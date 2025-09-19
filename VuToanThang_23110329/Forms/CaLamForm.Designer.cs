@@ -116,25 +116,13 @@ namespace VuToanThang_23110329.Forms
             dtpGioBatDau = CreateTimePicker();
             dtpGioKetThuc = CreateTimePicker();
             txtHeSoCa = CreateTextBox();
-            txtMoTa = CreateTextBox();
-            txtMoTa.Multiline = true;
-            txtMoTa.Height = 60;
-            chkKichHoat = new CheckBox
-            {
-                Text = "Kích hoạt",
-                ForeColor = Color.White,
-                AutoSize = true,
-                Checked = true
-            };
 
             pnlThongTin.Controls.AddRange(new Control[] {
                 lblThongTin,
                 CreateLabel("Tên ca:"), txtTenCa,
                 CreateLabel("Giờ bắt đầu:"), dtpGioBatDau,
                 CreateLabel("Giờ kết thúc:"), dtpGioKetThuc,
-                CreateLabel("Hệ số ca:"), txtHeSoCa,
-                CreateLabel("Mô tả:"), txtMoTa,
-                chkKichHoat
+                CreateLabel("Hệ số ca:"), txtHeSoCa
             });
         }
 
@@ -233,15 +221,9 @@ namespace VuToanThang_23110329.Forms
                     controls[i].Location = new Point(10, y);
                     controls[i].Size = new Size(labelWidth, 20);
                     controls[i + 1].Location = new Point(120, y - 3);
-                    controls[i + 1].Size = new Size(controlWidth, controls[i + 1] == txtMoTa ? 60 : 23);
-                    y += controls[i + 1] == txtMoTa ? 70 : spacing;
+                    controls[i + 1].Size = new Size(controlWidth, 23);
+                    y += spacing;
                 }
-            }
-
-            // Handle checkbox separately
-            if (controls.Length > 0 && controls[controls.Length - 1] is CheckBox)
-            {
-                controls[controls.Length - 1].Location = new Point(10, y);
             }
         }
 

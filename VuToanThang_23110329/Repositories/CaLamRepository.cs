@@ -83,14 +83,12 @@ namespace VuToanThang_23110329.Repositories
                     SqlHelper.CreateParameter("@TenCa", caLam.TenCa),
                     SqlHelper.CreateParameter("@GioBatDau", caLam.GioBatDau),
                     SqlHelper.CreateParameter("@GioKetThuc", caLam.GioKetThuc),
-                    SqlHelper.CreateParameter("@HeSoCa", caLam.HeSoCa),
-                    SqlHelper.CreateParameter("@MoTa", caLam.MoTa),
-                    SqlHelper.CreateParameter("@KichHoat", caLam.KichHoat)
+                    SqlHelper.CreateParameter("@HeSoCa", caLam.HeSoCa)
                 };
 
                 SqlHelper.ExecuteNonQuery(@"
-                    INSERT INTO CaLam (TenCa, GioBatDau, GioKetThuc, HeSoCa, MoTa, KichHoat)
-                    VALUES (@TenCa, @GioBatDau, @GioKetThuc, @HeSoCa, @MoTa, @KichHoat)", parameters);
+                    INSERT INTO CaLam (TenCa, GioBatDau, GioKetThuc, HeSoCa)
+                    VALUES (@TenCa, @GioBatDau, @GioKetThuc, @HeSoCa)", parameters);
 
                 return new OperationResult
                 {
@@ -118,15 +116,13 @@ namespace VuToanThang_23110329.Repositories
                     SqlHelper.CreateParameter("@TenCa", caLam.TenCa),
                     SqlHelper.CreateParameter("@GioBatDau", caLam.GioBatDau),
                     SqlHelper.CreateParameter("@GioKetThuc", caLam.GioKetThuc),
-                    SqlHelper.CreateParameter("@HeSoCa", caLam.HeSoCa),
-                    SqlHelper.CreateParameter("@MoTa", caLam.MoTa),
-                    SqlHelper.CreateParameter("@KichHoat", caLam.KichHoat)
+                    SqlHelper.CreateParameter("@HeSoCa", caLam.HeSoCa)
                 };
 
                 SqlHelper.ExecuteNonQuery(@"
                     UPDATE CaLam SET 
                         TenCa = @TenCa, GioBatDau = @GioBatDau, GioKetThuc = @GioKetThuc, 
-                        HeSoCa = @HeSoCa, MoTa = @MoTa, KichHoat = @KichHoat
+                        HeSoCa = @HeSoCa
                     WHERE MaCa = @MaCa", parameters);
 
                 return new OperationResult
@@ -177,9 +173,7 @@ namespace VuToanThang_23110329.Repositories
                 TenCa = row["TenCa"].ToString(),
                 GioBatDau = TimeSpan.Parse(row["GioBatDau"].ToString()),
                 GioKetThuc = TimeSpan.Parse(row["GioKetThuc"].ToString()),
-                HeSoCa = Convert.ToDecimal(row["HeSoCa"]),
-                MoTa = row["MoTa"]?.ToString(),
-                KichHoat = row["KichHoat"] != DBNull.Value ? Convert.ToBoolean(row["KichHoat"]) : true
+                HeSoCa = Convert.ToDecimal(row["HeSoCa"])
             };
         }
     }

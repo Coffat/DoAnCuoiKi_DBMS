@@ -305,7 +305,7 @@ namespace VuToanThang_23110329.Forms
                 cmbNhanVien.ValueMember = "MaNV";
 
                 // Load shifts
-                var caLams = _caLamRepository.GetAll().Where(c => c.KichHoat).ToList();
+                var caLams = _caLamRepository.GetAll();
                 cmbCaLam.DataSource = caLams;
                 cmbCaLam.DisplayMember = "TenCa";
                 cmbCaLam.ValueMember = "MaCa";

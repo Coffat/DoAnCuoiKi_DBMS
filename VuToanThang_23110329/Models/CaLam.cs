@@ -9,7 +9,5 @@ namespace VuToanThang_23110329.Models
         public TimeSpan GioBatDau { get; set; }
         public TimeSpan GioKetThuc { get; set; }
         public decimal HeSoCa { get; set; }
-        public string MoTa { get; set; }
-        public bool KichHoat { get; set; }
     }
 }

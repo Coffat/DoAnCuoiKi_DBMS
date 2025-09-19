@@ -17,9 +17,8 @@ namespace VuToanThang_23110329.Forms
 
         // UI Controls
         private DataGridView dgvCaLam;
-        private TextBox txtSearch, txtTenCa, txtMoTa, txtHeSoCa;
+        private TextBox txtSearch, txtTenCa, txtHeSoCa;
         private DateTimePicker dtpGioBatDau, dtpGioKetThuc;
-        private CheckBox chkKichHoat;
         private Button btnThem, btnSua, btnXoa, btnLuu, btnHuy, btnLamMoi;
         private Panel pnlThongTin;
 
@@ -73,11 +72,6 @@ namespace VuToanThang_23110329.Forms
                 dgvCaLam.Columns["GioBatDau"].HeaderText = "Giờ bắt đầu";
                 dgvCaLam.Columns["GioKetThuc"].HeaderText = "Giờ kết thúc";
                 dgvCaLam.Columns["HeSoCa"].HeaderText = "Hệ số";
-                dgvCaLam.Columns["KichHoat"].HeaderText = "Kích hoạt";
-                
-                // Hide MoTa column in grid
-                if (dgvCaLam.Columns["MoTa"] != null)
-                    dgvCaLam.Columns["MoTa"].Visible = false;
             }
         }
 
@@ -107,8 +101,6 @@ namespace VuToanThang_23110329.Forms
             dtpGioBatDau.Value = DateTime.Today.AddHours(8); // 8:00 AM
             dtpGioKetThuc.Value = DateTime.Today.AddHours(17); // 5:00 PM
             txtHeSoCa.Text = "1.0";
-            txtMoTa.Clear();
-            chkKichHoat.Checked = true;
             
             _currentCaLam = null;
         }
@@ -122,8 +114,6 @@ namespace VuToanThang_23110329.Forms
             dtpGioBatDau.Value = DateTime.Today.Add(ca.GioBatDau);
             dtpGioKetThuc.Value = DateTime.Today.Add(ca.GioKetThuc);
             txtHeSoCa.Text = ca.HeSoCa.ToString();
-            txtMoTa.Text = ca.MoTa;
-            chkKichHoat.Checked = ca.KichHoat;
         }
 
         private void ShowMessage(string message, string title, MessageBoxIcon icon)
@@ -227,9 +217,7 @@ namespace VuToanThang_23110329.Forms
                         TenCa = txtTenCa.Text.Trim(),
                         GioBatDau = gioBatDau,
                         GioKetThuc = gioKetThuc,
-                        HeSoCa = heSoCa,
-                        MoTa = txtMoTa.Text.Trim(),
-                        KichHoat = chkKichHoat.Checked
+                        HeSoCa = heSoCa
                     };
 
                     var result = _caLamRepository.Insert(caLam);
@@ -252,8 +240,6 @@ namespace VuToanThang_23110329.Forms
                     _currentCaLam.GioBatDau = gioBatDau;
                     _currentCaLam.GioKetThuc = gioKetThuc;
                     _currentCaLam.HeSoCa = heSoCa;
-                    _currentCaLam.MoTa = txtMoTa.Text.Trim();
-                    _currentCaLam.KichHoat = chkKichHoat.Checked;
 
                     var result = _caLamRepository.Update(_currentCaLam);
                     
