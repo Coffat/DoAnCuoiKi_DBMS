@@ -270,6 +270,9 @@ namespace VuToanThang_23110329.Forms
                 return;
             }
 
+            CreateControls();
+            LayoutControls();
+            SetupEventHandlers();
             LoadPayslip();
         }
 

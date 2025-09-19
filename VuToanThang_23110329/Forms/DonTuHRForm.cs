@@ -286,6 +286,9 @@ namespace VuToanThang_23110329.Forms
 
         private void InitializeForm()
         {
+            CreateControls();
+            LayoutControls();
+            SetupEventHandlers();
             LoadData();
         }
 
