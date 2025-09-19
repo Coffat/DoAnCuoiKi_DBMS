@@ -1,0 +1,192 @@
+using System;
+using System.Collections.Generic;
+using System.Data;
+using VuToanThang_23110329.Data;
+using VuToanThang_23110329.Models;
+
+namespace VuToanThang_23110329.Repositories
+{
+    public class CaLamRepository
+    {
+        public List<CaLam> GetAll()
+        {
+            var list = new List<CaLam>();
+            try
+            {
+                var dt = SqlHelper.ExecuteDataTable("SELECT * FROM CaLam ORDER BY GioBatDau");
+                
+                foreach (DataRow row in dt.Rows)
+                {
+                    list.Add(MapFromDataRow(row));
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Lỗi lấy danh sách ca làm: {ex.Message}", ex);
+            }
+            return list;
+        }
+
+        public List<fn_KhungCa_Result> GetKhungCa(DateTime ngay)
+        {
+            var list = new List<fn_KhungCa_Result>();
+            try
+            {
+                var parameters = new[] { SqlHelper.CreateParameter("@Ngay", ngay) };
+                var dt = SqlHelper.ExecuteDataTable("SELECT * FROM fn_KhungCa(@Ngay)", parameters);
+                
+                foreach (DataRow row in dt.Rows)
+                {
+                    list.Add(new fn_KhungCa_Result
+                    {
+                        MaCa = Convert.ToInt32(row["MaCa"]),
+                        TenCa = row["TenCa"].ToString(),
+                        GioBatDau = TimeSpan.Parse(row["GioBatDau"].ToString()),
+                        GioKetThuc = TimeSpan.Parse(row["GioKetThuc"].ToString()),
+                        TrangThai = row["TrangThai"].ToString()
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Lỗi lấy khung ca: {ex.Message}", ex);
+            }
+            return list;
+        }
+
+        public CaLam GetById(int maCa)
+        {
+            try
+            {
+                var parameters = new[] { SqlHelper.CreateParameter("@MaCa", maCa) };
+                var dt = SqlHelper.ExecuteDataTable("SELECT * FROM CaLam WHERE MaCa = @MaCa", parameters);
+                
+                if (dt.Rows.Count > 0)
+                    return MapFromDataRow(dt.Rows[0]);
+                
+                return null;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Lỗi lấy thông tin ca làm: {ex.Message}", ex);
+            }
+        }
+
+        public OperationResult Insert(CaLam caLam)
+        {
+            try
+            {
+                var parameters = new[]
+                {
+                    SqlHelper.CreateParameter("@TenCa", caLam.TenCa),
+                    SqlHelper.CreateParameter("@GioBatDau", caLam.GioBatDau),
+                    SqlHelper.CreateParameter("@GioKetThuc", caLam.GioKetThuc),
+                    SqlHelper.CreateParameter("@SoGioLam", caLam.SoGioLam),
+                    SqlHelper.CreateParameter("@GioNghiGiua", caLam.GioNghiGiua),
+                    SqlHelper.CreateParameter("@PhutNghiGiua", caLam.PhutNghiGiua),
+                    SqlHelper.CreateParameter("@MoTa", caLam.MoTa)
+                };
+
+                SqlHelper.ExecuteNonQuery(@"
+                    INSERT INTO CaLam (TenCa, GioBatDau, GioKetThuc, SoGioLam, GioNghiGiua, PhutNghiGiua, MoTa, TrangThai, NgayTao)
+                    VALUES (@TenCa, @GioBatDau, @GioKetThuc, @SoGioLam, @GioNghiGiua, @PhutNghiGiua, @MoTa, 1, GETDATE())", parameters);
+
+                return new OperationResult
+                {
+                    Success = true,
+                    Message = "Thêm ca làm thành công!"
+                };
+            }
+            catch (Exception ex)
+            {
+                return new OperationResult
+                {
+                    Success = false,
+                    Message = $"Lỗi thêm ca làm: {ex.Message}"
+                };
+            }
+        }
+
+        public OperationResult Update(CaLam caLam)
+        {
+            try
+            {
+                var parameters = new[]
+                {
+                    SqlHelper.CreateParameter("@MaCa", caLam.MaCa),
+                    SqlHelper.CreateParameter("@TenCa", caLam.TenCa),
+                    SqlHelper.CreateParameter("@GioBatDau", caLam.GioBatDau),
+                    SqlHelper.CreateParameter("@GioKetThuc", caLam.GioKetThuc),
+                    SqlHelper.CreateParameter("@SoGioLam", caLam.SoGioLam),
+                    SqlHelper.CreateParameter("@GioNghiGiua", caLam.GioNghiGiua),
+                    SqlHelper.CreateParameter("@PhutNghiGiua", caLam.PhutNghiGiua),
+                    SqlHelper.CreateParameter("@MoTa", caLam.MoTa),
+                    SqlHelper.CreateParameter("@TrangThai", caLam.TrangThai)
+                };
+
+                SqlHelper.ExecuteNonQuery(@"
+                    UPDATE CaLam SET 
+                        TenCa = @TenCa, GioBatDau = @GioBatDau, GioKetThuc = @GioKetThuc, 
+                        SoGioLam = @SoGioLam, GioNghiGiua = @GioNghiGiua, PhutNghiGiua = @PhutNghiGiua, 
+                        MoTa = @MoTa, TrangThai = @TrangThai, NgayCapNhat = GETDATE()
+                    WHERE MaCa = @MaCa", parameters);
+
+                return new OperationResult
+                {
+                    Success = true,
+                    Message = "Cập nhật ca làm thành công!"
+                };
+            }
+            catch (Exception ex)
+            {
+                return new OperationResult
+                {
+                    Success = false,
+                    Message = $"Lỗi cập nhật ca làm: {ex.Message}"
+                };
+            }
+        }
+
+        public OperationResult Delete(int maCa)
+        {
+            try
+            {
+                var parameters = new[] { SqlHelper.CreateParameter("@MaCa", maCa) };
+                
+                SqlHelper.ExecuteNonQuery("UPDATE CaLam SET TrangThai = 0, NgayCapNhat = GETDATE() WHERE MaCa = @MaCa", parameters);
+
+                return new OperationResult
+                {
+                    Success = true,
+                    Message = "Xóa ca làm thành công!"
+                };
+            }
+            catch (Exception ex)
+            {
+                return new OperationResult
+                {
+                    Success = false,
+                    Message = $"Lỗi xóa ca làm: {ex.Message}"
+                };
+            }
+        }
+
+        private CaLam MapFromDataRow(DataRow row)
+        {
+            return new CaLam
+            {
+                MaCa = Convert.ToInt32(row["MaCa"]),
+                TenCa = row["TenCa"].ToString(),
+                GioBatDau = TimeSpan.Parse(row["GioBatDau"].ToString()),
+                GioKetThuc = TimeSpan.Parse(row["GioKetThuc"].ToString()),
+                SoGioLam = Convert.ToInt32(row["SoGioLam"]),
+                GioNghiGiua = row["GioNghiGiua"] != DBNull.Value ? TimeSpan.Parse(row["GioNghiGiua"].ToString()) : (TimeSpan?)null,
+                PhutNghiGiua = row["PhutNghiGiua"] != DBNull.Value ? Convert.ToInt32(row["PhutNghiGiua"]) : (int?)null,
+                MoTa = row["MoTa"]?.ToString(),
+                TrangThai = Convert.ToBoolean(row["TrangThai"]),
+                NgayTao = Convert.ToDateTime(row["NgayTao"]),
+                NgayCapNhat = row["NgayCapNhat"] != DBNull.Value ? Convert.ToDateTime(row["NgayCapNhat"]) : (DateTime?)null
+            };
+        }
+    }
+}
