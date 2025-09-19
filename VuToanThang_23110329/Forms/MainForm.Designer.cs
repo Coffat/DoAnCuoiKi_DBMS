@@ -81,17 +81,17 @@ namespace VuToanThang_23110329.Forms
             this.pnlSidebar.TabIndex = 0;
             
             // Configure all buttons with similar styling
-            ConfigureMenuButton(this.btnDashboard, "🏠 Trang chủ", 150, true);
-            ConfigureMenuButton(this.btnNhanVien, "👥 Nhân viên", 200, false);
-            ConfigureMenuButton(this.btnCaLam, "🕐 Ca làm", 250, false);
-            ConfigureMenuButton(this.btnLichPhanCa, "📅 Lịch phân ca", 300, false);
-            ConfigureMenuButton(this.btnChamCong, "⏰ Chấm công", 350, false);
-            ConfigureMenuButton(this.btnDonTu, "📝 Đơn từ", 400, false);
-            ConfigureMenuButton(this.btnTinhLuong, "🧮 Tính lương", 450, false);
-            ConfigureMenuButton(this.btnBangLuong, "💰 Bảng lương", 500, false);
-            ConfigureMenuButton(this.btnPhieuLuong, "🧾 Phiếu lương", 550, false);
-            ConfigureMenuButton(this.btnBaoCaoNhanSu, "📈 Báo cáo nhân sự", 600, false);
-            ConfigureMenuButton(this.btnBaoCaoLuong, "📊 Báo cáo lương", 650, false);
+            ConfigureMenuButton(this.btnDashboard, "btnDashboard", "🏠 Trang chủ", 150, true);
+            ConfigureMenuButton(this.btnNhanVien, "btnNhanVien", "👥 Nhân viên", 200, false);
+            ConfigureMenuButton(this.btnCaLam, "btnCaLam", "🕐 Ca làm", 250, false);
+            ConfigureMenuButton(this.btnLichPhanCa, "btnLichPhanCa", "📅 Lịch phân ca", 300, false);
+            ConfigureMenuButton(this.btnChamCong, "btnChamCong", "⏰ Chấm công", 350, false);
+            ConfigureMenuButton(this.btnDonTu, "btnDonTu", "📝 Đơn từ", 400, false);
+            ConfigureMenuButton(this.btnTinhLuong, "btnTinhLuong", "🧮 Tính lương", 450, false);
+            ConfigureMenuButton(this.btnBangLuong, "btnBangLuong", "💰 Bảng lương", 500, false);
+            ConfigureMenuButton(this.btnPhieuLuong, "btnPhieuLuong", "🧾 Phiếu lương", 550, false);
+            ConfigureMenuButton(this.btnBaoCaoNhanSu, "btnBaoCaoNhanSu", "📈 Báo cáo nhân sự", 600, false);
+            ConfigureMenuButton(this.btnBaoCaoLuong, "btnBaoCaoLuong", "📊 Báo cáo lương", 650, false);
             
             // btnLogout
             this.btnLogout.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
@@ -246,8 +246,9 @@ namespace VuToanThang_23110329.Forms
             this.ResumeLayout(false);
         }
 
-        private void ConfigureMenuButton(Guna.UI2.WinForms.Guna2Button button, string text, int top, bool isActive)
+        private void ConfigureMenuButton(Guna.UI2.WinForms.Guna2Button button, string name, string text, int top, bool isActive)
         {
+            button.Name = name;
             button.BorderRadius = 8;
             button.FillColor = isActive ? System.Drawing.Color.FromArgb(124, 77, 255) : System.Drawing.Color.Transparent;
             button.Font = new System.Drawing.Font("Segoe UI", 10.5F, isActive ? System.Drawing.FontStyle.Bold : System.Drawing.FontStyle.Regular);
