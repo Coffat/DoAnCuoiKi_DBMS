@@ -596,9 +596,12 @@ namespace VuToanThang_23110329.Forms
             _nhanVienRepository = new NhanVienRepository();
             _caLamRepository = new CaLamRepository();
             InitializeComponent();
+            CreateControls();
             LoadData();
         }
 
+        private void CreateControls()
+        {
             var lblTitle = new Label
             {
                 Text = "TẠO LỊCH TUẦN",
