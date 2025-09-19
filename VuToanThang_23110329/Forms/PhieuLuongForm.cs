@@ -421,9 +421,12 @@ namespace VuToanThang_23110329.Forms
         public PrintPayslipForm(Panel originalPanel)
         {
             InitializeComponent();
+            CreatePrintButtons();
             ClonePayslipPanel(originalPanel);
         }
 
+        private void CreatePrintButtons()
+        {
             var btnPrint = new Button
             {
                 Text = "In",

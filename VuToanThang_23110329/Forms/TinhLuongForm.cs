@@ -627,8 +627,11 @@ namespace VuToanThang_23110329.Forms
         {
             InitializeComponent();
             this.Text = $"Chỉnh sửa lương - {bangLuong.TenNhanVien}";
+            CreateControls();
         }
 
+        private void CreateControls()
+        {
             var lblTitle = new Label
             {
                 Text = "Chỉnh sửa lương cá nhân - Chức năng đang phát triển",
