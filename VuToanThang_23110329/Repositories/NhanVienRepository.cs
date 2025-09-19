@@ -105,28 +105,24 @@ namespace VuToanThang_23110329.Repositories
                 {
                     SqlHelper.CreateParameter("@MaNV", nhanVien.MaNV),
                     SqlHelper.CreateParameter("@HoTen", nhanVien.HoTen),
-                    SqlHelper.CreateParameter("@CCCD", nhanVien.CCCD),
-                    SqlHelper.CreateParameter("@SoDienThoai", nhanVien.SoDienThoai),
-                    SqlHelper.CreateParameter("@Email", nhanVien.Email),
-                    SqlHelper.CreateParameter("@DiaChi", nhanVien.DiaChi),
                     SqlHelper.CreateParameter("@NgaySinh", nhanVien.NgaySinh),
                     SqlHelper.CreateParameter("@GioiTinh", nhanVien.GioiTinh),
-                    SqlHelper.CreateParameter("@ChucVu", nhanVien.ChucVu),
-                    SqlHelper.CreateParameter("@PhongBan", nhanVien.PhongBan),
-                    SqlHelper.CreateParameter("@LuongCoBan", nhanVien.LuongCoBan),
-                    SqlHelper.CreateParameter("@PhuCapChucVu", nhanVien.PhuCapChucVu),
-                    SqlHelper.CreateParameter("@PhuCapKhac", nhanVien.PhuCapKhac),
+                    SqlHelper.CreateParameter("@DienThoai", nhanVien.DienThoai),
+                    SqlHelper.CreateParameter("@Email", nhanVien.Email),
+                    SqlHelper.CreateParameter("@DiaChi", nhanVien.DiaChi),
+                    SqlHelper.CreateParameter("@NgayVaoLam", nhanVien.NgayVaoLam),
                     SqlHelper.CreateParameter("@TrangThai", nhanVien.TrangThai),
-                    SqlHelper.CreateParameter("@MaQuanLy", nhanVien.MaQuanLy)
+                    SqlHelper.CreateParameter("@PhongBan", nhanVien.PhongBan),
+                    SqlHelper.CreateParameter("@ChucDanh", nhanVien.ChucDanh),
+                    SqlHelper.CreateParameter("@LuongCoBan", nhanVien.LuongCoBan)
                 };
 
                 SqlHelper.ExecuteNonQuery(@"
                     UPDATE NhanVien SET 
-                        HoTen = @HoTen, CCCD = @CCCD, SoDienThoai = @SoDienThoai, Email = @Email, 
-                        DiaChi = @DiaChi, NgaySinh = @NgaySinh, GioiTinh = @GioiTinh, ChucVu = @ChucVu, 
-                        PhongBan = @PhongBan, LuongCoBan = @LuongCoBan, PhuCapChucVu = @PhuCapChucVu, 
-                        PhuCapKhac = @PhuCapKhac, TrangThai = @TrangThai, MaQuanLy = @MaQuanLy, 
-                        NgayCapNhat = GETDATE()
+                        HoTen = @HoTen, NgaySinh = @NgaySinh, GioiTinh = @GioiTinh, 
+                        DienThoai = @DienThoai, Email = @Email, DiaChi = @DiaChi,
+                        NgayVaoLam = @NgayVaoLam, TrangThai = @TrangThai, 
+                        PhongBan = @PhongBan, ChucDanh = @ChucDanh, LuongCoBan = @LuongCoBan
                     WHERE MaNV = @MaNV", parameters);
 
                 return new OperationResult
@@ -151,7 +147,7 @@ namespace VuToanThang_23110329.Repositories
             {
                 var parameters = new[] { SqlHelper.CreateParameter("@MaNV", maNV) };
                 
-                SqlHelper.ExecuteNonQuery("UPDATE NhanVien SET TrangThai = 'Terminated', NgayCapNhat = GETDATE() WHERE MaNV = @MaNV", parameters);
+                SqlHelper.ExecuteNonQuery("UPDATE NhanVien SET TrangThai = N'Nghi' WHERE MaNV = @MaNV", parameters);
 
                 return new OperationResult
                 {

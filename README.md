@@ -95,27 +95,21 @@ CREATE TABLE NhanVien (
 
 CREATE TABLE CaLam (
     MaCa INT IDENTITY(1,1) PRIMARY KEY,
-    TenCa NVARCHAR(50) NOT NULL,
-    GioBatDau TIME NOT NULL,
-    GioKetThuc TIME NOT NULL,
-    HeSoCa DECIMAL(4,2) DEFAULT 1.0,
-    MoTa NVARCHAR(255) NULL,
-    KichHoat BIT DEFAULT 1,
-    NgayTao DATETIME DEFAULT GETDATE(),
-    NgayCapNhat DATETIME NULL
+    TenCa NVARCHAR(60) NOT NULL,    -- VD: 'Sang','Chieu','Toi'
+    GioBatDau TIME(0) NOT NULL,
+    GioKetThuc TIME(0) NOT NULL,
+    HeSoCa DECIMAL(4,2) NOT NULL DEFAULT(1.00)
 );
 
 CREATE TABLE LichPhanCa (
     MaLich INT IDENTITY(1,1) PRIMARY KEY,
     MaNV INT NOT NULL,
-    MaCa INT NOT NULL,
     NgayLam DATE NOT NULL,
-    TrangThai NVARCHAR(10) DEFAULT N'Mo', -- Mo, Khoa
-    GhiChu NVARCHAR(255) NULL,
-    NgayTao DATETIME DEFAULT GETDATE(),
-    NgayCapNhat DATETIME NULL,
-    FOREIGN KEY (MaNV) REFERENCES NhanVien(MaNV),
-    FOREIGN KEY (MaCa) REFERENCES CaLam(MaCa)
+    MaCa INT NOT NULL,
+    TrangThai NVARCHAR(12) NOT NULL DEFAULT(N'DuKien'),
+
+    CONSTRAINT FK_LichPhanCa_NhanVien FOREIGN KEY(MaNV) REFERENCES NhanVien(MaNV) ON DELETE CASCADE,
+    CONSTRAINT FK_LichPhanCa_CaLam FOREIGN KEY(MaCa) REFERENCES CaLam(MaCa)
 );
 
 CREATE TABLE ChamCong (
@@ -125,29 +119,26 @@ CREATE TABLE ChamCong (
     GioVao DATETIME2(0) NULL,
     GioRa DATETIME2(0) NULL,
     GioCong DECIMAL(5,2) NULL,
-    DiTrePhut INT DEFAULT 0,
-    VeSomPhut INT DEFAULT 0,
-    GhiChu NVARCHAR(255) NULL,
-    Khoa BIT DEFAULT 0,
-    NgayTao DATETIME DEFAULT GETDATE(),
-    NgayCapNhat DATETIME NULL,
-    FOREIGN KEY (MaNV) REFERENCES NhanVien(MaNV)
+    DiTrePhut INT NULL,
+    VeSomPhut INT NULL,
+    Khoa BIT NOT NULL DEFAULT(0),
+
+    CONSTRAINT FK_ChamCong_NhanVien FOREIGN KEY(MaNV) REFERENCES NhanVien(MaNV) ON DELETE CASCADE
 );
 
 CREATE TABLE DonTu (
     MaDon INT IDENTITY(1,1) PRIMARY KEY,
     MaNV INT NOT NULL,
-    Loai NVARCHAR(10) NOT NULL, -- NGHI, OT
-    TuLuc DATETIME2(0) NULL,
-    DenLuc DATETIME2(0) NULL,
+    Loai NVARCHAR(10) NOT NULL,   -- 'NGHI' hoặc 'OT'
+    TuLuc DATETIME2(0) NOT NULL,
+    DenLuc DATETIME2(0) NOT NULL,
     SoGio DECIMAL(5,2) NULL,
-    LyDo NVARCHAR(500) NULL,
-    TrangThai NVARCHAR(10) DEFAULT N'ChoDuyet', -- ChoDuyet, DaDuyet, TuChoi
+    LyDo NVARCHAR(255) NULL,
+    TrangThai NVARCHAR(10) NOT NULL DEFAULT(N'ChoDuyet'),
     DuyetBoi INT NULL,
-    NgayTao DATETIME DEFAULT GETDATE(),
-    NgayCapNhat DATETIME NULL,
-    FOREIGN KEY (MaNV) REFERENCES NhanVien(MaNV),
-    FOREIGN KEY (DuyetBoi) REFERENCES NhanVien(MaNV)
+
+    CONSTRAINT FK_DonTu_NhanVien FOREIGN KEY(MaNV) REFERENCES NhanVien(MaNV) ON DELETE CASCADE,
+    CONSTRAINT FK_DonTu_DuyetBoi FOREIGN KEY(DuyetBoi) REFERENCES NguoiDung(MaNguoiDung)
 );
 
 CREATE TABLE BangLuong (
@@ -155,28 +146,31 @@ CREATE TABLE BangLuong (
     Nam INT NOT NULL,
     Thang INT NOT NULL,
     MaNV INT NOT NULL,
-    LuongCoBan DECIMAL(12,2) DEFAULT 0,
-    TongGioCong DECIMAL(7,2) DEFAULT 0,
-    GioOT DECIMAL(7,2) DEFAULT 0,
-    PhuCap DECIMAL(12,2) DEFAULT 0,
-    KhauTru DECIMAL(12,2) DEFAULT 0,
-    ThueBH DECIMAL(12,2) DEFAULT 0,
-    ThucLanh DECIMAL(12,2) DEFAULT 0,
-    TrangThai NVARCHAR(10) DEFAULT N'Mo', -- Mo, Dong
-    NgayTao DATETIME DEFAULT GETDATE(),
-    NgayCapNhat DATETIME NULL,
-    FOREIGN KEY (MaNV) REFERENCES NhanVien(MaNV)
+    LuongCoBan DECIMAL(12,2) NOT NULL,
+    TongGioCong DECIMAL(7,2) NOT NULL,
+    GioOT DECIMAL(7,2) NOT NULL,
+    PhuCap DECIMAL(12,2) NOT NULL DEFAULT(0),
+    KhauTru DECIMAL(12,2) NOT NULL DEFAULT(0),
+    ThueBH DECIMAL(12,2) NOT NULL DEFAULT(0),
+    ThucLanh DECIMAL(12,2) NOT NULL,
+    TrangThai NVARCHAR(10) NOT NULL DEFAULT(N'Mo'),
+
+    CONSTRAINT FK_BangLuong_NhanVien FOREIGN KEY(MaNV) REFERENCES NhanVien(MaNV) ON DELETE CASCADE
 );
 
 -- Tạo tài khoản admin mặc định (password: admin123)
-INSERT INTO NguoiDung (TenDangNhap, MatKhauHash, VaiTro, KichHoat)
-VALUES ('admin', 'YWRtaW4xMjM=', 'HR', 1);
+-- Xóa user cũ nếu có
+DELETE FROM NguoiDung WHERE TenDangNhap = 'admin';
 
--- Tạo dữ liệu mẫu ca làm
+-- Tạo user admin với plain text password (để test)
+INSERT INTO NguoiDung (TenDangNhap, MatKhauHash, VaiTro, KichHoat)
+VALUES ('admin', 'admin123', 'HR', 1);
+
+-- Tạo dữ liệu mẫu ca làm (lưu ý: constraint GioBatDau < GioKetThuc)
 INSERT INTO CaLam (TenCa, GioBatDau, GioKetThuc, HeSoCa) VALUES
 (N'Ca Sáng', '08:00:00', '16:00:00', 1.0),
-(N'Ca Chiều', '16:00:00', '00:00:00', 1.2),
-(N'Ca Tối', '00:00:00', '08:00:00', 1.5);
+(N'Ca Chiều', '16:00:00', '22:00:00', 1.2),
+(N'Ca Tối', '22:00:00', '23:59:59', 1.5);
 ```
 
 #### Chạy script Views, Functions, Procedures và Security

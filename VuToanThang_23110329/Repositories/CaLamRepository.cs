@@ -83,15 +83,12 @@ namespace VuToanThang_23110329.Repositories
                     SqlHelper.CreateParameter("@TenCa", caLam.TenCa),
                     SqlHelper.CreateParameter("@GioBatDau", caLam.GioBatDau),
                     SqlHelper.CreateParameter("@GioKetThuc", caLam.GioKetThuc),
-                    SqlHelper.CreateParameter("@SoGioLam", caLam.SoGioLam),
-                    SqlHelper.CreateParameter("@GioNghiGiua", caLam.GioNghiGiua),
-                    SqlHelper.CreateParameter("@PhutNghiGiua", caLam.PhutNghiGiua),
-                    SqlHelper.CreateParameter("@MoTa", caLam.MoTa)
+                    SqlHelper.CreateParameter("@HeSoCa", caLam.HeSoCa)
                 };
 
                 SqlHelper.ExecuteNonQuery(@"
-                    INSERT INTO CaLam (TenCa, GioBatDau, GioKetThuc, SoGioLam, GioNghiGiua, PhutNghiGiua, MoTa, TrangThai, NgayTao)
-                    VALUES (@TenCa, @GioBatDau, @GioKetThuc, @SoGioLam, @GioNghiGiua, @PhutNghiGiua, @MoTa, 1, GETDATE())", parameters);
+                    INSERT INTO CaLam (TenCa, GioBatDau, GioKetThuc, HeSoCa)
+                    VALUES (@TenCa, @GioBatDau, @GioKetThuc, @HeSoCa)", parameters);
 
                 return new OperationResult
                 {
@@ -119,18 +116,12 @@ namespace VuToanThang_23110329.Repositories
                     SqlHelper.CreateParameter("@TenCa", caLam.TenCa),
                     SqlHelper.CreateParameter("@GioBatDau", caLam.GioBatDau),
                     SqlHelper.CreateParameter("@GioKetThuc", caLam.GioKetThuc),
-                    SqlHelper.CreateParameter("@SoGioLam", caLam.SoGioLam),
-                    SqlHelper.CreateParameter("@GioNghiGiua", caLam.GioNghiGiua),
-                    SqlHelper.CreateParameter("@PhutNghiGiua", caLam.PhutNghiGiua),
-                    SqlHelper.CreateParameter("@MoTa", caLam.MoTa),
-                    SqlHelper.CreateParameter("@TrangThai", caLam.TrangThai)
+                    SqlHelper.CreateParameter("@HeSoCa", caLam.HeSoCa)
                 };
 
                 SqlHelper.ExecuteNonQuery(@"
                     UPDATE CaLam SET 
-                        TenCa = @TenCa, GioBatDau = @GioBatDau, GioKetThuc = @GioKetThuc, 
-                        SoGioLam = @SoGioLam, GioNghiGiua = @GioNghiGiua, PhutNghiGiua = @PhutNghiGiua, 
-                        MoTa = @MoTa, TrangThai = @TrangThai, NgayCapNhat = GETDATE()
+                        TenCa = @TenCa, GioBatDau = @GioBatDau, GioKetThuc = @GioKetThuc, HeSoCa = @HeSoCa
                     WHERE MaCa = @MaCa", parameters);
 
                 return new OperationResult
@@ -155,7 +146,7 @@ namespace VuToanThang_23110329.Repositories
             {
                 var parameters = new[] { SqlHelper.CreateParameter("@MaCa", maCa) };
                 
-                SqlHelper.ExecuteNonQuery("UPDATE CaLam SET TrangThai = 0, NgayCapNhat = GETDATE() WHERE MaCa = @MaCa", parameters);
+                SqlHelper.ExecuteNonQuery("DELETE FROM CaLam WHERE MaCa = @MaCa", parameters);
 
                 return new OperationResult
                 {

@@ -151,7 +151,7 @@ namespace VuToanThang_23110329.Repositories
             }
         }
 
-        public OperationResult CreateUserAccount(string tenDangNhap, string matKhau, string vaiTro, int? maNV = null)
+        public OperationResult CreateUserAccount(string tenDangNhap, string matKhau, string vaiTro)
         {
             try
             {
@@ -172,17 +172,19 @@ namespace VuToanThang_23110329.Repositories
                     };
                 }
 
+                // Hash password (for consistency with login)
+                string matKhauHash = matKhau; // Using plain text for now, same as login
+                
                 var parameters = new[]
                 {
                     SqlHelper.CreateParameter("@TenDangNhap", tenDangNhap),
-                    SqlHelper.CreateParameter("@MatKhau", matKhau),
-                    SqlHelper.CreateParameter("@VaiTro", vaiTro),
-                    SqlHelper.CreateParameter("@MaNV", maNV)
+                    SqlHelper.CreateParameter("@MatKhauHash", matKhauHash),
+                    SqlHelper.CreateParameter("@VaiTro", vaiTro)
                 };
 
                 SqlHelper.ExecuteNonQuery(@"
-                    INSERT INTO NguoiDung (TenDangNhap, MatKhau, VaiTro, MaNV, TrangThai, NgayTao)
-                    VALUES (@TenDangNhap, @MatKhau, @VaiTro, @MaNV, 1, GETDATE())", parameters);
+                    INSERT INTO NguoiDung (TenDangNhap, MatKhauHash, VaiTro, KichHoat)
+                    VALUES (@TenDangNhap, @MatKhauHash, @VaiTro, 1)", parameters);
 
                 return new OperationResult
                 {
