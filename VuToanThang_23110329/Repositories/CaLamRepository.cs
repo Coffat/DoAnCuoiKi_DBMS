@@ -166,13 +166,18 @@ namespace VuToanThang_23110329.Repositories
 
         private CaLam MapFromDataRow(DataRow row)
         {
+            int.TryParse(row["MaCa"]?.ToString(), out int maCa);
+            TimeSpan.TryParse(row["GioBatDau"]?.ToString(), out TimeSpan gioBatDau);
+            TimeSpan.TryParse(row["GioKetThuc"]?.ToString(), out TimeSpan gioKetThuc);
+            decimal.TryParse(row["HeSoCa"]?.ToString(), out decimal heSoCa);
+
             return new CaLam
             {
-                MaCa = Convert.ToInt32(row["MaCa"]),
-                TenCa = row["TenCa"].ToString(),
-                GioBatDau = TimeSpan.Parse(row["GioBatDau"].ToString()),
-                GioKetThuc = TimeSpan.Parse(row["GioKetThuc"].ToString()),
-                HeSoCa = Convert.ToDecimal(row["HeSoCa"])
+                MaCa = maCa,
+                TenCa = row["TenCa"]?.ToString(),
+                GioBatDau = gioBatDau,
+                GioKetThuc = gioKetThuc,
+                HeSoCa = heSoCa
             };
         }
     }
