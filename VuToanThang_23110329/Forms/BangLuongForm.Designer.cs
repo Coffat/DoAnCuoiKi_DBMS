@@ -40,20 +40,6 @@ namespace VuToanThang_23110329.Forms
             this.ResumeLayout(false);
         }
 
-        private void CreateControls()
-        {
-            // This method will be called from the main form
-        }
-
-        private void LayoutControls()
-        {
-            // This method will be called from the main form
-        }
-
-        private void SetupEventHandlers()
-        {
-            // This method will be called from the main form
-        }
 
         #endregion
     }
