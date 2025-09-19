@@ -48,23 +48,4 @@ namespace VuToanThang_23110329.Models
         public NhanVien Employee { get; set; }
     }
 
-
-    // Stored procedure parameter models
-    public class ThemMoiNhanVienParams
-    {
-        public string HoTen { get; set; }
-        public DateTime? NgaySinh { get; set; }
-        public string GioiTinh { get; set; }
-        public string DienThoai { get; set; }
-        public string Email { get; set; }
-        public string DiaChi { get; set; }
-        public DateTime? NgayVaoLam { get; set; }
-        public string PhongBan { get; set; }
-        public string ChucDanh { get; set; }
-        public decimal LuongCoBan { get; set; }
-        public bool TaoTaiKhoan { get; set; }
-        public string TenDangNhap { get; set; }
-        public string MatKhauHash { get; set; }
-        public string VaiTro { get; set; }
-    }
 }
