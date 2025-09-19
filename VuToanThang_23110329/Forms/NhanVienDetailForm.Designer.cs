@@ -25,7 +25,7 @@ namespace VuToanThang_23110329.Forms
             this.BackColor = Color.FromArgb(50, 50, 50);
             this.ForeColor = Color.White;
             this.Size = new Size(500, 700);
-            this.Text = _isEditMode ? "Chỉnh sửa nhân viên" : "Thêm nhân viên mới";
+            this.Text = "Nhân viên";
             this.StartPosition = FormStartPosition.CenterParent;
             this.FormBorderStyle = FormBorderStyle.FixedDialog;
             this.MaximizeBox = false;
@@ -42,7 +42,7 @@ namespace VuToanThang_23110329.Forms
             // Title
             var lblTitle = new Label
             {
-                Text = _isEditMode ? "CHỈNH SỬA NHÂN VIÊN" : "THÊM NHÂN VIÊN MỚI",
+                Text = "QUẢN LÝ NHÂN VIÊN",
                 Font = new Font("Segoe UI", 16, FontStyle.Bold),
                 ForeColor = Color.FromArgb(124, 77, 255),
                 AutoSize = true
@@ -130,19 +130,6 @@ namespace VuToanThang_23110329.Forms
             });
         }
 
-        private Button CreateButton(string text, Color backColor)
-        {
-            return new Button
-            {
-                Text = text,
-                BackColor = backColor,
-                ForeColor = Color.White,
-                FlatStyle = FlatStyle.Flat,
-                Size = new Size(100, 35),
-                Font = new Font("Segoe UI", 9, FontStyle.Bold),
-                UseVisualStyleBackColor = false
-            };
-        }
 
         private TextBox CreateTextBox()
         {

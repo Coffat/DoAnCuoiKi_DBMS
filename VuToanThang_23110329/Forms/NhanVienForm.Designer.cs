@@ -94,79 +94,6 @@ namespace VuToanThang_23110329.Forms
             this.Controls.AddRange(new Control[] { lblTitle, lblSearch, txtSearch, lblFilter, cmbFilterTrangThai, btnThem, btnSua, btnXoa, btnKhoiPhuc, btnLamMoi, dgvNhanVien });
         }
 
-        private void CreateInfoControls()
-        {
-            var lblThongTin = new Label
-            {
-                Text = "THÔNG TIN NHÂN VIÊN",
-                Font = new Font("Segoe UI", 14, FontStyle.Bold),
-                ForeColor = Color.FromArgb(124, 77, 255),
-                AutoSize = true
-            };
-
-            // Personal Info
-            txtHoTen = CreateTextBox();
-            dtpNgaySinh = CreateDateTimePicker();
-            cmbGioiTinh = CreateComboBox(new[] { "Nam", "Nữ", "Khác" });
-            txtDienThoai = CreateTextBox();
-            txtEmail = CreateTextBox();
-            txtDiaChi = CreateTextBox();
-
-            // Work Info
-            dtpNgayVaoLam = CreateDateTimePicker();
-            cmbTrangThai = CreateComboBox(new[] { "DangLam", "Nghi" });
-            txtPhongBan = CreateTextBox();
-            txtChucDanh = CreateTextBox();
-            txtLuongCoBan = CreateTextBox();
-
-            // Account Info
-            chkTaoTaiKhoan = new CheckBox
-            {
-                Text = "Tạo tài khoản đăng nhập",
-                ForeColor = Color.White,
-                AutoSize = true
-            };
-            txtTenDangNhap = CreateTextBox();
-            txtMatKhau = CreateTextBox();
-            txtMatKhau.UseSystemPasswordChar = true;
-            cmbVaiTro = CreateComboBox(new[] { "NhanVien", "HR", "QuanLy", "KeToan" });
-
-            txtTenDangNhap.Enabled = false;
-            txtMatKhau.Enabled = false;
-            cmbVaiTro.Enabled = false;
-
-            pnlThongTin.Controls.AddRange(new Control[] {
-                lblThongTin,
-                CreateLabel("Họ tên:"), txtHoTen,
-                CreateLabel("Ngày sinh:"), dtpNgaySinh,
-                CreateLabel("Giới tính:"), cmbGioiTinh,
-                CreateLabel("Điện thoại:"), txtDienThoai,
-                CreateLabel("Email:"), txtEmail,
-                CreateLabel("Địa chỉ:"), txtDiaChi,
-                CreateLabel("Ngày vào làm:"), dtpNgayVaoLam,
-                CreateLabel("Trạng thái:"), cmbTrangThai,
-                CreateLabel("Phòng ban:"), txtPhongBan,
-                CreateLabel("Chức danh:"), txtChucDanh,
-                CreateLabel("Lương cơ bản:"), txtLuongCoBan,
-                chkTaoTaiKhoan,
-                CreateLabel("Tên đăng nhập:"), txtTenDangNhap,
-                CreateLabel("Mật khẩu:"), txtMatKhau,
-                CreateLabel("Vai trò:"), cmbVaiTro
-            });
-        }
-
-        private Button CreateButton(string text, Color backColor)
-        {
-            return new Button
-            {
-                Text = text,
-                BackColor = backColor,
-                ForeColor = Color.White,
-                FlatStyle = FlatStyle.Flat,
-                Size = new Size(80, 35),
-                Font = new Font("Segoe UI", 9, FontStyle.Bold)
-            };
-        }
 
         private TextBox CreateTextBox()
         {
@@ -240,32 +167,6 @@ namespace VuToanThang_23110329.Forms
             dgvNhanVien.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
         }
 
-        private void LayoutInfoControls()
-        {
-            int y = 10;
-            int labelWidth = 120;
-            int controlWidth = 200;
-            int spacing = 35;
-
-            var controls = pnlThongTin.Controls.Cast<Control>().ToArray();
-            
-            // Title
-            controls[0].Location = new Point(10, y);
-            y += 40;
-
-            // Layout pairs of label and control
-            for (int i = 1; i < controls.Length; i += 2)
-            {
-                if (i + 1 < controls.Length)
-                {
-                    controls[i].Location = new Point(10, y);
-                    controls[i].Size = new Size(labelWidth, 20);
-                    controls[i + 1].Location = new Point(140, y - 3);
-                    controls[i + 1].Size = new Size(controlWidth, 23);
-                    y += spacing;
-                }
-            }
-        }
 
         #endregion
     }
