@@ -12,8 +12,19 @@ namespace VuToanThang_23110329.Repositories
         {
             try
             {
-                // Simple password hash for demo (in production, use proper hashing)
-                string passwordHash = Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(password));
+                // Test connection first
+                var testConnection = SqlHelper.ExecuteDataTable("SELECT GETDATE() as CurrentTime, DB_NAME() as DatabaseName");
+                if (testConnection.Rows.Count > 0)
+                {
+                    System.Diagnostics.Debug.WriteLine($"Database connection OK: {testConnection.Rows[0]["DatabaseName"]} at {testConnection.Rows[0]["CurrentTime"]}");
+                }
+                
+                // For testing: use plain text password (ONLY FOR DEVELOPMENT!)
+                string passwordHash = password; // Temporary: use plain text
+                // string passwordHash = Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(password));
+                
+                // Debug: Log the hash being used
+                System.Diagnostics.Debug.WriteLine($"Login attempt - Username: {username}, Password: {password}, Hash: {passwordHash}");
                 
                 var parameters = new[]
                 {
@@ -21,6 +32,47 @@ namespace VuToanThang_23110329.Repositories
                     SqlHelper.CreateParameter("@MatKhauHash", passwordHash)
                 };
 
+                // First, check if user exists at all
+                var checkUserParams = new[] { SqlHelper.CreateParameter("@TenDangNhap", username) };
+                var userCheck = SqlHelper.ExecuteDataTable(@"
+                    SELECT TenDangNhap, MatKhauHash, VaiTro, KichHoat 
+                    FROM NguoiDung 
+                    WHERE TenDangNhap = @TenDangNhap", checkUserParams);
+                
+                if (userCheck.Rows.Count == 0)
+                {
+                    return new LoginResult
+                    {
+                        Success = false,
+                        Message = $"Không tìm thấy tài khoản '{username}'"
+                    };
+                }
+                
+                var userRow = userCheck.Rows[0];
+                string dbHash = userRow["MatKhauHash"].ToString();
+                bool isActive = Convert.ToBoolean(userRow["KichHoat"]);
+                
+                System.Diagnostics.Debug.WriteLine($"DB Hash: {dbHash}, Active: {isActive}");
+                
+                if (!isActive)
+                {
+                    return new LoginResult
+                    {
+                        Success = false,
+                        Message = "Tài khoản đã bị khóa!"
+                    };
+                }
+                
+                if (dbHash != passwordHash)
+                {
+                    return new LoginResult
+                    {
+                        Success = false,
+                        Message = "Mật khẩu không đúng!"
+                    };
+                }
+
+                // Now get full user info
                 var dt = SqlHelper.ExecuteDataTable(@"
                     SELECT nd.MaNguoiDung, nd.TenDangNhap, nd.VaiTro, nd.KichHoat,
                            nv.MaNV, nv.HoTen, nv.ChucDanh, nv.PhongBan
@@ -34,7 +86,7 @@ namespace VuToanThang_23110329.Repositories
                     return new LoginResult
                     {
                         Success = false,
-                        Message = "Tên đăng nhập hoặc mật khẩu không đúng!"
+                        Message = "Lỗi hệ thống khi lấy thông tin người dùng!"
                     };
                 }
 
