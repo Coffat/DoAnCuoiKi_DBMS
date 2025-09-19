@@ -299,9 +299,9 @@ namespace VuToanThang_23110329.Forms
         {
             _isEditing = isEditing;
             
-            btnThem.Enabled = !isEditing && VuToanThang_23110329.Data.VuToanThang_23110329.Data.CurrentUser.HasPermission("MANAGE_SHIFTS");
-            btnSua.Enabled = !isEditing && dgvCaLam.SelectedRows.Count > 0 && VuToanThang_23110329.Data.VuToanThang_23110329.Data.CurrentUser.HasPermission("MANAGE_SHIFTS");
-            btnXoa.Enabled = !isEditing && dgvCaLam.SelectedRows.Count > 0 && VuToanThang_23110329.Data.VuToanThang_23110329.Data.CurrentUser.HasPermission("MANAGE_SHIFTS");
+            btnThem.Enabled = !isEditing && VuToanThang_23110329.Data.CurrentUser.HasPermission("MANAGE_SHIFTS");
+            btnSua.Enabled = !isEditing && dgvCaLam.SelectedRows.Count > 0 && VuToanThang_23110329.Data.CurrentUser.HasPermission("MANAGE_SHIFTS");
+            btnXoa.Enabled = !isEditing && dgvCaLam.SelectedRows.Count > 0 && VuToanThang_23110329.Data.CurrentUser.HasPermission("MANAGE_SHIFTS");
             btnLuu.Enabled = isEditing;
             btnHuy.Enabled = isEditing;
             

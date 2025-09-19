@@ -182,7 +182,8 @@ namespace VuToanThang_23110329.Forms
             txtGhiChuDuyet = CreateTextBox();
             txtGhiChuDuyet.Multiline = true;
             txtGhiChuDuyet.Height = 60;
-            txtGhiChuDuyet.PlaceholderText = "Nhập ghi chú khi duyệt/từ chối...";
+            // PlaceholderText not available in .NET Framework
+            // txtGhiChuDuyet.PlaceholderText = "Nhập ghi chú khi duyệt/từ chối...";
 
             pnlThongTin.Controls.AddRange(new Control[] {
                 lblThongTin,
