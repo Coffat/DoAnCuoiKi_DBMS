@@ -305,6 +305,13 @@ namespace VuToanThang_23110329.Forms
         {
             try
             {
+                // Test database connection first
+                if (!SqlHelper.TestConnection())
+                {
+                    ShowMessage("Không thể kết nối đến cơ sở dữ liệu!", "Cảnh báo", MessageBoxIcon.Warning);
+                    return;
+                }
+
                 var nhanViens = VuToanThang_23110329.Data.CurrentUser.IsHR ? 
                     _nhanVienRepository.GetAll() : 
                     _nhanVienRepository.GetByRLS();
@@ -314,7 +321,7 @@ namespace VuToanThang_23110329.Forms
             }
             catch (Exception ex)
             {
-                ShowMessage($"Lỗi tải dữ liệu: {ex.Message}", "Lỗi", MessageBoxIcon.Error);
+                ShowMessage($"Lỗi tải dữ liệu: {ex.Message}\n\nChi tiết: {ex.StackTrace}", "Lỗi", MessageBoxIcon.Error);
             }
         }
 

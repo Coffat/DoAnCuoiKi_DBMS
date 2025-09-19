@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 using VuToanThang_23110329.Data;
+using VuToanThang_23110329.Models;
+using VuToanThang_23110329.Repositories;
 
 namespace VuToanThang_23110329.Forms
 {
@@ -169,6 +171,9 @@ namespace VuToanThang_23110329.Forms
 
             try
             {
+                // Debug logging
+                System.Diagnostics.Debug.WriteLine($"Opening form for button: {menuButton.Name}");
+                
                 switch (menuButton.Name)
                 {
                     case "btnDashboard":
@@ -178,58 +183,148 @@ namespace VuToanThang_23110329.Forms
                         return;
 
                     case "btnNhanVien":
-                        childForm = new NhanVienForm();
-                        formTitle = "Quản lý nhân viên";
+                        System.Diagnostics.Debug.WriteLine("Creating NhanVienForm...");
+                        try
+                        {
+                            childForm = new NhanVienForm();
+                            formTitle = "Quản lý nhân viên";
+                        }
+                        catch (Exception ex)
+                        {
+                            ShowMessage($"Lỗi tạo NhanVienForm: {ex.Message}\n\nStack trace: {ex.StackTrace}", "Lỗi", MessageBoxIcon.Error);
+                            return;
+                        }
                         break;
 
                     case "btnCaLam":
-                        childForm = new CaLamForm();
-                        formTitle = "Quản lý ca làm";
+                        System.Diagnostics.Debug.WriteLine("Creating CaLamForm...");
+                        try
+                        {
+                            childForm = new CaLamForm();
+                            formTitle = "Quản lý ca làm";
+                        }
+                        catch (Exception ex)
+                        {
+                            ShowMessage($"Lỗi tạo CaLamForm: {ex.Message}", "Lỗi", MessageBoxIcon.Error);
+                            return;
+                        }
                         break;
 
                     case "btnLichPhanCa":
-                        childForm = new LichPhanCaForm();
-                        formTitle = "Lịch phân ca";
+                        System.Diagnostics.Debug.WriteLine("Creating LichPhanCaForm...");
+                        try
+                        {
+                            childForm = new LichPhanCaForm();
+                            formTitle = "Lịch phân ca";
+                        }
+                        catch (Exception ex)
+                        {
+                            ShowMessage($"Lỗi tạo LichPhanCaForm: {ex.Message}", "Lỗi", MessageBoxIcon.Error);
+                            return;
+                        }
                         break;
 
                     case "btnChamCong":
-                        childForm = new ChamCongForm();
-                        formTitle = "Chấm công";
+                        System.Diagnostics.Debug.WriteLine("Creating ChamCongForm...");
+                        try
+                        {
+                            childForm = new ChamCongForm();
+                            formTitle = "Chấm công";
+                        }
+                        catch (Exception ex)
+                        {
+                            ShowMessage($"Lỗi tạo ChamCongForm: {ex.Message}", "Lỗi", MessageBoxIcon.Error);
+                            return;
+                        }
                         break;
 
                     case "btnDonTu":
-                        if (VuToanThang_23110329.Data.CurrentUser.IsNhanVien)
-                            childForm = new DonTuNVForm();
-                        else if (VuToanThang_23110329.Data.CurrentUser.IsQuanLy)
-                            childForm = new DonTuSMForm();
-                        else
-                            childForm = new DonTuHRForm();
-                        formTitle = "Quản lý đơn từ";
+                        System.Diagnostics.Debug.WriteLine("Creating DonTu form based on role...");
+                        try
+                        {
+                            if (VuToanThang_23110329.Data.CurrentUser.IsNhanVien)
+                                childForm = new DonTuNVForm();
+                            else if (VuToanThang_23110329.Data.CurrentUser.IsQuanLy)
+                                childForm = new DonTuSMForm();
+                            else
+                                childForm = new DonTuHRForm();
+                            formTitle = "Quản lý đơn từ";
+                        }
+                        catch (Exception ex)
+                        {
+                            ShowMessage($"Lỗi tạo DonTu form: {ex.Message}", "Lỗi", MessageBoxIcon.Error);
+                            return;
+                        }
                         break;
 
                     case "btnTinhLuong":
-                        childForm = new TinhLuongForm();
-                        formTitle = "Tính lương";
+                        System.Diagnostics.Debug.WriteLine("Creating TinhLuongForm...");
+                        try
+                        {
+                            childForm = new TinhLuongForm();
+                            formTitle = "Tính lương";
+                        }
+                        catch (Exception ex)
+                        {
+                            ShowMessage($"Lỗi tạo TinhLuongForm: {ex.Message}", "Lỗi", MessageBoxIcon.Error);
+                            return;
+                        }
                         break;
 
                     case "btnBangLuong":
-                        childForm = new BangLuongForm();
-                        formTitle = "Bảng lương";
+                        System.Diagnostics.Debug.WriteLine("Creating BangLuongForm...");
+                        try
+                        {
+                            childForm = new BangLuongForm();
+                            formTitle = "Bảng lương";
+                        }
+                        catch (Exception ex)
+                        {
+                            ShowMessage($"Lỗi tạo BangLuongForm: {ex.Message}", "Lỗi", MessageBoxIcon.Error);
+                            return;
+                        }
                         break;
 
                     case "btnPhieuLuong":
-                        childForm = new PhieuLuongForm();
-                        formTitle = "Phiếu lương";
+                        System.Diagnostics.Debug.WriteLine("Creating PhieuLuongForm...");
+                        try
+                        {
+                            childForm = new PhieuLuongForm();
+                            formTitle = "Phiếu lương";
+                        }
+                        catch (Exception ex)
+                        {
+                            ShowMessage($"Lỗi tạo PhieuLuongForm: {ex.Message}", "Lỗi", MessageBoxIcon.Error);
+                            return;
+                        }
                         break;
 
                     case "btnBaoCaoNhanSu":
-                        childForm = new BaoCaoNhanSuForm();
-                        formTitle = "Báo cáo nhân sự";
+                        System.Diagnostics.Debug.WriteLine("Creating BaoCaoNhanSuForm...");
+                        try
+                        {
+                            childForm = new BaoCaoNhanSuForm();
+                            formTitle = "Báo cáo nhân sự";
+                        }
+                        catch (Exception ex)
+                        {
+                            ShowMessage($"Lỗi tạo BaoCaoNhanSuForm: {ex.Message}", "Lỗi", MessageBoxIcon.Error);
+                            return;
+                        }
                         break;
 
                     case "btnBaoCaoLuong":
-                        childForm = new BaoCaoLuongForm();
-                        formTitle = "Báo cáo lương";
+                        System.Diagnostics.Debug.WriteLine("Creating BaoCaoLuongForm...");
+                        try
+                        {
+                            childForm = new BaoCaoLuongForm();
+                            formTitle = "Báo cáo lương";
+                        }
+                        catch (Exception ex)
+                        {
+                            ShowMessage($"Lỗi tạo BaoCaoLuongForm: {ex.Message}", "Lỗi", MessageBoxIcon.Error);
+                            return;
+                        }
                         break;
 
                     default:
@@ -239,12 +334,18 @@ namespace VuToanThang_23110329.Forms
 
                 if (childForm != null)
                 {
+                    System.Diagnostics.Debug.WriteLine($"Form created successfully: {childForm.GetType().Name}");
                     OpenFormInPanel(childForm, formTitle);
+                }
+                else
+                {
+                    ShowMessage($"Không thể tạo form cho chức năng: {menuButton.Name}", "Lỗi", MessageBoxIcon.Error);
                 }
             }
             catch (Exception ex)
             {
-                ShowMessage($"Lỗi mở form: {ex.Message}", "Lỗi", MessageBoxIcon.Error);
+                System.Diagnostics.Debug.WriteLine($"Error creating form: {ex}");
+                ShowMessage($"Lỗi mở form: {ex.Message}\n\nChi tiết: {ex.StackTrace}", "Lỗi", MessageBoxIcon.Error);
             }
         }
 
