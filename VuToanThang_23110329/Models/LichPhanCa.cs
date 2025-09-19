@@ -8,7 +8,8 @@ namespace VuToanThang_23110329.Models
         public int MaNV { get; set; }
         public DateTime NgayLam { get; set; }
         public int MaCa { get; set; }
-        public string TrangThai { get; set; } // DuKien, Khoa, Huy
+        public string TrangThai { get; set; } // Mo, Khoa
+        public string GhiChu { get; set; }
         
         // Navigation properties (for display)
         public string TenNhanVien { get; set; }
