@@ -15,9 +15,9 @@ namespace VuToanThang_23110329.Forms
     public partial class ChinhSuaLuongForm : Form
     {
         private readonly NhanVienRepository _nhanVienRepository;
-        private string _maNV;
+        private int _maNV;
 
-        public ChinhSuaLuongForm(string maNV)
+        public ChinhSuaLuongForm(int maNV)
         {
             InitializeComponent();
             _nhanVienRepository = new NhanVienRepository();

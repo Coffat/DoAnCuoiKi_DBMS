@@ -16,11 +16,11 @@ namespace VuToanThang_23110329.Forms
     {
         private readonly BangLuongRepository _bangLuongRepository;
         private readonly NhanVienRepository _nhanVienRepository;
-        private string _maNV;
+        private int _maNV;
         private int _nam;
         private int _thang;
 
-        public PrintPayslipForm(string maNV, int nam, int thang)
+        public PrintPayslipForm(int maNV, int nam, int thang)
         {
             InitializeComponent();
             _bangLuongRepository = new BangLuongRepository();

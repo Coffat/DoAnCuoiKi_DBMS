@@ -15,11 +15,11 @@ namespace VuToanThang_23110329.Forms
     public partial class CapNhatPhuCapForm : Form
     {
         private readonly BangLuongRepository _bangLuongRepository;
-        private string _maNV;
+        private int _maNV;
         private int _nam;
         private int _thang;
 
-        public CapNhatPhuCapForm(string maNV, int nam, int thang)
+        public CapNhatPhuCapForm(int maNV, int nam, int thang)
         {
             InitializeComponent();
             _bangLuongRepository = new BangLuongRepository();
