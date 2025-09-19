@@ -40,7 +40,6 @@ namespace VuToanThang_23110329.Forms
 
             CreateControls();
             LayoutControls();
-            SetupEventHandlers();
         }
 
         private void CreateControls()
