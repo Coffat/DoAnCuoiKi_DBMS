@@ -272,8 +272,184 @@ JOIN dbo.CaLam cl     ON cl.MaCa = lpc.MaCa
 LEFT JOIN dbo.ChamCong cc ON cc.MaNV = lpc.MaNV AND cc.NgayLam = lpc.NgayLam;
 GO
 
+-- 10) Stored Procedures cho CaLam CRUD operations
+IF OBJECT_ID('dbo.sp_CaLam_GetAll','P') IS NOT NULL DROP PROCEDURE dbo.sp_CaLam_GetAll;
+GO
+CREATE PROCEDURE dbo.sp_CaLam_GetAll
+AS
+BEGIN
+    SET NOCOUNT ON;
+    
+    SELECT MaCa, TenCa, GioBatDau, GioKetThuc, HeSoCa
+    FROM dbo.CaLam 
+    ORDER BY GioBatDau;
+END
+GO
 
+IF OBJECT_ID('dbo.sp_CaLam_GetById','P') IS NOT NULL DROP PROCEDURE dbo.sp_CaLam_GetById;
+GO
+CREATE PROCEDURE dbo.sp_CaLam_GetById
+    @MaCa INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    
+    SELECT MaCa, TenCa, GioBatDau, GioKetThuc, HeSoCa
+    FROM dbo.CaLam 
+    WHERE MaCa = @MaCa;
+END
+GO
 
+IF OBJECT_ID('dbo.sp_CaLam_Insert','P') IS NOT NULL DROP PROCEDURE dbo.sp_CaLam_Insert;
+GO
+CREATE PROCEDURE dbo.sp_CaLam_Insert
+    @TenCa       NVARCHAR(60),
+    @GioBatDau   TIME(0),
+    @GioKetThuc  TIME(0),
+    @HeSoCa      DECIMAL(4,2),
+    @MaCa_OUT    INT OUTPUT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET XACT_ABORT ON;
+
+    -- Kiểm tra validation
+    IF @TenCa IS NULL OR LTRIM(RTRIM(@TenCa)) = ''
+    BEGIN
+        RAISERROR(N'Tên ca không được để trống.', 16, 1);
+        RETURN;
+    END
+
+    IF @GioBatDau >= @GioKetThuc
+    BEGIN
+        RAISERROR(N'Giờ bắt đầu phải nhỏ hơn giờ kết thúc.', 16, 1);
+        RETURN;
+    END
+
+    IF @HeSoCa <= 0
+    BEGIN
+        RAISERROR(N'Hệ số ca phải lớn hơn 0.', 16, 1);
+        RETURN;
+    END
+
+    -- Kiểm tra trùng tên ca
+    IF EXISTS (SELECT 1 FROM dbo.CaLam WHERE TenCa = @TenCa)
+    BEGIN
+        RAISERROR(N'Tên ca đã tồn tại.', 16, 1);
+        RETURN;
+    END
+
+    BEGIN TRAN;
+
+    INSERT INTO dbo.CaLam (TenCa, GioBatDau, GioKetThuc, HeSoCa)
+    VALUES (@TenCa, @GioBatDau, @GioKetThuc, @HeSoCa);
+
+    SET @MaCa_OUT = SCOPE_IDENTITY();
+
+    COMMIT;
+END
+GO
+
+IF OBJECT_ID('dbo.sp_CaLam_Update','P') IS NOT NULL DROP PROCEDURE dbo.sp_CaLam_Update;
+GO
+CREATE PROCEDURE dbo.sp_CaLam_Update
+    @MaCa        INT,
+    @TenCa       NVARCHAR(60),
+    @GioBatDau   TIME(0),
+    @GioKetThuc  TIME(0),
+    @HeSoCa      DECIMAL(4,2)
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET XACT_ABORT ON;
+
+    -- Kiểm tra ca làm tồn tại
+    IF NOT EXISTS (SELECT 1 FROM dbo.CaLam WHERE MaCa = @MaCa)
+    BEGIN
+        RAISERROR(N'Ca làm không tồn tại.', 16, 1);
+        RETURN;
+    END
+
+    -- Kiểm tra validation
+    IF @TenCa IS NULL OR LTRIM(RTRIM(@TenCa)) = ''
+    BEGIN
+        RAISERROR(N'Tên ca không được để trống.', 16, 1);
+        RETURN;
+    END
+
+    IF @GioBatDau >= @GioKetThuc
+    BEGIN
+        RAISERROR(N'Giờ bắt đầu phải nhỏ hơn giờ kết thúc.', 16, 1);
+        RETURN;
+    END
+
+    IF @HeSoCa <= 0
+    BEGIN
+        RAISERROR(N'Hệ số ca phải lớn hơn 0.', 16, 1);
+        RETURN;
+    END
+
+    -- Kiểm tra trùng tên ca (trừ chính nó)
+    IF EXISTS (SELECT 1 FROM dbo.CaLam WHERE TenCa = @TenCa AND MaCa <> @MaCa)
+    BEGIN
+        RAISERROR(N'Tên ca đã tồn tại.', 16, 1);
+        RETURN;
+    END
+
+    BEGIN TRAN;
+
+    UPDATE dbo.CaLam 
+    SET TenCa = @TenCa,
+        GioBatDau = @GioBatDau,
+        GioKetThuc = @GioKetThuc,
+        HeSoCa = @HeSoCa
+    WHERE MaCa = @MaCa;
+
+    COMMIT;
+END
+GO
+
+IF OBJECT_ID('dbo.sp_CaLam_Delete','P') IS NOT NULL DROP PROCEDURE dbo.sp_CaLam_Delete;
+GO
+CREATE PROCEDURE dbo.sp_CaLam_Delete
+    @MaCa INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET XACT_ABORT ON;
+
+    -- Kiểm tra ca làm tồn tại
+    IF NOT EXISTS (SELECT 1 FROM dbo.CaLam WHERE MaCa = @MaCa)
+    BEGIN
+        RAISERROR(N'Ca làm không tồn tại.', 16, 1);
+        RETURN;
+    END
+
+    -- Kiểm tra ca làm có đang được sử dụng trong lịch phân ca không
+    IF EXISTS (SELECT 1 FROM dbo.LichPhanCa WHERE MaCa = @MaCa)
+    BEGIN
+        RAISERROR(N'Không thể xóa ca làm đang được sử dụng trong lịch phân ca.', 16, 1);
+        RETURN;
+    END
+
+    BEGIN TRAN;
+
+    DELETE FROM dbo.CaLam WHERE MaCa = @MaCa;
+
+    COMMIT;
+END
+GO
+
+-- Cấp quyền thực thi stored procedures cho CaLam
+GRANT EXECUTE ON dbo.sp_CaLam_GetAll TO r_hr, r_quanly, r_nhanvien;
+GRANT EXECUTE ON dbo.sp_CaLam_GetById TO r_hr, r_quanly, r_nhanvien;
+GRANT EXECUTE ON dbo.sp_CaLam_Insert TO r_hr;
+GRANT EXECUTE ON dbo.sp_CaLam_Update TO r_hr;
+GRANT EXECUTE ON dbo.sp_CaLam_Delete TO r_hr;
+GO
+
+------------------------------------------------------------
+-- IV) SECURITY: RBAC + DAC + (tùy chọn) RLS
 ------------------------------------------------------------
 -- II) FUNCTIONS
 ------------------------------------------------------------

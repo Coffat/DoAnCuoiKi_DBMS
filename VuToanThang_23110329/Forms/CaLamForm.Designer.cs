@@ -34,12 +34,14 @@ namespace VuToanThang_23110329.Forms
         private void InitializeComponent()
         {
             this.BackColor = Color.FromArgb(50, 50, 50);
-            this.Size = new Size(1200, 800);
+            this.Dock = DockStyle.Fill;
             this.Text = "Quản lý ca làm";
             this.Padding = new Padding(20);
+            this.MinimumSize = new Size(800, 600);
 
             CreateControls();
             LayoutControls();
+            this.Resize += CaLamForm_Resize;
         }
 
         private void CreateControls()
@@ -173,45 +175,85 @@ namespace VuToanThang_23110329.Forms
 
         private void LayoutControls()
         {
+            PerformLayout();
+        }
+
+        private void CaLamForm_Resize(object sender, EventArgs e)
+        {
+            PerformLayout();
+        }
+
+        private void PerformLayout()
+        {
+            if (this.Controls.Count == 0) return;
+
+            int formWidth = this.ClientSize.Width - 40; // Account for padding
+            int formHeight = this.ClientSize.Height - 40;
+
             // Title
             this.Controls[0].Location = new Point(20, 20);
 
             // Search
             this.Controls[1].Location = new Point(20, 70);
             txtSearch.Location = new Point(100, 68);
+            txtSearch.Width = Math.Min(300, formWidth - 120);
 
-            // Buttons
+            // Buttons - make them responsive
             int btnY = 110;
+            int btnSpacing = 90;
             btnThem.Location = new Point(20, btnY);
-            btnSua.Location = new Point(110, btnY);
-            btnXoa.Location = new Point(200, btnY);
-            btnLuu.Location = new Point(290, btnY);
-            btnHuy.Location = new Point(380, btnY);
-            btnLamMoi.Location = new Point(470, btnY);
+            btnSua.Location = new Point(20 + btnSpacing, btnY);
+            btnXoa.Location = new Point(20 + btnSpacing * 2, btnY);
+            btnLuu.Location = new Point(20 + btnSpacing * 3, btnY);
+            btnHuy.Location = new Point(20 + btnSpacing * 4, btnY);
+            btnLamMoi.Location = new Point(20 + btnSpacing * 5, btnY);
 
-            // DataGridView
-            dgvCaLam.Location = new Point(20, 160);
-            dgvCaLam.Size = new Size(700, 400);
+            // Calculate available space for grid and panel
+            int availableWidth = formWidth;
+            int availableHeight = formHeight - 160; // Space above controls
+            
+            // Responsive layout: stack vertically on small screens, side-by-side on larger screens
+            if (formWidth < 900) // Vertical layout for smaller screens
+            {
+                // DataGridView takes full width, half height
+                dgvCaLam.Location = new Point(20, 160);
+                dgvCaLam.Size = new Size(availableWidth, availableHeight / 2 - 10);
 
-            // Information Panel
-            pnlThongTin.Location = new Point(740, 160);
-            pnlThongTin.Size = new Size(420, 400);
+                // Information Panel below the grid
+                pnlThongTin.Location = new Point(20, 160 + availableHeight / 2);
+                pnlThongTin.Size = new Size(availableWidth, availableHeight / 2 - 10);
+            }
+            else // Horizontal layout for larger screens
+            {
+                // DataGridView takes 60% of width
+                int gridWidth = (int)(availableWidth * 0.6);
+                dgvCaLam.Location = new Point(20, 160);
+                dgvCaLam.Size = new Size(gridWidth, availableHeight);
+
+                // Information Panel takes remaining 40% minus margin
+                int panelWidth = availableWidth - gridWidth - 20;
+                pnlThongTin.Location = new Point(20 + gridWidth + 20, 160);
+                pnlThongTin.Size = new Size(panelWidth, availableHeight);
+            }
 
             LayoutInfoControls();
         }
 
         private void LayoutInfoControls()
         {
+            if (pnlThongTin.Controls.Count == 0) return;
+
             int y = 10;
-            int labelWidth = 100;
-            int controlWidth = 250;
-            int spacing = 40;
+            int panelWidth = pnlThongTin.ClientSize.Width - 30; // Account for padding
+            int labelWidth = Math.Min(100, panelWidth / 3);
+            int controlWidth = Math.Max(150, panelWidth - labelWidth - 20);
+            int spacing = 45;
 
             var controls = pnlThongTin.Controls.Cast<Control>().ToArray();
             
             // Title
             controls[0].Location = new Point(10, y);
-            y += 40;
+            y += 50;
 
             // Layout pairs of label and control
             for (int i = 1; i < controls.Length; i += 2)
@@ -220,7 +262,7 @@ namespace VuToanThang_23110329.Forms
                 {
                     controls[i].Location = new Point(10, y);
                     controls[i].Size = new Size(labelWidth, 20);
-                    controls[i + 1].Location = new Point(120, y - 3);
+                    controls[i + 1].Location = new Point(labelWidth + 15, y - 3);
                     controls[i + 1].Size = new Size(controlWidth, 23);
                     y += spacing;
                 }

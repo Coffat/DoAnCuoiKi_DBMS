@@ -45,6 +45,7 @@ namespace VuToanThang_23110329.Forms
 
         private void InitializeForm()
         {
+            SetupEventHandlers();
             LoadData();
             SetFormMode(false);
         }
@@ -124,8 +125,33 @@ namespace VuToanThang_23110329.Forms
         // Event Handlers
         private void txtSearch_TextChanged(object sender, EventArgs e)
         {
-            // Implement search functionality
-            LoadData(); // For now, just reload data
+            try
+            {
+                var allShifts = _caLamRepository.GetAll();
+                var searchTerm = txtSearch.Text.ToLower().Trim();
+                
+                if (string.IsNullOrEmpty(searchTerm))
+                {
+                    dgvCaLam.DataSource = allShifts;
+                }
+                else
+                {
+                    var filteredShifts = allShifts.Where(ca => 
+                        ca.TenCa.ToLower().Contains(searchTerm) ||
+                        ca.GioBatDau.ToString(@"hh\:mm").Contains(searchTerm) ||
+                        ca.GioKetThuc.ToString(@"hh\:mm").Contains(searchTerm) ||
+                        ca.HeSoCa.ToString().Contains(searchTerm)
+                    ).ToList();
+                    
+                    dgvCaLam.DataSource = filteredShifts;
+                }
+                
+                ConfigureDataGridView();
+            }
+            catch (Exception ex)
+            {
+                ShowMessage($"Lỗi tìm kiếm: {ex.Message}", "Lỗi", MessageBoxIcon.Error);
+            }
         }
 
         private void dgvCaLam_SelectionChanged(object sender, EventArgs e)
