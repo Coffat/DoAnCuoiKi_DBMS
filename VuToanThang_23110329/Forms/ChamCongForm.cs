@@ -31,6 +31,9 @@ namespace VuToanThang_23110329.Forms
             InitializeComponent();
             _chamCongRepository = new ChamCongRepository();
             _nhanVienRepository = new NhanVienRepository();
+            CreateControls();
+            LayoutControls();
+            SetupEventHandlers();
             InitializeForm();
         }
 

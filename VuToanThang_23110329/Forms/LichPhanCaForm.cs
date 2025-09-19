@@ -31,6 +31,9 @@ namespace VuToanThang_23110329.Forms
             _lichPhanCaRepository = new LichPhanCaRepository();
             _nhanVienRepository = new NhanVienRepository();
             _caLamRepository = new CaLamRepository();
+            CreateControls();
+            LayoutControls();
+            SetupEventHandlers();
             InitializeForm();
         }
 
