@@ -186,11 +186,6 @@ namespace VuToanThang_23110329.Forms
             btnSave.Location = new Point(this.ClientSize.Width - 340, 15);
         }
 
-        private void BtnLoadEmployees_Click(object sender, EventArgs e)
-        {
-            // This will be handled in the main form
-        }
-
         #endregion
     }
 }
