@@ -491,7 +491,59 @@ namespace VuToanThang_23110329.Forms
 
         private void btnXuatBaoCao_Click(object sender, EventArgs e)
         {
-            ShowMessage("Chức năng xuất báo cáo đang được phát triển!", "Thông báo", MessageBoxIcon.Information);
+            try
+            {
+                if (dgvDonTu.Rows.Count == 0)
+                {
+                    ShowMessage("Không có dữ liệu để xuất!", "Cảnh báo", MessageBoxIcon.Warning);
+                    return;
+                }
+
+                var csv = new System.Text.StringBuilder();
+                
+                // Header
+                var headers = new List<string>();
+                foreach (DataGridViewColumn col in dgvDonTu.Columns)
+                {
+                    if (col.Visible)
+                        headers.Add($"\"{col.HeaderText}\"");
+                }
+                csv.AppendLine(string.Join(",", headers));
+
+                // Data rows
+                foreach (DataGridViewRow row in dgvDonTu.Rows)
+                {
+                    if (row.IsNewRow) continue;
+                    
+                    var values = new List<string>();
+                    foreach (DataGridViewColumn col in dgvDonTu.Columns)
+                    {
+                        if (col.Visible)
+                        {
+                            var cellValue = row.Cells[col.Index].Value?.ToString() ?? "";
+                            values.Add($"\"{cellValue}\"");
+                        }
+                    }
+                    csv.AppendLine(string.Join(",", values));
+                }
+
+                // Save file dialog
+                using (var saveDialog = new SaveFileDialog())
+                {
+                    saveDialog.Filter = "CSV files (*.csv)|*.csv|All files (*.*)|*.*";
+                    saveDialog.FileName = $"BaoCaoDonTu_HR_{DateTime.Now:yyyyMMdd}.csv";
+                    
+                    if (saveDialog.ShowDialog() == DialogResult.OK)
+                    {
+                        System.IO.File.WriteAllText(saveDialog.FileName, csv.ToString(), System.Text.Encoding.UTF8);
+                        ShowMessage($"Xuất file thành công: {saveDialog.FileName}", "Thành công", MessageBoxIcon.Information);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                ShowMessage($"Lỗi xuất báo cáo: {ex.Message}", "Lỗi", MessageBoxIcon.Error);
+            }
         }
 
         private void btnLamMoi_Click(object sender, EventArgs e)

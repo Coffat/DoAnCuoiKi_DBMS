@@ -641,12 +641,81 @@ namespace VuToanThang_23110329.Forms
         {
             try
             {
-                // Placeholder for export functionality
-                ShowMessage("Chức năng xuất báo cáo đang được phát triển!", "Thông báo", MessageBoxIcon.Information);
+                var activeTab = tabControl.SelectedIndex;
+                DataGridView currentGrid = null;
+                string fileName = "";
+
+                switch (activeTab)
+                {
+                    case 0:
+                        currentGrid = dgvTongQuan;
+                        fileName = "BaoCaoTongQuanNhanSu";
+                        break;
+                    case 1:
+                        currentGrid = dgvChamCong;
+                        fileName = $"BaoCaoChamCong_{cmbThang.SelectedItem}_{cmbNam.SelectedItem}";
+                        break;
+                    case 2:
+                        currentGrid = dgvDonTu;
+                        fileName = $"BaoCaoDonTu_{dtpTuNgay.Value:yyyyMMdd}_{dtpDenNgay.Value:yyyyMMdd}";
+                        break;
+                }
+
+                if (currentGrid?.Rows.Count == 0)
+                {
+                    ShowMessage("Không có dữ liệu để xuất!", "Cảnh báo", MessageBoxIcon.Warning);
+                    return;
+                }
+
+                ExportToCSV(currentGrid, fileName);
             }
             catch (Exception ex)
             {
                 ShowMessage($"Lỗi xuất báo cáo: {ex.Message}", "Lỗi", MessageBoxIcon.Error);
+            }
+        }
+
+        private void ExportToCSV(DataGridView dgv, string fileName)
+        {
+            var csv = new System.Text.StringBuilder();
+            
+            // Header
+            var headers = new List<string>();
+            foreach (DataGridViewColumn col in dgv.Columns)
+            {
+                if (col.Visible)
+                    headers.Add($"\"{col.HeaderText}\"");
+            }
+            csv.AppendLine(string.Join(",", headers));
+
+            // Data rows
+            foreach (DataGridViewRow row in dgv.Rows)
+            {
+                if (row.IsNewRow) continue;
+                
+                var values = new List<string>();
+                foreach (DataGridViewColumn col in dgv.Columns)
+                {
+                    if (col.Visible)
+                    {
+                        var cellValue = row.Cells[col.Index].Value?.ToString() ?? "";
+                        values.Add($"\"{cellValue}\"");
+                    }
+                }
+                csv.AppendLine(string.Join(",", values));
+            }
+
+            // Save file dialog
+            using (var saveDialog = new SaveFileDialog())
+            {
+                saveDialog.Filter = "CSV files (*.csv)|*.csv|All files (*.*)|*.*";
+                saveDialog.FileName = $"{fileName}_{DateTime.Now:yyyyMMdd}.csv";
+                
+                if (saveDialog.ShowDialog() == DialogResult.OK)
+                {
+                    System.IO.File.WriteAllText(saveDialog.FileName, csv.ToString(), System.Text.Encoding.UTF8);
+                    ShowMessage($"Xuất file thành công: {saveDialog.FileName}", "Thành công", MessageBoxIcon.Information);
+                }
             }
         }
 

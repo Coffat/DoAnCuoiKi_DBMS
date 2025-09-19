@@ -346,8 +346,53 @@ namespace VuToanThang_23110329.Forms
         {
             try
             {
-                // Placeholder for Excel export functionality
-                ShowMessage("Chức năng xuất Excel đang được phát triển!", "Thông báo", MessageBoxIcon.Information);
+                if (dgvBangLuong.Rows.Count == 0)
+                {
+                    ShowMessage("Không có dữ liệu để xuất!", "Cảnh báo", MessageBoxIcon.Warning);
+                    return;
+                }
+
+                // Tạo nội dung CSV đơn giản
+                var csv = new System.Text.StringBuilder();
+                
+                // Header
+                var headers = new List<string>();
+                foreach (DataGridViewColumn col in dgvBangLuong.Columns)
+                {
+                    if (col.Visible)
+                        headers.Add($"\"{col.HeaderText}\"");
+                }
+                csv.AppendLine(string.Join(",", headers));
+
+                // Data rows
+                foreach (DataGridViewRow row in dgvBangLuong.Rows)
+                {
+                    if (row.IsNewRow) continue;
+                    
+                    var values = new List<string>();
+                    foreach (DataGridViewColumn col in dgvBangLuong.Columns)
+                    {
+                        if (col.Visible)
+                        {
+                            var cellValue = row.Cells[col.Index].Value?.ToString() ?? "";
+                            values.Add($"\"{cellValue}\"");
+                        }
+                    }
+                    csv.AppendLine(string.Join(",", values));
+                }
+
+                // Save file dialog
+                using (var saveDialog = new SaveFileDialog())
+                {
+                    saveDialog.Filter = "CSV files (*.csv)|*.csv|All files (*.*)|*.*";
+                    saveDialog.FileName = $"BangLuong_{DateTime.Now:yyyyMMdd}.csv";
+                    
+                    if (saveDialog.ShowDialog() == DialogResult.OK)
+                    {
+                        System.IO.File.WriteAllText(saveDialog.FileName, csv.ToString(), System.Text.Encoding.UTF8);
+                        ShowMessage($"Xuất file thành công: {saveDialog.FileName}", "Thành công", MessageBoxIcon.Information);
+                    }
+                }
             }
             catch (Exception ex)
             {
@@ -359,8 +404,15 @@ namespace VuToanThang_23110329.Forms
         {
             try
             {
-                // Placeholder for print functionality
-                ShowMessage("Chức năng in bảng lương đang được phát triển!", "Thông báo", MessageBoxIcon.Information);
+                if (dgvBangLuong.Rows.Count == 0)
+                {
+                    ShowMessage("Không có dữ liệu để in!", "Cảnh báo", MessageBoxIcon.Warning);
+                    return;
+                }
+
+                // Tạo form preview để in
+                var printForm = new PrintBangLuongForm(dgvBangLuong, (int)cmbThang.SelectedItem, (int)cmbNam.SelectedItem);
+                printForm.ShowDialog();
             }
             catch (Exception ex)
             {
@@ -458,6 +510,82 @@ Trạng thái: {(bl.TrangThai == "Mo" ? "Đang mở" : "Đã đóng")}";
             btnClose.Click += (s, e) => this.Close();
 
             this.Controls.AddRange(new Control[] { lblTitle, lblDetails, btnClose });
+        }
+    }
+
+    // Print form for payroll
+    public partial class PrintBangLuongForm : Form
+    {
+        public PrintBangLuongForm(DataGridView dgv, int thang, int nam)
+        {
+            InitializeComponent();
+            CreatePrintPreview(dgv, thang, nam);
+        }
+
+        private void InitializeComponent()
+        {
+            this.Text = "In bảng lương";
+            this.Size = new Size(1000, 700);
+            this.BackColor = Color.White;
+            this.StartPosition = FormStartPosition.CenterParent;
+            this.WindowState = FormWindowState.Maximized;
+
+            var btnPrint = new Button
+            {
+                Text = "In",
+                BackColor = Color.FromArgb(46, 125, 50),
+                ForeColor = Color.White,
+                FlatStyle = FlatStyle.Flat,
+                Size = new Size(80, 35),
+                Location = new Point(20, 20)
+            };
+
+            var btnClose = new Button
+            {
+                Text = "Đóng",
+                BackColor = Color.FromArgb(158, 158, 158),
+                ForeColor = Color.White,
+                FlatStyle = FlatStyle.Flat,
+                Size = new Size(80, 35),
+                Location = new Point(110, 20)
+            };
+
+            btnPrint.Click += (s, e) => {
+                MessageBox.Show("Chức năng in thực tế cần cài đặt thêm thư viện in ấn!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            };
+
+            btnClose.Click += (s, e) => this.Close();
+
+            this.Controls.AddRange(new Control[] { btnPrint, btnClose });
+        }
+
+        private void CreatePrintPreview(DataGridView dgv, int thang, int nam)
+        {
+            var panel = new Panel
+            {
+                Size = new Size(800, 600),
+                Location = new Point(50, 70),
+                BackColor = Color.White,
+                BorderStyle = BorderStyle.FixedSingle,
+                AutoScroll = true
+            };
+
+            var content = new Label
+            {
+                Text = $"BẢNG LƯƠNG THÁNG {thang:00}/{nam}\n\n" +
+                       "SIÊU THỊ MINI - HỆ THỐNG QUẢN LÝ NHÂN SỰ\n\n" +
+                       $"Ngày in: {DateTime.Now:dd/MM/yyyy HH:mm}\n\n" +
+                       "Nội dung bảng lương sẽ được hiển thị ở đây...\n" +
+                       "(Cần implement thêm logic format dữ liệu từ DataGridView)",
+                Font = new Font("Arial", 10),
+                ForeColor = Color.Black,
+                Location = new Point(20, 20),
+                Size = new Size(750, 550),
+                AutoSize = false
+            };
+
+            panel.Controls.Add(content);
+            this.Controls.Add(panel);
         }
     }
 }
