@@ -6,6 +6,7 @@ using System.Windows.Forms;
 using VuToanThang_23110329.Data;
 using VuToanThang_23110329.Models;
 using VuToanThang_23110329.Repositories;
+using VuToanThang_23110329.Controls;
 
 namespace VuToanThang_23110329.Forms
 {
@@ -18,13 +19,9 @@ namespace VuToanThang_23110329.Forms
 
         // UI Controls
         private DataGridView dgvNhanVien;
-        private TextBox txtSearch, txtHoTen, txtDienThoai, txtEmail, txtDiaChi, txtPhongBan, txtChucDanh, txtLuongCoBan;
-        private DateTimePicker dtpNgaySinh, dtpNgayVaoLam;
-        private ComboBox cmbGioiTinh, cmbTrangThai, cmbVaiTro, cmbFilterTrangThai;
-        private CheckBox chkTaoTaiKhoan;
-        private TextBox txtTenDangNhap, txtMatKhau;
-        private Button btnThem, btnSua, btnXoa, btnLuu, btnHuy, btnLamMoi, btnKhoiPhuc;
-        private Panel pnlThongTin;
+        private TextBox txtSearch;
+        private ComboBox cmbFilterTrangThai;
+        private ModernButton btnThem, btnSua, btnXoa, btnLamMoi, btnKhoiPhuc;
 
         public NhanVienForm()
         {
@@ -39,15 +36,12 @@ namespace VuToanThang_23110329.Forms
         {
             txtSearch.TextChanged += txtSearch_TextChanged;
             dgvNhanVien.SelectionChanged += dgvNhanVien_SelectionChanged;
-            chkTaoTaiKhoan.CheckedChanged += chkTaoTaiKhoan_CheckedChanged;
             cmbFilterTrangThai.SelectedIndexChanged += cmbFilterTrangThai_SelectedIndexChanged;
             
             btnThem.Click += btnThem_Click;
             btnSua.Click += btnSua_Click;
             btnXoa.Click += btnXoa_Click;
             btnKhoiPhuc.Click += btnKhoiPhuc_Click;
-            btnLuu.Click += btnLuu_Click;
-            btnHuy.Click += btnHuy_Click;
             btnLamMoi.Click += btnLamMoi_Click;
         }
 
@@ -113,14 +107,12 @@ namespace VuToanThang_23110329.Forms
             bool hasManagePermission = VuToanThang_23110329.Data.CurrentUser.HasPermission("MANAGE_EMPLOYEES");
             bool hasSelectedEmployee = dgvNhanVien.SelectedRows.Count > 0;
             
-            btnThem.Enabled = !isEditing && hasManagePermission;
-            btnSua.Enabled = !isEditing && hasSelectedEmployee && hasManagePermission;
-            btnXoa.Enabled = !isEditing && hasSelectedEmployee && hasManagePermission;
-            btnLuu.Enabled = isEditing;
-            btnHuy.Enabled = isEditing;
+            btnThem.Enabled = hasManagePermission;
+            btnSua.Enabled = hasSelectedEmployee && hasManagePermission;
+            btnXoa.Enabled = hasSelectedEmployee && hasManagePermission;
             
             // Restore button: only for HR and when a resigned employee is selected
-            if (hasSelectedEmployee && !isEditing)
+            if (hasSelectedEmployee)
             {
                 var selectedNV = (NhanVien)dgvNhanVien.SelectedRows[0].DataBoundItem;
                 btnKhoiPhuc.Enabled = hasManagePermission && selectedNV.TrangThai == "Nghi";
@@ -129,54 +121,6 @@ namespace VuToanThang_23110329.Forms
             {
                 btnKhoiPhuc.Enabled = false;
             }
-            
-            // Enable/disable input controls
-            foreach (Control control in pnlThongTin.Controls)
-            {
-                if (control is TextBox || control is ComboBox || control is DateTimePicker || control is CheckBox)
-                {
-                    control.Enabled = isEditing;
-                }
-            }
-        }
-
-        private void ClearForm()
-        {
-            txtHoTen.Clear();
-            dtpNgaySinh.Value = DateTime.Now.AddYears(-25);
-            cmbGioiTinh.SelectedIndex = -1;
-            txtDienThoai.Clear();
-            txtEmail.Clear();
-            txtDiaChi.Clear();
-            dtpNgayVaoLam.Value = DateTime.Now;
-            cmbTrangThai.SelectedIndex = 0; // DangLam
-            txtPhongBan.Clear();
-            txtChucDanh.Clear();
-            txtLuongCoBan.Clear();
-            chkTaoTaiKhoan.Checked = false;
-            txtTenDangNhap.Clear();
-            txtMatKhau.Clear();
-            cmbVaiTro.SelectedIndex = 0; // NhanVien
-            
-            _currentNhanVien = null;
-        }
-
-        private void LoadEmployeeToForm(NhanVien nv)
-        {
-            if (nv == null) return;
-
-            _currentNhanVien = nv;
-            txtHoTen.Text = nv.HoTen;
-            if (nv.NgaySinh.HasValue) dtpNgaySinh.Value = nv.NgaySinh.Value;
-            cmbGioiTinh.Text = nv.GioiTinh;
-            txtDienThoai.Text = nv.DienThoai;
-            txtEmail.Text = nv.Email;
-            txtDiaChi.Text = nv.DiaChi;
-            dtpNgayVaoLam.Value = nv.NgayVaoLam;
-            cmbTrangThai.Text = nv.TrangThai;
-            txtPhongBan.Text = nv.PhongBan;
-            txtChucDanh.Text = nv.ChucDanh;
-            txtLuongCoBan.Text = nv.LuongCoBan.ToString();
         }
 
         private void ShowMessage(string message, string title, MessageBoxIcon icon)
@@ -232,33 +176,28 @@ namespace VuToanThang_23110329.Forms
 
         private void dgvNhanVien_SelectionChanged(object sender, EventArgs e)
         {
-            if (dgvNhanVien.SelectedRows.Count > 0 && !_isEditing)
-            {
-                var selectedNV = (NhanVien)dgvNhanVien.SelectedRows[0].DataBoundItem;
-                LoadEmployeeToForm(selectedNV);
-                SetFormMode(false);
-            }
-        }
-
-        private void chkTaoTaiKhoan_CheckedChanged(object sender, EventArgs e)
-        {
-            bool enabled = chkTaoTaiKhoan.Checked && _isEditing;
-            txtTenDangNhap.Enabled = enabled;
-            txtMatKhau.Enabled = enabled;
-            cmbVaiTro.Enabled = enabled;
+            SetFormMode(false);
         }
 
         private void btnThem_Click(object sender, EventArgs e)
         {
-            ClearForm();
-            SetFormMode(true);
+            var detailForm = new NhanVienDetailForm();
+            if (detailForm.ShowDialog() == DialogResult.OK)
+            {
+                LoadData(); // Refresh the list
+            }
         }
 
         private void btnSua_Click(object sender, EventArgs e)
         {
             if (dgvNhanVien.SelectedRows.Count > 0)
             {
-                SetFormMode(true);
+                var selectedNV = (NhanVien)dgvNhanVien.SelectedRows[0].DataBoundItem;
+                var detailForm = new NhanVienDetailForm(selectedNV);
+                if (detailForm.ShowDialog() == DialogResult.OK)
+                {
+                    LoadData(); // Refresh the list
+                }
             }
         }
 
@@ -280,7 +219,6 @@ namespace VuToanThang_23110329.Forms
                         {
                             ShowMessage(deleteResult.Message, "Thành công", MessageBoxIcon.Information);
                             LoadData();
-                            ClearForm();
                         }
                         else
                         {
@@ -295,109 +233,9 @@ namespace VuToanThang_23110329.Forms
             }
         }
 
-        private void btnLuu_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                if (string.IsNullOrWhiteSpace(txtHoTen.Text))
-                {
-                    ShowMessage("Vui lòng nhập họ tên!", "Cảnh báo", MessageBoxIcon.Warning);
-                    return;
-                }
-
-                if (!decimal.TryParse(txtLuongCoBan.Text, out decimal luongCoBan))
-                {
-                    ShowMessage("Lương cơ bản không hợp lệ!", "Cảnh báo", MessageBoxIcon.Warning);
-                    return;
-                }
-
-                if (_currentNhanVien == null) // Add new
-                {
-                    var param = new ThemMoiNhanVienParams
-                    {
-                        HoTen = txtHoTen.Text.Trim(),
-                        NgaySinh = dtpNgaySinh.Value,
-                        GioiTinh = cmbGioiTinh.Text,
-                        DienThoai = txtDienThoai.Text.Trim(),
-                        Email = txtEmail.Text.Trim(),
-                        DiaChi = txtDiaChi.Text.Trim(),
-                        NgayVaoLam = dtpNgayVaoLam.Value,
-                        PhongBan = txtPhongBan.Text.Trim(),
-                        ChucDanh = txtChucDanh.Text.Trim(),
-                        LuongCoBan = luongCoBan,
-                        TaoTaiKhoan = chkTaoTaiKhoan.Checked,
-                        TenDangNhap = txtTenDangNhap.Text.Trim(),
-                        MatKhauHash = txtMatKhau.Text,
-                        VaiTro = cmbVaiTro.Text
-                    };
-
-                    var result = _nhanVienRepository.Insert(param);
-                    
-                    if (result.Success)
-                    {
-                        ShowMessage(result.Message, "Thành công", MessageBoxIcon.Information);
-                        LoadData();
-                        SetFormMode(false);
-                        ClearForm();
-                    }
-                    else
-                    {
-                        ShowMessage(result.Message, "Lỗi", MessageBoxIcon.Error);
-                    }
-                }
-                else // Update existing
-                {
-                    _currentNhanVien.HoTen = txtHoTen.Text.Trim();
-                    _currentNhanVien.NgaySinh = dtpNgaySinh.Value;
-                    _currentNhanVien.GioiTinh = cmbGioiTinh.Text;
-                    _currentNhanVien.DienThoai = txtDienThoai.Text.Trim();
-                    _currentNhanVien.Email = txtEmail.Text.Trim();
-                    _currentNhanVien.DiaChi = txtDiaChi.Text.Trim();
-                    _currentNhanVien.NgayVaoLam = dtpNgayVaoLam.Value;
-                    _currentNhanVien.TrangThai = cmbTrangThai.Text;
-                    _currentNhanVien.PhongBan = txtPhongBan.Text.Trim();
-                    _currentNhanVien.ChucDanh = txtChucDanh.Text.Trim();
-                    _currentNhanVien.LuongCoBan = luongCoBan;
-
-                    var result = _nhanVienRepository.Update(_currentNhanVien);
-                    
-                    if (result.Success)
-                    {
-                        ShowMessage(result.Message, "Thành công", MessageBoxIcon.Information);
-                        LoadData();
-                        SetFormMode(false);
-                    }
-                    else
-                    {
-                        ShowMessage(result.Message, "Lỗi", MessageBoxIcon.Error);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                ShowMessage($"Lỗi lưu dữ liệu: {ex.Message}", "Lỗi", MessageBoxIcon.Error);
-            }
-        }
-
-        private void btnHuy_Click(object sender, EventArgs e)
-        {
-            SetFormMode(false);
-            if (dgvNhanVien.SelectedRows.Count > 0)
-            {
-                var selectedNV = (NhanVien)dgvNhanVien.SelectedRows[0].DataBoundItem;
-                LoadEmployeeToForm(selectedNV);
-            }
-            else
-            {
-                ClearForm();
-            }
-        }
-
         private void btnLamMoi_Click(object sender, EventArgs e)
         {
             LoadData();
-            ClearForm();
-            SetFormMode(false);
         }
 
         private void cmbFilterTrangThai_SelectedIndexChanged(object sender, EventArgs e)
@@ -430,7 +268,6 @@ namespace VuToanThang_23110329.Forms
                         {
                             ShowMessage(restoreResult.Message, "Thành công", MessageBoxIcon.Information);
                             LoadData();
-                            ClearForm();
                         }
                         else
                         {

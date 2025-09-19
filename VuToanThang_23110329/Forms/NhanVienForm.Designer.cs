@@ -2,6 +2,7 @@ using System;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
+using VuToanThang_23110329.Controls;
 
 namespace VuToanThang_23110329.Forms
 {
@@ -62,17 +63,12 @@ namespace VuToanThang_23110329.Forms
             cmbFilterTrangThai = CreateComboBox(new[] { "Tất cả", "DangLam", "Nghi" });
             cmbFilterTrangThai.SelectedIndex = 0;
 
-            // Buttons
-            btnThem = CreateButton("Thêm", Color.FromArgb(46, 125, 50));
-            btnSua = CreateButton("Sửa", Color.FromArgb(255, 152, 0));
-            btnXoa = CreateButton("Xóa", Color.FromArgb(244, 67, 54));
-            btnKhoiPhuc = CreateButton("Khôi phục", Color.FromArgb(76, 175, 80));
-            btnLuu = CreateButton("Lưu", Color.FromArgb(33, 150, 243));
-            btnHuy = CreateButton("Hủy", Color.FromArgb(158, 158, 158));
-            btnLamMoi = CreateButton("Làm mới", Color.FromArgb(96, 125, 139));
-
-            btnLuu.Enabled = false;
-            btnHuy.Enabled = false;
+            // Modern Buttons
+            btnThem = ButtonFactory.CreateSuccessButton("Thêm");
+            btnSua = ButtonFactory.CreateWarningButton("Sửa");
+            btnXoa = ButtonFactory.CreateDangerButton("Xóa");
+            btnKhoiPhuc = ButtonFactory.CreateInfoButton("Khôi phục");
+            btnLamMoi = ButtonFactory.CreateSecondaryButton("Làm mới");
 
             // DataGridView
             dgvNhanVien = new DataGridView
@@ -95,17 +91,7 @@ namespace VuToanThang_23110329.Forms
             dgvNhanVien.DefaultCellStyle.ForeColor = Color.White;
             dgvNhanVien.DefaultCellStyle.SelectionBackColor = Color.FromArgb(124, 77, 255);
 
-            // Information Panel
-            pnlThongTin = new Panel
-            {
-                BackColor = Color.FromArgb(60, 60, 60),
-                BorderStyle = BorderStyle.FixedSingle,
-                Padding = new Padding(15)
-            };
-
-            CreateInfoControls();
-
-            this.Controls.AddRange(new Control[] { lblTitle, lblSearch, txtSearch, lblFilter, cmbFilterTrangThai, btnThem, btnSua, btnXoa, btnKhoiPhuc, btnLuu, btnHuy, btnLamMoi, dgvNhanVien, pnlThongTin });
+            this.Controls.AddRange(new Control[] { lblTitle, lblSearch, txtSearch, lblFilter, cmbFilterTrangThai, btnThem, btnSua, btnXoa, btnKhoiPhuc, btnLamMoi, dgvNhanVien });
         }
 
         private void CreateInfoControls()
@@ -246,19 +232,12 @@ namespace VuToanThang_23110329.Forms
             btnSua.Location = new Point(110, btnY);
             btnXoa.Location = new Point(200, btnY);
             btnKhoiPhuc.Location = new Point(290, btnY);
-            btnLuu.Location = new Point(390, btnY);
-            btnHuy.Location = new Point(480, btnY);
-            btnLamMoi.Location = new Point(570, btnY);
+            btnLamMoi.Location = new Point(380, btnY);
 
-            // DataGridView
+            // DataGridView - expanded to use full width
             dgvNhanVien.Location = new Point(20, 160);
-            dgvNhanVien.Size = new Size(800, 400);
-
-            // Information Panel
-            pnlThongTin.Location = new Point(840, 160);
-            pnlThongTin.Size = new Size(520, 700);
-
-            LayoutInfoControls();
+            dgvNhanVien.Size = new Size(this.Width - 60, this.Height - 200);
+            dgvNhanVien.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
         }
 
         private void LayoutInfoControls()
