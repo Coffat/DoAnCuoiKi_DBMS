@@ -70,6 +70,14 @@ namespace VuToanThang_23110329.Forms
             btnLuu.Enabled = false;
             btnHuy.Enabled = false;
 
+            // Set up button event handlers immediately after button creation
+            btnThem.Click += btnThem_Click;
+            btnSua.Click += btnSua_Click;
+            btnXoa.Click += btnXoa_Click;
+            btnLuu.Click += btnLuu_Click;
+            btnHuy.Click += btnHuy_Click;
+            btnLamMoi.Click += btnLamMoi_Click;
+
             // DataGridView
             dgvCaLam = new DataGridView
             {

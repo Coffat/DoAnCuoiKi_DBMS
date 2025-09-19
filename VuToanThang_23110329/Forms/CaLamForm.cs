@@ -32,21 +32,19 @@ namespace VuToanThang_23110329.Forms
 
         private void SetupEventHandlers()
         {
-            txtSearch.TextChanged += txtSearch_TextChanged;
-            dgvCaLam.SelectionChanged += dgvCaLam_SelectionChanged;
+            // Only set up DataGridView and TextBox event handlers here
+            // Button event handlers are now set up in Designer.cs
+            if (txtSearch != null)
+                txtSearch.TextChanged += txtSearch_TextChanged;
             
-            btnThem.Click += btnThem_Click;
-            btnSua.Click += btnSua_Click;
-            btnXoa.Click += btnXoa_Click;
-            btnLuu.Click += btnLuu_Click;
-            btnHuy.Click += btnHuy_Click;
-            btnLamMoi.Click += btnLamMoi_Click;
+            if (dgvCaLam != null)
+                dgvCaLam.SelectionChanged += dgvCaLam_SelectionChanged;
         }
 
         private void InitializeForm()
         {
-            SetupEventHandlers();
             LoadData();
+            SetupEventHandlers();
             SetFormMode(false);
         }
 
