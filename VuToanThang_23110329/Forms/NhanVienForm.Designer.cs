@@ -153,13 +153,14 @@ namespace VuToanThang_23110329.Forms
             this.Controls[3].Location = new Point(420, 70); // lblFilter
             cmbFilterTrangThai.Location = new Point(460, 68);
 
-            // Buttons
+            // Buttons with better spacing
             int btnY = 110;
+            int btnSpacing = 85; // Reduced spacing between buttons
             btnThem.Location = new Point(20, btnY);
-            btnSua.Location = new Point(110, btnY);
-            btnXoa.Location = new Point(200, btnY);
-            btnKhoiPhuc.Location = new Point(290, btnY);
-            btnLamMoi.Location = new Point(380, btnY);
+            btnSua.Location = new Point(20 + btnSpacing, btnY);
+            btnXoa.Location = new Point(20 + btnSpacing * 2, btnY);
+            btnKhoiPhuc.Location = new Point(20 + btnSpacing * 3, btnY);
+            btnLamMoi.Location = new Point(20 + btnSpacing * 4, btnY);
 
             // DataGridView - expanded to use full width
             dgvNhanVien.Location = new Point(20, 160);

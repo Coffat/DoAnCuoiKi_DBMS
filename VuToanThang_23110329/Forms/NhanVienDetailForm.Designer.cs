@@ -24,7 +24,7 @@ namespace VuToanThang_23110329.Forms
         {
             this.BackColor = Color.FromArgb(50, 50, 50);
             this.ForeColor = Color.White;
-            this.Size = new Size(500, 700);
+            this.Size = new Size(480, 600);
             this.Text = "Nhân viên";
             this.StartPosition = FormStartPosition.CenterParent;
             this.FormBorderStyle = FormBorderStyle.FixedDialog;
@@ -181,19 +181,20 @@ namespace VuToanThang_23110329.Forms
 
         private void LayoutControls()
         {
-            int x = 30;
-            int y = 20;
+            int x = 25;
+            int y = 15;
             int labelWidth = 120;
             int controlX = x + labelWidth + 10;
-            int spacing = 40;
+            int spacing = 30; // Reduced spacing from 40 to 30
+            int sectionSpacing = 25; // Reduced section spacing
 
             // Title
             this.Controls[0].Location = new Point(x, y);
-            y += 50;
+            y += 40; // Reduced from 50
 
             // Personal Information Section
             this.Controls[1].Location = new Point(x, y);
-            y += 35;
+            y += sectionSpacing;
 
             // Personal info fields
             for (int i = 2; i < 14; i += 2) // Personal info: 6 fields x 2 controls each
@@ -204,8 +205,8 @@ namespace VuToanThang_23110329.Forms
             }
 
             // Work Information Section
-            this.Controls[14].Location = new Point(x, y);
-            y += 35;
+            this.Controls[14].Location = new Point(x, y + 5);
+            y += sectionSpacing + 5;
 
             // Work info fields
             for (int i = 15; i < 25; i += 2) // Work info: 5 fields x 2 controls each
@@ -216,8 +217,8 @@ namespace VuToanThang_23110329.Forms
             }
 
             // Account Information Section
-            this.Controls[25].Location = new Point(x, y);
-            y += 35;
+            this.Controls[25].Location = new Point(x, y + 5);
+            y += sectionSpacing + 5;
 
             // Account checkbox
             chkTaoTaiKhoan.Location = new Point(x, y);
@@ -231,13 +232,13 @@ namespace VuToanThang_23110329.Forms
                 y += spacing;
             }
 
-            // Buttons
-            y += 20;
+            // Buttons with better spacing
+            y += 15;
             btnLuu.Location = new Point(controlX, y);
-            btnHuy.Location = new Point(controlX + 110, y);
+            btnHuy.Location = new Point(controlX + 130, y); // Better spacing between buttons
 
-            // Adjust form height
-            this.Height = y + 80;
+            // Adjust form height to be more compact
+            this.Height = y + 70;
         }
 
         #endregion
