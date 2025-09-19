@@ -254,7 +254,6 @@ namespace VuToanThang_23110329.Forms
             button.ForeColor = System.Drawing.Color.White;
             button.HoverState.FillColor = System.Drawing.Color.FromArgb(124, 77, 255);
             button.Location = new System.Drawing.Point(20, top);
-            button.Name = text.Replace(" ", "").Replace("🏠", "").Replace("👥", "").Replace("🕐", "").Replace("📅", "").Replace("⏰", "").Replace("📝", "").Replace("🧮", "").Replace("💰", "").Replace("🧾", "").Replace("📈", "").Replace("📊", "");
             button.Size = new System.Drawing.Size(240, 45);
             button.Text = text;
             button.TextAlign = System.Windows.Forms.HorizontalAlignment.Left;
@@ -273,6 +272,14 @@ namespace VuToanThang_23110329.Forms
             button.Location = new System.Drawing.Point(left, 10);
             button.Size = new System.Drawing.Size(30, 30);
             button.Text = text;
+            
+            // Add event handlers
+            if (text == "×")
+                button.Click += new System.EventHandler(this.btnClose_Click);
+            else if (text == "□")
+                button.Click += new System.EventHandler(this.btnMaximize_Click);
+            else if (text == "−")
+                button.Click += new System.EventHandler(this.btnMinimize_Click);
         }
 
         //#endregion

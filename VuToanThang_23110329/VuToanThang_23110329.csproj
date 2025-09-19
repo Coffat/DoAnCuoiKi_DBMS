@@ -33,13 +33,15 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Guna.UI2">
-      <HintPath>packages\Guna.UI2.WinForms.2.0.4.6\lib\net40\Guna.UI2.dll</HintPath>
+    <Reference Include="Guna.UI2, Version=2.0.4.7, Culture=neutral, PublicKeyToken=8b9d14aa5142e261, processorArchitecture=MSIL">
+      <HintPath>packages\Guna.UI2.WinForms.2.0.4.7\lib\net40\Guna.UI2.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Data.SqlClient" />
+    <Reference Include="System.Data.SqlClient, Version=4.9.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>packages\System.Data.SqlClient.4.9.0\lib\net461\System.Data.SqlClient.dll</HintPath>
+    </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -51,7 +53,35 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Data\CurrentUser.cs" />
     <Compile Include="Data\SqlHelper.cs" />
+    <Compile Include="Forms\BangLuongForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\BaoCaoLuongForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\BaoCaoNhanSuForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\CaLamForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\ChamCongForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\DonTuHRForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\DonTuNVForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\DonTuSMForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\LichPhanCaForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Forms\LoginForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -64,6 +94,15 @@
     <Compile Include="Forms\MainForm.Designer.cs">
       <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\NhanVienForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\PhieuLuongForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\TinhLuongForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Models\BangLuong.cs" />
     <Compile Include="Models\CaLam.cs" />
     <Compile Include="Models\ChamCong.cs" />
@@ -71,6 +110,7 @@
     <Compile Include="Models\LichPhanCa.cs" />
     <Compile Include="Models\NguoiDung.cs" />
     <Compile Include="Models\NhanVien.cs" />
+    <Compile Include="Models\OperationResult.cs" />
     <Compile Include="Models\ViewModels.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -79,6 +119,7 @@
     <Compile Include="Repositories\CaLamRepository.cs" />
     <Compile Include="Repositories\ChamCongRepository.cs" />
     <Compile Include="Repositories\DonTuRepository.cs" />
+    <Compile Include="Repositories\LichPhanCaRepository.cs" />
     <Compile Include="Repositories\NhanVienRepository.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
