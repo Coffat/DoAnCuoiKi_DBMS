@@ -48,10 +48,9 @@ namespace VuToanThang_23110329.Forms
         }
 
         // UI Controls
-        private Label lblTitle, lblNhanVien, lblCaLam, lblNgayLam, lblTrangThai, lblGhiChu, lblShiftInfo;
+        private Label lblTitle, lblNhanVien, lblCaLam, lblNgayLam, lblTrangThai, lblShiftInfo;
         private ComboBox cmbNhanVien, cmbCaLam, cmbTrangThai;
         private DateTimePicker dtpNgayLam;
-        private TextBox txtGhiChu;
         private Button btnLuu, btnHuy;
         private Panel pnlMain, pnlButtons;
 
@@ -79,7 +78,6 @@ namespace VuToanThang_23110329.Forms
             lblCaLam = CreateLabel("Ca làm:");
             lblNgayLam = CreateLabel("Ngày làm:");
             lblTrangThai = CreateLabel("Trạng thái:");
-            lblGhiChu = CreateLabel("Ghi chú:");
 
             // Shift info label (initially hidden)
             lblShiftInfo = new Label
@@ -101,18 +99,12 @@ namespace VuToanThang_23110329.Forms
             cmbTrangThai.Items.AddRange(new[] { "Mo", "Khoa" });
             cmbTrangThai.SelectedIndex = 0;
 
-            txtGhiChu = CreateTextBox();
-            txtGhiChu.Multiline = true;
-            txtGhiChu.Height = 80;
-            txtGhiChu.ScrollBars = ScrollBars.Vertical;
-
             // Add controls to main panel
             pnlMain.Controls.AddRange(new Control[] {
                 lblNhanVien, cmbNhanVien,
                 lblCaLam, cmbCaLam, lblShiftInfo,
                 lblNgayLam, dtpNgayLam,
-                lblTrangThai, cmbTrangThai,
-                lblGhiChu, txtGhiChu
+                lblTrangThai, cmbTrangThai
             });
 
             // Button Panel
@@ -232,11 +224,6 @@ namespace VuToanThang_23110329.Forms
             cmbTrangThai.Location = new Point(labelWidth + 20, y - 3);
             cmbTrangThai.Size = new Size(controlWidth, 23);
             y += spacing;
-
-            // Notes
-            lblGhiChu.Location = new Point(20, y);
-            txtGhiChu.Location = new Point(labelWidth + 20, y - 3);
-            txtGhiChu.Size = new Size(controlWidth, 80);
 
             // Button panel layout
             btnHuy.Location = new Point(this.ClientSize.Width - 120, 15);

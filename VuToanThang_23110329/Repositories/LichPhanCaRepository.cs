@@ -80,13 +80,12 @@ namespace VuToanThang_23110329.Repositories
                     SqlHelper.CreateParameter("@MaNV", lichPhanCa.MaNV),
                     SqlHelper.CreateParameter("@MaCa", lichPhanCa.MaCa),
                     SqlHelper.CreateParameter("@NgayLam", lichPhanCa.NgayLam),
-                    SqlHelper.CreateParameter("@TrangThai", lichPhanCa.TrangThai ?? "Mo"),
-                    SqlHelper.CreateParameter("@GhiChu", lichPhanCa.GhiChu)
+                    SqlHelper.CreateParameter("@TrangThai", lichPhanCa.TrangThai ?? "Mo")
                 };
 
                 SqlHelper.ExecuteNonQuery(@"
-                    INSERT INTO LichPhanCa (MaNV, MaCa, NgayLam, TrangThai, GhiChu)
-                    VALUES (@MaNV, @MaCa, @NgayLam, @TrangThai, @GhiChu)", parameters);
+                    INSERT INTO LichPhanCa (MaNV, MaCa, NgayLam, TrangThai)
+                    VALUES (@MaNV, @MaCa, @NgayLam, @TrangThai)", parameters);
 
                 return new OperationResult
                 {
@@ -114,14 +113,13 @@ namespace VuToanThang_23110329.Repositories
                     SqlHelper.CreateParameter("@MaNV", lichPhanCa.MaNV),
                     SqlHelper.CreateParameter("@MaCa", lichPhanCa.MaCa),
                     SqlHelper.CreateParameter("@NgayLam", lichPhanCa.NgayLam),
-                    SqlHelper.CreateParameter("@TrangThai", lichPhanCa.TrangThai),
-                    SqlHelper.CreateParameter("@GhiChu", lichPhanCa.GhiChu)
+                    SqlHelper.CreateParameter("@TrangThai", lichPhanCa.TrangThai)
                 };
 
                 SqlHelper.ExecuteNonQuery(@"
                     UPDATE LichPhanCa SET 
                         MaNV = @MaNV, MaCa = @MaCa, NgayLam = @NgayLam, 
-                        TrangThai = @TrangThai, GhiChu = @GhiChu
+                        TrangThai = @TrangThai
                     WHERE MaLich = @MaLich", parameters);
 
                 return new OperationResult
@@ -200,7 +198,6 @@ namespace VuToanThang_23110329.Repositories
                 MaCa = Convert.ToInt32(row["MaCa"]),
                 NgayLam = Convert.ToDateTime(row["NgayLam"]),
                 TrangThai = row["TrangThai"]?.ToString(),
-                GhiChu = row["GhiChu"]?.ToString(),
                 TenNhanVien = row["TenNhanVien"]?.ToString(),
                 TenCa = row["TenCa"]?.ToString(),
                 GioBatDau = row["GioBatDau"] != DBNull.Value ? TimeSpan.Parse(row["GioBatDau"].ToString()) : TimeSpan.Zero,

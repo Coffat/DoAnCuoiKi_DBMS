@@ -97,8 +97,6 @@ namespace VuToanThang_23110329.Forms
                     dgvLichPhanCa.Columns["MaCa"].Visible = false;
                 if (dgvLichPhanCa.Columns["HeSoCa"] != null)
                     dgvLichPhanCa.Columns["HeSoCa"].Visible = false;
-                if (dgvLichPhanCa.Columns["GhiChu"] != null)
-                    dgvLichPhanCa.Columns["GhiChu"].Visible = false;
             }
         }
 
@@ -133,7 +131,6 @@ namespace VuToanThang_23110329.Forms
             cmbCaLam.SelectedIndex = -1;
             dtpNgayLam.Value = DateTime.Now;
             cmbTrangThai.SelectedIndex = 0;
-            txtGhiChu.Clear();
             
             _currentLichPhanCa = null;
         }
@@ -147,7 +144,6 @@ namespace VuToanThang_23110329.Forms
             cmbCaLam.SelectedValue = lich.MaCa;
             dtpNgayLam.Value = lich.NgayLam;
             cmbTrangThai.Text = lich.TrangThai;
-            txtGhiChu.Text = lich.GhiChu;
         }
 
         private void ShowMessage(string message, string title, MessageBoxIcon icon)

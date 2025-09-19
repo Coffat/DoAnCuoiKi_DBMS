@@ -16,7 +16,6 @@ namespace VuToanThang_23110329.Forms
         private DataGridView dgvLichPhanCa;
         private DateTimePicker dtpTuNgay, dtpDenNgay, dtpNgayLam;
         private ComboBox cmbNhanVien, cmbCaLam, cmbTrangThai;
-        private TextBox txtGhiChu;
         private Button btnThem, btnSua, btnXoa, btnLuu, btnHuy, btnLamMoi, btnTimKiem, btnTaoLichTuan;
         private Panel pnlThongTin, pnlFilter;
 
@@ -161,17 +160,12 @@ namespace VuToanThang_23110329.Forms
             cmbTrangThai.Items.AddRange(new[] { "Mo", "Khoa" });
             cmbTrangThai.SelectedIndex = 0;
 
-            txtGhiChu = CreateTextBox();
-            txtGhiChu.Multiline = true;
-            txtGhiChu.Height = 60;
-
             pnlThongTin.Controls.AddRange(new Control[] {
                 lblThongTin,
                 CreateLabel("Nhân viên:"), cmbNhanVien,
                 CreateLabel("Ca làm:"), cmbCaLam,
                 CreateLabel("Ngày làm:"), dtpNgayLam,
-                CreateLabel("Trạng thái:"), cmbTrangThai,
-                CreateLabel("Ghi chú:"), txtGhiChu
+                CreateLabel("Trạng thái:"), cmbTrangThai
             });
         }
 
@@ -334,16 +328,8 @@ namespace VuToanThang_23110329.Forms
                     controls[i].Size = new Size(labelWidth, 20);
                     controls[i + 1].Location = new Point(labelWidth + 20, y - 3);
                     
-                    if (controls[i + 1] == txtGhiChu)
-                    {
-                        controls[i + 1].Size = new Size(controlWidth, 60);
-                        y += 70;
-                    }
-                    else
-                    {
-                        controls[i + 1].Size = new Size(controlWidth, 23);
-                        y += spacing;
-                    }
+                    controls[i + 1].Size = new Size(controlWidth, 23);
+                    y += spacing;
                 }
             }
         }

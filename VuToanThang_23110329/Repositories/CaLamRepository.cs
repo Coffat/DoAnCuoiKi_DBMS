@@ -41,11 +41,15 @@ namespace VuToanThang_23110329.Repositories
                 if (dt.Rows.Count > 0)
                 {
                     var row = dt.Rows[0];
+                    TimeSpan.TryParse(row["GioBatDau"]?.ToString(), out TimeSpan gioBatDau);
+                    TimeSpan.TryParse(row["GioKetThuc"]?.ToString(), out TimeSpan gioKetThuc);
+                    decimal.TryParse(row["HeSoCa"]?.ToString(), out decimal heSoCa);
+
                     return new fn_KhungCa_Result
                     {
-                        GioBatDau = TimeSpan.Parse(row["GioBatDau"].ToString()),
-                        GioKetThuc = TimeSpan.Parse(row["GioKetThuc"].ToString()),
-                        HeSoCa = Convert.ToDecimal(row["HeSoCa"])
+                        GioBatDau = gioBatDau,
+                        GioKetThuc = gioKetThuc,
+                        HeSoCa = heSoCa
                     };
                 }
                 return null;

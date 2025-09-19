@@ -81,7 +81,7 @@ namespace VuToanThang_23110329.Forms
             cmbCaLam.SelectedValue = _currentLichPhanCa.MaCa;
             dtpNgayLam.Value = _currentLichPhanCa.NgayLam;
             cmbTrangThai.Text = _currentLichPhanCa.TrangThai;
-            txtGhiChu.Text = _currentLichPhanCa.GhiChu;
+            // GhiChu is removed, no need to load it.
         }
 
         private void ShowMessage(string message, string title, MessageBoxIcon icon)
@@ -114,7 +114,6 @@ namespace VuToanThang_23110329.Forms
                     _currentLichPhanCa.MaCa = Convert.ToInt32(cmbCaLam.SelectedValue);
                     _currentLichPhanCa.NgayLam = dtpNgayLam.Value.Date;
                     _currentLichPhanCa.TrangThai = cmbTrangThai.Text;
-                    _currentLichPhanCa.GhiChu = txtGhiChu.Text.Trim();
 
                     var result = _lichPhanCaRepository.Update(_currentLichPhanCa);
                     
@@ -138,8 +137,7 @@ namespace VuToanThang_23110329.Forms
                         MaNV = Convert.ToInt32(cmbNhanVien.SelectedValue),
                         MaCa = Convert.ToInt32(cmbCaLam.SelectedValue),
                         NgayLam = dtpNgayLam.Value.Date,
-                        TrangThai = cmbTrangThai.Text,
-                        GhiChu = txtGhiChu.Text.Trim()
+                        TrangThai = cmbTrangThai.Text
                     };
 
                     var result = _lichPhanCaRepository.Insert(lichPhanCa);
