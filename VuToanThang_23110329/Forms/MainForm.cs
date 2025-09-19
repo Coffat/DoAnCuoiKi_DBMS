@@ -126,10 +126,53 @@ namespace VuToanThang_23110329.Forms
                 {
                     ShowMessage("Không thể kết nối đến cơ sở dữ liệu!", "Cảnh báo", MessageBoxIcon.Warning);
                 }
+                
+                // Test form creation
+                TestFormCreation();
             }
             catch (Exception ex)
             {
                 ShowMessage($"Lỗi kết nối cơ sở dữ liệu: {ex.Message}", "Lỗi", MessageBoxIcon.Error);
+            }
+        }
+
+        private void TestFormCreation()
+        {
+            try
+            {
+                // Test creating each form to see if there are any issues
+                var testForms = new Dictionary<string, Func<Form>>
+                {
+                    {"NhanVienForm", () => new NhanVienForm()},
+                    {"CaLamForm", () => new CaLamForm()},
+                    {"LichPhanCaForm", () => new LichPhanCaForm()},
+                    {"ChamCongForm", () => new ChamCongForm()},
+                    {"BaoCaoLuongForm", () => new BaoCaoLuongForm()},
+                    {"BaoCaoNhanSuForm", () => new BaoCaoNhanSuForm()},
+                    {"PhieuLuongForm", () => new PhieuLuongForm()},
+                    {"TinhLuongForm", () => new TinhLuongForm()},
+                    {"BangLuongForm", () => new BangLuongForm()},
+                    {"DonTuNVForm", () => new DonTuNVForm()},
+                    {"DonTuSMForm", () => new DonTuSMForm()},
+                    {"DonTuHRForm", () => new DonTuHRForm()}
+                };
+
+                foreach (var kvp in testForms)
+                {
+                    try
+                    {
+                        var form = kvp.Value();
+                        form.Dispose(); // Dispose immediately after creation test
+                    }
+                    catch (Exception ex)
+                    {
+                        ShowMessage($"Lỗi tạo {kvp.Key}: {ex.Message}", "Lỗi Form", MessageBoxIcon.Warning);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                ShowMessage($"Lỗi test form: {ex.Message}", "Lỗi", MessageBoxIcon.Error);
             }
         }
 
@@ -177,23 +220,55 @@ namespace VuToanThang_23110329.Forms
                         return;
 
                     case "btnNhanVien":
-                        childForm = new NhanVienForm();
-                        formTitle = "Quản lý nhân viên";
+                        try
+                        {
+                            childForm = new NhanVienForm();
+                            formTitle = "Quản lý nhân viên";
+                        }
+                        catch (Exception ex)
+                        {
+                            ShowMessage($"Lỗi tạo form NhanVien: {ex.Message}", "Lỗi", MessageBoxIcon.Error);
+                            return;
+                        }
                         break;
 
                     case "btnCaLam":
-                        childForm = new CaLamForm();
-                        formTitle = "Quản lý ca làm";
+                        try
+                        {
+                            childForm = new CaLamForm();
+                            formTitle = "Quản lý ca làm";
+                        }
+                        catch (Exception ex)
+                        {
+                            ShowMessage($"Lỗi tạo form CaLam: {ex.Message}", "Lỗi", MessageBoxIcon.Error);
+                            return;
+                        }
                         break;
 
                     case "btnLichPhanCa":
-                        childForm = new LichPhanCaForm();
-                        formTitle = "Lịch phân ca";
+                        try
+                        {
+                            childForm = new LichPhanCaForm();
+                            formTitle = "Lịch phân ca";
+                        }
+                        catch (Exception ex)
+                        {
+                            ShowMessage($"Lỗi tạo form LichPhanCa: {ex.Message}", "Lỗi", MessageBoxIcon.Error);
+                            return;
+                        }
                         break;
 
                     case "btnChamCong":
-                        childForm = new ChamCongForm();
-                        formTitle = "Chấm công";
+                        try
+                        {
+                            childForm = new ChamCongForm();
+                            formTitle = "Chấm công";
+                        }
+                        catch (Exception ex)
+                        {
+                            ShowMessage($"Lỗi tạo form ChamCong: {ex.Message}", "Lỗi", MessageBoxIcon.Error);
+                            return;
+                        }
                         break;
 
                     case "btnDonTu":
@@ -227,12 +302,20 @@ namespace VuToanThang_23110329.Forms
                         break;
 
                     case "btnBaoCaoLuong":
-                        childForm = new BaoCaoLuongForm();
-                        formTitle = "Báo cáo lương";
+                        try
+                        {
+                            childForm = new BaoCaoLuongForm();
+                            formTitle = "Báo cáo lương";
+                        }
+                        catch (Exception ex)
+                        {
+                            ShowMessage($"Lỗi tạo form BaoCaoLuong: {ex.Message}", "Lỗi", MessageBoxIcon.Error);
+                            return;
+                        }
                         break;
 
                     default:
-                        ShowMessage("Chức năng đang được phát triển!", "Thông báo", MessageBoxIcon.Information);
+                        ShowMessage($"Không tìm thấy form cho chức năng: {menuButton.Name}", "Lỗi", MessageBoxIcon.Error);
                         return;
                 }
 
@@ -369,17 +452,4 @@ namespace VuToanThang_23110329.Forms
         }
     }
 
-    // Placeholder forms - these will be created later
-    public partial class NhanVienForm : Form { public NhanVienForm() { InitializeComponent(); } private void InitializeComponent() { this.Text = "Nhân viên"; this.BackColor = Color.FromArgb(50, 50, 50); } }
-    public partial class CaLamForm : Form { public CaLamForm() { InitializeComponent(); } private void InitializeComponent() { this.Text = "Ca làm"; this.BackColor = Color.FromArgb(50, 50, 50); } }
-    public partial class LichPhanCaForm : Form { public LichPhanCaForm() { InitializeComponent(); } private void InitializeComponent() { this.Text = "Lịch phân ca"; this.BackColor = Color.FromArgb(50, 50, 50); } }
-    public partial class ChamCongForm : Form { public ChamCongForm() { InitializeComponent(); } private void InitializeComponent() { this.Text = "Chấm công"; this.BackColor = Color.FromArgb(50, 50, 50); } }
-    public partial class DonTuHRForm : Form { public DonTuHRForm() { InitializeComponent(); } private void InitializeComponent() { this.Text = "Đơn từ HR"; this.BackColor = Color.FromArgb(50, 50, 50); } }
-    public partial class DonTuSMForm : Form { public DonTuSMForm() { InitializeComponent(); } private void InitializeComponent() { this.Text = "Đơn từ SM"; this.BackColor = Color.FromArgb(50, 50, 50); } }
-    public partial class DonTuNVForm : Form { public DonTuNVForm() { InitializeComponent(); } private void InitializeComponent() { this.Text = "Đơn từ NV"; this.BackColor = Color.FromArgb(50, 50, 50); } }
-    public partial class TinhLuongForm : Form { public TinhLuongForm() { InitializeComponent(); } private void InitializeComponent() { this.Text = "Tính lương"; this.BackColor = Color.FromArgb(50, 50, 50); } }
-    public partial class BangLuongForm : Form { public BangLuongForm() { InitializeComponent(); } private void InitializeComponent() { this.Text = "Bảng lương"; this.BackColor = Color.FromArgb(50, 50, 50); } }
-    public partial class PhieuLuongForm : Form { public PhieuLuongForm() { InitializeComponent(); } private void InitializeComponent() { this.Text = "Phiếu lương"; this.BackColor = Color.FromArgb(50, 50, 50); } }
-    public partial class BaoCaoNhanSuForm : Form { public BaoCaoNhanSuForm() { InitializeComponent(); } private void InitializeComponent() { this.Text = "Báo cáo nhân sự"; this.BackColor = Color.FromArgb(50, 50, 50); } }
-    public partial class BaoCaoLuongForm : Form { public BaoCaoLuongForm() { InitializeComponent(); } private void InitializeComponent() { this.Text = "Báo cáo lương"; this.BackColor = Color.FromArgb(50, 50, 50); } }
 }
