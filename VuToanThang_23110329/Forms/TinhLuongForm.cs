@@ -595,8 +595,11 @@ namespace VuToanThang_23110329.Forms
         {
             InitializeComponent();
             this.Text = $"Cập nhật phụ cấp - {thang}/{nam}";
+            CreateControls();
         }
 
+        private void CreateControls()
+        {
             var lblTitle = new Label
             {
                 Text = "Cập nhật phụ cấp hàng loạt - Chức năng đang phát triển",
