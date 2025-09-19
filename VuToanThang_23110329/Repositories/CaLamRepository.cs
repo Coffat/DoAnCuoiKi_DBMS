@@ -13,7 +13,7 @@ namespace VuToanThang_23110329.Repositories
             var list = new List<CaLam>();
             try
             {
-                var dt = SqlHelper.ExecuteDataTable("EXEC dbo.sp_CaLam_GetAll");
+                var dt = SqlHelper.ExecuteDataTable("dbo.sp_CaLam_GetAll");
                 
                 foreach (DataRow row in dt.Rows)
                 {
@@ -61,7 +61,7 @@ namespace VuToanThang_23110329.Repositories
             try
             {
                 var parameters = new[] { SqlHelper.CreateParameter("@MaCa", maCa) };
-                var dt = SqlHelper.ExecuteDataTable("EXEC dbo.sp_CaLam_GetById @MaCa", parameters);
+                var dt = SqlHelper.ExecuteDataTable("dbo.sp_CaLam_GetById", parameters);
                 
                 if (dt.Rows.Count > 0)
                     return MapFromDataRow(dt.Rows[0]);
@@ -84,10 +84,10 @@ namespace VuToanThang_23110329.Repositories
                     SqlHelper.CreateParameter("@GioBatDau", caLam.GioBatDau),
                     SqlHelper.CreateParameter("@GioKetThuc", caLam.GioKetThuc),
                     SqlHelper.CreateParameter("@HeSoCa", caLam.HeSoCa),
-                    SqlHelper.CreateParameter("@MaCa_OUT", System.Data.SqlDbType.Int, System.Data.ParameterDirection.Output)
+                    SqlHelper.CreateOutputParameter("@MaCa_OUT", System.Data.SqlDbType.Int)
                 };
 
-                SqlHelper.ExecuteNonQuery("EXEC dbo.sp_CaLam_Insert @TenCa, @GioBatDau, @GioKetThuc, @HeSoCa, @MaCa_OUT OUTPUT", parameters);
+                SqlHelper.ExecuteNonQuery("dbo.sp_CaLam_Insert", parameters);
 
                 // Lấy MaCa vừa được tạo
                 var maCaMoi = Convert.ToInt32(parameters[4].Value);
@@ -122,7 +122,7 @@ namespace VuToanThang_23110329.Repositories
                     SqlHelper.CreateParameter("@HeSoCa", caLam.HeSoCa)
                 };
 
-                SqlHelper.ExecuteNonQuery("EXEC dbo.sp_CaLam_Update @MaCa, @TenCa, @GioBatDau, @GioKetThuc, @HeSoCa", parameters);
+                SqlHelper.ExecuteNonQuery("dbo.sp_CaLam_Update", parameters);
 
                 return new OperationResult
                 {
@@ -146,7 +146,7 @@ namespace VuToanThang_23110329.Repositories
             {
                 var parameters = new[] { SqlHelper.CreateParameter("@MaCa", maCa) };
                 
-                SqlHelper.ExecuteNonQuery("EXEC dbo.sp_CaLam_Delete @MaCa", parameters);
+                SqlHelper.ExecuteNonQuery("dbo.sp_CaLam_Delete", parameters);
 
                 return new OperationResult
                 {
