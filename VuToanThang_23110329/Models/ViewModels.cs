@@ -48,13 +48,6 @@ namespace VuToanThang_23110329.Models
         public NhanVien Employee { get; set; }
     }
 
-    // Common result model for operations
-    public class OperationResult
-    {
-        public bool Success { get; set; }
-        public string Message { get; set; }
-        public object Data { get; set; }
-    }
 
     // Stored procedure parameter models
     public class ThemMoiNhanVienParams
