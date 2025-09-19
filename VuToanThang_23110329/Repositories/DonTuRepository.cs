@@ -18,7 +18,7 @@ namespace VuToanThang_23110329.Repositories
                     FROM DonTu dt
                     JOIN NhanVien nv ON dt.MaNV = nv.MaNV
                     LEFT JOIN NhanVien nd ON dt.DuyetBoi = nd.MaNV
-                    ORDER BY dt.NgayTao DESC");
+                    ORDER BY dt.MaDon DESC");
                 
                 foreach (DataRow row in dt.Rows)
                 {
@@ -44,7 +44,7 @@ namespace VuToanThang_23110329.Repositories
                     JOIN NhanVien nv ON dt.MaNV = nv.MaNV
                     LEFT JOIN NhanVien nd ON dt.DuyetBoi = nd.MaNV
                     WHERE dt.MaNV = @MaNV
-                    ORDER BY dt.NgayTao DESC", parameters);
+                    ORDER BY dt.MaDon DESC", parameters);
                 
                 foreach (DataRow row in dt.Rows)
                 {
@@ -73,8 +73,8 @@ namespace VuToanThang_23110329.Repositories
                 };
 
                 SqlHelper.ExecuteNonQuery(@"
-                    INSERT INTO DonTu (MaNV, Loai, TuLuc, DenLuc, SoGio, LyDo, TrangThai, NgayTao)
-                    VALUES (@MaNV, @Loai, @TuLuc, @DenLuc, @SoGio, @LyDo, N'ChoDuyet', GETDATE())", parameters);
+                    INSERT INTO DonTu (MaNV, Loai, TuLuc, DenLuc, SoGio, LyDo, TrangThai)
+                    VALUES (@MaNV, @Loai, @TuLuc, @DenLuc, @SoGio, @LyDo, N'ChoDuyet')", parameters);
 
                 return new OperationResult
                 {
