@@ -30,17 +30,6 @@ namespace VuToanThang_23110329.Forms
             InitializeForm();
         }
 
-        private void InitializeComponent()
-        {
-            this.BackColor = Color.FromArgb(50, 50, 50);
-            this.Size = new Size(1200, 800);
-            this.Text = "Đơn từ của tôi";
-            this.Padding = new Padding(20);
-
-            CreateControls();
-            LayoutControls();
-            SetupEventHandlers();
-        }
 
         private void CreateControls()
         {

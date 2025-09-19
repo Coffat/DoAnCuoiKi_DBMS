@@ -27,17 +27,6 @@ namespace VuToanThang_23110329.Forms
             InitializeForm();
         }
 
-        private void InitializeComponent()
-        {
-            this.BackColor = Color.FromArgb(50, 50, 50);
-            this.Size = new Size(1400, 900);
-            this.Text = "Bảng lương";
-            this.Padding = new Padding(20);
-
-            CreateControls();
-            LayoutControls();
-            SetupEventHandlers();
-        }
 
         private void CreateControls()
         {
@@ -446,15 +435,6 @@ namespace VuToanThang_23110329.Forms
             LoadPayrollDetails(bangLuong);
         }
 
-        private void InitializeComponent()
-        {
-            this.Text = "Chi tiết bảng lương";
-            this.Size = new Size(600, 500);
-            this.BackColor = Color.FromArgb(50, 50, 50);
-            this.StartPosition = FormStartPosition.CenterParent;
-            this.FormBorderStyle = FormBorderStyle.FixedDialog;
-            this.MaximizeBox = false;
-        }
 
         private void LoadPayrollDetails(BangLuong bl)
         {
@@ -522,14 +502,6 @@ Trạng thái: {(bl.TrangThai == "Mo" ? "Đang mở" : "Đã đóng")}";
             InitializeComponent();
             CreatePrintPreview(dgv, thang, nam);
         }
-
-        private void InitializeComponent()
-        {
-            this.Text = "In bảng lương";
-            this.Size = new Size(1000, 700);
-            this.BackColor = Color.White;
-            this.StartPosition = FormStartPosition.CenterParent;
-            this.WindowState = FormWindowState.Maximized;
 
             var btnPrint = new Button
             {

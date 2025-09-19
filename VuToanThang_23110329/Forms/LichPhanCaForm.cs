@@ -34,17 +34,6 @@ namespace VuToanThang_23110329.Forms
             InitializeForm();
         }
 
-        private void InitializeComponent()
-        {
-            this.BackColor = Color.FromArgb(50, 50, 50);
-            this.Size = new Size(1400, 900);
-            this.Text = "Lịch phân ca";
-            this.Padding = new Padding(20);
-
-            CreateControls();
-            LayoutControls();
-            SetupEventHandlers();
-        }
 
         private void CreateControls()
         {
@@ -609,15 +598,6 @@ namespace VuToanThang_23110329.Forms
             InitializeComponent();
             LoadData();
         }
-
-        private void InitializeComponent()
-        {
-            this.Text = "Tạo lịch tuần";
-            this.Size = new Size(500, 400);
-            this.BackColor = Color.FromArgb(50, 50, 50);
-            this.StartPosition = FormStartPosition.CenterParent;
-            this.FormBorderStyle = FormBorderStyle.FixedDialog;
-            this.MaximizeBox = false;
 
             var lblTitle = new Label
             {

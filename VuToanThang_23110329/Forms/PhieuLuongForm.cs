@@ -28,17 +28,6 @@ namespace VuToanThang_23110329.Forms
             InitializeForm();
         }
 
-        private void InitializeComponent()
-        {
-            this.BackColor = Color.FromArgb(50, 50, 50);
-            this.Size = new Size(900, 800);
-            this.Text = "Phiếu lương của tôi";
-            this.Padding = new Padding(20);
-
-            CreateControls();
-            LayoutControls();
-            SetupEventHandlers();
-        }
 
         private void CreateControls()
         {
@@ -434,14 +423,6 @@ namespace VuToanThang_23110329.Forms
             InitializeComponent();
             ClonePayslipPanel(originalPanel);
         }
-
-        private void InitializeComponent()
-        {
-            this.Text = "In phiếu lương";
-            this.Size = new Size(900, 700);
-            this.BackColor = Color.White;
-            this.StartPosition = FormStartPosition.CenterParent;
-            this.WindowState = FormWindowState.Maximized;
 
             var btnPrint = new Button
             {

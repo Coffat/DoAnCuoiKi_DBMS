@@ -31,17 +31,6 @@ namespace VuToanThang_23110329.Forms
             InitializeForm();
         }
 
-        private void InitializeComponent()
-        {
-            this.BackColor = Color.FromArgb(50, 50, 50);
-            this.Size = new Size(1400, 900);
-            this.Text = "Tính lương";
-            this.Padding = new Padding(20);
-
-            CreateControls();
-            LayoutControls();
-            SetupEventHandlers();
-        }
 
         private void CreateControls()
         {
@@ -608,12 +597,6 @@ namespace VuToanThang_23110329.Forms
             this.Text = $"Cập nhật phụ cấp - {thang}/{nam}";
         }
 
-        private void InitializeComponent()
-        {
-            this.Size = new Size(600, 400);
-            this.BackColor = Color.FromArgb(50, 50, 50);
-            this.StartPosition = FormStartPosition.CenterParent;
-
             var lblTitle = new Label
             {
                 Text = "Cập nhật phụ cấp hàng loạt - Chức năng đang phát triển",
@@ -645,12 +628,6 @@ namespace VuToanThang_23110329.Forms
             InitializeComponent();
             this.Text = $"Chỉnh sửa lương - {bangLuong.TenNhanVien}";
         }
-
-        private void InitializeComponent()
-        {
-            this.Size = new Size(500, 400);
-            this.BackColor = Color.FromArgb(50, 50, 50);
-            this.StartPosition = FormStartPosition.CenterParent;
 
             var lblTitle = new Label
             {

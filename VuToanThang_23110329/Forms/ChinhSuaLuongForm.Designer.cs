@@ -4,7 +4,7 @@ using System.Windows.Forms;
 
 namespace VuToanThang_23110329.Forms
 {
-    partial class BangLuongForm
+    partial class ChinhSuaLuongForm
     {
         /// <summary>
         /// Required designer variable.
@@ -32,27 +32,11 @@ namespace VuToanThang_23110329.Forms
         /// </summary>
         private void InitializeComponent()
         {
+            this.Size = new Size(500, 400);
             this.BackColor = Color.FromArgb(50, 50, 50);
-            this.Size = new Size(1400, 900);
-            this.Text = "Bảng lương";
-            this.Padding = new Padding(20);
+            this.StartPosition = FormStartPosition.CenterParent;
             this.SuspendLayout();
             this.ResumeLayout(false);
-        }
-
-        private void CreateControls()
-        {
-            // This method will be called from the main form
-        }
-
-        private void LayoutControls()
-        {
-            // This method will be called from the main form
-        }
-
-        private void SetupEventHandlers()
-        {
-            // This method will be called from the main form
         }
 
         #endregion
