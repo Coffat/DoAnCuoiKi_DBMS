@@ -208,6 +208,9 @@ namespace VuToanThang_23110329.Forms
 
         private void InitializeForm()
         {
+            CreateControls();
+            LayoutControls();
+            SetupEventHandlers();
             LoadData();
         }
 
@@ -500,9 +503,12 @@ Trạng thái: {(bl.TrangThai == "Mo" ? "Đang mở" : "Đã đóng")}";
         public PrintBangLuongForm(DataGridView dgv, int thang, int nam)
         {
             InitializeComponent();
+            CreatePrintButtons();
             CreatePrintPreview(dgv, thang, nam);
         }
 
+        private void CreatePrintButtons()
+        {
             var btnPrint = new Button
             {
                 Text = "In",

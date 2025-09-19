@@ -62,29 +62,80 @@
     <Compile Include="Forms\BangLuongForm.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="Forms\BangLuongForm.Designer.cs">
+      <DependentUpon>BangLuongForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\BaoCaoLuongForm.cs">
       <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\BaoCaoLuongForm.Designer.cs">
+      <DependentUpon>BaoCaoLuongForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\BaoCaoNhanSuForm.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="Forms\BaoCaoNhanSuForm.Designer.cs">
+      <DependentUpon>BaoCaoNhanSuForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\CaLamForm.cs">
       <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\CaLamForm.Designer.cs">
+      <DependentUpon>CaLamForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\CapNhatPhuCapForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\CapNhatPhuCapForm.Designer.cs">
+      <DependentUpon>CapNhatPhuCapForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\ChamCongForm.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="Forms\ChamCongForm.Designer.cs">
+      <DependentUpon>ChamCongForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\ChiTietBangLuongForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\ChiTietBangLuongForm.Designer.cs">
+      <DependentUpon>ChiTietBangLuongForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\ChinhSuaLuongForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\ChinhSuaLuongForm.Designer.cs">
+      <DependentUpon>ChinhSuaLuongForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\DonTuDetailForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\DonTuDetailForm.Designer.cs">
+      <DependentUpon>DonTuDetailForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\DonTuHRForm.cs">
       <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\DonTuHRForm.Designer.cs">
+      <DependentUpon>DonTuHRForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\DonTuNVForm.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="Forms\DonTuNVForm.Designer.cs">
+      <DependentUpon>DonTuNVForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\DonTuSMForm.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="Forms\DonTuSMForm.Designer.cs">
+      <DependentUpon>DonTuSMForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\LichPhanCaForm.cs">
       <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\LichPhanCaForm.Designer.cs">
+      <DependentUpon>LichPhanCaForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\LoginForm.cs">
       <SubType>Form</SubType>
@@ -101,11 +152,38 @@
     <Compile Include="Forms\NhanVienForm.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="Forms\NhanVienForm.Designer.cs">
+      <DependentUpon>NhanVienForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\PhieuLuongForm.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="Forms\PhieuLuongForm.Designer.cs">
+      <DependentUpon>PhieuLuongForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\PrintBangLuongForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\PrintBangLuongForm.Designer.cs">
+      <DependentUpon>PrintBangLuongForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\PrintPayslipForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\PrintPayslipForm.Designer.cs">
+      <DependentUpon>PrintPayslipForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\TaoLichTuanForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\TaoLichTuanForm.Designer.cs">
+      <DependentUpon>TaoLichTuanForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\TinhLuongForm.cs">
       <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\TinhLuongForm.Designer.cs">
+      <DependentUpon>TinhLuongForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Models\BangLuong.cs" />
     <Compile Include="Models\CaLam.cs" />
@@ -115,6 +193,7 @@
     <Compile Include="Models\NguoiDung.cs" />
     <Compile Include="Models\NhanVien.cs" />
     <Compile Include="Models\OperationResult.cs" />
+    <Compile Include="Models\ThemMoiNhanVienParams.cs" />
     <Compile Include="Models\ViewModels.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
