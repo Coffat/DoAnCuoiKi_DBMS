@@ -161,6 +161,11 @@ namespace VuToanThang_23110329.Repositories
             }
         }
 
+        public BangLuong GetByMaNVAndPeriod(int maNV, int nam, int thang)
+        {
+            return GetByEmployeeAndPeriod(maNV, nam, thang);
+        }
+
         private BangLuong MapFromDataRow(DataRow row)
         {
             return new BangLuong

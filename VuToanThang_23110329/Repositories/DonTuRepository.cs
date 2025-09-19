@@ -121,6 +121,29 @@ namespace VuToanThang_23110329.Repositories
             }
         }
 
+        public DonTu GetById(int maDon)
+        {
+            try
+            {
+                var parameters = new[] { SqlHelper.CreateParameter("@MaDon", maDon) };
+                var dt = SqlHelper.ExecuteDataTable(@"
+                    SELECT dt.*, nv.HoTen as TenNhanVien, nd.HoTen as TenNguoiDuyet
+                    FROM DonTu dt
+                    JOIN NhanVien nv ON dt.MaNV = nv.MaNV
+                    LEFT JOIN NhanVien nd ON dt.DuyetBoi = nd.MaNV
+                    WHERE dt.MaDon = @MaDon", parameters);
+                
+                if (dt.Rows.Count > 0)
+                    return MapFromDataRow(dt.Rows[0]);
+                
+                return null;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Lỗi lấy thông tin đơn từ: {ex.Message}", ex);
+            }
+        }
+
         private DonTu MapFromDataRow(DataRow row)
         {
             return new DonTu

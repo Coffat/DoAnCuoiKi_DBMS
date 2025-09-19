@@ -22,6 +22,7 @@ namespace VuToanThang_23110329.Models
         public bool TaoTaiKhoan { get; set; }
         public string TenDangNhap { get; set; }
         public string MatKhau { get; set; }
+        public string MatKhauHash { get; set; }
         public string VaiTro { get; set; }
     }
 }

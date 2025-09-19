@@ -184,6 +184,11 @@ namespace VuToanThang_23110329.Repositories
             return list;
         }
 
+        public NhanVien GetByMaNV(int maNV)
+        {
+            return GetById(maNV);
+        }
+
         private NhanVien MapFromDataRow(DataRow row)
         {
             return new NhanVien

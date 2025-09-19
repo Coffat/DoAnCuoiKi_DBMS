@@ -421,7 +421,7 @@ namespace VuToanThang_23110329.Forms
 
         private void btnTaoLichTuan_Click(object sender, EventArgs e)
         {
-            var form = new TaoLichTuanForm();
+            var form = new TaoLichTuanForm(dtpTuNgay.Value);
             if (form.ShowDialog() == DialogResult.OK)
             {
                 LoadData();
