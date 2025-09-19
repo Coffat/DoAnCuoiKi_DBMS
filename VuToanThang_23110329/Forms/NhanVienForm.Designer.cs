@@ -57,10 +57,16 @@ namespace VuToanThang_23110329.Forms
             var lblSearch = new Label { Text = "Tìm kiếm:", ForeColor = Color.White, AutoSize = true };
             txtSearch = new TextBox { Width = 300, BackColor = Color.FromArgb(60, 60, 60), ForeColor = Color.White, BorderStyle = BorderStyle.FixedSingle };
 
+            // Status Filter
+            var lblFilter = new Label { Text = "Lọc:", ForeColor = Color.White, AutoSize = true };
+            cmbFilterTrangThai = CreateComboBox(new[] { "Tất cả", "DangLam", "Nghi" });
+            cmbFilterTrangThai.SelectedIndex = 0;
+
             // Buttons
             btnThem = CreateButton("Thêm", Color.FromArgb(46, 125, 50));
             btnSua = CreateButton("Sửa", Color.FromArgb(255, 152, 0));
             btnXoa = CreateButton("Xóa", Color.FromArgb(244, 67, 54));
+            btnKhoiPhuc = CreateButton("Khôi phục", Color.FromArgb(76, 175, 80));
             btnLuu = CreateButton("Lưu", Color.FromArgb(33, 150, 243));
             btnHuy = CreateButton("Hủy", Color.FromArgb(158, 158, 158));
             btnLamMoi = CreateButton("Làm mới", Color.FromArgb(96, 125, 139));
@@ -99,7 +105,7 @@ namespace VuToanThang_23110329.Forms
 
             CreateInfoControls();
 
-            this.Controls.AddRange(new Control[] { lblTitle, lblSearch, txtSearch, btnThem, btnSua, btnXoa, btnLuu, btnHuy, btnLamMoi, dgvNhanVien, pnlThongTin });
+            this.Controls.AddRange(new Control[] { lblTitle, lblSearch, txtSearch, lblFilter, cmbFilterTrangThai, btnThem, btnSua, btnXoa, btnKhoiPhuc, btnLuu, btnHuy, btnLamMoi, dgvNhanVien, pnlThongTin });
         }
 
         private void CreateInfoControls()
@@ -230,14 +236,19 @@ namespace VuToanThang_23110329.Forms
             this.Controls[1].Location = new Point(20, 70);
             txtSearch.Location = new Point(100, 68);
 
+            // Status Filter
+            this.Controls[3].Location = new Point(420, 70); // lblFilter
+            cmbFilterTrangThai.Location = new Point(460, 68);
+
             // Buttons
             int btnY = 110;
             btnThem.Location = new Point(20, btnY);
             btnSua.Location = new Point(110, btnY);
             btnXoa.Location = new Point(200, btnY);
-            btnLuu.Location = new Point(290, btnY);
-            btnHuy.Location = new Point(380, btnY);
-            btnLamMoi.Location = new Point(470, btnY);
+            btnKhoiPhuc.Location = new Point(290, btnY);
+            btnLuu.Location = new Point(390, btnY);
+            btnHuy.Location = new Point(480, btnY);
+            btnLamMoi.Location = new Point(570, btnY);
 
             // DataGridView
             dgvNhanVien.Location = new Point(20, 160);

@@ -20,6 +20,9 @@ namespace VuToanThang_23110329.Forms
 
         private void InitializeMainForm()
         {
+            // Auto-size form to fit screen
+            AutoSizeToScreen();
+            
             // Set user information
             SetUserInfo();
             
@@ -28,6 +31,29 @@ namespace VuToanThang_23110329.Forms
             
             // Test database connection
             TestDatabaseConnection();
+        }
+
+        private void AutoSizeToScreen()
+        {
+            // Get screen dimensions
+            Rectangle screenBounds = Screen.PrimaryScreen.WorkingArea;
+            
+            // Calculate form size (80% of screen size but not smaller than minimum)
+            int formWidth = Math.Max((int)(screenBounds.Width * 0.8), 1024);
+            int formHeight = Math.Max((int)(screenBounds.Height * 0.8), 768);
+            
+            // Ensure form doesn't exceed screen size
+            formWidth = Math.Min(formWidth, screenBounds.Width);
+            formHeight = Math.Min(formHeight, screenBounds.Height);
+            
+            // Set form size
+            this.Size = new Size(formWidth, formHeight);
+            
+            // Center on screen
+            this.Location = new Point(
+                (screenBounds.Width - formWidth) / 2,
+                (screenBounds.Height - formHeight) / 2
+            );
         }
 
         private void SetUserInfo()

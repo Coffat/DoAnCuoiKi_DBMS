@@ -101,6 +101,16 @@ namespace VuToanThang_23110329.Repositories
         {
             try
             {
+                // Check permission using CurrentUser
+                if (!CurrentUser.HasPermission("MANAGE_EMPLOYEES"))
+                {
+                    return new OperationResult
+                    {
+                        Success = false,
+                        Message = "Bạn không có quyền cập nhật thông tin nhân viên."
+                    };
+                }
+
                 var parameters = new[]
                 {
                     SqlHelper.CreateParameter("@MaNV", nhanVien.MaNV),
@@ -114,16 +124,11 @@ namespace VuToanThang_23110329.Repositories
                     SqlHelper.CreateParameter("@TrangThai", nhanVien.TrangThai),
                     SqlHelper.CreateParameter("@PhongBan", nhanVien.PhongBan),
                     SqlHelper.CreateParameter("@ChucDanh", nhanVien.ChucDanh),
-                    SqlHelper.CreateParameter("@LuongCoBan", nhanVien.LuongCoBan)
+                    SqlHelper.CreateParameter("@LuongCoBan", nhanVien.LuongCoBan),
+                    SqlHelper.CreateParameter("@MaNguoiDung", CurrentUser.User?.MaNguoiDung)
                 };
 
-                SqlHelper.ExecuteNonQuery(@"
-                    UPDATE NhanVien SET 
-                        HoTen = @HoTen, NgaySinh = @NgaySinh, GioiTinh = @GioiTinh, 
-                        DienThoai = @DienThoai, Email = @Email, DiaChi = @DiaChi,
-                        NgayVaoLam = @NgayVaoLam, TrangThai = @TrangThai, 
-                        PhongBan = @PhongBan, ChucDanh = @ChucDanh, LuongCoBan = @LuongCoBan
-                    WHERE MaNV = @MaNV", parameters);
+                SqlHelper.ExecuteNonQuery("sp_CapNhatNhanVien", parameters);
 
                 return new OperationResult
                 {
@@ -145,9 +150,23 @@ namespace VuToanThang_23110329.Repositories
         {
             try
             {
-                var parameters = new[] { SqlHelper.CreateParameter("@MaNV", maNV) };
+                // Check permission using CurrentUser
+                if (!CurrentUser.HasPermission("MANAGE_EMPLOYEES"))
+                {
+                    return new OperationResult
+                    {
+                        Success = false,
+                        Message = "Bạn không có quyền xóa nhân viên."
+                    };
+                }
+
+                var parameters = new[] 
+                { 
+                    SqlHelper.CreateParameter("@MaNV", maNV),
+                    SqlHelper.CreateParameter("@MaNguoiDung", CurrentUser.User?.MaNguoiDung)
+                };
                 
-                SqlHelper.ExecuteNonQuery("UPDATE NhanVien SET TrangThai = N'Nghi' WHERE MaNV = @MaNV", parameters);
+                SqlHelper.ExecuteNonQuery("sp_XoaNhanVien", parameters);
 
                 return new OperationResult
                 {
@@ -162,6 +181,73 @@ namespace VuToanThang_23110329.Repositories
                     Success = false,
                     Message = $"Lỗi xóa nhân viên: {ex.Message}"
                 };
+            }
+        }
+
+        /// <summary>
+        /// Restore employee from 'Nghi' status back to 'DangLam'
+        /// </summary>
+        public OperationResult Restore(int maNV)
+        {
+            try
+            {
+                // Check permission using CurrentUser
+                if (!CurrentUser.HasPermission("MANAGE_EMPLOYEES"))
+                {
+                    return new OperationResult
+                    {
+                        Success = false,
+                        Message = "Bạn không có quyền khôi phục nhân viên."
+                    };
+                }
+
+                var parameters = new[] 
+                { 
+                    SqlHelper.CreateParameter("@MaNV", maNV),
+                    SqlHelper.CreateParameter("@MaNguoiDung", CurrentUser.User?.MaNguoiDung)
+                };
+                
+                SqlHelper.ExecuteNonQuery("sp_KhoiPhucNhanVien", parameters);
+
+                return new OperationResult
+                {
+                    Success = true,
+                    Message = "Khôi phục nhân viên thành công!"
+                };
+            }
+            catch (Exception ex)
+            {
+                return new OperationResult
+                {
+                    Success = false,
+                    Message = $"Lỗi khôi phục nhân viên: {ex.Message}"
+                };
+            }
+        }
+
+        /// <summary>
+        /// Check if current user has permission for specific action
+        /// </summary>
+        public bool CheckPermission(string action)
+        {
+            try
+            {
+                if (CurrentUser.User == null) return false;
+
+                var parameters = new[]
+                {
+                    SqlHelper.CreateParameter("@MaNguoiDung", CurrentUser.User.MaNguoiDung),
+                    SqlHelper.CreateParameter("@ChucNang", action),
+                    SqlHelper.CreateOutputParameter("@CoQuyen", SqlDbType.Bit)
+                };
+
+                SqlHelper.ExecuteNonQuery("sp_KiemTraQuyenTruyCap", parameters);
+                
+                return Convert.ToBoolean(parameters[2].Value);
+            }
+            catch
+            {
+                return false;
             }
         }
 

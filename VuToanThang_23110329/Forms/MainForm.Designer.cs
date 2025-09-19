@@ -224,7 +224,8 @@ namespace VuToanThang_23110329.Forms
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(50)))), ((int)(((byte)(50)))), ((int)(((byte)(50)))));
-            this.ClientSize = new System.Drawing.Size(1200, 800);
+            this.MinimumSize = new System.Drawing.Size(1024, 768);
+            this.Size = new System.Drawing.Size(1200, 800);
             this.Controls.Add(this.pnlContent);
             this.Controls.Add(this.pnlTopbar);
             this.Controls.Add(this.pnlSidebar);
@@ -232,7 +233,7 @@ namespace VuToanThang_23110329.Forms
             this.Name = "MainForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "HR Management System";
-            this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
+            this.WindowState = System.Windows.Forms.FormWindowState.Normal;
             this.pnlSidebar.ResumeLayout(false);
             this.pnlUserInfo.ResumeLayout(false);
             this.pnlUserInfo.PerformLayout();

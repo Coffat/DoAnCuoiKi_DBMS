@@ -20,10 +20,10 @@ namespace VuToanThang_23110329.Forms
         private DataGridView dgvNhanVien;
         private TextBox txtSearch, txtHoTen, txtDienThoai, txtEmail, txtDiaChi, txtPhongBan, txtChucDanh, txtLuongCoBan;
         private DateTimePicker dtpNgaySinh, dtpNgayVaoLam;
-        private ComboBox cmbGioiTinh, cmbTrangThai, cmbVaiTro;
+        private ComboBox cmbGioiTinh, cmbTrangThai, cmbVaiTro, cmbFilterTrangThai;
         private CheckBox chkTaoTaiKhoan;
         private TextBox txtTenDangNhap, txtMatKhau;
-        private Button btnThem, btnSua, btnXoa, btnLuu, btnHuy, btnLamMoi;
+        private Button btnThem, btnSua, btnXoa, btnLuu, btnHuy, btnLamMoi, btnKhoiPhuc;
         private Panel pnlThongTin;
 
         public NhanVienForm()
@@ -40,10 +40,12 @@ namespace VuToanThang_23110329.Forms
             txtSearch.TextChanged += txtSearch_TextChanged;
             dgvNhanVien.SelectionChanged += dgvNhanVien_SelectionChanged;
             chkTaoTaiKhoan.CheckedChanged += chkTaoTaiKhoan_CheckedChanged;
+            cmbFilterTrangThai.SelectedIndexChanged += cmbFilterTrangThai_SelectedIndexChanged;
             
             btnThem.Click += btnThem_Click;
             btnSua.Click += btnSua_Click;
             btnXoa.Click += btnXoa_Click;
+            btnKhoiPhuc.Click += btnKhoiPhuc_Click;
             btnLuu.Click += btnLuu_Click;
             btnHuy.Click += btnHuy_Click;
             btnLamMoi.Click += btnLamMoi_Click;
@@ -51,6 +53,7 @@ namespace VuToanThang_23110329.Forms
 
         private void InitializeForm()
         {
+            SetupEventHandlers();
             LoadData();
             SetFormMode(false);
         }
@@ -107,11 +110,25 @@ namespace VuToanThang_23110329.Forms
         {
             _isEditing = isEditing;
             
-            btnThem.Enabled = !isEditing && VuToanThang_23110329.Data.CurrentUser.HasPermission("MANAGE_EMPLOYEES");
-            btnSua.Enabled = !isEditing && dgvNhanVien.SelectedRows.Count > 0 && VuToanThang_23110329.Data.CurrentUser.HasPermission("MANAGE_EMPLOYEES");
-            btnXoa.Enabled = !isEditing && dgvNhanVien.SelectedRows.Count > 0 && VuToanThang_23110329.Data.CurrentUser.HasPermission("MANAGE_EMPLOYEES");
+            bool hasManagePermission = VuToanThang_23110329.Data.CurrentUser.HasPermission("MANAGE_EMPLOYEES");
+            bool hasSelectedEmployee = dgvNhanVien.SelectedRows.Count > 0;
+            
+            btnThem.Enabled = !isEditing && hasManagePermission;
+            btnSua.Enabled = !isEditing && hasSelectedEmployee && hasManagePermission;
+            btnXoa.Enabled = !isEditing && hasSelectedEmployee && hasManagePermission;
             btnLuu.Enabled = isEditing;
             btnHuy.Enabled = isEditing;
+            
+            // Restore button: only for HR and when a resigned employee is selected
+            if (hasSelectedEmployee && !isEditing)
+            {
+                var selectedNV = (NhanVien)dgvNhanVien.SelectedRows[0].DataBoundItem;
+                btnKhoiPhuc.Enabled = hasManagePermission && selectedNV.TrangThai == "Nghi";
+            }
+            else
+            {
+                btnKhoiPhuc.Enabled = false;
+            }
             
             // Enable/disable input controls
             foreach (Control control in pnlThongTin.Controls)
@@ -170,8 +187,47 @@ namespace VuToanThang_23110329.Forms
         // Event Handlers
         private void txtSearch_TextChanged(object sender, EventArgs e)
         {
-            // Implement search functionality
-            LoadData(); // For now, just reload data
+            FilterData();
+        }
+
+        private void FilterData()
+        {
+            try
+            {
+                var allData = VuToanThang_23110329.Data.CurrentUser.IsHR ? 
+                    _nhanVienRepository.GetAll() : 
+                    _nhanVienRepository.GetByRLS();
+
+                var filteredData = allData.AsEnumerable();
+
+                // Filter by status
+                if (cmbFilterTrangThai.SelectedIndex > 0) // 0 = "Tất cả"
+                {
+                    var statusFilter = cmbFilterTrangThai.Text;
+                    filteredData = filteredData.Where(nv => nv.TrangThai == statusFilter);
+                }
+
+                // Filter by search term
+                if (!string.IsNullOrWhiteSpace(txtSearch.Text))
+                {
+                    var searchTerm = txtSearch.Text.ToLower().Trim();
+                    filteredData = filteredData.Where(nv => 
+                        nv.HoTen.ToLower().Contains(searchTerm) ||
+                        nv.DienThoai?.ToLower().Contains(searchTerm) == true ||
+                        nv.Email?.ToLower().Contains(searchTerm) == true ||
+                        nv.PhongBan?.ToLower().Contains(searchTerm) == true ||
+                        nv.ChucDanh?.ToLower().Contains(searchTerm) == true ||
+                        nv.MaNV.ToString().Contains(searchTerm)
+                    );
+                }
+                
+                dgvNhanVien.DataSource = filteredData.ToList();
+                ConfigureDataGridView();
+            }
+            catch (Exception ex)
+            {
+                ShowMessage($"Lỗi tìm kiếm: {ex.Message}", "Lỗi", MessageBoxIcon.Error);
+            }
         }
 
         private void dgvNhanVien_SelectionChanged(object sender, EventArgs e)
@@ -342,6 +398,51 @@ namespace VuToanThang_23110329.Forms
             LoadData();
             ClearForm();
             SetFormMode(false);
+        }
+
+        private void cmbFilterTrangThai_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            FilterData();
+        }
+
+        private void btnKhoiPhuc_Click(object sender, EventArgs e)
+        {
+            if (dgvNhanVien.SelectedRows.Count > 0)
+            {
+                var selectedNV = (NhanVien)dgvNhanVien.SelectedRows[0].DataBoundItem;
+                
+                if (selectedNV.TrangThai != "Nghi")
+                {
+                    ShowMessage("Chỉ có thể khôi phục nhân viên đã nghỉ việc!", "Cảnh báo", MessageBoxIcon.Warning);
+                    return;
+                }
+
+                var result = MessageBox.Show($"Bạn có chắc chắn muốn khôi phục nhân viên {selectedNV.HoTen}?", "Xác nhận", 
+                    MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                
+                if (result == DialogResult.Yes)
+                {
+                    try
+                    {
+                        var restoreResult = _nhanVienRepository.Restore(selectedNV.MaNV);
+                        
+                        if (restoreResult.Success)
+                        {
+                            ShowMessage(restoreResult.Message, "Thành công", MessageBoxIcon.Information);
+                            LoadData();
+                            ClearForm();
+                        }
+                        else
+                        {
+                            ShowMessage(restoreResult.Message, "Lỗi", MessageBoxIcon.Error);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        ShowMessage($"Lỗi khôi phục nhân viên: {ex.Message}", "Lỗi", MessageBoxIcon.Error);
+                    }
+                }
+            }
         }
     }
 }
