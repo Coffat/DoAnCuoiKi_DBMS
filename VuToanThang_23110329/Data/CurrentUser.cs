@@ -21,7 +21,10 @@ namespace VuToanThang_23110329.Data
         public static bool IsLoggedIn => User != null;
 
         // Get current employee ID (for RLS)
-        public static int? CurrentEmployeeId => Employee?.MaNV;
+        public static int? CurrentEmployeeId 
+        { 
+            get { return Employee?.MaNV; } 
+        }
 
         /// <summary>
         /// Clear current user session

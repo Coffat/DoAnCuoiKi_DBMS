@@ -421,7 +421,7 @@ namespace VuToanThang_23110329.Forms
                         {
                             var approveResult = _donTuRepository.DuyetDonTu(
                                 donTu.MaDon,
-                                CurrentUser.CurrentEmployeeId.Value,
+                                VuToanThang_23110329.Data.CurrentUser.CurrentEmployeeId.Value,
                                 true
                             );
                             if (approveResult.Success) successCount++;
@@ -472,7 +472,7 @@ namespace VuToanThang_23110329.Forms
                         {
                             var rejectResult = _donTuRepository.DuyetDonTu(
                                 donTu.MaDon,
-                                CurrentUser.CurrentEmployeeId.Value,
+                                VuToanThang_23110329.Data.CurrentUser.CurrentEmployeeId.Value,
                                 false
                             );
                             if (rejectResult.Success) successCount++;

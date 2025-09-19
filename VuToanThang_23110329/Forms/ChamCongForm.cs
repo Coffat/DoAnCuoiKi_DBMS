@@ -6,7 +6,6 @@ using System.Windows.Forms;
 using VuToanThang_23110329.Data;
 using VuToanThang_23110329.Models;
 using VuToanThang_23110329.Repositories;
-using static VuToanThang_23110329.Data.CurrentUser;
 
 namespace VuToanThang_23110329.Forms
 {
@@ -454,7 +453,7 @@ namespace VuToanThang_23110329.Forms
             try
             {
                 // Load employees for filter
-                var nhanViens = CurrentUser.IsHR || CurrentUser.IsQuanLy ? 
+                var nhanViens = VuToanThang_23110329.Data.CurrentUser.IsHR || VuToanThang_23110329.Data.CurrentUser.IsQuanLy ? 
                     _nhanVienRepository.GetAll() : 
                     _nhanVienRepository.GetByRLS();
 
@@ -537,10 +536,10 @@ namespace VuToanThang_23110329.Forms
 
         private void SetFormPermissions()
         {
-            bool canManageAttendance = CurrentUser.HasPermission("MANAGE_ATTENDANCE");
+            bool canManageAttendance = VuToanThang_23110329.Data.CurrentUser.HasPermission("MANAGE_ATTENDANCE");
             
             btnCapNhat.Enabled = canManageAttendance;
-            btnKhoaCong.Enabled = CurrentUser.IsHR;
+            btnKhoaCong.Enabled = VuToanThang_23110329.Data.CurrentUser.IsHR;
             
             dtpGioVao.Enabled = canManageAttendance;
             dtpGioRa.Enabled = canManageAttendance;
@@ -568,7 +567,7 @@ namespace VuToanThang_23110329.Forms
             lblDiTre.Text = $"Đi trễ: {cc.DiTrePhut ?? 0} phút";
             lblVeSom.Text = $"Về sớm: {cc.VeSomPhut ?? 0} phút";
 
-            btnCapNhat.Enabled = !cc.Khoa && CurrentUser.HasPermission("MANAGE_ATTENDANCE");
+            btnCapNhat.Enabled = !cc.Khoa && VuToanThang_23110329.Data.CurrentUser.HasPermission("MANAGE_ATTENDANCE");
         }
 
         private void ShowMessage(string message, string title, MessageBoxIcon icon)

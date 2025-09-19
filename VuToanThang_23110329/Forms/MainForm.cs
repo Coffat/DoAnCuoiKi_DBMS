@@ -30,10 +30,10 @@ namespace VuToanThang_23110329.Forms
 
         private void SetUserInfo()
         {
-            if (CurrentUser.User != null)
+            if (VuToanThang_23110329.Data.CurrentUser.User != null)
             {
-                lblUserName.Text = CurrentUser.Employee?.HoTen ?? CurrentUser.User.TenDangNhap;
-                lblUserRole.Text = GetRoleDisplayName(CurrentUser.User.VaiTro);
+                lblUserName.Text = VuToanThang_23110329.Data.CurrentUser.Employee?.HoTen ?? VuToanThang_23110329.Data.CurrentUser.User.TenDangNhap;
+                lblUserRole.Text = GetRoleDisplayName(VuToanThang_23110329.Data.CurrentUser.User.VaiTro);
                 
                 // Set welcome message
                 lblWelcome.Text = $"Chào mừng {lblUserName.Text}!";
@@ -61,12 +61,12 @@ namespace VuToanThang_23110329.Forms
             btnDashboard.Visible = true; // Always visible
             btnLogout.Visible = true; // Always visible
 
-            if (CurrentUser.IsHR)
+            if (VuToanThang_23110329.Data.CurrentUser.IsHR)
             {
                 // HR can access everything
                 ShowAllMenuButtons();
             }
-            else if (CurrentUser.IsQuanLy)
+            else if (VuToanThang_23110329.Data.CurrentUser.IsQuanLy)
             {
                 // Manager can access schedule, attendance, and approval
                 btnLichPhanCa.Visible = true;
@@ -74,14 +74,14 @@ namespace VuToanThang_23110329.Forms
                 btnDonTu.Visible = true;
                 btnBaoCaoNhanSu.Visible = true;
             }
-            else if (CurrentUser.IsKeToan)
+            else if (VuToanThang_23110329.Data.CurrentUser.IsKeToan)
             {
                 // Accountant can access payroll functions
                 btnTinhLuong.Visible = true;
                 btnBangLuong.Visible = true;
                 btnBaoCaoLuong.Visible = true;
             }
-            else if (CurrentUser.IsNhanVien)
+            else if (VuToanThang_23110329.Data.CurrentUser.IsNhanVien)
             {
                 // Employee can only view their own data
                 btnLichPhanCa.Visible = true;
@@ -198,9 +198,9 @@ namespace VuToanThang_23110329.Forms
                         break;
 
                     case "btnDonTu":
-                        if (CurrentUser.IsNhanVien)
+                        if (VuToanThang_23110329.Data.CurrentUser.IsNhanVien)
                             childForm = new DonTuNVForm();
-                        else if (CurrentUser.IsQuanLy)
+                        else if (VuToanThang_23110329.Data.CurrentUser.IsQuanLy)
                             childForm = new DonTuSMForm();
                         else
                             childForm = new DonTuHRForm();
@@ -348,7 +348,7 @@ namespace VuToanThang_23110329.Forms
             if (result == DialogResult.Yes)
             {
                 // Clear current user
-                CurrentUser.Clear();
+                VuToanThang_23110329.Data.CurrentUser.Clear();
                 
                 // Close current form and show login
                 this.Hide();

@@ -6,7 +6,6 @@ using System.Windows.Forms;
 using VuToanThang_23110329.Data;
 using VuToanThang_23110329.Models;
 using VuToanThang_23110329.Repositories;
-using static VuToanThang_23110329.Data.CurrentUser;
 
 namespace VuToanThang_23110329.Forms
 {
@@ -275,7 +274,7 @@ namespace VuToanThang_23110329.Forms
 
         private void InitializeForm()
         {
-            if (!CurrentUser.CurrentEmployeeId.HasValue)
+            if (!VuToanThang_23110329.Data.CurrentUser.CurrentEmployeeId.HasValue)
             {
                 ShowMessage("Không xác định được nhân viên hiện tại!", "Lỗi", MessageBoxIcon.Error);
                 this.Close();
@@ -289,7 +288,7 @@ namespace VuToanThang_23110329.Forms
         {
             try
             {
-                if (!CurrentUser.CurrentEmployeeId.HasValue)
+                if (!VuToanThang_23110329.Data.CurrentUser.CurrentEmployeeId.HasValue)
                 {
                     ShowMessage("Không xác định được nhân viên hiện tại!", "Lỗi", MessageBoxIcon.Error);
                     return;
@@ -299,7 +298,7 @@ namespace VuToanThang_23110329.Forms
                 int nam = (int)cmbNam.SelectedItem;
 
                 var bangLuong = _bangLuongRepository.GetByEmployeeAndPeriod(
-                    CurrentUser.CurrentEmployeeId.Value, nam, thang);
+                    VuToanThang_23110329.Data.CurrentUser.CurrentEmployeeId.Value, nam, thang);
 
                 if (bangLuong == null)
                 {
@@ -309,7 +308,7 @@ namespace VuToanThang_23110329.Forms
 
                 // Load attendance summary
                 var congThang = _chamCongRepository.GetCongThang(nam, thang)
-                    .FirstOrDefault(c => c.MaNV == CurrentUser.CurrentEmployeeId.Value);
+                    .FirstOrDefault(c => c.MaNV == VuToanThang_23110329.Data.CurrentUser.CurrentEmployeeId.Value);
 
                 DisplayPayslip(bangLuong, congThang);
             }

@@ -6,7 +6,6 @@ using System.Windows.Forms;
 using VuToanThang_23110329.Data;
 using VuToanThang_23110329.Models;
 using VuToanThang_23110329.Repositories;
-using static VuToanThang_23110329.Data.CurrentUser;
 
 namespace VuToanThang_23110329.Forms
 {
@@ -363,7 +362,7 @@ namespace VuToanThang_23110329.Forms
 
         private void InitializeForm()
         {
-            if (!CurrentUser.HasPermission("VIEW_REPORTS"))
+            if (!VuToanThang_23110329.Data.CurrentUser.HasPermission("VIEW_REPORTS"))
             {
                 ShowMessage("Bạn không có quyền truy cập báo cáo!", "Cảnh báo", MessageBoxIcon.Warning);
                 this.Close();
@@ -378,7 +377,7 @@ namespace VuToanThang_23110329.Forms
         {
             try
             {
-                var nhanViens = CurrentUser.IsHR ? 
+                var nhanViens = VuToanThang_23110329.Data.CurrentUser.IsHR ? 
                     _nhanVienRepository.GetAll() : 
                     _nhanVienRepository.GetByRLS();
 

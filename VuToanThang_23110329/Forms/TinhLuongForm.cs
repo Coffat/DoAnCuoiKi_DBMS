@@ -6,7 +6,6 @@ using System.Windows.Forms;
 using VuToanThang_23110329.Data;
 using VuToanThang_23110329.Models;
 using VuToanThang_23110329.Repositories;
-using static VuToanThang_23110329.Data.CurrentUser;
 
 namespace VuToanThang_23110329.Forms
 {
@@ -331,7 +330,7 @@ namespace VuToanThang_23110329.Forms
 
         private void InitializeForm()
         {
-            if (!CurrentUser.HasPermission("MANAGE_PAYROLL"))
+            if (!VuToanThang_23110329.Data.CurrentUser.HasPermission("MANAGE_PAYROLL"))
             {
                 ShowMessage("Bạn không có quyền truy cập chức năng này!", "Cảnh báo", MessageBoxIcon.Warning);
                 this.Close();

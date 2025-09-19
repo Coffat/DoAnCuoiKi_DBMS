@@ -6,7 +6,6 @@ using System.Windows.Forms;
 using VuToanThang_23110329.Data;
 using VuToanThang_23110329.Models;
 using VuToanThang_23110329.Repositories;
-using static VuToanThang_23110329.Data.CurrentUser;
 
 namespace VuToanThang_23110329.Forms
 {
@@ -306,7 +305,7 @@ namespace VuToanThang_23110329.Forms
         {
             try
             {
-                var nhanViens = CurrentUser.IsHR ? 
+                var nhanViens = VuToanThang_23110329.Data.CurrentUser.IsHR ? 
                     _nhanVienRepository.GetAll() : 
                     _nhanVienRepository.GetByRLS();
 
@@ -347,9 +346,9 @@ namespace VuToanThang_23110329.Forms
         {
             _isEditing = isEditing;
             
-            btnThem.Enabled = !isEditing && CurrentUser.HasPermission("MANAGE_EMPLOYEES");
-            btnSua.Enabled = !isEditing && dgvNhanVien.SelectedRows.Count > 0 && CurrentUser.HasPermission("MANAGE_EMPLOYEES");
-            btnXoa.Enabled = !isEditing && dgvNhanVien.SelectedRows.Count > 0 && CurrentUser.HasPermission("MANAGE_EMPLOYEES");
+            btnThem.Enabled = !isEditing && VuToanThang_23110329.Data.CurrentUser.HasPermission("MANAGE_EMPLOYEES");
+            btnSua.Enabled = !isEditing && dgvNhanVien.SelectedRows.Count > 0 && VuToanThang_23110329.Data.CurrentUser.HasPermission("MANAGE_EMPLOYEES");
+            btnXoa.Enabled = !isEditing && dgvNhanVien.SelectedRows.Count > 0 && VuToanThang_23110329.Data.CurrentUser.HasPermission("MANAGE_EMPLOYEES");
             btnLuu.Enabled = isEditing;
             btnHuy.Enabled = isEditing;
             

@@ -84,8 +84,7 @@ namespace VuToanThang_23110329.Forms
                     }
 
                     // Store current user information in a static class for global access
-                    CurrentUser.User = result.User;
-                    CurrentUser.Employee = result.Employee;
+                    VuToanThang_23110329.Data.CurrentUser.SetUser(result.User, result.Employee);
 
                     ShowMessage(result.Message, "Thành công", MessageBoxIcon.Information);
 
@@ -180,26 +179,4 @@ namespace VuToanThang_23110329.Forms
         }
     }
 
-    // Static class to hold current user information globally
-    public static class CurrentUser
-    {
-        public static NguoiDung User { get; set; }
-        public static NhanVien Employee { get; set; }
-
-        public static bool IsInRole(string role)
-        {
-            return User?.VaiTro?.Equals(role, StringComparison.OrdinalIgnoreCase) == true;
-        }
-
-        public static bool IsHR => IsInRole("HR");
-        public static bool IsQuanLy => IsInRole("QuanLy");
-        public static bool IsKeToan => IsInRole("KeToan");
-        public static bool IsNhanVien => IsInRole("NhanVien");
-
-        public static void Clear()
-        {
-            User = null;
-            Employee = null;
-        }
-    }
 }

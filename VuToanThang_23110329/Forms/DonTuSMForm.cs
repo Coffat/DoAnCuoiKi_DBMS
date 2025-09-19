@@ -528,7 +528,7 @@ namespace VuToanThang_23110329.Forms
             {
                 try
                 {
-                    if (!CurrentUser.CurrentEmployeeId.HasValue)
+                    if (!VuToanThang_23110329.Data.CurrentUser.CurrentEmployeeId.HasValue)
                     {
                         ShowMessage("Không xác định được người duyệt!", "Lỗi", MessageBoxIcon.Error);
                         return;
@@ -536,7 +536,7 @@ namespace VuToanThang_23110329.Forms
 
                     var approveResult = _donTuRepository.DuyetDonTu(
                         _currentDonTu.MaDon,
-                        CurrentUser.CurrentEmployeeId.Value,
+                        VuToanThang_23110329.Data.CurrentUser.CurrentEmployeeId.Value,
                         true
                     );
 
@@ -583,7 +583,7 @@ namespace VuToanThang_23110329.Forms
             {
                 try
                 {
-                    if (!CurrentUser.CurrentEmployeeId.HasValue)
+                    if (!VuToanThang_23110329.Data.CurrentUser.CurrentEmployeeId.HasValue)
                     {
                         ShowMessage("Không xác định được người duyệt!", "Lỗi", MessageBoxIcon.Error);
                         return;
@@ -591,7 +591,7 @@ namespace VuToanThang_23110329.Forms
 
                     var rejectResult = _donTuRepository.DuyetDonTu(
                         _currentDonTu.MaDon,
-                        CurrentUser.CurrentEmployeeId.Value,
+                        VuToanThang_23110329.Data.CurrentUser.CurrentEmployeeId.Value,
                         false
                     );
 

@@ -6,7 +6,6 @@ using System.Windows.Forms;
 using VuToanThang_23110329.Data;
 using VuToanThang_23110329.Models;
 using VuToanThang_23110329.Repositories;
-using static VuToanThang_23110329.Data.CurrentUser;
 
 namespace VuToanThang_23110329.Forms
 {
@@ -305,7 +304,7 @@ namespace VuToanThang_23110329.Forms
             try
             {
                 // Load employees
-                var nhanViens = CurrentUser.IsHR ? 
+                var nhanViens = VuToanThang_23110329.Data.CurrentUser.IsHR ? 
                     _nhanVienRepository.GetAll() : 
                     _nhanVienRepository.GetByRLS();
 
@@ -329,8 +328,8 @@ namespace VuToanThang_23110329.Forms
         {
             try
             {
-                var lichPhanCas = CurrentUser.IsNhanVien && CurrentUser.CurrentEmployeeId.HasValue ?
-                    _lichPhanCaRepository.GetByEmployee(CurrentUser.CurrentEmployeeId.Value, dtpTuNgay.Value, dtpDenNgay.Value) :
+                var lichPhanCas = VuToanThang_23110329.Data.CurrentUser.IsNhanVien && VuToanThang_23110329.Data.CurrentUser.CurrentEmployeeId.HasValue ?
+                    _lichPhanCaRepository.GetByEmployee(VuToanThang_23110329.Data.CurrentUser.CurrentEmployeeId.Value, dtpTuNgay.Value, dtpDenNgay.Value) :
                     _lichPhanCaRepository.GetByPeriod(dtpTuNgay.Value, dtpDenNgay.Value);
 
                 dgvLichPhanCa.DataSource = lichPhanCas;
@@ -370,12 +369,12 @@ namespace VuToanThang_23110329.Forms
         {
             _isEditing = isEditing;
             
-            btnThem.Enabled = !isEditing && CurrentUser.HasPermission("MANAGE_SCHEDULE");
-            btnSua.Enabled = !isEditing && dgvLichPhanCa.SelectedRows.Count > 0 && CurrentUser.HasPermission("MANAGE_SCHEDULE");
-            btnXoa.Enabled = !isEditing && dgvLichPhanCa.SelectedRows.Count > 0 && CurrentUser.HasPermission("MANAGE_SCHEDULE");
+            btnThem.Enabled = !isEditing && VuToanThang_23110329.Data.CurrentUser.HasPermission("MANAGE_SCHEDULE");
+            btnSua.Enabled = !isEditing && dgvLichPhanCa.SelectedRows.Count > 0 && VuToanThang_23110329.Data.CurrentUser.HasPermission("MANAGE_SCHEDULE");
+            btnXoa.Enabled = !isEditing && dgvLichPhanCa.SelectedRows.Count > 0 && VuToanThang_23110329.Data.CurrentUser.HasPermission("MANAGE_SCHEDULE");
             btnLuu.Enabled = isEditing;
             btnHuy.Enabled = isEditing;
-            btnTaoLichTuan.Enabled = !isEditing && CurrentUser.HasPermission("MANAGE_SCHEDULE");
+            btnTaoLichTuan.Enabled = !isEditing && VuToanThang_23110329.Data.CurrentUser.HasPermission("MANAGE_SCHEDULE");
             
             // Enable/disable input controls
             foreach (Control control in pnlThongTin.Controls)

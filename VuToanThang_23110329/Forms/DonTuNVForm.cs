@@ -279,13 +279,13 @@ namespace VuToanThang_23110329.Forms
         {
             try
             {
-                if (!CurrentUser.CurrentEmployeeId.HasValue)
+                if (!VuToanThang_23110329.Data.CurrentUser.CurrentEmployeeId.HasValue)
                 {
                     ShowMessage("Không xác định được nhân viên hiện tại!", "Lỗi", MessageBoxIcon.Error);
                     return;
                 }
 
-                var donTus = _donTuRepository.GetByEmployee(CurrentUser.CurrentEmployeeId.Value);
+                var donTus = _donTuRepository.GetByEmployee(VuToanThang_23110329.Data.CurrentUser.CurrentEmployeeId.Value);
 
                 // Filter by status if selected
                 if (cmbTrangThai.SelectedIndex > 0)
@@ -509,7 +509,7 @@ namespace VuToanThang_23110329.Forms
                 {
                     var donTu = new DonTu
                     {
-                        MaNV = CurrentUser.CurrentEmployeeId.Value,
+                        MaNV = VuToanThang_23110329.Data.CurrentUser.CurrentEmployeeId.Value,
                         Loai = cmbLoai.Text,
                         TuLuc = dtpTuLuc.Value,
                         DenLuc = dtpDenLuc.Value,
