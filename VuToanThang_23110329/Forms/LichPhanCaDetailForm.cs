@@ -110,8 +110,8 @@ namespace VuToanThang_23110329.Forms
                 if (_isEditMode)
                 {
                     // Update existing
-                    _currentLichPhanCa.MaNV = (int)cmbNhanVien.SelectedValue;
-                    _currentLichPhanCa.MaCa = (int)cmbCaLam.SelectedValue;
+                    _currentLichPhanCa.MaNV = Convert.ToInt32(cmbNhanVien.SelectedValue);
+                    _currentLichPhanCa.MaCa = Convert.ToInt32(cmbCaLam.SelectedValue);
                     _currentLichPhanCa.NgayLam = dtpNgayLam.Value.Date;
                     _currentLichPhanCa.TrangThai = cmbTrangThai.Text;
                     _currentLichPhanCa.GhiChu = txtGhiChu.Text.Trim();
@@ -135,8 +135,8 @@ namespace VuToanThang_23110329.Forms
                     // Add new
                     var lichPhanCa = new LichPhanCa
                     {
-                        MaNV = (int)cmbNhanVien.SelectedValue,
-                        MaCa = (int)cmbCaLam.SelectedValue,
+                        MaNV = Convert.ToInt32(cmbNhanVien.SelectedValue),
+                        MaCa = Convert.ToInt32(cmbCaLam.SelectedValue),
                         NgayLam = dtpNgayLam.Value.Date,
                         TrangThai = cmbTrangThai.Text,
                         GhiChu = txtGhiChu.Text.Trim()

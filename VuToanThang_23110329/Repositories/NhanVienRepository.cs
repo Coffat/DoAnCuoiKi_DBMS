@@ -277,21 +277,43 @@ namespace VuToanThang_23110329.Repositories
 
         private NhanVien MapFromDataRow(DataRow row)
         {
+            int.TryParse(row["MaNV"]?.ToString(), out int maNV);
+
+            int? maNguoiDung = null;
+            if (int.TryParse(row["MaNguoiDung"]?.ToString(), out int tempMaNguoiDung))
+            {
+                maNguoiDung = tempMaNguoiDung;
+            }
+
+            DateTime? ngaySinh = null;
+            if (DateTime.TryParse(row["NgaySinh"]?.ToString(), out DateTime tempNgaySinh))
+            {
+                ngaySinh = tempNgaySinh;
+            }
+
+            DateTime.TryParse(row["NgayVaoLam"]?.ToString(), out DateTime ngayVaoLam);
+            if (ngayVaoLam == DateTime.MinValue)
+            {
+                ngayVaoLam = DateTime.Now; // Or some other sensible default
+            }
+
+            decimal.TryParse(row["LuongCoBan"]?.ToString(), out decimal luongCoBan);
+
             return new NhanVien
             {
-                MaNV = Convert.ToInt32(row["MaNV"]),
-                MaNguoiDung = row["MaNguoiDung"] != DBNull.Value ? Convert.ToInt32(row["MaNguoiDung"]) : (int?)null,
-                HoTen = row["HoTen"].ToString(),
-                NgaySinh = row["NgaySinh"] != DBNull.Value ? Convert.ToDateTime(row["NgaySinh"]) : (DateTime?)null,
+                MaNV = maNV,
+                MaNguoiDung = maNguoiDung,
+                HoTen = row["HoTen"]?.ToString(),
+                NgaySinh = ngaySinh,
                 GioiTinh = row["GioiTinh"]?.ToString(),
                 DienThoai = row["DienThoai"]?.ToString(),
                 Email = row["Email"]?.ToString(),
                 DiaChi = row["DiaChi"]?.ToString(),
-                NgayVaoLam = Convert.ToDateTime(row["NgayVaoLam"]),
-                TrangThai = row["TrangThai"].ToString(),
+                NgayVaoLam = ngayVaoLam,
+                TrangThai = row["TrangThai"]?.ToString(),
                 PhongBan = row["PhongBan"]?.ToString(),
                 ChucDanh = row["ChucDanh"]?.ToString(),
-                LuongCoBan = Convert.ToDecimal(row["LuongCoBan"])
+                LuongCoBan = luongCoBan
             };
         }
     }
