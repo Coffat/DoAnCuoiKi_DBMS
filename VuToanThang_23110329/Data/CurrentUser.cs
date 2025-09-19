@@ -4,6 +4,7 @@ namespace VuToanThang_23110329.Data
 {
     /// <summary>
     /// Static class to manage current logged-in user session
+    /// Updated: 2025-09-19
     /// </summary>
     public static class CurrentUser
     {
@@ -43,6 +44,8 @@ namespace VuToanThang_23110329.Data
         /// <summary>
         /// Check if current user has permission for specific action
         /// </summary>
+        /// <param name="action">Action to check permission for</param>
+        /// <returns>True if user has permission, false otherwise</returns>
         public static bool HasPermission(string action)
         {
             if (!IsLoggedIn) return false;
