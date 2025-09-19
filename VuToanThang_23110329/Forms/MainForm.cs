@@ -126,53 +126,10 @@ namespace VuToanThang_23110329.Forms
                 {
                     ShowMessage("Không thể kết nối đến cơ sở dữ liệu!", "Cảnh báo", MessageBoxIcon.Warning);
                 }
-                
-                // Test form creation
-                TestFormCreation();
             }
             catch (Exception ex)
             {
                 ShowMessage($"Lỗi kết nối cơ sở dữ liệu: {ex.Message}", "Lỗi", MessageBoxIcon.Error);
-            }
-        }
-
-        private void TestFormCreation()
-        {
-            try
-            {
-                // Test creating each form to see if there are any issues
-                var testForms = new Dictionary<string, Func<Form>>
-                {
-                    {"NhanVienForm", () => new NhanVienForm()},
-                    {"CaLamForm", () => new CaLamForm()},
-                    {"LichPhanCaForm", () => new LichPhanCaForm()},
-                    {"ChamCongForm", () => new ChamCongForm()},
-                    {"BaoCaoLuongForm", () => new BaoCaoLuongForm()},
-                    {"BaoCaoNhanSuForm", () => new BaoCaoNhanSuForm()},
-                    {"PhieuLuongForm", () => new PhieuLuongForm()},
-                    {"TinhLuongForm", () => new TinhLuongForm()},
-                    {"BangLuongForm", () => new BangLuongForm()},
-                    {"DonTuNVForm", () => new DonTuNVForm()},
-                    {"DonTuSMForm", () => new DonTuSMForm()},
-                    {"DonTuHRForm", () => new DonTuHRForm()}
-                };
-
-                foreach (var kvp in testForms)
-                {
-                    try
-                    {
-                        var form = kvp.Value();
-                        form.Dispose(); // Dispose immediately after creation test
-                    }
-                    catch (Exception ex)
-                    {
-                        ShowMessage($"Lỗi tạo {kvp.Key}: {ex.Message}", "Lỗi Form", MessageBoxIcon.Warning);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                ShowMessage($"Lỗi test form: {ex.Message}", "Lỗi", MessageBoxIcon.Error);
             }
         }
 
@@ -220,55 +177,23 @@ namespace VuToanThang_23110329.Forms
                         return;
 
                     case "btnNhanVien":
-                        try
-                        {
-                            childForm = new NhanVienForm();
-                            formTitle = "Quản lý nhân viên";
-                        }
-                        catch (Exception ex)
-                        {
-                            ShowMessage($"Lỗi tạo form NhanVien: {ex.Message}", "Lỗi", MessageBoxIcon.Error);
-                            return;
-                        }
+                        childForm = new NhanVienForm();
+                        formTitle = "Quản lý nhân viên";
                         break;
 
                     case "btnCaLam":
-                        try
-                        {
-                            childForm = new CaLamForm();
-                            formTitle = "Quản lý ca làm";
-                        }
-                        catch (Exception ex)
-                        {
-                            ShowMessage($"Lỗi tạo form CaLam: {ex.Message}", "Lỗi", MessageBoxIcon.Error);
-                            return;
-                        }
+                        childForm = new CaLamForm();
+                        formTitle = "Quản lý ca làm";
                         break;
 
                     case "btnLichPhanCa":
-                        try
-                        {
-                            childForm = new LichPhanCaForm();
-                            formTitle = "Lịch phân ca";
-                        }
-                        catch (Exception ex)
-                        {
-                            ShowMessage($"Lỗi tạo form LichPhanCa: {ex.Message}", "Lỗi", MessageBoxIcon.Error);
-                            return;
-                        }
+                        childForm = new LichPhanCaForm();
+                        formTitle = "Lịch phân ca";
                         break;
 
                     case "btnChamCong":
-                        try
-                        {
-                            childForm = new ChamCongForm();
-                            formTitle = "Chấm công";
-                        }
-                        catch (Exception ex)
-                        {
-                            ShowMessage($"Lỗi tạo form ChamCong: {ex.Message}", "Lỗi", MessageBoxIcon.Error);
-                            return;
-                        }
+                        childForm = new ChamCongForm();
+                        formTitle = "Chấm công";
                         break;
 
                     case "btnDonTu":
@@ -302,16 +227,8 @@ namespace VuToanThang_23110329.Forms
                         break;
 
                     case "btnBaoCaoLuong":
-                        try
-                        {
-                            childForm = new BaoCaoLuongForm();
-                            formTitle = "Báo cáo lương";
-                        }
-                        catch (Exception ex)
-                        {
-                            ShowMessage($"Lỗi tạo form BaoCaoLuong: {ex.Message}", "Lỗi", MessageBoxIcon.Error);
-                            return;
-                        }
+                        childForm = new BaoCaoLuongForm();
+                        formTitle = "Báo cáo lương";
                         break;
 
                     default:

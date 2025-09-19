@@ -275,7 +275,7 @@ namespace VuToanThang_23110329.Forms
             button.Text = text;
         }
 
-        #endregion
+        //#endregion
 
         private Guna.UI2.WinForms.Guna2BorderlessForm guna2BorderlessForm1;
         private Guna.UI2.WinForms.Guna2Panel pnlSidebar;
