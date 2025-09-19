@@ -109,16 +109,20 @@ namespace VuToanThang_23110329.Forms
             btnThem.Enabled = !isEditing && VuToanThang_23110329.Data.CurrentUser.HasPermission("MANAGE_SCHEDULE");
             btnSua.Enabled = !isEditing && dgvLichPhanCa.SelectedRows.Count > 0 && VuToanThang_23110329.Data.CurrentUser.HasPermission("MANAGE_SCHEDULE");
             btnXoa.Enabled = !isEditing && dgvLichPhanCa.SelectedRows.Count > 0 && VuToanThang_23110329.Data.CurrentUser.HasPermission("MANAGE_SCHEDULE");
-            btnLuu.Enabled = isEditing;
-            btnHuy.Enabled = isEditing;
+            btnLuu.Enabled = false; // Always disabled since we use dialog now
+            btnHuy.Enabled = false; // Always disabled since we use dialog now
             btnTaoLichTuan.Enabled = !isEditing && VuToanThang_23110329.Data.CurrentUser.HasPermission("MANAGE_SCHEDULE");
             
-            // Enable/disable input controls
+            // Keep original panel color since we don't edit inline anymore
+            pnlThongTin.BackColor = Color.FromArgb(60, 60, 60);
+            
+            // All input controls are always disabled since we use dialog
             foreach (Control control in pnlThongTin.Controls)
             {
                 if (control is TextBox || control is ComboBox || control is DateTimePicker)
                 {
-                    control.Enabled = isEditing;
+                    control.Enabled = false;
+                    control.BackColor = Color.FromArgb(70, 70, 70);
                 }
             }
         }
@@ -178,8 +182,12 @@ namespace VuToanThang_23110329.Forms
 
         private void btnThem_Click(object sender, EventArgs e)
         {
-            ClearForm();
-            SetFormMode(true);
+            var detailForm = new LichPhanCaDetailForm();
+            if (detailForm.ShowDialog() == DialogResult.OK)
+            {
+                LoadData();
+                ShowMessage("Thêm lịch phân ca thành công!", "Thành công", MessageBoxIcon.Information);
+            }
         }
 
         private void btnSua_Click(object sender, EventArgs e)
@@ -192,7 +200,13 @@ namespace VuToanThang_23110329.Forms
                     ShowMessage("Không thể sửa lịch đã khóa!", "Cảnh báo", MessageBoxIcon.Warning);
                     return;
                 }
-                SetFormMode(true);
+                
+                var detailForm = new LichPhanCaDetailForm(selectedLich);
+                if (detailForm.ShowDialog() == DialogResult.OK)
+                {
+                    LoadData();
+                    ShowMessage("Cập nhật lịch phân ca thành công!", "Thành công", MessageBoxIcon.Information);
+                }
             }
         }
 
@@ -237,85 +251,12 @@ namespace VuToanThang_23110329.Forms
 
         private void btnLuu_Click(object sender, EventArgs e)
         {
-            try
-            {
-                if (cmbNhanVien.SelectedValue == null)
-                {
-                    ShowMessage("Vui lòng chọn nhân viên!", "Cảnh báo", MessageBoxIcon.Warning);
-                    return;
-                }
-
-                if (cmbCaLam.SelectedValue == null)
-                {
-                    ShowMessage("Vui lòng chọn ca làm!", "Cảnh báo", MessageBoxIcon.Warning);
-                    return;
-                }
-
-                if (_currentLichPhanCa == null) // Add new
-                {
-                    var lichPhanCa = new LichPhanCa
-                    {
-                        MaNV = (int)cmbNhanVien.SelectedValue,
-                        MaCa = (int)cmbCaLam.SelectedValue,
-                        NgayLam = dtpNgayLam.Value.Date,
-                        TrangThai = cmbTrangThai.Text,
-                        GhiChu = txtGhiChu.Text.Trim()
-                    };
-
-                    var result = _lichPhanCaRepository.Insert(lichPhanCa);
-                    
-                    if (result.Success)
-                    {
-                        ShowMessage(result.Message, "Thành công", MessageBoxIcon.Information);
-                        LoadData();
-                        SetFormMode(false);
-                        ClearForm();
-                    }
-                    else
-                    {
-                        ShowMessage(result.Message, "Lỗi", MessageBoxIcon.Error);
-                    }
-                }
-                else // Update existing
-                {
-                    _currentLichPhanCa.MaNV = (int)cmbNhanVien.SelectedValue;
-                    _currentLichPhanCa.MaCa = (int)cmbCaLam.SelectedValue;
-                    _currentLichPhanCa.NgayLam = dtpNgayLam.Value.Date;
-                    _currentLichPhanCa.TrangThai = cmbTrangThai.Text;
-                    _currentLichPhanCa.GhiChu = txtGhiChu.Text.Trim();
-
-                    var result = _lichPhanCaRepository.Update(_currentLichPhanCa);
-                    
-                    if (result.Success)
-                    {
-                        ShowMessage(result.Message, "Thành công", MessageBoxIcon.Information);
-                        LoadData();
-                        SetFormMode(false);
-                    }
-                    else
-                    {
-                        ShowMessage(result.Message, "Lỗi", MessageBoxIcon.Error);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                ShowMessage($"Lỗi lưu dữ liệu: {ex.Message}", "Lỗi", MessageBoxIcon.Error);
-            }
+            // This button is now disabled and logic is handled in LichPhanCaDetailForm
         }
 
         private void btnHuy_Click(object sender, EventArgs e)
         {
-            SetFormMode(false);
-            if (dgvLichPhanCa.SelectedRows.Count > 0)
-            {
-                var selectedLich = (LichPhanCa)dgvLichPhanCa.SelectedRows[0].DataBoundItem;
-                LoadScheduleToForm(selectedLich);
-            }
-            else
-            {
-                ClearForm();
-            }
+            // This button is now disabled and logic is handled in LichPhanCaDetailForm
         }
 
         private void btnLamMoi_Click(object sender, EventArgs e)
