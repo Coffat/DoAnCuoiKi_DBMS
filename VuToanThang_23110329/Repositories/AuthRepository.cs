@@ -12,18 +12,21 @@ namespace VuToanThang_23110329.Repositories
         {
             try
             {
+                // Simple password hash for demo (in production, use proper hashing)
+                string passwordHash = Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(password));
+                
                 var parameters = new[]
                 {
                     SqlHelper.CreateParameter("@TenDangNhap", username),
-                    SqlHelper.CreateParameter("@MatKhau", password)
+                    SqlHelper.CreateParameter("@MatKhauHash", passwordHash)
                 };
 
                 var dt = SqlHelper.ExecuteDataTable(@"
-                    SELECT nd.MaNguoiDung, nd.TenDangNhap, nd.VaiTro, nd.MaNV, nd.TrangThai,
-                           nv.HoTen, nv.ChucVu, nv.PhongBan
+                    SELECT nd.MaNguoiDung, nd.TenDangNhap, nd.VaiTro, nd.KichHoat,
+                           nv.MaNV, nv.HoTen, nv.ChucDanh, nv.PhongBan
                     FROM NguoiDung nd
-                    LEFT JOIN NhanVien nv ON nd.MaNV = nv.MaNV
-                    WHERE nd.TenDangNhap = @TenDangNhap AND nd.MatKhau = @MatKhau AND nd.TrangThai = 1", 
+                    LEFT JOIN NhanVien nv ON nd.MaNguoiDung = nv.MaNguoiDung
+                    WHERE nd.TenDangNhap = @TenDangNhap AND nd.MatKhauHash = @MatKhauHash AND nd.KichHoat = 1", 
                     parameters);
 
                 if (dt.Rows.Count == 0)
@@ -41,23 +44,24 @@ namespace VuToanThang_23110329.Repositories
                     MaNguoiDung = Convert.ToInt32(row["MaNguoiDung"]),
                     TenDangNhap = row["TenDangNhap"].ToString(),
                     VaiTro = row["VaiTro"].ToString(),
-                    MaNV = row["MaNV"] != DBNull.Value ? Convert.ToInt32(row["MaNV"]) : (int?)null,
-                    TrangThai = Convert.ToBoolean(row["TrangThai"])
+                    KichHoat = Convert.ToBoolean(row["KichHoat"])
                 };
 
                 NhanVien employee = null;
-                if (user.MaNV.HasValue)
+                if (row["MaNV"] != DBNull.Value)
                 {
+                    int maNV = Convert.ToInt32(row["MaNV"]);
                     employee = new NhanVien
                     {
-                        MaNV = user.MaNV.Value,
+                        MaNV = maNV,
+                        MaNguoiDung = user.MaNguoiDung,
                         HoTen = row["HoTen"]?.ToString(),
-                        ChucVu = row["ChucVu"]?.ToString(),
+                        ChucDanh = row["ChucDanh"]?.ToString(),
                         PhongBan = row["PhongBan"]?.ToString()
                     };
 
                     // Set session context for employee
-                    SetSessionContext(user.MaNV.Value);
+                    SetSessionContext(maNV);
                 }
 
                 return new LoginResult

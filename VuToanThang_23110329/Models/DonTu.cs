@@ -6,17 +6,13 @@ namespace VuToanThang_23110329.Models
     {
         public int MaDon { get; set; }
         public int MaNV { get; set; }
-        public string LoaiDon { get; set; } // Nghi, TangCa, DiTre, VeSom, Khac
-        public DateTime NgayGui { get; set; }
-        public DateTime? NgayBatDau { get; set; }
-        public DateTime? NgayKetThuc { get; set; }
+        public string Loai { get; set; } // NGHI, OT
+        public DateTime TuLuc { get; set; }
+        public DateTime DenLuc { get; set; }
+        public decimal? SoGio { get; set; }
         public string LyDo { get; set; }
         public string TrangThai { get; set; } // ChoDuyet, DaDuyet, TuChoi
-        public int? MaNguoiDuyet { get; set; }
-        public DateTime? NgayDuyet { get; set; }
-        public string GhiChuDuyet { get; set; }
-        public DateTime NgayTao { get; set; }
-        public DateTime? NgayCapNhat { get; set; }
+        public int? DuyetBoi { get; set; }
         
         // Navigation properties (for display)
         public string TenNhanVien { get; set; }

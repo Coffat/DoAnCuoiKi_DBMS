@@ -46,81 +46,46 @@ namespace VuToanThang_23110329.Repositories
             }
         }
 
-        public OperationResult Insert(NhanVien nhanVien, bool createAccount = false, string tenDangNhap = "", string matKhau = "", string vaiTro = "NhanVien")
+        public OperationResult Insert(ThemMoiNhanVienParams param)
         {
             try
             {
-                if (createAccount)
+                // Hash password if creating account
+                string matKhauHash = null;
+                if (param.TaoTaiKhoan && !string.IsNullOrEmpty(param.MatKhauHash))
                 {
-                    // Use stored procedure to create employee with account
-                    var parameters = new[]
-                    {
-                        SqlHelper.CreateParameter("@HoTen", nhanVien.HoTen),
-                        SqlHelper.CreateParameter("@CCCD", nhanVien.CCCD),
-                        SqlHelper.CreateParameter("@SoDienThoai", nhanVien.SoDienThoai),
-                        SqlHelper.CreateParameter("@Email", nhanVien.Email),
-                        SqlHelper.CreateParameter("@DiaChi", nhanVien.DiaChi),
-                        SqlHelper.CreateParameter("@NgaySinh", nhanVien.NgaySinh),
-                        SqlHelper.CreateParameter("@GioiTinh", nhanVien.GioiTinh),
-                        SqlHelper.CreateParameter("@NgayVaoLam", nhanVien.NgayVaoLam),
-                        SqlHelper.CreateParameter("@ChucVu", nhanVien.ChucVu),
-                        SqlHelper.CreateParameter("@PhongBan", nhanVien.PhongBan),
-                        SqlHelper.CreateParameter("@LuongCoBan", nhanVien.LuongCoBan),
-                        SqlHelper.CreateParameter("@PhuCapChucVu", nhanVien.PhuCapChucVu),
-                        SqlHelper.CreateParameter("@PhuCapKhac", nhanVien.PhuCapKhac),
-                        SqlHelper.CreateParameter("@MaQuanLy", nhanVien.MaQuanLy),
-                        SqlHelper.CreateParameter("@TenDangNhap", tenDangNhap),
-                        SqlHelper.CreateParameter("@MatKhau", matKhau),
-                        SqlHelper.CreateParameter("@VaiTro", vaiTro),
-                        SqlHelper.CreateOutputParameter("@MaNV_OUT", SqlDbType.Int)
-                    };
-
-                    SqlHelper.ExecuteNonQuery("sp_ThemMoiNhanVien", parameters);
-                    
-                    var newMaNV = Convert.ToInt32(parameters[parameters.Length - 1].Value);
-                    
-                    return new OperationResult
-                    {
-                        Success = true,
-                        Message = "Thêm nhân viên và tạo tài khoản thành công!",
-                        Data = newMaNV
-                    };
+                    matKhauHash = Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(param.MatKhauHash));
                 }
-                else
+
+                var parameters = new[]
                 {
-                    // Regular insert without account creation
-                    var parameters = new[]
-                    {
-                        SqlHelper.CreateParameter("@HoTen", nhanVien.HoTen),
-                        SqlHelper.CreateParameter("@CCCD", nhanVien.CCCD),
-                        SqlHelper.CreateParameter("@SoDienThoai", nhanVien.SoDienThoai),
-                        SqlHelper.CreateParameter("@Email", nhanVien.Email),
-                        SqlHelper.CreateParameter("@DiaChi", nhanVien.DiaChi),
-                        SqlHelper.CreateParameter("@NgaySinh", nhanVien.NgaySinh),
-                        SqlHelper.CreateParameter("@GioiTinh", nhanVien.GioiTinh),
-                        SqlHelper.CreateParameter("@NgayVaoLam", nhanVien.NgayVaoLam),
-                        SqlHelper.CreateParameter("@ChucVu", nhanVien.ChucVu),
-                        SqlHelper.CreateParameter("@PhongBan", nhanVien.PhongBan),
-                        SqlHelper.CreateParameter("@LuongCoBan", nhanVien.LuongCoBan),
-                        SqlHelper.CreateParameter("@PhuCapChucVu", nhanVien.PhuCapChucVu),
-                        SqlHelper.CreateParameter("@PhuCapKhac", nhanVien.PhuCapKhac),
-                        SqlHelper.CreateParameter("@MaQuanLy", nhanVien.MaQuanLy)
-                    };
+                    SqlHelper.CreateParameter("@HoTen", param.HoTen),
+                    SqlHelper.CreateParameter("@NgaySinh", param.NgaySinh),
+                    SqlHelper.CreateParameter("@GioiTinh", param.GioiTinh),
+                    SqlHelper.CreateParameter("@DienThoai", param.DienThoai),
+                    SqlHelper.CreateParameter("@Email", param.Email),
+                    SqlHelper.CreateParameter("@DiaChi", param.DiaChi),
+                    SqlHelper.CreateParameter("@NgayVaoLam", param.NgayVaoLam),
+                    SqlHelper.CreateParameter("@PhongBan", param.PhongBan),
+                    SqlHelper.CreateParameter("@ChucDanh", param.ChucDanh),
+                    SqlHelper.CreateParameter("@LuongCoBan", param.LuongCoBan),
+                    SqlHelper.CreateParameter("@TaoTaiKhoan", param.TaoTaiKhoan ? 1 : 0),
+                    SqlHelper.CreateParameter("@TenDangNhap", param.TenDangNhap),
+                    SqlHelper.CreateParameter("@MatKhauHash", matKhauHash),
+                    SqlHelper.CreateParameter("@VaiTro", param.VaiTro ?? "NhanVien"),
+                    SqlHelper.CreateOutputParameter("@MaNV_OUT", SqlDbType.Int)
+                };
 
-                    SqlHelper.ExecuteNonQuery(@"
-                        INSERT INTO NhanVien (HoTen, CCCD, SoDienThoai, Email, DiaChi, NgaySinh, GioiTinh, 
-                                            NgayVaoLam, ChucVu, PhongBan, LuongCoBan, PhuCapChucVu, PhuCapKhac, 
-                                            TrangThai, MaQuanLy, NgayTao)
-                        VALUES (@HoTen, @CCCD, @SoDienThoai, @Email, @DiaChi, @NgaySinh, @GioiTinh, 
-                               @NgayVaoLam, @ChucVu, @PhongBan, @LuongCoBan, @PhuCapChucVu, @PhuCapKhac, 
-                               'Active', @MaQuanLy, GETDATE())", parameters);
-
-                    return new OperationResult
-                    {
-                        Success = true,
-                        Message = "Thêm nhân viên thành công!"
-                    };
-                }
+                SqlHelper.ExecuteNonQuery("sp_ThemMoiNhanVien", parameters);
+                
+                var newMaNV = Convert.ToInt32(parameters[parameters.Length - 1].Value);
+                
+                return new OperationResult
+                {
+                    Success = true,
+                    Message = param.TaoTaiKhoan ? "Thêm nhân viên và tạo tài khoản thành công!" : "Thêm nhân viên thành công!",
+                    Data = newMaNV
+                };
             }
             catch (Exception ex)
             {
@@ -228,23 +193,18 @@ namespace VuToanThang_23110329.Repositories
             return new NhanVien
             {
                 MaNV = Convert.ToInt32(row["MaNV"]),
+                MaNguoiDung = row["MaNguoiDung"] != DBNull.Value ? Convert.ToInt32(row["MaNguoiDung"]) : (int?)null,
                 HoTen = row["HoTen"].ToString(),
-                CCCD = row["CCCD"].ToString(),
-                SoDienThoai = row["SoDienThoai"]?.ToString(),
+                NgaySinh = row["NgaySinh"] != DBNull.Value ? Convert.ToDateTime(row["NgaySinh"]) : (DateTime?)null,
+                GioiTinh = row["GioiTinh"]?.ToString(),
+                DienThoai = row["DienThoai"]?.ToString(),
                 Email = row["Email"]?.ToString(),
                 DiaChi = row["DiaChi"]?.ToString(),
-                NgaySinh = Convert.ToDateTime(row["NgaySinh"]),
-                GioiTinh = row["GioiTinh"].ToString(),
                 NgayVaoLam = Convert.ToDateTime(row["NgayVaoLam"]),
-                ChucVu = row["ChucVu"]?.ToString(),
-                PhongBan = row["PhongBan"]?.ToString(),
-                LuongCoBan = Convert.ToDecimal(row["LuongCoBan"]),
-                PhuCapChucVu = row["PhuCapChucVu"] != DBNull.Value ? Convert.ToDecimal(row["PhuCapChucVu"]) : 0,
-                PhuCapKhac = row["PhuCapKhac"] != DBNull.Value ? Convert.ToDecimal(row["PhuCapKhac"]) : 0,
                 TrangThai = row["TrangThai"].ToString(),
-                MaQuanLy = row["MaQuanLy"] != DBNull.Value ? Convert.ToInt32(row["MaQuanLy"]) : (int?)null,
-                NgayTao = Convert.ToDateTime(row["NgayTao"]),
-                NgayCapNhat = row["NgayCapNhat"] != DBNull.Value ? Convert.ToDateTime(row["NgayCapNhat"]) : (DateTime?)null
+                PhongBan = row["PhongBan"]?.ToString(),
+                ChucDanh = row["ChucDanh"]?.ToString(),
+                LuongCoBan = Convert.ToDecimal(row["LuongCoBan"])
             };
         }
     }

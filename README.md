@@ -58,48 +58,134 @@ Update-Package -reinstall
 
 ### 3. Cấu hình cơ sở dữ liệu
 
-#### Tạo database và tables
+#### Tạo database và schema
 ```sql
 -- Tạo database
 CREATE DATABASE QLNhanSuSieuThiMini;
 USE QLNhanSuSieuThiMini;
 
--- Tạo các bảng cơ bản (ví dụ)
+-- Tạo các bảng theo schema thực tế
 CREATE TABLE NguoiDung (
     MaNguoiDung INT IDENTITY(1,1) PRIMARY KEY,
     TenDangNhap NVARCHAR(50) UNIQUE NOT NULL,
-    MatKhau NVARCHAR(255) NOT NULL,
+    MatKhauHash NVARCHAR(255) NOT NULL,
     VaiTro NVARCHAR(20) NOT NULL, -- HR, QuanLy, KeToan, NhanVien
-    MaNV INT NULL,
-    TrangThai BIT DEFAULT 1,
+    KichHoat BIT DEFAULT 1,
     NgayTao DATETIME DEFAULT GETDATE()
 );
 
 CREATE TABLE NhanVien (
     MaNV INT IDENTITY(1,1) PRIMARY KEY,
-    HoTen NVARCHAR(100) NOT NULL,
-    CCCD NVARCHAR(12) UNIQUE NOT NULL,
-    SoDienThoai NVARCHAR(15),
-    Email NVARCHAR(100),
-    DiaChi NVARCHAR(255),
-    NgaySinh DATE NOT NULL,
-    GioiTinh NVARCHAR(10) NOT NULL,
+    MaNguoiDung INT NULL,
+    HoTen NVARCHAR(120) NOT NULL,
+    NgaySinh DATE NULL,
+    GioiTinh NVARCHAR(10) NULL,
+    DienThoai NVARCHAR(20) NULL,
+    Email NVARCHAR(120) NULL,
+    DiaChi NVARCHAR(255) NULL,
     NgayVaoLam DATE NOT NULL,
-    ChucVu NVARCHAR(50),
-    PhongBan NVARCHAR(50),
-    LuongCoBan DECIMAL(18,2) DEFAULT 0,
-    PhuCapChucVu DECIMAL(18,2) DEFAULT 0,
-    PhuCapKhac DECIMAL(18,2) DEFAULT 0,
-    TrangThai NVARCHAR(20) DEFAULT 'Active',
-    MaQuanLy INT NULL,
+    TrangThai NVARCHAR(20) DEFAULT N'DangLam', -- DangLam, Nghi
+    PhongBan NVARCHAR(80) NULL,
+    ChucDanh NVARCHAR(80) NULL,
+    LuongCoBan DECIMAL(12,2) DEFAULT 0,
+    NgayTao DATETIME DEFAULT GETDATE(),
+    NgayCapNhat DATETIME NULL,
+    FOREIGN KEY (MaNguoiDung) REFERENCES NguoiDung(MaNguoiDung)
+);
+
+CREATE TABLE CaLam (
+    MaCa INT IDENTITY(1,1) PRIMARY KEY,
+    TenCa NVARCHAR(50) NOT NULL,
+    GioBatDau TIME NOT NULL,
+    GioKetThuc TIME NOT NULL,
+    HeSoCa DECIMAL(4,2) DEFAULT 1.0,
+    MoTa NVARCHAR(255) NULL,
+    KichHoat BIT DEFAULT 1,
     NgayTao DATETIME DEFAULT GETDATE(),
     NgayCapNhat DATETIME NULL
 );
 
--- Tạo tài khoản admin mặc định
-INSERT INTO NguoiDung (TenDangNhap, MatKhau, VaiTro, TrangThai)
-VALUES ('admin', 'admin123', 'HR', 1);
+CREATE TABLE LichPhanCa (
+    MaLich INT IDENTITY(1,1) PRIMARY KEY,
+    MaNV INT NOT NULL,
+    MaCa INT NOT NULL,
+    NgayLam DATE NOT NULL,
+    TrangThai NVARCHAR(10) DEFAULT N'Mo', -- Mo, Khoa
+    GhiChu NVARCHAR(255) NULL,
+    NgayTao DATETIME DEFAULT GETDATE(),
+    NgayCapNhat DATETIME NULL,
+    FOREIGN KEY (MaNV) REFERENCES NhanVien(MaNV),
+    FOREIGN KEY (MaCa) REFERENCES CaLam(MaCa)
+);
+
+CREATE TABLE ChamCong (
+    MaChamCong INT IDENTITY(1,1) PRIMARY KEY,
+    MaNV INT NOT NULL,
+    NgayLam DATE NOT NULL,
+    GioVao DATETIME2(0) NULL,
+    GioRa DATETIME2(0) NULL,
+    GioCong DECIMAL(5,2) NULL,
+    DiTrePhut INT DEFAULT 0,
+    VeSomPhut INT DEFAULT 0,
+    GhiChu NVARCHAR(255) NULL,
+    Khoa BIT DEFAULT 0,
+    NgayTao DATETIME DEFAULT GETDATE(),
+    NgayCapNhat DATETIME NULL,
+    FOREIGN KEY (MaNV) REFERENCES NhanVien(MaNV)
+);
+
+CREATE TABLE DonTu (
+    MaDon INT IDENTITY(1,1) PRIMARY KEY,
+    MaNV INT NOT NULL,
+    Loai NVARCHAR(10) NOT NULL, -- NGHI, OT
+    TuLuc DATETIME2(0) NULL,
+    DenLuc DATETIME2(0) NULL,
+    SoGio DECIMAL(5,2) NULL,
+    LyDo NVARCHAR(500) NULL,
+    TrangThai NVARCHAR(10) DEFAULT N'ChoDuyet', -- ChoDuyet, DaDuyet, TuChoi
+    DuyetBoi INT NULL,
+    NgayTao DATETIME DEFAULT GETDATE(),
+    NgayCapNhat DATETIME NULL,
+    FOREIGN KEY (MaNV) REFERENCES NhanVien(MaNV),
+    FOREIGN KEY (DuyetBoi) REFERENCES NhanVien(MaNV)
+);
+
+CREATE TABLE BangLuong (
+    MaBangLuong INT IDENTITY(1,1) PRIMARY KEY,
+    Nam INT NOT NULL,
+    Thang INT NOT NULL,
+    MaNV INT NOT NULL,
+    LuongCoBan DECIMAL(12,2) DEFAULT 0,
+    TongGioCong DECIMAL(7,2) DEFAULT 0,
+    GioOT DECIMAL(7,2) DEFAULT 0,
+    PhuCap DECIMAL(12,2) DEFAULT 0,
+    KhauTru DECIMAL(12,2) DEFAULT 0,
+    ThueBH DECIMAL(12,2) DEFAULT 0,
+    ThucLanh DECIMAL(12,2) DEFAULT 0,
+    TrangThai NVARCHAR(10) DEFAULT N'Mo', -- Mo, Dong
+    NgayTao DATETIME DEFAULT GETDATE(),
+    NgayCapNhat DATETIME NULL,
+    FOREIGN KEY (MaNV) REFERENCES NhanVien(MaNV)
+);
+
+-- Tạo tài khoản admin mặc định (password: admin123)
+INSERT INTO NguoiDung (TenDangNhap, MatKhauHash, VaiTro, KichHoat)
+VALUES ('admin', 'YWRtaW4xMjM=', 'HR', 1);
+
+-- Tạo dữ liệu mẫu ca làm
+INSERT INTO CaLam (TenCa, GioBatDau, GioKetThuc, HeSoCa) VALUES
+(N'Ca Sáng', '08:00:00', '16:00:00', 1.0),
+(N'Ca Chiều', '16:00:00', '00:00:00', 1.2),
+(N'Ca Tối', '00:00:00', '08:00:00', 1.5);
 ```
+
+#### Chạy script Views, Functions, Procedures và Security
+Sau khi tạo schema cơ bản, hãy chạy toàn bộ script SQL mà bạn đã cung cấp để tạo:
+- Views: `vw_CongThang`, `vw_Lich_ChamCong_Ngay`
+- Functions: `fn_KhungCa`, `fn_SoPhutDuong`, `fn_rls_NhanVien`
+- Stored Procedures: `sp_SetSessionContextNhanVien`, `sp_ThemMoiNhanVien`, `sp_DuyetDonTu`, `sp_KhoaCongThang`, `sp_ChayBangLuong`, `sp_DongBangLuong`
+- Security: Roles và RLS policies
+- Triggers: Tự động tính toán và bảo vệ dữ liệu
 
 #### Cấu hình connection string
 File `App.config` đã được cấu hình với connection string:

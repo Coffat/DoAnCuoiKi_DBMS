@@ -6,19 +6,13 @@ namespace VuToanThang_23110329.Models
     {
         public int MaChamCong { get; set; }
         public int MaNV { get; set; }
-        public DateTime NgayCham { get; set; }
-        public int? MaCa { get; set; }
+        public DateTime NgayLam { get; set; }
         public DateTime? GioVao { get; set; }
         public DateTime? GioRa { get; set; }
-        public int? SoPhutLam { get; set; }
-        public int? SoPhutTangCa { get; set; }
-        public int? SoPhutTre { get; set; }
-        public int? SoPhutSom { get; set; }
-        public string TrangThai { get; set; } // Present, Absent, Late, Early
-        public string GhiChu { get; set; }
-        public bool DaKhoa { get; set; }
-        public DateTime NgayTao { get; set; }
-        public DateTime? NgayCapNhat { get; set; }
+        public decimal? GioCong { get; set; }
+        public int? DiTrePhut { get; set; }
+        public int? VeSomPhut { get; set; }
+        public bool Khoa { get; set; }
         
         // Navigation properties (for display)
         public string TenNhanVien { get; set; }

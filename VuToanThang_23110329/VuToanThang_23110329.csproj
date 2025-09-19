@@ -75,7 +75,10 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repositories\AuthRepository.cs" />
+    <Compile Include="Repositories\BangLuongRepository.cs" />
     <Compile Include="Repositories\CaLamRepository.cs" />
+    <Compile Include="Repositories\ChamCongRepository.cs" />
+    <Compile Include="Repositories\DonTuRepository.cs" />
     <Compile Include="Repositories\NhanVienRepository.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

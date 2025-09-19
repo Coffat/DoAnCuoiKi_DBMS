@@ -27,31 +27,33 @@ namespace VuToanThang_23110329.Repositories
             return list;
         }
 
-        public List<fn_KhungCa_Result> GetKhungCa(DateTime ngay)
+        public fn_KhungCa_Result GetKhungCa(int maNV, DateTime ngay)
         {
-            var list = new List<fn_KhungCa_Result>();
             try
             {
-                var parameters = new[] { SqlHelper.CreateParameter("@Ngay", ngay) };
-                var dt = SqlHelper.ExecuteDataTable("SELECT * FROM fn_KhungCa(@Ngay)", parameters);
+                var parameters = new[] 
+                { 
+                    SqlHelper.CreateParameter("@MaNV", maNV),
+                    SqlHelper.CreateParameter("@Ngay", ngay) 
+                };
+                var dt = SqlHelper.ExecuteDataTable("SELECT * FROM fn_KhungCa(@MaNV, @Ngay)", parameters);
                 
-                foreach (DataRow row in dt.Rows)
+                if (dt.Rows.Count > 0)
                 {
-                    list.Add(new fn_KhungCa_Result
+                    var row = dt.Rows[0];
+                    return new fn_KhungCa_Result
                     {
-                        MaCa = Convert.ToInt32(row["MaCa"]),
-                        TenCa = row["TenCa"].ToString(),
                         GioBatDau = TimeSpan.Parse(row["GioBatDau"].ToString()),
                         GioKetThuc = TimeSpan.Parse(row["GioKetThuc"].ToString()),
-                        TrangThai = row["TrangThai"].ToString()
-                    });
+                        HeSoCa = Convert.ToDecimal(row["HeSoCa"])
+                    };
                 }
+                return null;
             }
             catch (Exception ex)
             {
                 throw new Exception($"Lỗi lấy khung ca: {ex.Message}", ex);
             }
-            return list;
         }
 
         public CaLam GetById(int maCa)
@@ -179,13 +181,7 @@ namespace VuToanThang_23110329.Repositories
                 TenCa = row["TenCa"].ToString(),
                 GioBatDau = TimeSpan.Parse(row["GioBatDau"].ToString()),
                 GioKetThuc = TimeSpan.Parse(row["GioKetThuc"].ToString()),
-                SoGioLam = Convert.ToInt32(row["SoGioLam"]),
-                GioNghiGiua = row["GioNghiGiua"] != DBNull.Value ? TimeSpan.Parse(row["GioNghiGiua"].ToString()) : (TimeSpan?)null,
-                PhutNghiGiua = row["PhutNghiGiua"] != DBNull.Value ? Convert.ToInt32(row["PhutNghiGiua"]) : (int?)null,
-                MoTa = row["MoTa"]?.ToString(),
-                TrangThai = Convert.ToBoolean(row["TrangThai"]),
-                NgayTao = Convert.ToDateTime(row["NgayTao"]),
-                NgayCapNhat = row["NgayCapNhat"] != DBNull.Value ? Convert.ToDateTime(row["NgayCapNhat"]) : (DateTime?)null
+                HeSoCa = Convert.ToDecimal(row["HeSoCa"])
             };
         }
     }
