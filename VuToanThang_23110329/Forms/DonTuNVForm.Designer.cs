@@ -38,8 +38,14 @@ namespace VuToanThang_23110329.Forms
             this.Padding = new Padding(20);
             this.MinimumSize = new Size(800, 550);
             this.AutoScaleMode = AutoScaleMode.Dpi;
+            this.Resize += new EventHandler(this.DonTuNVForm_Resize);
             this.SuspendLayout();
             this.ResumeLayout(false);
+        }
+
+        private void DonTuNVForm_Resize(object sender, EventArgs e)
+        {
+            PerformLayout();
         }
 
         #endregion

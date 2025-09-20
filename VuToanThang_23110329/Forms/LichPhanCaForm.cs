@@ -232,21 +232,32 @@ namespace VuToanThang_23110329.Forms
         private void OrganizeInfoPanelVertical()
         {
             // Horizontal layout of controls within info panel for vertical mode
-            if (pnlThongTin?.Controls != null)
+            if (pnlThongTin?.Controls != null && pnlThongTin.Controls.Count > 0)
             {
                 int y = 20;
-                int spacing = 25;
-                int controlWidth = (pnlThongTin.Width - 60) / 2; // Two columns
+                int spacing = 35;
+                int labelWidth = 80;
+                int controlWidth = pnlThongTin.Width - labelWidth - 30;
 
-                foreach (Control control in pnlThongTin.Controls)
+                // Title first
+                pnlThongTin.Controls[0].Location = new Point(10, y);
+                pnlThongTin.Controls[0].Size = new Size(pnlThongTin.Width - 20, 25);
+                y += 40;
+
+                // Layout label-control pairs
+                for (int i = 1; i < pnlThongTin.Controls.Count; i += 2)
                 {
-                    if (control is Label || control is ComboBox || control is DateTimePicker)
+                    if (i + 1 < pnlThongTin.Controls.Count)
                     {
-                        control.Width = controlWidth;
-                        control.Location = new Point(20 + (control.TabIndex % 2) * (controlWidth + 20), y);
+                        // Label
+                        pnlThongTin.Controls[i].Location = new Point(10, y);
+                        pnlThongTin.Controls[i].Size = new Size(labelWidth, 20);
                         
-                        if (control.TabIndex % 2 == 1) // Every second control moves to next row
-                            y += spacing;
+                        // Control
+                        pnlThongTin.Controls[i + 1].Location = new Point(labelWidth + 10, y - 3);
+                        pnlThongTin.Controls[i + 1].Size = new Size(controlWidth, 25);
+                        
+                        y += spacing;
                     }
                 }
             }
@@ -255,17 +266,31 @@ namespace VuToanThang_23110329.Forms
         private void OrganizeInfoPanelCompact()
         {
             // Vertical stacking of controls within narrow info panel
-            if (pnlThongTin?.Controls != null)
+            if (pnlThongTin?.Controls != null && pnlThongTin.Controls.Count > 0)
             {
                 int y = 20;
-                int spacing = 30;
+                int spacing = 35;
+                int labelWidth = 70;
+                int controlWidth = pnlThongTin.Width - labelWidth - 30;
 
-                foreach (Control control in pnlThongTin.Controls)
+                // Title first
+                pnlThongTin.Controls[0].Location = new Point(10, y);
+                pnlThongTin.Controls[0].Size = new Size(pnlThongTin.Width - 20, 25);
+                y += 40;
+
+                // Layout label-control pairs
+                for (int i = 1; i < pnlThongTin.Controls.Count; i += 2)
                 {
-                    if (control is Label || control is ComboBox || control is DateTimePicker)
+                    if (i + 1 < pnlThongTin.Controls.Count)
                     {
-                        control.Location = new Point(10, y);
-                        control.Width = pnlThongTin.Width - 20;
+                        // Label
+                        pnlThongTin.Controls[i].Location = new Point(10, y);
+                        pnlThongTin.Controls[i].Size = new Size(labelWidth, 20);
+                        
+                        // Control
+                        pnlThongTin.Controls[i + 1].Location = new Point(labelWidth + 10, y - 3);
+                        pnlThongTin.Controls[i + 1].Size = new Size(controlWidth, 25);
+                        
                         y += spacing;
                     }
                 }
@@ -275,17 +300,31 @@ namespace VuToanThang_23110329.Forms
         private void OrganizeInfoPanelFull()
         {
             // Standard vertical stacking with more spacing for full layout
-            if (pnlThongTin?.Controls != null)
+            if (pnlThongTin?.Controls != null && pnlThongTin.Controls.Count > 0)
             {
                 int y = 20;
-                int spacing = 35;
+                int spacing = 40;
+                int labelWidth = 90;
+                int controlWidth = pnlThongTin.Width - labelWidth - 30;
 
-                foreach (Control control in pnlThongTin.Controls)
+                // Title first
+                pnlThongTin.Controls[0].Location = new Point(15, y);
+                pnlThongTin.Controls[0].Size = new Size(pnlThongTin.Width - 30, 25);
+                y += 45;
+
+                // Layout label-control pairs
+                for (int i = 1; i < pnlThongTin.Controls.Count; i += 2)
                 {
-                    if (control is Label || control is ComboBox || control is DateTimePicker)
+                    if (i + 1 < pnlThongTin.Controls.Count)
                     {
-                        control.Location = new Point(15, y);
-                        control.Width = pnlThongTin.Width - 30;
+                        // Label
+                        pnlThongTin.Controls[i].Location = new Point(15, y);
+                        pnlThongTin.Controls[i].Size = new Size(labelWidth, 20);
+                        
+                        // Control
+                        pnlThongTin.Controls[i + 1].Location = new Point(labelWidth + 15, y - 3);
+                        pnlThongTin.Controls[i + 1].Size = new Size(controlWidth, 25);
+                        
                         y += spacing;
                     }
                 }
