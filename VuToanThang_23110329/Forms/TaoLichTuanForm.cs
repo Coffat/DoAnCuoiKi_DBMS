@@ -144,7 +144,7 @@ namespace VuToanThang_23110329.Forms
                 foreach (var shift in _shifts)
                 {
                     options.Add(new { 
-                        Display = $"{shift.TenCa} ({shift.GioBatDau:HH:mm}-{shift.GioKetThuc:HH:mm})", 
+                        Display = shift.DisplayText, 
                         Value = shift.MaCa.ToString() 
                     });
                 }

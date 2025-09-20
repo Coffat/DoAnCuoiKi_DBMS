@@ -88,13 +88,15 @@ namespace VuToanThang_23110329.Repositories
                     SqlHelper.CreateParameter("@GioBatDau", caLam.GioBatDau),
                     SqlHelper.CreateParameter("@GioKetThuc", caLam.GioKetThuc),
                     SqlHelper.CreateParameter("@HeSoCa", caLam.HeSoCa),
+                    SqlHelper.CreateParameter("@MoTa", caLam.MoTa ?? (object)DBNull.Value),
+                    SqlHelper.CreateParameter("@KichHoat", caLam.KichHoat),
                     SqlHelper.CreateOutputParameter("@MaCa_OUT", System.Data.SqlDbType.Int)
                 };
 
                 SqlHelper.ExecuteNonQuery("dbo.sp_CaLam_Insert", parameters);
 
                 // Lấy MaCa vừa được tạo
-                var maCaMoi = Convert.ToInt32(parameters[4].Value);
+                var maCaMoi = Convert.ToInt32(parameters[6].Value);
                 caLam.MaCa = maCaMoi;
 
                 return new OperationResult
@@ -123,7 +125,9 @@ namespace VuToanThang_23110329.Repositories
                     SqlHelper.CreateParameter("@TenCa", caLam.TenCa),
                     SqlHelper.CreateParameter("@GioBatDau", caLam.GioBatDau),
                     SqlHelper.CreateParameter("@GioKetThuc", caLam.GioKetThuc),
-                    SqlHelper.CreateParameter("@HeSoCa", caLam.HeSoCa)
+                    SqlHelper.CreateParameter("@HeSoCa", caLam.HeSoCa),
+                    SqlHelper.CreateParameter("@MoTa", caLam.MoTa ?? (object)DBNull.Value),
+                    SqlHelper.CreateParameter("@KichHoat", caLam.KichHoat)
                 };
 
                 SqlHelper.ExecuteNonQuery("dbo.sp_CaLam_Update", parameters);
@@ -174,6 +178,7 @@ namespace VuToanThang_23110329.Repositories
             TimeSpan.TryParse(row["GioBatDau"]?.ToString(), out TimeSpan gioBatDau);
             TimeSpan.TryParse(row["GioKetThuc"]?.ToString(), out TimeSpan gioKetThuc);
             decimal.TryParse(row["HeSoCa"]?.ToString(), out decimal heSoCa);
+            bool.TryParse(row["KichHoat"]?.ToString(), out bool kichHoat);
 
             return new CaLam
             {
@@ -181,7 +186,9 @@ namespace VuToanThang_23110329.Repositories
                 TenCa = row["TenCa"]?.ToString(),
                 GioBatDau = gioBatDau,
                 GioKetThuc = gioKetThuc,
-                HeSoCa = heSoCa
+                HeSoCa = heSoCa,
+                MoTa = row["MoTa"]?.ToString(),
+                KichHoat = kichHoat
             };
         }
     }

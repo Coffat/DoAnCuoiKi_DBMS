@@ -1,6 +1,14 @@
 /* =========================================================
    Dự án DBMS - HR cho Siêu Thị Mini
    SQL Server (T-SQL) - Phiên bản tiếng Việt + Giải thích
+   
+   CÁC SỬA ĐỔI ĐÃ THỰC HIỆN:
+   1. Bỏ ràng buộc CK_CaLam_Gio để hỗ trợ ca qua đêm (22:00-06:00)
+   2. Sửa CTE OT trong sp_ChayBangLuong để tính giờ OT chính xác theo kỳ lương
+   3. Sửa CTE Calc trong trigger tr_ChamCong_AIU_TinhCong xử lý ca qua đêm
+   4. Thêm trigger tr_CaLam_CheckOverlap kiểm tra trùng lặp thời gian ca
+   5. Thêm trường MoTa và KichHoat vào bảng CaLam
+   6. Cập nhật các stored procedure CaLam để hỗ trợ trường mới
    ========================================================= */
 
 ------------------------------------------------------------
@@ -97,12 +105,14 @@ CREATE TABLE dbo.CaLam (
     TenCa       NVARCHAR(60) NOT NULL,    -- VD: 'Sang','Chieu','Toi'
     GioBatDau   TIME(0) NOT NULL,
     GioKetThuc  TIME(0) NOT NULL,
-    HeSoCa      DECIMAL(4,2) NOT NULL CONSTRAINT DF_CaLam_HeSoCa DEFAULT(1.00)
+    HeSoCa      DECIMAL(4,2) NOT NULL CONSTRAINT DF_CaLam_HeSoCa DEFAULT(1.00),
+    MoTa        NVARCHAR(255) NULL,       -- Mô tả chi tiết ca làm
+    KichHoat    BIT NOT NULL CONSTRAINT DF_CaLam_KichHoat DEFAULT(1) -- Trạng thái kích hoạt
 );
 GO
 -- RÀNG BUỘC / GIẢI THÍCH
-ALTER TABLE dbo.CaLam ADD CONSTRAINT CK_CaLam_Gio CHECK(GioBatDau < GioKetThuc);
--- Giờ bắt đầu phải nhỏ hơn giờ kết thúc.
+-- Đã bỏ ràng buộc CK_CaLam_Gio để hỗ trợ ca qua đêm (VD: 22:00 - 06:00)
+-- Logic xử lý ca qua đêm sẽ được thực hiện ở tầng ứng dụng và trong các trigger/stored procedure
 
 
 /* =========================================================
@@ -280,8 +290,9 @@ AS
 BEGIN
     SET NOCOUNT ON;
     
-    SELECT MaCa, TenCa, GioBatDau, GioKetThuc, HeSoCa
+    SELECT MaCa, TenCa, GioBatDau, GioKetThuc, HeSoCa, MoTa, KichHoat
     FROM dbo.CaLam 
+    WHERE KichHoat = 1
     ORDER BY GioBatDau;
 END
 GO
@@ -294,7 +305,7 @@ AS
 BEGIN
     SET NOCOUNT ON;
     
-    SELECT MaCa, TenCa, GioBatDau, GioKetThuc, HeSoCa
+    SELECT MaCa, TenCa, GioBatDau, GioKetThuc, HeSoCa, MoTa, KichHoat
     FROM dbo.CaLam 
     WHERE MaCa = @MaCa;
 END
@@ -307,6 +318,8 @@ CREATE PROCEDURE dbo.sp_CaLam_Insert
     @GioBatDau   TIME(0),
     @GioKetThuc  TIME(0),
     @HeSoCa      DECIMAL(4,2),
+    @MoTa        NVARCHAR(255) = NULL,
+    @KichHoat    BIT = 1,
     @MaCa_OUT    INT OUTPUT
 AS
 BEGIN
@@ -320,11 +333,8 @@ BEGIN
         RETURN;
     END
 
-    IF @GioBatDau >= @GioKetThuc
-    BEGIN
-        RAISERROR(N'Giờ bắt đầu phải nhỏ hơn giờ kết thúc.', 16, 1);
-        RETURN;
-    END
+    -- Bỏ kiểm tra giờ bắt đầu < giờ kết thúc để hỗ trợ ca qua đêm
+    -- Logic kiểm tra ca qua đêm sẽ được xử lý ở tầng ứng dụng
 
     IF @HeSoCa <= 0
     BEGIN
@@ -341,8 +351,8 @@ BEGIN
 
     BEGIN TRAN;
 
-    INSERT INTO dbo.CaLam (TenCa, GioBatDau, GioKetThuc, HeSoCa)
-    VALUES (@TenCa, @GioBatDau, @GioKetThuc, @HeSoCa);
+    INSERT INTO dbo.CaLam (TenCa, GioBatDau, GioKetThuc, HeSoCa, MoTa, KichHoat)
+    VALUES (@TenCa, @GioBatDau, @GioKetThuc, @HeSoCa, @MoTa, @KichHoat);
 
     SET @MaCa_OUT = SCOPE_IDENTITY();
 
@@ -357,7 +367,9 @@ CREATE PROCEDURE dbo.sp_CaLam_Update
     @TenCa       NVARCHAR(60),
     @GioBatDau   TIME(0),
     @GioKetThuc  TIME(0),
-    @HeSoCa      DECIMAL(4,2)
+    @HeSoCa      DECIMAL(4,2),
+    @MoTa        NVARCHAR(255) = NULL,
+    @KichHoat    BIT = 1
 AS
 BEGIN
     SET NOCOUNT ON;
@@ -377,11 +389,8 @@ BEGIN
         RETURN;
     END
 
-    IF @GioBatDau >= @GioKetThuc
-    BEGIN
-        RAISERROR(N'Giờ bắt đầu phải nhỏ hơn giờ kết thúc.', 16, 1);
-        RETURN;
-    END
+    -- Bỏ kiểm tra giờ bắt đầu < giờ kết thúc để hỗ trợ ca qua đêm
+    -- Logic kiểm tra ca qua đêm sẽ được xử lý ở tầng ứng dụng
 
     IF @HeSoCa <= 0
     BEGIN
@@ -402,7 +411,9 @@ BEGIN
     SET TenCa = @TenCa,
         GioBatDau = @GioBatDau,
         GioKetThuc = @GioKetThuc,
-        HeSoCa = @HeSoCa
+        HeSoCa = @HeSoCa,
+        MoTa = @MoTa,
+        KichHoat = @KichHoat
     WHERE MaCa = @MaCa;
 
     COMMIT;
@@ -716,12 +727,28 @@ BEGIN
         GROUP BY MaNV
     ),
     OT AS (
-        SELECT r.MaNV,
-               SUM(CASE WHEN r.Loai=N'OT' AND r.TrangThai=N'DaDuyet'
-                        THEN ISNULL(r.SoGio, DATEDIFF(MINUTE, r.TuLuc, r.DenLuc)/60.0)
-                        ELSE 0 END) AS GioOT
+        SELECT
+            r.MaNV,
+            SUM(
+                CASE
+                    WHEN r.Loai = N'OT' AND r.TrangThai = N'DaDuyet'
+                    THEN
+                        -- Tính toán khoảng thời gian OT thực sự nằm trong tháng
+                        CAST(
+                            DATEDIFF(
+                                MINUTE,
+                                -- Lấy thời điểm bắt đầu muộn hơn (giữa TuLuc và đầu tháng)
+                                CASE WHEN r.TuLuc > @D0 THEN r.TuLuc ELSE @D0 END,
+                                -- Lấy thời điểm kết thúc sớm hơn (giữa DenLuc và cuối tháng)
+                                CASE WHEN r.DenLuc < DATEADD(DAY, 1, @D1) THEN r.DenLuc ELSE DATEADD(DAY, 1, @D1) END
+                            ) / 60.0
+                        AS DECIMAL(7,2))
+                    ELSE 0
+                END
+            ) AS GioOT
         FROM dbo.DonTu r
-        WHERE r.DenLuc >= @D0 AND r.TuLuc <= DATEADD(SECOND,86399,@D1)
+        -- Lấy tất cả đơn từ có khoảng thời gian giao với tháng đang xét
+        WHERE r.TuLuc < DATEADD(DAY, 1, @D1) AND r.DenLuc >= @D0
         GROUP BY r.MaNV
     ),
     Src AS (
@@ -1093,21 +1120,35 @@ BEGIN
         FROM inserted i
     ),
     Calc AS (
-        SELECT 
+        SELECT
             I.MaChamCong,
-            CASE 
-              WHEN I.GioVao IS NOT NULL AND I.GioRa IS NOT NULL 
+            CASE
+              WHEN I.GioVao IS NOT NULL AND I.GioRa IS NOT NULL
               THEN CAST(DATEDIFF(MINUTE, I.GioVao, I.GioRa)/60.0 AS DECIMAL(5,2))
               ELSE NULL
             END AS GioCongCalc,
-            CASE 
-              WHEN I.GioVao IS NULL THEN NULL
-              ELSE dbo.fn_SoPhutDuong(KC.GioBatDau, I.GioVao)
-            END AS DiTreCalc,
-            CASE 
-              WHEN I.GioRa IS NULL THEN NULL
-              ELSE dbo.fn_SoPhutDuong(I.GioRa, KC.GioKetThuc)
-            END AS VeSomCalc
+            
+            -- Ghép ngày làm với giờ bắt đầu ca để so sánh chính xác
+            IIF(I.GioVao IS NULL OR KC.GioBatDau IS NULL, NULL,
+                dbo.fn_SoPhutDuong(
+                    DATETIMEFROMPARTS(YEAR(I.NgayLam), MONTH(I.NgayLam), DAY(I.NgayLam),
+                                    DATEPART(hour, KC.GioBatDau), DATEPART(minute, KC.GioBatDau), 0, 0),
+                    I.GioVao
+                )
+            ) AS DiTreCalc,
+
+            -- Với ca qua đêm, giờ kết thúc thuộc về ngày hôm sau
+            IIF(I.GioRa IS NULL OR KC.GioKetThuc IS NULL, NULL,
+                dbo.fn_SoPhutDuong(
+                    I.GioRa,
+                    DATETIMEFROMPARTS(
+                        YEAR(DATEADD(DAY, IIF(KC.GioKetThuc < KC.GioBatDau, 1, 0), I.NgayLam)),
+                        MONTH(DATEADD(DAY, IIF(KC.GioKetThuc < KC.GioBatDau, 1, 0), I.NgayLam)),
+                        DAY(DATEADD(DAY, IIF(KC.GioKetThuc < KC.GioBatDau, 1, 0), I.NgayLam)),
+                        DATEPART(hour, KC.GioKetThuc), DATEPART(minute, KC.GioKetThuc), 0, 0
+                    )
+                )
+            ) AS VeSomCalc
         FROM I
         OUTER APPLY dbo.fn_KhungCa(I.MaNV, I.NgayLam) KC
     )
@@ -1265,5 +1306,36 @@ BEGIN
     JOIN inserted i   ON i.MaNguoiDung = nd.MaNguoiDung
     JOIN deleted  d   ON d.MaNV = i.MaNV
     WHERE i.TrangThai = N'DangLam' AND d.TrangThai <> N'DangLam' AND i.MaNguoiDung IS NOT NULL;
+END
+GO
+
+-- 6) CALAM: Kiểm tra trùng lặp thời gian ca làm việc
+IF OBJECT_ID('dbo.tr_CaLam_CheckOverlap','TR') IS NOT NULL DROP TRIGGER dbo.tr_CaLam_CheckOverlap;
+GO
+CREATE TRIGGER dbo.tr_CaLam_CheckOverlap
+ON dbo.CaLam
+AFTER INSERT, UPDATE
+AS
+BEGIN
+    SET NOCOUNT ON;
+    IF TRY_CONVERT(INT, SESSION_CONTEXT(N'SkipTrigger')) = 1 RETURN;
+
+    -- Kiểm tra trùng lặp thời gian giữa các ca làm (chưa xử lý ca qua đêm)
+    IF EXISTS (
+        SELECT 1
+        FROM dbo.CaLam t1
+        JOIN dbo.CaLam t2 ON t1.MaCa <> t2.MaCa -- So sánh với các ca khác
+        WHERE
+            t1.MaCa IN (SELECT MaCa FROM inserted) -- Chỉ kiểm tra các ca vừa được thêm/sửa
+            AND t1.KichHoat = 1 AND t2.KichHoat = 1 -- Chỉ kiểm tra các ca đang kích hoạt
+            AND t1.GioBatDau < t2.GioKetThuc
+            AND t1.GioKetThuc > t2.GioBatDau
+            -- Lưu ý: Logic này chưa xử lý ca qua đêm, cần cải tiến thêm
+    )
+    BEGIN
+        RAISERROR (N'Thời gian của ca làm bị trùng lặp với một ca khác.', 16, 1);
+        ROLLBACK TRANSACTION;
+        RETURN;
+    END
 END
 GO

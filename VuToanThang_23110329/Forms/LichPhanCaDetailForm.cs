@@ -172,7 +172,7 @@ namespace VuToanThang_23110329.Forms
             // Update shift info display when shift is selected
             if (cmbCaLam.SelectedItem is CaLam selectedShift)
             {
-                lblShiftInfo.Text = $"Giờ làm: {selectedShift.GioBatDau:HH:mm} - {selectedShift.GioKetThuc:HH:mm} | Hệ số: {selectedShift.HeSoCa}";
+                lblShiftInfo.Text = $"Giờ làm: {selectedShift.ThoiGianDisplay} | Hệ số: {selectedShift.HeSoCa}";
                 lblShiftInfo.Visible = true;
             }
             else

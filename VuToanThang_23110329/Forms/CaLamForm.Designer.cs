@@ -126,13 +126,17 @@ namespace VuToanThang_23110329.Forms
             dtpGioBatDau = CreateTimePicker();
             dtpGioKetThuc = CreateTimePicker();
             txtHeSoCa = CreateTextBox();
+            txtMoTa = CreateMultilineTextBox();
+            chkKichHoat = CreateCheckBox();
 
             pnlThongTin.Controls.AddRange(new Control[] {
                 lblThongTin,
                 CreateLabel("Tên ca:"), txtTenCa,
                 CreateLabel("Giờ bắt đầu:"), dtpGioBatDau,
                 CreateLabel("Giờ kết thúc:"), dtpGioKetThuc,
-                CreateLabel("Hệ số ca:"), txtHeSoCa
+                CreateLabel("Hệ số ca:"), txtHeSoCa,
+                CreateLabel("Mô tả:"), txtMoTa,
+                CreateLabel("Kích hoạt:"), chkKichHoat
             });
         }
 
@@ -178,6 +182,29 @@ namespace VuToanThang_23110329.Forms
                 ForeColor = Color.White,
                 AutoSize = true,
                 Font = new Font("Segoe UI", 9)
+            };
+        }
+        
+        private TextBox CreateMultilineTextBox()
+        {
+            return new TextBox
+            {
+                BackColor = Color.FromArgb(70, 70, 70),
+                ForeColor = Color.White,
+                BorderStyle = BorderStyle.FixedSingle,
+                Font = new Font("Segoe UI", 9),
+                Multiline = true,
+                ScrollBars = ScrollBars.Vertical
+            };
+        }
+        
+        private CheckBox CreateCheckBox()
+        {
+            return new CheckBox
+            {
+                ForeColor = Color.White,
+                Font = new Font("Segoe UI", 9),
+                Checked = true
             };
         }
 
@@ -255,7 +282,7 @@ namespace VuToanThang_23110329.Forms
             int panelWidth = pnlThongTin.ClientSize.Width - 30; // Account for padding
             int labelWidth = Math.Min(100, panelWidth / 3);
             int controlWidth = Math.Max(150, panelWidth - labelWidth - 20);
-            int spacing = 45;
+            int spacing = 50; // Tăng khoảng cách để chửa các control mới
 
             var controls = pnlThongTin.Controls.Cast<Control>().ToArray();
             
@@ -270,9 +297,20 @@ namespace VuToanThang_23110329.Forms
                 {
                     controls[i].Location = new Point(10, y);
                     controls[i].Size = new Size(labelWidth, 20);
-                    controls[i + 1].Location = new Point(labelWidth + 15, y - 3);
-                    controls[i + 1].Size = new Size(controlWidth, 23);
-                    y += spacing;
+                    
+                    // Đặc biệt xử lý cho TextBox mô tả (multiline)
+                    if (controls[i + 1] == txtMoTa)
+                    {
+                        controls[i + 1].Location = new Point(labelWidth + 15, y - 3);
+                        controls[i + 1].Size = new Size(controlWidth, 60); // Cao hơn cho multiline
+                        y += 80; // Khoảng cách lớn hơn
+                    }
+                    else
+                    {
+                        controls[i + 1].Location = new Point(labelWidth + 15, y - 3);
+                        controls[i + 1].Size = new Size(controlWidth, 23);
+                        y += spacing;
+                    }
                 }
             }
         }

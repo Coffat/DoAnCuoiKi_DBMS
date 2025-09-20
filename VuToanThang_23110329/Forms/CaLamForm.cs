@@ -17,8 +17,9 @@ namespace VuToanThang_23110329.Forms
 
         // UI Controls
         private DataGridView dgvCaLam;
-        private TextBox txtSearch, txtTenCa, txtHeSoCa;
+        private TextBox txtSearch, txtTenCa, txtHeSoCa, txtMoTa;
         private DateTimePicker dtpGioBatDau, dtpGioKetThuc;
+        private CheckBox chkKichHoat;
         private Button btnThem, btnSua, btnXoa, btnLuu, btnHuy, btnLamMoi;
         private Panel pnlThongTin;
 
@@ -71,6 +72,16 @@ namespace VuToanThang_23110329.Forms
                 dgvCaLam.Columns["GioBatDau"].HeaderText = "Giờ bắt đầu";
                 dgvCaLam.Columns["GioKetThuc"].HeaderText = "Giờ kết thúc";
                 dgvCaLam.Columns["HeSoCa"].HeaderText = "Hệ số";
+                dgvCaLam.Columns["MoTa"].HeaderText = "Mô tả";
+                dgvCaLam.Columns["KichHoat"].HeaderText = "Kích hoạt";
+                
+                // Ẩn các cột không cần thiết trong display
+                if (dgvCaLam.Columns["ThoiGianDisplay"] != null)
+                    dgvCaLam.Columns["ThoiGianDisplay"].Visible = false;
+                if (dgvCaLam.Columns["DisplayText"] != null)
+                    dgvCaLam.Columns["DisplayText"].Visible = false;
+                if (dgvCaLam.Columns["IsNightShift"] != null)
+                    dgvCaLam.Columns["IsNightShift"].Visible = false;
             }
         }
 
@@ -100,6 +111,8 @@ namespace VuToanThang_23110329.Forms
             dtpGioBatDau.Value = DateTime.Today.AddHours(8); // 8:00 AM
             dtpGioKetThuc.Value = DateTime.Today.AddHours(17); // 5:00 PM
             txtHeSoCa.Text = "1.0";
+            txtMoTa.Clear();
+            chkKichHoat.Checked = true;
             
             _currentCaLam = null;
         }
@@ -113,6 +126,8 @@ namespace VuToanThang_23110329.Forms
             dtpGioBatDau.Value = DateTime.Today.Add(ca.GioBatDau);
             dtpGioKetThuc.Value = DateTime.Today.Add(ca.GioKetThuc);
             txtHeSoCa.Text = ca.HeSoCa.ToString();
+            txtMoTa.Text = ca.MoTa ?? "";
+            chkKichHoat.Checked = ca.KichHoat;
         }
 
         private void ShowMessage(string message, string title, MessageBoxIcon icon)
@@ -138,7 +153,8 @@ namespace VuToanThang_23110329.Forms
                         ca.TenCa.ToLower().Contains(searchTerm) ||
                         ca.GioBatDau.ToString(@"hh\:mm").Contains(searchTerm) ||
                         ca.GioKetThuc.ToString(@"hh\:mm").Contains(searchTerm) ||
-                        ca.HeSoCa.ToString().Contains(searchTerm)
+                        ca.HeSoCa.ToString().Contains(searchTerm) ||
+                        (ca.MoTa != null && ca.MoTa.ToLower().Contains(searchTerm))
                     ).ToList();
                     
                     dgvCaLam.DataSource = filteredShifts;
@@ -228,10 +244,20 @@ namespace VuToanThang_23110329.Forms
                 var gioBatDau = dtpGioBatDau.Value.TimeOfDay;
                 var gioKetThuc = dtpGioKetThuc.Value.TimeOfDay;
 
+                // Bỏ kiểm tra giờ bắt đầu < giờ kết thúc để hỗ trợ ca qua đêm
+                // Thông báo cho người dùng biết về ca qua đêm
                 if (gioBatDau >= gioKetThuc)
                 {
-                    ShowMessage("Giờ bắt đầu phải nhỏ hơn giờ kết thúc!", "Cảnh báo", MessageBoxIcon.Warning);
-                    return;
+                    var result = MessageBox.Show(
+                        "Giờ bắt đầu lớn hơn hoặc bằng giờ kết thúc. Đây có phải là ca qua đêm không?\n\n" +
+                        "Ví dụ: Ca tối từ 22:00 đến 06:00 sáng hôm sau.\n\n" +
+                        "Bấm Yes để tiếp tục, No để kiểm tra lại.",
+                        "Xác nhận ca qua đêm", 
+                        MessageBoxButtons.YesNo, 
+                        MessageBoxIcon.Question);
+                    
+                    if (result == DialogResult.No)
+                        return;
                 }
 
                 if (_currentCaLam == null) // Add new
@@ -241,7 +267,9 @@ namespace VuToanThang_23110329.Forms
                         TenCa = txtTenCa.Text.Trim(),
                         GioBatDau = gioBatDau,
                         GioKetThuc = gioKetThuc,
-                        HeSoCa = heSoCa
+                        HeSoCa = heSoCa,
+                        MoTa = txtMoTa.Text.Trim(),
+                        KichHoat = chkKichHoat.Checked
                     };
 
                     var result = _caLamRepository.Insert(caLam);
@@ -264,6 +292,8 @@ namespace VuToanThang_23110329.Forms
                     _currentCaLam.GioBatDau = gioBatDau;
                     _currentCaLam.GioKetThuc = gioKetThuc;
                     _currentCaLam.HeSoCa = heSoCa;
+                    _currentCaLam.MoTa = txtMoTa.Text.Trim();
+                    _currentCaLam.KichHoat = chkKichHoat.Checked;
 
                     var result = _caLamRepository.Update(_currentCaLam);
                     
