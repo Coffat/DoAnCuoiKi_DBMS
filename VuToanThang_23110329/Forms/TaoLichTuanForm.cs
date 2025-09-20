@@ -30,11 +30,12 @@ namespace VuToanThang_23110329.Forms
             _caLamRepository = new CaLamRepository();
             _startDate = startDate;
             
-            // Set date range for the week
+            // Set date range for the week after InitializeComponent is complete
             dtpTuNgay.Value = _startDate;
             dtpDenNgay.Value = _startDate.AddDays(6); // 7 days total
             
-            LoadData();
+            // Load data after all controls are initialized
+            this.Load += (s, e) => LoadData();
         }
 
         private void LoadData()
@@ -47,91 +48,124 @@ namespace VuToanThang_23110329.Forms
                     _nhanVienRepository.GetByRLS();
                 _shifts = _caLamRepository.GetAll();
                 
+                // Validate data before setting up grid
+                if (_employees == null)
+                {
+                    MessageBox.Show("Không thể tải danh sách nhân viên!", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+                
+                if (_shifts == null)
+                {
+                    MessageBox.Show("Không thể tải danh sách ca làm!", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+                
                 SetupWeeklyGrid();
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Lỗi tải dữ liệu: {ex.Message}", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($"Lỗi tải dữ liệu: {ex.Message}\n\nStack trace: {ex.StackTrace}", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
         private void SetupWeeklyGrid()
         {
-            _scheduleTable = new DataTable();
-            
-            // Add employee column
-            _scheduleTable.Columns.Add("Nhân viên", typeof(string));
-            _scheduleTable.Columns.Add("MaNV", typeof(int));
-            
-            // Add columns for each day of the week
-            var startDate = dtpTuNgay.Value.Date;
-            for (int i = 0; i < 7; i++)
+            try
             {
-                var date = startDate.AddDays(i);
-                var dayName = GetVietnameseDayName(date.DayOfWeek);
-                var columnName = $"{dayName}\n{date:dd/MM}";
-                _scheduleTable.Columns.Add(columnName, typeof(string));
-            }
-            
-            // Add rows for each employee
-            if (_employees != null)
-            {
-                foreach (var emp in _employees)
+                _scheduleTable = new DataTable();
+                
+                // Add employee column
+                _scheduleTable.Columns.Add("Nhân viên", typeof(string));
+                _scheduleTable.Columns.Add("MaNV", typeof(int));
+                
+                // Add columns for each day of the week
+                var startDate = dtpTuNgay?.Value.Date ?? _startDate;
+                for (int i = 0; i < 7; i++)
                 {
-                    var row = _scheduleTable.NewRow();
-                    row["Nhân viên"] = emp.HoTen;
-                    row["MaNV"] = emp.MaNV;
-                    
-                    // Initialize all days with empty values
-                    for (int i = 0; i < 7; i++)
+                    var date = startDate.AddDays(i);
+                    var dayName = GetVietnameseDayName(date.DayOfWeek);
+                    var columnName = $"{dayName}\n{date:dd/MM}";
+                    _scheduleTable.Columns.Add(columnName, typeof(string));
+                }
+                
+                // Add rows for each employee
+                if (_employees != null)
+                {
+                    foreach (var emp in _employees)
                     {
-                        var date = startDate.AddDays(i);
-                        var dayName = GetVietnameseDayName(date.DayOfWeek);
-                        var columnName = $"{dayName}\n{date:dd/MM}";
-                        row[columnName] = "";
+                        var row = _scheduleTable.NewRow();
+                        row["Nhân viên"] = emp.HoTen;
+                        row["MaNV"] = emp.MaNV;
+                        
+                        // Initialize all days with empty values
+                        for (int i = 0; i < 7; i++)
+                        {
+                            var date = startDate.AddDays(i);
+                            var dayName = GetVietnameseDayName(date.DayOfWeek);
+                            var columnName = $"{dayName}\n{date:dd/MM}";
+                            row[columnName] = "";
+                        }
+                        
+                        _scheduleTable.Rows.Add(row);
                     }
-                    
-                    _scheduleTable.Rows.Add(row);
+                }
+                
+                if (dgvLichTuan != null)
+                {
+                    dgvLichTuan.DataSource = _scheduleTable;
+                    ConfigureGrid();
                 }
             }
-            
-            dgvLichTuan.DataSource = _scheduleTable;
-            ConfigureGrid();
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Lỗi thiết lập grid: {ex.Message}\n\nStack trace: {ex.StackTrace}", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void ConfigureGrid()
         {
-            // Hide MaNV column
-            if (dgvLichTuan.Columns["MaNV"] != null)
-                dgvLichTuan.Columns["MaNV"].Visible = false;
-            
-            // Set employee column width
-            if (dgvLichTuan.Columns["Nhân viên"] != null)
+            try
             {
-                dgvLichTuan.Columns["Nhân viên"].Width = 200;
-                dgvLichTuan.Columns["Nhân viên"].ReadOnly = true;
+                if (dgvLichTuan?.Columns == null) return;
+                
+                // Hide MaNV column
+                if (dgvLichTuan.Columns["MaNV"] != null)
+                    dgvLichTuan.Columns["MaNV"].Visible = false;
+                
+                // Set employee column width
+                if (dgvLichTuan.Columns["Nhân viên"] != null)
+                {
+                    dgvLichTuan.Columns["Nhân viên"].Width = 200;
+                    dgvLichTuan.Columns["Nhân viên"].ReadOnly = true;
+                }
+                
+                // Configure day columns as ComboBox
+                for (int i = 2; i < dgvLichTuan.Columns.Count; i++)
+                {
+                    var column = dgvLichTuan.Columns[i];
+                    if (column == null) continue;
+                    
+                    // Create ComboBox column for shifts
+                    var comboColumn = new DataGridViewComboBoxColumn();
+                    comboColumn.HeaderText = column.HeaderText;
+                    comboColumn.Name = column.Name;
+                    comboColumn.DataSource = GetShiftOptions();
+                    comboColumn.DisplayMember = "Display";
+                    comboColumn.ValueMember = "Value";
+                    comboColumn.FlatStyle = FlatStyle.Flat;
+                    
+                    // Replace the column
+                    dgvLichTuan.Columns.RemoveAt(i);
+                    dgvLichTuan.Columns.Insert(i, comboColumn);
+                }
+                
+                dgvLichTuan.EditMode = DataGridViewEditMode.EditOnEnter;
             }
-            
-            // Configure day columns as ComboBox
-            for (int i = 2; i < dgvLichTuan.Columns.Count; i++)
+            catch (Exception ex)
             {
-                var column = dgvLichTuan.Columns[i];
-                
-                // Create ComboBox column for shifts
-                var comboColumn = new DataGridViewComboBoxColumn();
-                comboColumn.HeaderText = column.HeaderText;
-                comboColumn.Name = column.Name;
-                comboColumn.DataSource = GetShiftOptions();
-                comboColumn.DisplayMember = "Display";
-                comboColumn.ValueMember = "Value";
-                comboColumn.FlatStyle = FlatStyle.Flat;
-                
-                // Replace the column
-                dgvLichTuan.Columns.RemoveAt(i);
-                dgvLichTuan.Columns.Insert(i, comboColumn);
+                MessageBox.Show($"Lỗi cấu hình grid: {ex.Message}\n\nStack trace: {ex.StackTrace}", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-            
-            dgvLichTuan.EditMode = DataGridViewEditMode.EditOnEnter;
         }
 
         private List<object> GetShiftOptions()
@@ -203,7 +237,7 @@ namespace VuToanThang_23110329.Forms
                                     MaNV = maNV,
                                     MaCa = maCa,
                                     NgayLam = workDate,
-                                    TrangThai = "Mo",
+                                    TrangThai = "DuKien",
                                     GhiChu = "Tạo từ lịch tuần"
                                 };
                                 

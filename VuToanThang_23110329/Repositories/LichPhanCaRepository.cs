@@ -80,7 +80,7 @@ namespace VuToanThang_23110329.Repositories
                     SqlHelper.CreateParameter("@MaNV", lichPhanCa.MaNV),
                     SqlHelper.CreateParameter("@MaCa", lichPhanCa.MaCa),
                     SqlHelper.CreateParameter("@NgayLam", lichPhanCa.NgayLam),
-                    SqlHelper.CreateParameter("@TrangThai", lichPhanCa.TrangThai ?? "Mo")
+                    SqlHelper.CreateParameter("@TrangThai", lichPhanCa.TrangThai ?? "DuKien")
                 };
 
                 SqlHelper.ExecuteNonQuery(@"

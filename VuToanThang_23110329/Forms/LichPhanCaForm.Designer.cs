@@ -157,7 +157,7 @@ namespace VuToanThang_23110329.Forms
             cmbCaLam = CreateComboBox();
             dtpNgayLam = CreateDatePicker();
             cmbTrangThai = CreateComboBox();
-            cmbTrangThai.Items.AddRange(new[] { "Mo", "Khoa" });
+            cmbTrangThai.Items.AddRange(new[] { "DuKien", "Khoa", "Huy" });
             cmbTrangThai.SelectedIndex = 0;
 
             pnlThongTin.Controls.AddRange(new Control[] {

@@ -96,7 +96,7 @@ namespace VuToanThang_23110329.Forms
             dtpNgayLam = CreateDatePicker();
             
             cmbTrangThai = CreateComboBox();
-            cmbTrangThai.Items.AddRange(new[] { "Mo", "Khoa" });
+            cmbTrangThai.Items.AddRange(new[] { "DuKien", "Khoa", "Huy" });
             cmbTrangThai.SelectedIndex = 0;
 
             // Add controls to main panel

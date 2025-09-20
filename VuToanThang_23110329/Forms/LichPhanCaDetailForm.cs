@@ -44,7 +44,7 @@ namespace VuToanThang_23110329.Forms
             {
                 // Set default values for new entry
                 dtpNgayLam.Value = DateTime.Now;
-                cmbTrangThai.SelectedIndex = 0; // "Mo"
+                cmbTrangThai.SelectedIndex = 0; // "DuKien"
             }
         }
 
