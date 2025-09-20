@@ -227,7 +227,7 @@ namespace VuToanThang_23110329.Forms
 
         private void LayoutControls()
         {
-            PerformLayout();
+            // Initial layout will be handled by PerformLayout override
         }
 
         private void LichPhanCaForm_Resize(object sender, EventArgs e)
