@@ -412,9 +412,9 @@ namespace VuToanThang_23110329.Forms
             // Title
             this.Controls[0].Location = new Point(20, 20);
 
-            // Tab Control - responsive size
+            // Tab Control - responsive size with larger minimum
             tabControl.Location = new Point(20, 70);
-            tabControl.Size = new Size(formWidth, Math.Max(formHeight - 90, 500));
+            tabControl.Size = new Size(formWidth, Math.Max(formHeight - 90, 600)); // Increased from 500 to 600
 
             // Layout filter controls in Tab 1 - Smart responsive layout
             if (pnlFilter != null)
@@ -509,37 +509,40 @@ namespace VuToanThang_23110329.Forms
 
             int tabWidth = tabControl.Width - 40;
             int tabHeight = tabControl.Height - (pnlFilter?.Height > 80 ? 140 : 120); // Adjust for filter height
+            
+            // Ensure minimum height for proper display
+            tabHeight = Math.Max(tabHeight, 450); // Minimum 450px height
 
             // Tab 1: Attendance Records - Adaptive layout
             if (dgvChamCong != null && pnlThongTin != null)
             {
                 if (tabWidth < 700) // Small screen - stack vertically
                 {
-                    // DataGridView on top
+                    // DataGridView on top - larger minimum size
                     dgvChamCong.Location = new Point(20, pnlFilter.Bottom + 20);
-                    dgvChamCong.Size = new Size(tabWidth, (int)(tabHeight * 0.6));
+                    dgvChamCong.Size = new Size(tabWidth, Math.Max((int)(tabHeight * 0.6), 300)); // Min 300px
                     
-                    // Information Panel below
+                    // Information Panel below - ensure minimum size
                     pnlThongTin.Location = new Point(20, dgvChamCong.Bottom + 10);
-                    pnlThongTin.Size = new Size(tabWidth, (int)(tabHeight * 0.35));
+                    pnlThongTin.Size = new Size(tabWidth, Math.Max((int)(tabHeight * 0.35), 150)); // Min 150px
                 }
                 else // Large screen - side by side
                 {
-                    // DataGridView on left (60% width)
+                    // DataGridView on left (60% width) - ensure minimum size
                     dgvChamCong.Location = new Point(20, pnlFilter.Bottom + 20);
-                    dgvChamCong.Size = new Size((int)(tabWidth * 0.6), tabHeight);
+                    dgvChamCong.Size = new Size(Math.Max((int)(tabWidth * 0.6), 400), Math.Max(tabHeight, 400)); // Min 400x400
                     
-                    // Information Panel on right (35% width)
+                    // Information Panel on right (35% width) - ensure minimum size
                     pnlThongTin.Location = new Point(dgvChamCong.Right + 20, dgvChamCong.Top);
-                    pnlThongTin.Size = new Size((int)(tabWidth * 0.35), tabHeight);
+                    pnlThongTin.Size = new Size(Math.Max((int)(tabWidth * 0.35), 250), Math.Max(tabHeight, 400)); // Min 250x400
                 }
             }
 
-            // Tab 2: Schedule & Attendance View - Full width
+            // Tab 2: Schedule & Attendance View - Full width with minimum size
             if (dgvLichChamCong != null)
             {
                 dgvLichChamCong.Location = new Point(20, 80);
-                dgvLichChamCong.Size = new Size(tabWidth, tabHeight + 40); // More space since no filter
+                dgvLichChamCong.Size = new Size(Math.Max(tabWidth, 600), Math.Max(tabHeight + 40, 450)); // Min 600x450
             }
         }
 

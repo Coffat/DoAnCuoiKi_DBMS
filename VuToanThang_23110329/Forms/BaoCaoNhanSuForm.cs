@@ -105,12 +105,12 @@ namespace VuToanThang_23110329.Forms
 
         private void CreateTab1Controls(TabPage tab)
         {
-            // Filter Panel
+            // Filter Panel - responsive size
             var pnlFilter1 = new Panel
             {
                 BackColor = Color.FromArgb(60, 60, 60),
                 BorderStyle = BorderStyle.FixedSingle,
-                Size = new Size(1320, 60),
+                Size = new Size(800, 60), // Reduced from 1320 to 800
                 Location = new Point(20, 20)
             };
 
@@ -128,10 +128,10 @@ namespace VuToanThang_23110329.Forms
 
             pnlFilter1.Controls.AddRange(new Control[] { lblPhongBan, cmbPhongBan, lblTrangThai, cmbTrangThai, btnTimKiem1 });
 
-            // Employee Overview Grid
+            // Employee Overview Grid - responsive size
             dgvTongQuan = CreateDataGridView();
             dgvTongQuan.Location = new Point(20, 100);
-            dgvTongQuan.Size = new Size(1320, 450);
+            dgvTongQuan.Size = new Size(800, 400); // Reduced from 1320x450 to 800x400
 
             tab.Controls.AddRange(new Control[] { pnlFilter1, dgvTongQuan });
 
@@ -149,12 +149,12 @@ namespace VuToanThang_23110329.Forms
 
         private void CreateTab2Controls(TabPage tab)
         {
-            // Filter Panel
+            // Filter Panel - responsive size
             var pnlFilter2 = new Panel
             {
                 BackColor = Color.FromArgb(60, 60, 60),
                 BorderStyle = BorderStyle.FixedSingle,
-                Size = new Size(1320, 60),
+                Size = new Size(800, 60), // Reduced from 1320 to 800
                 Location = new Point(20, 20)
             };
 
@@ -174,10 +174,10 @@ namespace VuToanThang_23110329.Forms
 
             pnlFilter2.Controls.AddRange(new Control[] { lblThang, cmbThang, lblNam, cmbNam, btnTimKiem2 });
 
-            // Attendance Report Grid
+            // Attendance Report Grid - responsive size
             dgvChamCong = CreateDataGridView();
             dgvChamCong.Location = new Point(20, 100);
-            dgvChamCong.Size = new Size(1320, 450);
+            dgvChamCong.Size = new Size(800, 400); // Reduced from 1320x450 to 800x400
 
             tab.Controls.AddRange(new Control[] { pnlFilter2, dgvChamCong });
 
@@ -196,12 +196,12 @@ namespace VuToanThang_23110329.Forms
 
         private void CreateTab3Controls(TabPage tab)
         {
-            // Filter Panel
+            // Filter Panel - responsive size
             var pnlFilter3 = new Panel
             {
                 BackColor = Color.FromArgb(60, 60, 60),
                 BorderStyle = BorderStyle.FixedSingle,
-                Size = new Size(1320, 60),
+                Size = new Size(800, 60), // Reduced from 1320 to 800
                 Location = new Point(20, 20)
             };
 
@@ -216,10 +216,10 @@ namespace VuToanThang_23110329.Forms
 
             pnlFilter3.Controls.AddRange(new Control[] { lblTuNgay, dtpTuNgay, lblDenNgay, dtpDenNgay, btnTimKiem3 });
 
-            // Request Report Grid
+            // Request Report Grid - responsive size
             dgvDonTu = CreateDataGridView();
             dgvDonTu.Location = new Point(20, 100);
-            dgvDonTu.Size = new Size(1320, 450);
+            dgvDonTu.Size = new Size(800, 400); // Reduced from 1320x450 to 800x400
 
             tab.Controls.AddRange(new Control[] { pnlFilter3, dgvDonTu });
 
@@ -353,14 +353,51 @@ namespace VuToanThang_23110329.Forms
                 pnlThongKe.Height = 80;
             }
 
-            // Tab Control - responsive
+            // Tab Control - responsive with larger minimum size
             tabControl.Location = new Point(20, pnlThongKe.Bottom + 20);
-            tabControl.Size = new Size(formWidth, Math.Max(formHeight - (pnlThongKe.Bottom + 80), 400));
+            tabControl.Size = new Size(formWidth, Math.Max(formHeight - (pnlThongKe.Bottom + 80), 550)); // Increased from 400 to 550
 
-            // Action Buttons
-            int buttonY = tabControl.Bottom + 10;
+            // Layout tab contents responsively
+            LayoutTabContents();
+
+            // Action Buttons - position them properly even if they go outside visible area
+            int buttonY = Math.Min(tabControl.Bottom + 10, formHeight - 30); // Ensure buttons are visible
             btnXuatBaoCao.Location = new Point(20, buttonY);
             btnLamMoi.Location = new Point(150, buttonY);
+        }
+
+        private void LayoutTabContents()
+        {
+            if (tabControl?.TabPages == null) return;
+
+            int tabWidth = tabControl.Width - 40;
+            int tabHeight = tabControl.Height - 100; // Account for tab headers and padding
+            
+            // Ensure minimum sizes
+            tabWidth = Math.Max(tabWidth, 600);
+            tabHeight = Math.Max(tabHeight, 400);
+
+            // Layout each tab's contents
+            foreach (TabPage tab in tabControl.TabPages)
+            {
+                if (tab.Controls.Count >= 2) // Should have filter panel and DataGridView
+                {
+                    // Filter Panel - make responsive
+                    var filterPanel = tab.Controls[0] as Panel;
+                    if (filterPanel != null)
+                    {
+                        filterPanel.Size = new Size(tabWidth, 60);
+                    }
+
+                    // DataGridView - make responsive
+                    var dataGridView = tab.Controls[1] as DataGridView;
+                    if (dataGridView != null)
+                    {
+                        dataGridView.Location = new Point(20, 100);
+                        dataGridView.Size = new Size(tabWidth, Math.Max(tabHeight - 120, 350)); // Min 350px height
+                    }
+                }
+            }
         }
 
         private void LayoutStatisticsVertical()
