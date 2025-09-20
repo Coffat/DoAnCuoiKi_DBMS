@@ -44,7 +44,7 @@ namespace VuToanThang_23110329.Forms
             {
                 BackColor = Color.FromArgb(60, 60, 60),
                 BorderStyle = BorderStyle.FixedSingle,
-                Size = new Size(1340, 80)
+                Size = new Size(800, 80)
             };
 
             var lblThang = CreateLabel("Tháng:");
@@ -79,7 +79,7 @@ namespace VuToanThang_23110329.Forms
             {
                 BackColor = Color.FromArgb(60, 60, 60),
                 BorderStyle = BorderStyle.FixedSingle,
-                Size = new Size(1340, 60)
+                Size = new Size(800, 60)
             };
 
             lblTongNhanVien = CreateStatLabel("Tổng nhân viên: 0", Color.White);
@@ -162,38 +162,59 @@ namespace VuToanThang_23110329.Forms
 
         private void LayoutControls()
         {
+            PerformLayout();
+        }
+
+        public void PerformLayout()
+        {
+            if (this.Controls.Count == 0) return;
+
+            int formWidth = this.ClientSize.Width - 40; // Account for padding
+            int formHeight = this.ClientSize.Height - 40;
+
             // Title
             this.Controls[0].Location = new Point(20, 20);
 
-            // Filter Panel
+            // Filter Panel - responsive
             pnlFilter.Location = new Point(20, 70);
+            pnlFilter.Size = new Size(Math.Max(formWidth, 800), 80);
 
             // Layout filter controls
-            pnlFilter.Controls[0].Location = new Point(10, 15); // lblThang
-            cmbThang.Location = new Point(10, 35);
+            int x = 10, y = 15;
+            pnlFilter.Controls[0].Location = new Point(x, y); // lblThang
+            cmbThang.Location = new Point(x, y + 20);
+            cmbThang.Size = new Size(80, 25);
+            x += 100;
 
-            pnlFilter.Controls[2].Location = new Point(110, 15); // lblNam
-            cmbNam.Location = new Point(110, 35);
+            pnlFilter.Controls[2].Location = new Point(x, y); // lblNam
+            cmbNam.Location = new Point(x, y + 20);
+            cmbNam.Size = new Size(80, 25);
+            x += 100;
 
-            pnlFilter.Controls[4].Location = new Point(210, 15); // lblTrangThai
-            cmbTrangThai.Location = new Point(210, 35);
+            pnlFilter.Controls[4].Location = new Point(x, y); // lblTrangThai
+            cmbTrangThai.Location = new Point(x, y + 20);
             cmbTrangThai.Size = new Size(100, 25);
+            x += 120;
 
-            btnTimKiem.Location = new Point(330, 33);
-            btnXuatExcel.Location = new Point(440, 33);
-            btnInBangLuong.Location = new Point(550, 33);
-            btnLamMoi.Location = new Point(660, 33);
+            btnTimKiem.Location = new Point(x, y + 18);
+            x += 100;
+            btnXuatExcel.Location = new Point(x, y + 18);
+            x += 110;
+            btnInBangLuong.Location = new Point(x, y + 18);
+            x += 120;
+            btnLamMoi.Location = new Point(x, y + 18);
 
-            // Summary Panel
+            // Summary Panel - responsive
             pnlSummary.Location = new Point(20, 170);
+            pnlSummary.Size = new Size(Math.Max(formWidth, 800), 60);
 
             lblTongNhanVien.Location = new Point(20, 20);
             lblTongLuong.Location = new Point(200, 20);
             lblLuongTB.Location = new Point(450, 20);
 
-            // DataGridView
+            // DataGridView - responsive
             dgvBangLuong.Location = new Point(20, 250);
-            dgvBangLuong.Size = new Size(1340, 600);
+            dgvBangLuong.Size = new Size(Math.Max(formWidth, 800), Math.Max(formHeight - 270, 300));
         }
 
         private void SetupEventHandlers()

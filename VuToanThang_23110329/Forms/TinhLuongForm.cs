@@ -48,7 +48,7 @@ namespace VuToanThang_23110329.Forms
             {
                 BackColor = Color.FromArgb(60, 60, 60),
                 BorderStyle = BorderStyle.FixedSingle,
-                Size = new Size(1340, 100)
+                Size = new Size(750, 100)
             };
 
             var lblThang = CreateLabel("Tháng:");
@@ -270,11 +270,22 @@ namespace VuToanThang_23110329.Forms
 
         private void LayoutControls()
         {
+            PerformLayout();
+        }
+
+        public void PerformLayout()
+        {
+            if (this.Controls.Count == 0) return;
+
+            int formWidth = this.ClientSize.Width - 40;
+            int formHeight = this.ClientSize.Height - 40;
+
             // Title
             this.Controls[0].Location = new Point(20, 20);
 
-            // Parameters Panel
+            // Parameters Panel - responsive
             pnlThongSo.Location = new Point(20, 70);
+            pnlThongSo.Size = new Size(Math.Max(formWidth, 750), 100);
 
             // Layout parameter controls
             var controls = pnlThongSo.Controls.Cast<Control>().ToArray();
@@ -299,9 +310,9 @@ namespace VuToanThang_23110329.Forms
             btnChayLuong.Location = new Point(590, 25);
             btnDongLuong.Location = new Point(730, 25);
 
-            // Tab Control
+            // Tab Control - responsive
             tabControl.Location = new Point(20, 190);
-            tabControl.Size = new Size(1360, 650);
+            tabControl.Size = new Size(Math.Max(formWidth, 750), Math.Max(formHeight - 210, 350));
         }
 
         private void SetupEventHandlers()

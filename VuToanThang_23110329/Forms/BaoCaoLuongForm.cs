@@ -47,7 +47,7 @@ namespace VuToanThang_23110329.Forms
             {
                 BackColor = Color.FromArgb(60, 60, 60),
                 BorderStyle = BorderStyle.FixedSingle,
-                Size = new Size(1340, 80)
+                Size = new Size(800, 80)
             };
 
             lblTongNV = CreateStatLabel("Tổng NV: 0", Color.White);
@@ -88,7 +88,7 @@ namespace VuToanThang_23110329.Forms
             {
                 BackColor = Color.FromArgb(60, 60, 60),
                 BorderStyle = BorderStyle.FixedSingle,
-                Size = new Size(1320, 60),
+                Size = new Size(800, 60),
                 Location = new Point(20, 20)
             };
 
@@ -113,7 +113,7 @@ namespace VuToanThang_23110329.Forms
 
             dgvBaoCaoThang = CreateDataGridView();
             dgvBaoCaoThang.Location = new Point(20, 100);
-            dgvBaoCaoThang.Size = new Size(1320, 450);
+            dgvBaoCaoThang.Size = new Size(800, 350);
 
             tab.Controls.AddRange(new Control[] { pnlFilter, dgvBaoCaoThang });
 
@@ -131,7 +131,7 @@ namespace VuToanThang_23110329.Forms
         {
             dgvBaoCaoNam = CreateDataGridView();
             dgvBaoCaoNam.Location = new Point(20, 20);
-            dgvBaoCaoNam.Size = new Size(1320, 530);
+            dgvBaoCaoNam.Size = new Size(800, 400);
             tab.Controls.Add(dgvBaoCaoNam);
         }
 
@@ -139,7 +139,7 @@ namespace VuToanThang_23110329.Forms
         {
             dgvSoSanh = CreateDataGridView();
             dgvSoSanh.Location = new Point(20, 20);
-            dgvSoSanh.Size = new Size(1320, 530);
+            dgvSoSanh.Size = new Size(800, 400);
             tab.Controls.Add(dgvSoSanh);
         }
 
@@ -218,8 +218,21 @@ namespace VuToanThang_23110329.Forms
 
         private void LayoutControls()
         {
+            PerformLayout();
+        }
+
+        public void PerformLayout()
+        {
+            if (this.Controls.Count == 0) return;
+
+            int formWidth = this.ClientSize.Width - 40;
+            int formHeight = this.ClientSize.Height - 40;
+
             this.Controls[0].Location = new Point(20, 20);
+            
+            // Statistics Panel - responsive
             pnlThongKe.Location = new Point(20, 70);
+            pnlThongKe.Size = new Size(Math.Max(formWidth, 800), 80);
             
             lblTongNV.Location = new Point(20, 30);
             lblTongLuong.Location = new Point(150, 30);
@@ -227,11 +240,14 @@ namespace VuToanThang_23110329.Forms
             lblCaoNhat.Location = new Point(550, 30);
             lblThapNhat.Location = new Point(750, 30);
 
+            // Tab Control - responsive
             tabControl.Location = new Point(20, 170);
-            tabControl.Size = new Size(1360, 600);
+            tabControl.Size = new Size(Math.Max(formWidth, 800), Math.Max(formHeight - 220, 400));
 
-            btnXuatExcel.Location = new Point(20, 790);
-            btnLamMoi.Location = new Point(150, 790);
+            // Action Buttons
+            int buttonY = 170 + tabControl.Height + 20;
+            btnXuatExcel.Location = new Point(20, buttonY);
+            btnLamMoi.Location = new Point(150, buttonY);
         }
 
         private void SetupEventHandlers()

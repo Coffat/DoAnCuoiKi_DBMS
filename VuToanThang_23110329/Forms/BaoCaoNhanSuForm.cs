@@ -50,7 +50,7 @@ namespace VuToanThang_23110329.Forms
             {
                 BackColor = Color.FromArgb(60, 60, 60),
                 BorderStyle = BorderStyle.FixedSingle,
-                Size = new Size(1340, 80)
+                Size = new Size(800, 80)
             };
 
             lblTongNV = CreateStatLabel("Tổng NV: 0", Color.White);
@@ -319,11 +319,22 @@ namespace VuToanThang_23110329.Forms
 
         private void LayoutControls()
         {
+            PerformLayout();
+        }
+
+        public void PerformLayout()
+        {
+            if (this.Controls.Count == 0) return;
+
+            int formWidth = this.ClientSize.Width - 40;
+            int formHeight = this.ClientSize.Height - 40;
+
             // Title
             this.Controls[0].Location = new Point(20, 20);
 
-            // Statistics Panel
+            // Statistics Panel - responsive
             pnlThongKe.Location = new Point(20, 70);
+            pnlThongKe.Size = new Size(Math.Max(formWidth, 800), 80);
 
             lblTongNV.Location = new Point(20, 30);
             lblDangLam.Location = new Point(150, 30);
@@ -331,13 +342,14 @@ namespace VuToanThang_23110329.Forms
             lblTongCong.Location = new Point(410, 30);
             lblTongDonTu.Location = new Point(540, 30);
 
-            // Tab Control
+            // Tab Control - responsive
             tabControl.Location = new Point(20, 170);
-            tabControl.Size = new Size(1360, 600);
+            tabControl.Size = new Size(Math.Max(formWidth, 800), Math.Max(formHeight - 220, 400));
 
             // Action Buttons
-            btnXuatBaoCao.Location = new Point(20, 790);
-            btnLamMoi.Location = new Point(150, 790);
+            int buttonY = 170 + tabControl.Height + 20;
+            btnXuatBaoCao.Location = new Point(20, buttonY);
+            btnLamMoi.Location = new Point(150, buttonY);
         }
 
         private void SetupEventHandlers()

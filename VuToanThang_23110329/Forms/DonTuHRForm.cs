@@ -46,7 +46,7 @@ namespace VuToanThang_23110329.Forms
             {
                 BackColor = Color.FromArgb(60, 60, 60),
                 BorderStyle = BorderStyle.FixedSingle,
-                Size = new Size(1340, 60)
+                Size = new Size(750, 60)
             };
 
             lblTongSo = CreateStatLabel("Tổng số: 0", Color.White);
@@ -61,7 +61,7 @@ namespace VuToanThang_23110329.Forms
             {
                 BackColor = Color.FromArgb(60, 60, 60),
                 BorderStyle = BorderStyle.FixedSingle,
-                Size = new Size(1340, 80)
+                Size = new Size(750, 80)
             };
 
             dtpTuNgay = CreateDatePicker();

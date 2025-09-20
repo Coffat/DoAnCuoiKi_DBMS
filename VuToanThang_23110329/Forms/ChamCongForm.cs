@@ -94,7 +94,7 @@ namespace VuToanThang_23110329.Forms
             {
                 BackColor = Color.FromArgb(60, 60, 60),
                 BorderStyle = BorderStyle.FixedSingle,
-                Size = new Size(1320, 80),
+                Size = new Size(800, 80),
                 Location = new Point(20, 20)
             };
 
@@ -119,7 +119,7 @@ namespace VuToanThang_23110329.Forms
             // DataGridView for attendance records
             dgvChamCong = CreateDataGridView();
             dgvChamCong.Location = new Point(20, 120);
-            dgvChamCong.Size = new Size(900, 400);
+            dgvChamCong.Size = new Size(500, 300);
 
             // Information Panel
             pnlThongTin = new Panel
@@ -127,8 +127,8 @@ namespace VuToanThang_23110329.Forms
                 BackColor = Color.FromArgb(60, 60, 60),
                 BorderStyle = BorderStyle.FixedSingle,
                 Padding = new Padding(15),
-                Location = new Point(940, 120),
-                Size = new Size(400, 400)
+                Location = new Point(540, 120),
+                Size = new Size(300, 300)
             };
 
             CreateInfoControls();
@@ -141,7 +141,7 @@ namespace VuToanThang_23110329.Forms
             // Schedule & Attendance Combined View
             dgvLichChamCong = CreateDataGridView();
             dgvLichChamCong.Location = new Point(20, 80);
-            dgvLichChamCong.Size = new Size(1320, 500);
+            dgvLichChamCong.Size = new Size(800, 400);
 
             var lblTitle2 = new Label
             {
@@ -399,16 +399,29 @@ namespace VuToanThang_23110329.Forms
 
         private void LayoutControls()
         {
+            PerformLayout();
+        }
+
+        public void PerformLayout()
+        {
+            if (this.Controls.Count == 0) return;
+
+            int formWidth = this.ClientSize.Width - 40; // Account for padding
+            int formHeight = this.ClientSize.Height - 40;
+
             // Title
             this.Controls[0].Location = new Point(20, 20);
 
-            // Tab Control
+            // Tab Control - responsive size
             tabControl.Location = new Point(20, 70);
-            tabControl.Size = new Size(1360, 800);
+            tabControl.Size = new Size(Math.Max(formWidth, 800), Math.Max(formHeight - 90, 500));
 
             // Layout filter controls in Tab 1
             if (pnlFilter != null)
             {
+                // Make filter panel responsive
+                pnlFilter.Size = new Size(Math.Max(formWidth - 40, 760), 80);
+                
                 pnlFilter.Controls[0].Location = new Point(10, 15); // lblTuNgay
                 dtpTuNgay.Location = new Point(10, 35);
 
@@ -421,6 +434,34 @@ namespace VuToanThang_23110329.Forms
 
                 btnTimKiem.Location = new Point(510, 33);
                 btnLamMoi.Location = new Point(600, 33);
+            }
+
+            // Layout DataGridViews to be responsive
+            LayoutDataGridViews();
+        }
+
+        private void LayoutDataGridViews()
+        {
+            if (tabControl?.TabPages == null) return;
+
+            int tabWidth = tabControl.Width - 40;
+            int tabHeight = tabControl.Height - 120;
+
+            // Tab 1: Attendance Records
+            if (dgvChamCong != null)
+            {
+                dgvChamCong.Size = new Size((int)(tabWidth * 0.6), tabHeight);
+                if (pnlThongTin != null)
+                {
+                    pnlThongTin.Size = new Size((int)(tabWidth * 0.35), tabHeight);
+                    pnlThongTin.Location = new Point(dgvChamCong.Right + 20, dgvChamCong.Top);
+                }
+            }
+
+            // Tab 2: Schedule & Attendance View  
+            if (dgvLichChamCong != null)
+            {
+                dgvLichChamCong.Size = new Size(tabWidth, tabHeight);
             }
         }
 
