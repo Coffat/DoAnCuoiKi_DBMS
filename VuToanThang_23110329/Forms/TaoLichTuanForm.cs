@@ -237,8 +237,7 @@ namespace VuToanThang_23110329.Forms
                                     MaNV = maNV,
                                     MaCa = maCa,
                                     NgayLam = workDate,
-                                    TrangThai = "DuKien",
-                                    GhiChu = "Tạo từ lịch tuần"
+                                    TrangThai = "DuKien"
                                 };
                                 
                                 scheduleList.Add(lichPhanCa);
