@@ -285,17 +285,106 @@ namespace VuToanThang_23110329.Forms
 
             // Parameters Panel - responsive
             pnlThongSo.Location = new Point(20, 70);
-            pnlThongSo.Size = new Size(Math.Max(formWidth, 750), 100);
+            pnlThongSo.Size = new Size(formWidth, 100);
 
-            // Layout parameter controls
+            // Adaptive parameter layout
+            if (formWidth < 600) // Small screen - vertical stacking
+            {
+                LayoutParametersVertical();
+                pnlThongSo.Height = 140;
+            }
+            else if (formWidth < 900) // Medium screen - compact
+            {
+                LayoutParametersCompact();
+                pnlThongSo.Height = 100;
+            }
+            else // Large screen - full layout
+            {
+                LayoutParametersFull();
+                pnlThongSo.Height = 100;
+            }
+
+            // Tab Control - responsive
+            tabControl.Location = new Point(20, pnlThongSo.Bottom + 20);
+            tabControl.Size = new Size(formWidth, Math.Max(formHeight - (pnlThongSo.Bottom + 40), 350));
+        }
+
+        private void LayoutParametersVertical()
+        {
+            // Stack parameters vertically for small screens
+            var controls = pnlThongSo.Controls.Cast<Control>().ToArray();
+            
+            // Row 1: Month and Year
+            controls[0].Location = new Point(20, 15); // lblThang
+            cmbThang.Location = new Point(80, 13);
+            cmbThang.Size = new Size(60, 25);
+            
+            controls[2].Location = new Point(150, 15); // lblNam
+            cmbNam.Location = new Point(190, 13);
+            cmbNam.Size = new Size(70, 25);
+
+            // Row 2: Parameters
+            controls[4].Location = new Point(20, 45); // lblGioChuan
+            nudGioChuan.Location = new Point(130, 43);
+            nudGioChuan.Size = new Size(70, 25);
+
+            controls[6].Location = new Point(210, 45); // lblHeSoOT
+            nudHeSoOT.Location = new Point(270, 43);
+            nudHeSoOT.Size = new Size(70, 25);
+
+            // Row 3: Buttons
+            btnXemCong.Location = new Point(20, 75);
+            btnXemCong.Size = new Size(100, 25);
+            btnChayLuong.Location = new Point(130, 75);
+            btnChayLuong.Size = new Size(100, 25);
+            btnDongLuong.Location = new Point(240, 75);
+            btnDongLuong.Size = new Size(100, 25);
+        }
+
+        private void LayoutParametersCompact()
+        {
+            // Compact horizontal layout for medium screens
             var controls = pnlThongSo.Controls.Cast<Control>().ToArray();
             
             // First row
             controls[0].Location = new Point(20, 15); // lblThang
             cmbThang.Location = new Point(20, 35);
+            cmbThang.Size = new Size(60, 25);
+            
+            controls[2].Location = new Point(90, 15); // lblNam
+            cmbNam.Location = new Point(90, 35);
+            cmbNam.Size = new Size(60, 25);
+
+            controls[4].Location = new Point(160, 15); // lblGioChuan
+            nudGioChuan.Location = new Point(160, 35);
+            nudGioChuan.Size = new Size(70, 25);
+
+            controls[6].Location = new Point(240, 15); // lblHeSoOT
+            nudHeSoOT.Location = new Point(240, 35);
+            nudHeSoOT.Size = new Size(70, 25);
+
+            // Buttons
+            btnXemCong.Location = new Point(320, 25);
+            btnXemCong.Size = new Size(90, 25);
+            btnChayLuong.Location = new Point(420, 25);
+            btnChayLuong.Size = new Size(90, 25);
+            btnDongLuong.Location = new Point(520, 25);
+            btnDongLuong.Size = new Size(90, 25);
+        }
+
+        private void LayoutParametersFull()
+        {
+            // Full horizontal layout for large screens
+            var controls = pnlThongSo.Controls.Cast<Control>().ToArray();
+            
+            // First row
+            controls[0].Location = new Point(20, 15); // lblThang
+            cmbThang.Location = new Point(20, 35);
+            cmbThang.Size = new Size(80, 25);
             
             controls[2].Location = new Point(120, 15); // lblNam
             cmbNam.Location = new Point(120, 35);
+            cmbNam.Size = new Size(80, 25);
 
             controls[4].Location = new Point(220, 15); // lblGioChuan
             nudGioChuan.Location = new Point(220, 35);
@@ -309,10 +398,6 @@ namespace VuToanThang_23110329.Forms
             btnXemCong.Location = new Point(450, 25);
             btnChayLuong.Location = new Point(590, 25);
             btnDongLuong.Location = new Point(730, 25);
-
-            // Tab Control - responsive
-            tabControl.Location = new Point(20, 190);
-            tabControl.Size = new Size(Math.Max(formWidth, 750), Math.Max(formHeight - 210, 350));
         }
 
         private void SetupEventHandlers()

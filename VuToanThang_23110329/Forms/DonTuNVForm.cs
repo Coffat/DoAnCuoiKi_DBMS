@@ -392,6 +392,183 @@ namespace VuToanThang_23110329.Forms
             txtLyDo.Text = donTu.LyDo;
         }
 
+        public void PerformLayout()
+        {
+            if (this.Controls.Count == 0) return;
+
+            int formWidth = this.ClientSize.Width - 40;
+            int formHeight = this.ClientSize.Height - 40;
+
+            // Title
+            this.Controls[0].Location = new Point(20, 20);
+
+            // Adaptive layout based on screen size
+            if (formWidth < 700) // Small screen - vertical stacking
+            {
+                LayoutControlsVertical();
+            }
+            else if (formWidth < 1000) // Medium screen - compact side-by-side
+            {
+                LayoutControlsCompact();
+            }
+            else // Large screen - full side-by-side
+            {
+                LayoutControlsFull();
+            }
+        }
+
+        private void LayoutControlsVertical()
+        {
+            // Vertical stacking for small screens
+            int formWidth = this.ClientSize.Width - 40;
+            int formHeight = this.ClientSize.Height - 40;
+
+            // Filter controls - horizontal
+            this.Controls[1].Location = new Point(20, 70); // lblFilter
+            cmbTrangThai.Location = new Point(150, 68);
+            cmbTrangThai.Size = new Size(120, 25);
+
+            // Action buttons - horizontal row
+            btnThem.Location = new Point(20, 110);
+            btnThem.Size = new Size(80, 30);
+            btnSua.Location = new Point(110, 110);
+            btnSua.Size = new Size(60, 30);
+            btnXoa.Location = new Point(180, 110);
+            btnXoa.Size = new Size(60, 30);
+            btnLuu.Location = new Point(250, 110);
+            btnLuu.Size = new Size(60, 30);
+            btnHuy.Location = new Point(320, 110);
+            btnHuy.Size = new Size(60, 30);
+            btnLamMoi.Location = new Point(390, 110);
+            btnLamMoi.Size = new Size(70, 30);
+
+            // DataGridView on top (60% height)
+            dgvDonTu.Location = new Point(20, 160);
+            dgvDonTu.Size = new Size(formWidth, (int)((formHeight - 180) * 0.6));
+
+            // Info Panel below (35% height)
+            pnlThongTin.Location = new Point(20, dgvDonTu.Bottom + 10);
+            pnlThongTin.Size = new Size(formWidth, (int)((formHeight - 180) * 0.35));
+
+            // Reorganize info panel for horizontal layout
+            OrganizeInfoPanelHorizontal();
+        }
+
+        private void LayoutControlsCompact()
+        {
+            // Compact side-by-side layout for medium screens
+            int formWidth = this.ClientSize.Width - 60;
+            int formHeight = this.ClientSize.Height - 40;
+
+            // Filter controls
+            this.Controls[1].Location = new Point(20, 70); // lblFilter
+            cmbTrangThai.Location = new Point(150, 68);
+            cmbTrangThai.Size = new Size(120, 25);
+
+            // Action buttons - compact row
+            btnThem.Location = new Point(20, 110);
+            btnThem.Size = new Size(70, 30);
+            btnSua.Location = new Point(100, 110);
+            btnSua.Size = new Size(50, 30);
+            btnXoa.Location = new Point(160, 110);
+            btnXoa.Size = new Size(50, 30);
+            btnLuu.Location = new Point(220, 110);
+            btnLuu.Size = new Size(50, 30);
+            btnHuy.Location = new Point(280, 110);
+            btnHuy.Size = new Size(50, 30);
+            btnLamMoi.Location = new Point(340, 110);
+            btnLamMoi.Size = new Size(60, 30);
+
+            // DataGridView on left (65% width)
+            dgvDonTu.Location = new Point(20, 160);
+            dgvDonTu.Size = new Size((int)(formWidth * 0.65), formHeight - 180);
+
+            // Info Panel on right (30% width)
+            pnlThongTin.Location = new Point(dgvDonTu.Right + 20, 160);
+            pnlThongTin.Size = new Size((int)(formWidth * 0.30), formHeight - 180);
+
+            // Reorganize info panel for vertical layout
+            OrganizeInfoPanelVertical();
+        }
+
+        private void LayoutControlsFull()
+        {
+            // Full side-by-side layout for large screens
+            int formWidth = this.ClientSize.Width - 60;
+            int formHeight = this.ClientSize.Height - 40;
+
+            // Filter controls
+            this.Controls[1].Location = new Point(20, 70); // lblFilter
+            cmbTrangThai.Location = new Point(150, 68);
+            cmbTrangThai.Size = new Size(150, 25);
+
+            // Action buttons - full row
+            btnThem.Location = new Point(20, 110);
+            btnSua.Location = new Point(130, 110);
+            btnXoa.Location = new Point(200, 110);
+            btnLuu.Location = new Point(270, 110);
+            btnHuy.Location = new Point(340, 110);
+            btnLamMoi.Location = new Point(410, 110);
+
+            // DataGridView on left (70% width)
+            dgvDonTu.Location = new Point(20, 160);
+            dgvDonTu.Size = new Size((int)(formWidth * 0.70), formHeight - 180);
+
+            // Info Panel on right (25% width)
+            pnlThongTin.Location = new Point(dgvDonTu.Right + 20, 160);
+            pnlThongTin.Size = new Size((int)(formWidth * 0.25), formHeight - 180);
+
+            // Reorganize info panel for vertical layout
+            OrganizeInfoPanelVertical();
+        }
+
+        private void OrganizeInfoPanelHorizontal()
+        {
+            // Horizontal layout of controls within info panel
+            if (pnlThongTin?.Controls != null && pnlThongTin.Controls.Count > 0)
+            {
+                int x = 15, y = 20;
+                int controlWidth = (pnlThongTin.Width - 60) / 2; // Two columns
+                int spacing = 30;
+
+                foreach (Control control in pnlThongTin.Controls)
+                {
+                    if (control is Label || control is ComboBox || control is DateTimePicker || control is TextBox)
+                    {
+                        control.Width = controlWidth;
+                        control.Location = new Point(x, y);
+                        
+                        x += controlWidth + 20;
+                        if (x + controlWidth > pnlThongTin.Width - 20) // Wrap to next row
+                        {
+                            x = 15;
+                            y += spacing;
+                        }
+                    }
+                }
+            }
+        }
+
+        private void OrganizeInfoPanelVertical()
+        {
+            // Vertical stacking of controls within info panel
+            if (pnlThongTin?.Controls != null && pnlThongTin.Controls.Count > 0)
+            {
+                int y = 20;
+                int spacing = 35;
+
+                foreach (Control control in pnlThongTin.Controls)
+                {
+                    if (control is Label || control is ComboBox || control is DateTimePicker || control is TextBox)
+                    {
+                        control.Location = new Point(15, y);
+                        control.Width = pnlThongTin.Width - 30;
+                        y += spacing;
+                    }
+                }
+            }
+        }
+
         private void ShowMessage(string message, string title, MessageBoxIcon icon)
         {
             MessageBox.Show(message, title, MessageBoxButtons.OK, icon);

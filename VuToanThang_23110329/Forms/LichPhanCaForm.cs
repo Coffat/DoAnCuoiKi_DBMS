@@ -144,6 +144,154 @@ namespace VuToanThang_23110329.Forms
             cmbTrangThai.Text = lich.TrangThai;
         }
 
+        public void PerformLayout()
+        {
+            if (this.Controls.Count == 0) return;
+
+            int formWidth = this.ClientSize.Width - 40;
+            int formHeight = this.ClientSize.Height - 40;
+
+            // Adaptive layout based on screen size
+            if (formWidth < 700) // Small screen - vertical stacking
+            {
+                LayoutControlsVertical();
+            }
+            else if (formWidth < 1000) // Medium screen - compact side-by-side
+            {
+                LayoutControlsCompact();
+            }
+            else // Large screen - full side-by-side
+            {
+                LayoutControlsFull();
+            }
+        }
+
+        private void LayoutControlsVertical()
+        {
+            // Stack DataGridView and Info Panel vertically for small screens
+            if (dgvLichPhanCa != null && pnlThongTin != null)
+            {
+                int availableWidth = this.ClientSize.Width - 40;
+                int availableHeight = this.ClientSize.Height - 120; // Account for filter panel
+
+                // DataGridView on top (60% height)
+                dgvLichPhanCa.Location = new Point(20, 100);
+                dgvLichPhanCa.Size = new Size(availableWidth, (int)(availableHeight * 0.6));
+
+                // Info Panel below (35% height)
+                pnlThongTin.Location = new Point(20, dgvLichPhanCa.Bottom + 10);
+                pnlThongTin.Size = new Size(availableWidth, (int)(availableHeight * 0.35));
+
+                // Reorganize info panel controls for vertical layout
+                OrganizeInfoPanelVertical();
+            }
+        }
+
+        private void LayoutControlsCompact()
+        {
+            // Compact side-by-side layout for medium screens
+            if (dgvLichPhanCa != null && pnlThongTin != null)
+            {
+                int availableWidth = this.ClientSize.Width - 60; // Account for spacing
+                int availableHeight = this.ClientSize.Height - 120;
+
+                // DataGridView on left (65% width)
+                dgvLichPhanCa.Location = new Point(20, 100);
+                dgvLichPhanCa.Size = new Size((int)(availableWidth * 0.65), availableHeight);
+
+                // Info Panel on right (30% width)
+                pnlThongTin.Location = new Point(dgvLichPhanCa.Right + 20, 100);
+                pnlThongTin.Size = new Size((int)(availableWidth * 0.30), availableHeight);
+
+                // Reorganize info panel controls for compact layout
+                OrganizeInfoPanelCompact();
+            }
+        }
+
+        private void LayoutControlsFull()
+        {
+            // Full side-by-side layout for large screens
+            if (dgvLichPhanCa != null && pnlThongTin != null)
+            {
+                int availableWidth = this.ClientSize.Width - 60;
+                int availableHeight = this.ClientSize.Height - 120;
+
+                // DataGridView on left (70% width)
+                dgvLichPhanCa.Location = new Point(20, 100);
+                dgvLichPhanCa.Size = new Size((int)(availableWidth * 0.70), availableHeight);
+
+                // Info Panel on right (25% width)
+                pnlThongTin.Location = new Point(dgvLichPhanCa.Right + 20, 100);
+                pnlThongTin.Size = new Size((int)(availableWidth * 0.25), availableHeight);
+
+                // Reorganize info panel controls for full layout
+                OrganizeInfoPanelFull();
+            }
+        }
+
+        private void OrganizeInfoPanelVertical()
+        {
+            // Horizontal layout of controls within info panel for vertical mode
+            if (pnlThongTin?.Controls != null)
+            {
+                int y = 20;
+                int spacing = 25;
+                int controlWidth = (pnlThongTin.Width - 60) / 2; // Two columns
+
+                foreach (Control control in pnlThongTin.Controls)
+                {
+                    if (control is Label || control is ComboBox || control is DateTimePicker)
+                    {
+                        control.Width = controlWidth;
+                        control.Location = new Point(20 + (control.TabIndex % 2) * (controlWidth + 20), y);
+                        
+                        if (control.TabIndex % 2 == 1) // Every second control moves to next row
+                            y += spacing;
+                    }
+                }
+            }
+        }
+
+        private void OrganizeInfoPanelCompact()
+        {
+            // Vertical stacking of controls within narrow info panel
+            if (pnlThongTin?.Controls != null)
+            {
+                int y = 20;
+                int spacing = 30;
+
+                foreach (Control control in pnlThongTin.Controls)
+                {
+                    if (control is Label || control is ComboBox || control is DateTimePicker)
+                    {
+                        control.Location = new Point(10, y);
+                        control.Width = pnlThongTin.Width - 20;
+                        y += spacing;
+                    }
+                }
+            }
+        }
+
+        private void OrganizeInfoPanelFull()
+        {
+            // Standard vertical stacking with more spacing for full layout
+            if (pnlThongTin?.Controls != null)
+            {
+                int y = 20;
+                int spacing = 35;
+
+                foreach (Control control in pnlThongTin.Controls)
+                {
+                    if (control is Label || control is ComboBox || control is DateTimePicker)
+                    {
+                        control.Location = new Point(15, y);
+                        control.Width = pnlThongTin.Width - 30;
+                        y += spacing;
+                    }
+                }
+            }
+        }
+
         private void ShowMessage(string message, string title, MessageBoxIcon icon)
         {
             MessageBox.Show(message, title, MessageBoxButtons.OK, icon);

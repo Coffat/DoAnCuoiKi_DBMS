@@ -414,30 +414,93 @@ namespace VuToanThang_23110329.Forms
 
             // Tab Control - responsive size
             tabControl.Location = new Point(20, 70);
-            tabControl.Size = new Size(Math.Max(formWidth, 800), Math.Max(formHeight - 90, 500));
+            tabControl.Size = new Size(formWidth, Math.Max(formHeight - 90, 500));
 
-            // Layout filter controls in Tab 1
+            // Layout filter controls in Tab 1 - Smart responsive layout
             if (pnlFilter != null)
             {
                 // Make filter panel responsive
-                pnlFilter.Size = new Size(Math.Max(formWidth - 40, 760), 80);
+                pnlFilter.Size = new Size(formWidth - 40, 80);
                 
-                pnlFilter.Controls[0].Location = new Point(10, 15); // lblTuNgay
-                dtpTuNgay.Location = new Point(10, 35);
-
-                pnlFilter.Controls[2].Location = new Point(150, 15); // lblDenNgay
-                dtpDenNgay.Location = new Point(150, 35);
-
-                pnlFilter.Controls[4].Location = new Point(290, 15); // lblNhanVien
-                cmbNhanVien.Location = new Point(290, 35);
-                cmbNhanVien.Size = new Size(200, 25);
-
-                btnTimKiem.Location = new Point(510, 33);
-                btnLamMoi.Location = new Point(600, 33);
+                // Adaptive layout based on available width
+                if (formWidth < 600) // Very small - stack vertically
+                {
+                    LayoutFilterControlsVertical();
+                    pnlFilter.Height = 120; // More height needed for vertical layout
+                }
+                else if (formWidth < 800) // Medium - compact horizontal
+                {
+                    LayoutFilterControlsCompact();
+                }
+                else // Large - full horizontal
+                {
+                    LayoutFilterControlsFull();
+                }
             }
 
             // Layout DataGridViews to be responsive
             LayoutDataGridViews();
+        }
+
+        private void LayoutFilterControlsVertical()
+        {
+            // Stack controls vertically for very small screens
+            pnlFilter.Controls[0].Location = new Point(10, 10); // lblTuNgay
+            dtpTuNgay.Location = new Point(80, 8);
+            dtpTuNgay.Size = new Size(100, 25);
+
+            pnlFilter.Controls[2].Location = new Point(190, 10); // lblDenNgay
+            dtpDenNgay.Location = new Point(260, 8);
+            dtpDenNgay.Size = new Size(100, 25);
+
+            pnlFilter.Controls[4].Location = new Point(10, 40); // lblNhanVien
+            cmbNhanVien.Location = new Point(80, 38);
+            cmbNhanVien.Size = new Size(150, 25);
+
+            btnTimKiem.Location = new Point(240, 38);
+            btnTimKiem.Size = new Size(80, 25);
+            btnLamMoi.Location = new Point(330, 38);
+            btnLamMoi.Size = new Size(80, 25);
+        }
+
+        private void LayoutFilterControlsCompact()
+        {
+            // Compact horizontal layout for medium screens
+            pnlFilter.Controls[0].Location = new Point(10, 15); // lblTuNgay
+            dtpTuNgay.Location = new Point(10, 35);
+            dtpTuNgay.Size = new Size(90, 25);
+
+            pnlFilter.Controls[2].Location = new Point(110, 15); // lblDenNgay
+            dtpDenNgay.Location = new Point(110, 35);
+            dtpDenNgay.Size = new Size(90, 25);
+
+            pnlFilter.Controls[4].Location = new Point(210, 15); // lblNhanVien
+            cmbNhanVien.Location = new Point(210, 35);
+            cmbNhanVien.Size = new Size(120, 25);
+
+            btnTimKiem.Location = new Point(340, 33);
+            btnTimKiem.Size = new Size(70, 25);
+            btnLamMoi.Location = new Point(420, 33);
+            btnLamMoi.Size = new Size(70, 25);
+        }
+
+        private void LayoutFilterControlsFull()
+        {
+            // Full horizontal layout for large screens
+            pnlFilter.Controls[0].Location = new Point(10, 15); // lblTuNgay
+            dtpTuNgay.Location = new Point(10, 35);
+            dtpTuNgay.Size = new Size(120, 25);
+
+            pnlFilter.Controls[2].Location = new Point(150, 15); // lblDenNgay
+            dtpDenNgay.Location = new Point(150, 35);
+            dtpDenNgay.Size = new Size(120, 25);
+
+            pnlFilter.Controls[4].Location = new Point(290, 15); // lblNhanVien
+            cmbNhanVien.Location = new Point(290, 35);
+            cmbNhanVien.Size = new Size(200, 25);
+
+            btnTimKiem.Location = new Point(510, 33);
+            btnLamMoi.Location = new Point(600, 33);
         }
 
         private void LayoutDataGridViews()
@@ -445,23 +508,38 @@ namespace VuToanThang_23110329.Forms
             if (tabControl?.TabPages == null) return;
 
             int tabWidth = tabControl.Width - 40;
-            int tabHeight = tabControl.Height - 120;
+            int tabHeight = tabControl.Height - (pnlFilter?.Height > 80 ? 140 : 120); // Adjust for filter height
 
-            // Tab 1: Attendance Records
-            if (dgvChamCong != null)
+            // Tab 1: Attendance Records - Adaptive layout
+            if (dgvChamCong != null && pnlThongTin != null)
             {
-                dgvChamCong.Size = new Size((int)(tabWidth * 0.6), tabHeight);
-                if (pnlThongTin != null)
+                if (tabWidth < 700) // Small screen - stack vertically
                 {
-                    pnlThongTin.Size = new Size((int)(tabWidth * 0.35), tabHeight);
+                    // DataGridView on top
+                    dgvChamCong.Location = new Point(20, pnlFilter.Bottom + 20);
+                    dgvChamCong.Size = new Size(tabWidth, (int)(tabHeight * 0.6));
+                    
+                    // Information Panel below
+                    pnlThongTin.Location = new Point(20, dgvChamCong.Bottom + 10);
+                    pnlThongTin.Size = new Size(tabWidth, (int)(tabHeight * 0.35));
+                }
+                else // Large screen - side by side
+                {
+                    // DataGridView on left (60% width)
+                    dgvChamCong.Location = new Point(20, pnlFilter.Bottom + 20);
+                    dgvChamCong.Size = new Size((int)(tabWidth * 0.6), tabHeight);
+                    
+                    // Information Panel on right (35% width)
                     pnlThongTin.Location = new Point(dgvChamCong.Right + 20, dgvChamCong.Top);
+                    pnlThongTin.Size = new Size((int)(tabWidth * 0.35), tabHeight);
                 }
             }
 
-            // Tab 2: Schedule & Attendance View  
+            // Tab 2: Schedule & Attendance View - Full width
             if (dgvLichChamCong != null)
             {
-                dgvLichChamCong.Size = new Size(tabWidth, tabHeight);
+                dgvLichChamCong.Location = new Point(20, 80);
+                dgvLichChamCong.Size = new Size(tabWidth, tabHeight + 40); // More space since no filter
             }
         }
 

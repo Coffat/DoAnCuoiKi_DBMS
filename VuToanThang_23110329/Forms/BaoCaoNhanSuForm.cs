@@ -334,22 +334,67 @@ namespace VuToanThang_23110329.Forms
 
             // Statistics Panel - responsive
             pnlThongKe.Location = new Point(20, 70);
-            pnlThongKe.Size = new Size(Math.Max(formWidth, 800), 80);
+            pnlThongKe.Size = new Size(formWidth, 80);
 
+            // Adaptive statistics layout
+            if (formWidth < 600) // Small screen - stack vertically
+            {
+                LayoutStatisticsVertical();
+                pnlThongKe.Height = 100;
+            }
+            else if (formWidth < 900) // Medium screen - compact horizontal
+            {
+                LayoutStatisticsCompact();
+                pnlThongKe.Height = 80;
+            }
+            else // Large screen - full horizontal
+            {
+                LayoutStatisticsFull();
+                pnlThongKe.Height = 80;
+            }
+
+            // Tab Control - responsive
+            tabControl.Location = new Point(20, pnlThongKe.Bottom + 20);
+            tabControl.Size = new Size(formWidth, Math.Max(formHeight - (pnlThongKe.Bottom + 80), 400));
+
+            // Action Buttons
+            int buttonY = tabControl.Bottom + 10;
+            btnXuatBaoCao.Location = new Point(20, buttonY);
+            btnLamMoi.Location = new Point(150, buttonY);
+        }
+
+        private void LayoutStatisticsVertical()
+        {
+            // Stack statistics vertically for small screens
+            lblTongNV.Location = new Point(20, 15);
+            lblDangLam.Location = new Point(150, 15);
+            lblNghi.Location = new Point(280, 15);
+            
+            lblTongCong.Location = new Point(20, 45);
+            lblTongDonTu.Location = new Point(150, 45);
+        }
+
+        private void LayoutStatisticsCompact()
+        {
+            // Compact horizontal layout for medium screens
+            int availableWidth = pnlThongKe.Width - 40;
+            int spacing = Math.Max(100, availableWidth / 6);
+            
+            lblTongNV.Location = new Point(20, 30);
+            lblDangLam.Location = new Point(20 + spacing, 30);
+            lblNghi.Location = new Point(20 + spacing * 2, 30);
+            lblTongCong.Location = new Point(20 + spacing * 3, 30);
+            lblTongDonTu.Location = new Point(20 + spacing * 4, 30);
+        }
+
+        private void LayoutStatisticsFull()
+        {
+            // Full horizontal layout for large screens
             lblTongNV.Location = new Point(20, 30);
             lblDangLam.Location = new Point(150, 30);
             lblNghi.Location = new Point(280, 30);
             lblTongCong.Location = new Point(410, 30);
             lblTongDonTu.Location = new Point(540, 30);
-
-            // Tab Control - responsive
-            tabControl.Location = new Point(20, 170);
-            tabControl.Size = new Size(Math.Max(formWidth, 800), Math.Max(formHeight - 220, 400));
-
-            // Action Buttons
-            int buttonY = 170 + tabControl.Height + 20;
-            btnXuatBaoCao.Location = new Point(20, buttonY);
-            btnLamMoi.Location = new Point(150, buttonY);
         }
 
         private void SetupEventHandlers()

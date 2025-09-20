@@ -177,10 +177,115 @@ namespace VuToanThang_23110329.Forms
 
             // Filter Panel - responsive
             pnlFilter.Location = new Point(20, 70);
-            pnlFilter.Size = new Size(Math.Max(formWidth, 800), 80);
+            pnlFilter.Size = new Size(formWidth, 80);
 
-            // Layout filter controls
+            // Adaptive filter layout based on screen size
+            if (formWidth < 600) // Small screen - stack vertically
+            {
+                LayoutFilterControlsVertical();
+                pnlFilter.Height = 120;
+            }
+            else if (formWidth < 900) // Medium screen - compact
+            {
+                LayoutFilterControlsCompact();
+            }
+            else // Large screen - full layout
+            {
+                LayoutFilterControlsFull();
+            }
+
+            // Summary Panel - responsive
+            int summaryY = pnlFilter.Bottom + 20;
+            pnlSummary.Location = new Point(20, summaryY);
+            pnlSummary.Size = new Size(formWidth, 60);
+
+            // Adaptive summary layout
+            if (formWidth < 600) // Stack summary items vertically
+            {
+                lblTongNhanVien.Location = new Point(20, 10);
+                lblTongLuong.Location = new Point(20, 30);
+                lblLuongTB.Location = new Point(200, 30);
+                pnlSummary.Height = 50;
+            }
+            else // Horizontal summary layout
+            {
+                lblTongNhanVien.Location = new Point(20, 20);
+                lblTongLuong.Location = new Point(Math.Min(200, formWidth / 3), 20);
+                lblLuongTB.Location = new Point(Math.Min(450, formWidth * 2 / 3), 20);
+                pnlSummary.Height = 60;
+            }
+
+            // DataGridView - responsive
+            dgvBangLuong.Location = new Point(20, pnlSummary.Bottom + 20);
+            dgvBangLuong.Size = new Size(formWidth, Math.Max(formHeight - (pnlSummary.Bottom + 40), 300));
+        }
+
+        private void LayoutFilterControlsVertical()
+        {
+            // Stack filter controls vertically for small screens
+            int y1 = 10, y2 = 35, y3 = 60;
+            
+            pnlFilter.Controls[0].Location = new Point(10, y1); // lblThang
+            cmbThang.Location = new Point(70, y1 - 2);
+            cmbThang.Size = new Size(60, 25);
+
+            pnlFilter.Controls[2].Location = new Point(140, y1); // lblNam
+            cmbNam.Location = new Point(180, y1 - 2);
+            cmbNam.Size = new Size(70, 25);
+
+            pnlFilter.Controls[4].Location = new Point(10, y2); // lblTrangThai
+            cmbTrangThai.Location = new Point(90, y2 - 2);
+            cmbTrangThai.Size = new Size(80, 25);
+
+            btnTimKiem.Location = new Point(180, y2 - 2);
+            btnTimKiem.Size = new Size(60, 25);
+
+            btnXuatExcel.Location = new Point(10, y3 - 2);
+            btnXuatExcel.Size = new Size(70, 25);
+            btnInBangLuong.Location = new Point(90, y3 - 2);
+            btnInBangLuong.Size = new Size(80, 25);
+            btnLamMoi.Location = new Point(180, y3 - 2);
+            btnLamMoi.Size = new Size(60, 25);
+        }
+
+        private void LayoutFilterControlsCompact()
+        {
+            // Compact horizontal layout for medium screens
             int x = 10, y = 15;
+            
+            pnlFilter.Controls[0].Location = new Point(x, y); // lblThang
+            cmbThang.Location = new Point(x, y + 20);
+            cmbThang.Size = new Size(60, 25);
+            x += 70;
+
+            pnlFilter.Controls[2].Location = new Point(x, y); // lblNam
+            cmbNam.Location = new Point(x, y + 20);
+            cmbNam.Size = new Size(60, 25);
+            x += 70;
+
+            pnlFilter.Controls[4].Location = new Point(x, y); // lblTrangThai
+            cmbTrangThai.Location = new Point(x, y + 20);
+            cmbTrangThai.Size = new Size(80, 25);
+            x += 90;
+
+            btnTimKiem.Location = new Point(x, y + 18);
+            btnTimKiem.Size = new Size(60, 25);
+            x += 70;
+            btnXuatExcel.Location = new Point(x, y + 18);
+            btnXuatExcel.Size = new Size(70, 25);
+            x += 80;
+            btnInBangLuong.Location = new Point(x, y + 18);
+            btnInBangLuong.Size = new Size(80, 25);
+            x += 90;
+            btnLamMoi.Location = new Point(x, y + 18);
+            btnLamMoi.Size = new Size(60, 25);
+        }
+
+        private void LayoutFilterControlsFull()
+        {
+            // Full horizontal layout for large screens
+            int x = 10, y = 15;
+            
             pnlFilter.Controls[0].Location = new Point(x, y); // lblThang
             cmbThang.Location = new Point(x, y + 20);
             cmbThang.Size = new Size(80, 25);
@@ -203,18 +308,6 @@ namespace VuToanThang_23110329.Forms
             btnInBangLuong.Location = new Point(x, y + 18);
             x += 120;
             btnLamMoi.Location = new Point(x, y + 18);
-
-            // Summary Panel - responsive
-            pnlSummary.Location = new Point(20, 170);
-            pnlSummary.Size = new Size(Math.Max(formWidth, 800), 60);
-
-            lblTongNhanVien.Location = new Point(20, 20);
-            lblTongLuong.Location = new Point(200, 20);
-            lblLuongTB.Location = new Point(450, 20);
-
-            // DataGridView - responsive
-            dgvBangLuong.Location = new Point(20, 250);
-            dgvBangLuong.Size = new Size(Math.Max(formWidth, 800), Math.Max(formHeight - 270, 300));
         }
 
         private void SetupEventHandlers()

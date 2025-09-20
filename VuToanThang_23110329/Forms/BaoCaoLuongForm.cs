@@ -232,22 +232,67 @@ namespace VuToanThang_23110329.Forms
             
             // Statistics Panel - responsive
             pnlThongKe.Location = new Point(20, 70);
-            pnlThongKe.Size = new Size(Math.Max(formWidth, 800), 80);
+            pnlThongKe.Size = new Size(formWidth, 80);
             
+            // Adaptive statistics layout
+            if (formWidth < 600) // Small screen - stack vertically
+            {
+                LayoutSalaryStatisticsVertical();
+                pnlThongKe.Height = 120;
+            }
+            else if (formWidth < 900) // Medium screen - compact horizontal
+            {
+                LayoutSalaryStatisticsCompact();
+                pnlThongKe.Height = 80;
+            }
+            else // Large screen - full horizontal
+            {
+                LayoutSalaryStatisticsFull();
+                pnlThongKe.Height = 80;
+            }
+
+            // Tab Control - responsive
+            tabControl.Location = new Point(20, pnlThongKe.Bottom + 20);
+            tabControl.Size = new Size(formWidth, Math.Max(formHeight - (pnlThongKe.Bottom + 80), 400));
+
+            // Action Buttons
+            int buttonY = tabControl.Bottom + 10;
+            btnXuatExcel.Location = new Point(20, buttonY);
+            btnLamMoi.Location = new Point(150, buttonY);
+        }
+
+        private void LayoutSalaryStatisticsVertical()
+        {
+            // Stack salary statistics vertically for small screens
+            lblTongNV.Location = new Point(20, 15);
+            lblTongLuong.Location = new Point(200, 15);
+            
+            lblLuongTB.Location = new Point(20, 45);
+            lblCaoNhat.Location = new Point(200, 45);
+            lblThapNhat.Location = new Point(20, 75);
+        }
+
+        private void LayoutSalaryStatisticsCompact()
+        {
+            // Compact horizontal layout for medium screens
+            int availableWidth = pnlThongKe.Width - 40;
+            int spacing = Math.Max(120, availableWidth / 6);
+            
+            lblTongNV.Location = new Point(20, 30);
+            lblTongLuong.Location = new Point(20 + spacing, 30);
+            lblLuongTB.Location = new Point(20 + spacing * 2, 30);
+            lblCaoNhat.Location = new Point(20 + spacing * 3, 30);
+            lblThapNhat.Location = new Point(20 + spacing * 4, 30);
+        }
+
+        private void LayoutSalaryStatisticsFull()
+        {
+            // Full horizontal layout for large screens
             lblTongNV.Location = new Point(20, 30);
             lblTongLuong.Location = new Point(150, 30);
             lblLuongTB.Location = new Point(350, 30);
             lblCaoNhat.Location = new Point(550, 30);
             lblThapNhat.Location = new Point(750, 30);
-
-            // Tab Control - responsive
-            tabControl.Location = new Point(20, 170);
-            tabControl.Size = new Size(Math.Max(formWidth, 800), Math.Max(formHeight - 220, 400));
-
-            // Action Buttons
-            int buttonY = 170 + tabControl.Height + 20;
-            btnXuatExcel.Location = new Point(20, buttonY);
-            btnLamMoi.Location = new Point(150, buttonY);
         }
 
         private void SetupEventHandlers()
