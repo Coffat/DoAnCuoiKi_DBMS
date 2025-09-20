@@ -41,10 +41,10 @@ namespace VuToanThang_23110329.Forms
         private void InitializeComponent()
         {
             this.BackColor = Color.FromArgb(50, 50, 50);
-            this.Size = new Size(1400, 900);
+            this.Size = new Size(900, 650);
             this.Text = "Lịch phân ca";
             this.Padding = new Padding(20);
-            this.MinimumSize = new Size(1400, 900);
+            this.MinimumSize = new Size(900, 650);
 
             CreateControls();
             LayoutControls();
@@ -247,7 +247,7 @@ namespace VuToanThang_23110329.Forms
 
             // Filter Panel
             pnlFilter.Location = new Point(20, 70);
-            pnlFilter.Size = new Size(Math.Min(1340, formWidth), 80);
+            pnlFilter.Size = new Size(Math.Min(formWidth, formWidth), 80);
 
             // Layout filter controls
             var filterControls = pnlFilter.Controls.Cast<Control>().ToArray();
@@ -277,7 +277,7 @@ namespace VuToanThang_23110329.Forms
             int availableHeight = formHeight - 220; // Space above controls
             
             // Responsive layout: stack vertically on small screens, side-by-side on larger screens
-            if (formWidth < 1200) // Vertical layout for smaller screens
+            if (formWidth < 800) // Vertical layout for smaller screens
             {
                 // DataGridView takes full width, 60% height
                 dgvLichPhanCa.Location = new Point(20, 220);

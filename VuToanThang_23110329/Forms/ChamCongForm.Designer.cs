@@ -33,9 +33,11 @@ namespace VuToanThang_23110329.Forms
         private void InitializeComponent()
         {
             this.BackColor = Color.FromArgb(50, 50, 50);
-            this.Size = new Size(1400, 900);
+            this.Size = new Size(900, 650);
             this.Text = "Chấm công";
             this.Padding = new Padding(20);
+            this.MinimumSize = new Size(900, 650);
+            this.AutoScaleMode = AutoScaleMode.Dpi;
             this.SuspendLayout();
             this.ResumeLayout(false);
         }

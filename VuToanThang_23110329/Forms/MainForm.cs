@@ -432,6 +432,9 @@ namespace VuToanThang_23110329.Forms
             childForm.FormBorderStyle = FormBorderStyle.None;
             childForm.Dock = DockStyle.Fill;
 
+            // Auto-resize child form to fit content panel
+            AutoResizeChildForm(childForm);
+
             // Clear and add to content panel
             pnlContent.Controls.Clear();
             pnlContent.Controls.Add(childForm);
@@ -441,6 +444,86 @@ namespace VuToanThang_23110329.Forms
             
             // Show form
             childForm.Show();
+        }
+
+        private void AutoResizeChildForm(Form childForm)
+        {
+            // Get available content panel size (minus padding)
+            int availableWidth = pnlContent.ClientSize.Width - pnlContent.Padding.Horizontal;
+            int availableHeight = pnlContent.ClientSize.Height - pnlContent.Padding.Vertical;
+
+            // Set minimum sizes based on form type
+            Size minSize = GetMinimumSizeForForm(childForm);
+            
+            // Calculate optimal size (use available space but respect minimum)
+            int optimalWidth = Math.Max(availableWidth, minSize.Width);
+            int optimalHeight = Math.Max(availableHeight, minSize.Height);
+
+            // Set the child form size
+            childForm.Size = new Size(optimalWidth, optimalHeight);
+            childForm.MinimumSize = minSize;
+
+            // Enable auto-scaling for responsive behavior
+            childForm.AutoScaleMode = AutoScaleMode.Dpi;
+            childForm.AutoSize = false;
+
+            // Add resize event handler to maintain responsive behavior
+            childForm.Resize += (sender, e) => OnChildFormResize(sender as Form);
+        }
+
+        private Size GetMinimumSizeForForm(Form form)
+        {
+            // Define minimum sizes for different form types
+            switch (form.GetType().Name)
+            {
+                case "NhanVienForm":
+                case "CaLamForm":
+                    return new Size(800, 600); // These are already optimized
+
+                case "LichPhanCaForm":
+                case "ChamCongForm":
+                case "BangLuongForm":
+                case "BaoCaoLuongForm":
+                case "BaoCaoNhanSuForm":
+                    return new Size(900, 650); // Large data forms
+
+                case "DonTuHRForm":
+                case "DonTuSMForm":
+                case "DonTuNVForm":
+                case "TinhLuongForm":
+                    return new Size(800, 550); // Medium forms
+
+                case "PhieuLuongForm":
+                    return new Size(700, 500); // Smaller forms
+
+                default:
+                    return new Size(800, 600); // Default minimum
+            }
+        }
+
+        private void OnChildFormResize(Form childForm)
+        {
+            if (childForm == null) return;
+
+            // Trigger layout update for forms that support it
+            try
+            {
+                // Use reflection to call PerformLayout if it exists
+                var performLayoutMethod = childForm.GetType().GetMethod("PerformLayout", new Type[] { });
+                if (performLayoutMethod != null)
+                {
+                    performLayoutMethod.Invoke(childForm, null);
+                }
+                else
+                {
+                    // Fallback to standard layout
+                    childForm.PerformLayout();
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error during child form resize: {ex.Message}");
+            }
         }
 
         private void btnClose_Click(object sender, EventArgs e)
@@ -494,6 +577,17 @@ namespace VuToanThang_23110329.Forms
         {
             currentChildForm?.Close();
             base.OnFormClosed(e);
+        }
+
+        protected override void OnResize(EventArgs e)
+        {
+            base.OnResize(e);
+            
+            // Auto-resize current child form when main form is resized
+            if (currentChildForm != null && !currentChildForm.IsDisposed)
+            {
+                AutoResizeChildForm(currentChildForm);
+            }
         }
     }
 
