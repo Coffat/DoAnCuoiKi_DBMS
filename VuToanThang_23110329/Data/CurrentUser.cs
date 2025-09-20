@@ -20,7 +20,7 @@ namespace VuToanThang_23110329.Data
         // Check if user is logged in
         public static bool IsLoggedIn => User != null;
 
-        // Get current employee ID (for RLS)
+        // Get current employee ID
         public static int? CurrentEmployeeId 
         { 
             get { return Employee?.MaNV; } 

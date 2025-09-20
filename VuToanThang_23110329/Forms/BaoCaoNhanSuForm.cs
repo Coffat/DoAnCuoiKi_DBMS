@@ -369,9 +369,7 @@ namespace VuToanThang_23110329.Forms
         {
             try
             {
-                var nhanViens = VuToanThang_23110329.Data.CurrentUser.IsHR ? 
-                    _nhanVienRepository.GetAll() : 
-                    _nhanVienRepository.GetByRLS();
+                var nhanViens = _nhanVienRepository.GetAll();
 
                 // Apply filters
                 if (cmbPhongBan.SelectedIndex > 0)

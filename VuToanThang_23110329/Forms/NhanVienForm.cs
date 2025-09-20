@@ -63,9 +63,7 @@ namespace VuToanThang_23110329.Forms
                     return;
                 }
 
-                var nhanViens = VuToanThang_23110329.Data.CurrentUser.IsHR ? 
-                    _nhanVienRepository.GetAll() : 
-                    _nhanVienRepository.GetByRLS();
+                var nhanViens = _nhanVienRepository.GetAll();
 
                 dgvNhanVien.DataSource = nhanViens;
                 ConfigureDataGridView();
@@ -138,9 +136,7 @@ namespace VuToanThang_23110329.Forms
         {
             try
             {
-                var allData = VuToanThang_23110329.Data.CurrentUser.IsHR ? 
-                    _nhanVienRepository.GetAll() : 
-                    _nhanVienRepository.GetByRLS();
+                var allData = _nhanVienRepository.GetAll();
 
                 var filteredData = allData.AsEnumerable();
 

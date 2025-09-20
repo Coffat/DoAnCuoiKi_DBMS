@@ -251,24 +251,6 @@ namespace VuToanThang_23110329.Repositories
             }
         }
 
-        public List<NhanVien> GetByRLS()
-        {
-            var list = new List<NhanVien>();
-            try
-            {
-                var dt = SqlHelper.ExecuteDataTable("SELECT * FROM fn_rls_NhanVien() ORDER BY HoTen");
-                
-                foreach (DataRow row in dt.Rows)
-                {
-                    list.Add(MapFromDataRow(row));
-                }
-            }
-            catch (Exception ex)
-            {
-                throw new Exception($"Lỗi lấy danh sách nhân viên (RLS): {ex.Message}", ex);
-            }
-            return list;
-        }
 
         public NhanVien GetByMaNV(int maNV)
         {

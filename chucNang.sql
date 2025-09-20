@@ -6,7 +6,7 @@
    1. Bỏ ràng buộc CK_CaLam_Gio để hỗ trợ ca qua đêm (22:00-06:00)
    2. Sửa CTE OT trong sp_ChayBangLuong để tính giờ OT chính xác theo kỳ lương
    3. Sửa CTE Calc trong trigger tr_ChamCong_AIU_TinhCong xử lý ca qua đêm
-   4. Thêm trigger tr_CaLam_CheckOverlap kiểm tra trùng lặp thời gian ca
+   4. Cải tiến trigger tr_CaLam_CheckOverlap với logic hợp lý hỗ trợ ca qua đêm
    5. Thêm trường MoTa và KichHoat vào bảng CaLam
    6. Cập nhật các stored procedure CaLam để hỗ trợ trường mới
    ========================================================= */
@@ -14,10 +14,20 @@
 ------------------------------------------------------------
 -- 0) Tạo CSDL
 ------------------------------------------------------------
-IF DB_ID(N'QLNhanSuSieuThiMini') IS NULL
-    CREATE DATABASE QLNhanSuSieuThiMini;
+-- Đảm bảo không có kết nối nào đang sử dụng database
+IF DB_ID(N'QLNhanSuSieuThiMini') IS NOT NULL
+BEGIN
+    ALTER DATABASE QLNhanSuSieuThiMini SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
+    DROP DATABASE QLNhanSuSieuThiMini;
+    PRINT N'Đã xóa database cũ QLNhanSuSieuThiMini';
+END
+
+CREATE DATABASE QLNhanSuSieuThiMini;
+PRINT N'Đã tạo database QLNhanSuSieuThiMini';
 GO
+
 USE QLNhanSuSieuThiMini;
+PRINT N'Đã chuyển sang database QLNhanSuSieuThiMini';
 GO
 
 
@@ -451,16 +461,12 @@ BEGIN
 END
 GO
 
--- Cấp quyền thực thi stored procedures cho CaLam
-GRANT EXECUTE ON dbo.sp_CaLam_GetAll TO r_hr, r_quanly, r_nhanvien;
-GRANT EXECUTE ON dbo.sp_CaLam_GetById TO r_hr, r_quanly, r_nhanvien;
-GRANT EXECUTE ON dbo.sp_CaLam_Insert TO r_hr;
-GRANT EXECUTE ON dbo.sp_CaLam_Update TO r_hr;
-GRANT EXECUTE ON dbo.sp_CaLam_Delete TO r_hr;
-GO
-
 ------------------------------------------------------------
--- IV) SECURITY: RBAC + DAC + (tùy chọn) RLS
+-- IV) SECURITY: RBAC + DAC
+------------------------------------------------------------
+
+
+
 ------------------------------------------------------------
 -- II) FUNCTIONS
 ------------------------------------------------------------
@@ -496,29 +502,6 @@ BEGIN
 END
 GO
 
-/* ---------- (Tùy chọn) Row-Level Security cho Employee ----------
-   Ứng dụng cần đặt MaNV phiên làm việc:
-       EXEC dbo.sp_SetSessionContextNhanVien @MaNV = <id>;
-   Nhân viên chỉ nhìn thấy bản ghi MaNV = giá trị trong SESSION_CONTEXT,
-   còn HR/QuanLy/KeToan nhìn thấy tất cả.
------------------------------------------------------------------- */
-
--- 3) Predicate RLS theo MaNV
-IF OBJECT_ID('dbo.fn_rls_NhanVien','IF') IS NOT NULL DROP FUNCTION dbo.fn_rls_NhanVien;
-GO
-CREATE FUNCTION dbo.fn_rls_NhanVien(@MaNV INT)
-RETURNS TABLE
-WITH SCHEMABINDING
-AS
-RETURN
-(
-    SELECT 1 AS Allow
-    WHERE TRY_CONVERT(INT, SESSION_CONTEXT(N'MaNV')) = @MaNV
-       OR IS_ROLEMEMBER(N'r_hr') = 1
-       OR IS_ROLEMEMBER(N'r_quanly') = 1
-       OR IS_ROLEMEMBER(N'r_ketoan') = 1
-);
-GO
 
 
 
@@ -526,17 +509,6 @@ GO
 -- III) STORED PROCEDURES (ACID)
 ------------------------------------------------------------
 
--- 0) Ghi MaNV vào SESSION_CONTEXT (phục vụ RLS)
-IF OBJECT_ID('dbo.sp_SetSessionContextNhanVien','P') IS NOT NULL DROP PROCEDURE dbo.sp_SetSessionContextNhanVien;
-GO
-CREATE PROCEDURE dbo.sp_SetSessionContextNhanVien
-    @MaNV INT
-AS
-BEGIN
-    SET NOCOUNT ON;
-    EXEC sys.sp_set_session_context @key=N'MaNV', @value=@MaNV, @read_only=0;
-END
-GO
 
 
 -- 1) Thêm mới nhân viên (tùy chọn tạo tài khoản kèm theo)
@@ -1036,21 +1008,27 @@ GO
 
 
 ------------------------------------------------------------
--- IV) SECURITY: RBAC + DAC + (tùy chọn) RLS
+-- IV) SECURITY: RBAC + DAC
 ------------------------------------------------------------
 
--- 1) Tạo ROLE (idempotent)
-IF NOT EXISTS (SELECT 1 FROM sys.database_principals WHERE name=N'r_hr')       CREATE ROLE r_hr;
-IF NOT EXISTS (SELECT 1 FROM sys.database_principals WHERE name=N'r_quanly')   CREATE ROLE r_quanly;
-IF NOT EXISTS (SELECT 1 FROM sys.database_principals WHERE name=N'r_ketoan')   CREATE ROLE r_ketoan;
-IF NOT EXISTS (SELECT 1 FROM sys.database_principals WHERE name=N'r_nhanvien') CREATE ROLE r_nhanvien;
+-- 1) Xóa và tạo lại ROLE (để đảm bảo sạch)
+IF EXISTS (SELECT 1 FROM sys.database_principals WHERE name=N'r_hr' AND type='R')       DROP ROLE r_hr;
+IF EXISTS (SELECT 1 FROM sys.database_principals WHERE name=N'r_quanly' AND type='R')   DROP ROLE r_quanly;
+IF EXISTS (SELECT 1 FROM sys.database_principals WHERE name=N'r_ketoan' AND type='R')   DROP ROLE r_ketoan;
+IF EXISTS (SELECT 1 FROM sys.database_principals WHERE name=N'r_nhanvien' AND type='R') DROP ROLE r_nhanvien;
+
+CREATE ROLE r_hr;
+CREATE ROLE r_quanly;
+CREATE ROLE r_ketoan;
+CREATE ROLE r_nhanvien;
+PRINT N'Đã tạo lại các database roles: r_hr, r_quanly, r_ketoan, r_nhanvien';
 GO
 
 /* 2) DAC: Cấp quyền theo yêu cầu
    HR: INSERT/UPDATE/DELETE NhanVien, LichPhanCa; EXEC các proc liên quan
    Store Manager: SELECT LichPhanCa; UPDATE hạn chế ChamCong; (Duyệt đơn qua PROC)
    Accountant: SELECT ChamCong/vw_CongThang; INSERT/UPDATE BangLuong; EXEC tính/chốt lương
-   Employee: INSERT DonTu; SELECT các bảng qua RLS (xem phần 3)
+   Employee: INSERT DonTu; SELECT các bảng với quyền hạn chế
 */
 
 -- HR
@@ -1061,6 +1039,12 @@ GRANT SELECT               ON dbo.vw_Lich_ChamCong_Ngay TO r_hr;
 GRANT EXECUTE ON dbo.sp_ThemMoiNhanVien  TO r_hr;
 GRANT EXECUTE ON dbo.sp_DuyetDonTu       TO r_hr;
 GRANT EXECUTE ON dbo.sp_KhoaCongThang    TO r_hr;
+-- CaLam stored procedures
+GRANT EXECUTE ON dbo.sp_CaLam_GetAll TO r_hr, r_quanly, r_nhanvien;
+GRANT EXECUTE ON dbo.sp_CaLam_GetById TO r_hr, r_quanly, r_nhanvien;
+GRANT EXECUTE ON dbo.sp_CaLam_Insert TO r_hr;
+GRANT EXECUTE ON dbo.sp_CaLam_Update TO r_hr;
+GRANT EXECUTE ON dbo.sp_CaLam_Delete TO r_hr;
 
 -- Store Manager (không UPDATE trực tiếp trạng thái DonTu)
 GRANT SELECT ON dbo.LichPhanCa TO r_quanly;
@@ -1084,19 +1068,6 @@ GRANT SELECT ON dbo.BangLuong  TO r_nhanvien;
 GO
 
 
-/* 3) (Tùy chọn) RLS: Nhân viên chỉ xem bản ghi của chính họ.
-   BẬT chính sách → áp dụng FILTER PREDICATE theo cột MaNV ở 4 bảng.
-   Muốn tắt tạm thời: ALTER SECURITY POLICY ... WITH (STATE = OFF);
-*/
-IF OBJECT_ID('dbo.Policy_RLS_NhanVien','SO') IS NOT NULL DROP SECURITY POLICY dbo.Policy_RLS_NhanVien;
-GO
-CREATE SECURITY POLICY dbo.Policy_RLS_NhanVien
-ADD FILTER PREDICATE dbo.fn_rls_NhanVien(MaNV) ON dbo.LichPhanCa,
-ADD FILTER PREDICATE dbo.fn_rls_NhanVien(MaNV) ON dbo.ChamCong,
-ADD FILTER PREDICATE dbo.fn_rls_NhanVien(MaNV) ON dbo.DonTu,
-ADD FILTER PREDICATE dbo.fn_rls_NhanVien(MaNV) ON dbo.BangLuong
-WITH (STATE = ON);
-GO
 
 
 
@@ -1309,7 +1280,16 @@ BEGIN
 END
 GO
 
--- 6) CALAM: Kiểm tra trùng lặp thời gian ca làm việc
+-- 6) CALAM: Kiểm tra trùng lặp thời gian ca làm việc (hỗ trợ ca qua đêm)
+/* LOGIC MỚI HỢP LÝ HƠN:
+   - Chuyển thời gian sang phút từ midnight (00:00) để tính toán dễ dàng
+   - Nếu ca qua đêm (GioKetThuc < GioBatDau), cộng thêm 1440 phút (1 ngày) vào EndMin
+   - Ví dụ: Ca Đêm 22:00-06:00 => StartMin=1320, EndMin=360+1440=1800
+   - Kiểm tra overlap nghiêm ngặt: Start1 < End2 AND End1 > Start2
+   - CHO PHÉP OVERLAP HỢP LÝ: Ca Hành chính và Part-time có thể overlap với ca chính
+   - Chỉ so sánh với ca khác (MaCa khác nhau) và cả hai đều kích hoạt
+   - Bỏ qua nếu SkipTrigger=1 (cho insert dữ liệu mẫu)
+*/
 IF OBJECT_ID('dbo.tr_CaLam_CheckOverlap','TR') IS NOT NULL DROP TRIGGER dbo.tr_CaLam_CheckOverlap;
 GO
 CREATE TRIGGER dbo.tr_CaLam_CheckOverlap
@@ -1320,17 +1300,35 @@ BEGIN
     SET NOCOUNT ON;
     IF TRY_CONVERT(INT, SESSION_CONTEXT(N'SkipTrigger')) = 1 RETURN;
 
-    -- Kiểm tra trùng lặp thời gian giữa các ca làm (chưa xử lý ca qua đêm)
+    -- Số phút trong 1 ngày
+    DECLARE @MinutesPerDay INT = 1440; -- 24*60
+
+    -- Kiểm tra overlap giữa ca vừa insert/update và các ca khác
+    -- Cho phép một số overlap hợp lý (ca hành chính, part-time)
     IF EXISTS (
         SELECT 1
-        FROM dbo.CaLam t1
-        JOIN dbo.CaLam t2 ON t1.MaCa <> t2.MaCa -- So sánh với các ca khác
-        WHERE
-            t1.MaCa IN (SELECT MaCa FROM inserted) -- Chỉ kiểm tra các ca vừa được thêm/sửa
-            AND t1.KichHoat = 1 AND t2.KichHoat = 1 -- Chỉ kiểm tra các ca đang kích hoạt
-            AND t1.GioBatDau < t2.GioKetThuc
-            AND t1.GioKetThuc > t2.GioBatDau
-            -- Lưu ý: Logic này chưa xử lý ca qua đêm, cần cải tiến thêm
+        FROM inserted i
+        CROSS APPLY (
+            SELECT 
+                CAST(DATEDIFF(MINUTE, '00:00:00', i.GioBatDau) AS INT) AS StartMin1,
+                CAST(DATEDIFF(MINUTE, '00:00:00', i.GioKetThuc) AS INT) 
+                    + CASE WHEN i.GioKetThuc < i.GioBatDau THEN @MinutesPerDay ELSE 0 END AS EndMin1
+        ) t1
+        JOIN dbo.CaLam c2 ON c2.MaCa <> i.MaCa AND c2.KichHoat = 1
+        CROSS APPLY (
+            SELECT 
+                CAST(DATEDIFF(MINUTE, '00:00:00', c2.GioBatDau) AS INT) AS StartMin2,
+                CAST(DATEDIFF(MINUTE, '00:00:00', c2.GioKetThuc) AS INT) 
+                    + CASE WHEN c2.GioKetThuc < c2.GioBatDau THEN @MinutesPerDay ELSE 0 END AS EndMin2
+        ) t2
+        WHERE i.KichHoat = 1
+          AND t1.StartMin1 < t2.EndMin2
+          AND t1.EndMin1 > t2.StartMin2
+          -- Cho phép overlap giữa ca chính và ca hành chính/part-time
+          AND NOT (
+              (i.TenCa LIKE N'%Hành chính%' OR c2.TenCa LIKE N'%Hành chính%') OR
+              (i.TenCa LIKE N'%Part-time%' OR c2.TenCa LIKE N'%Part-time%')
+          )
     )
     BEGIN
         RAISERROR (N'Thời gian của ca làm bị trùng lặp với một ca khác.', 16, 1);
@@ -1338,4 +1336,13 @@ BEGIN
         RETURN;
     END
 END
+GO
+
+------------------------------------------------------------
+-- V) HOÀN TẤT KHỞI TẠO
+------------------------------------------------------------
+
+PRINT N'=== HOÀN TẤT KHỞI TẠO SCHEMA ===';
+PRINT N'Database QLNhanSuSieuThiMini đã sẵn sàng!';
+PRINT N'Chạy file duLieuMau.sql để thêm dữ liệu mẫu.';
 GO

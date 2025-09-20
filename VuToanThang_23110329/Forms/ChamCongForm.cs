@@ -445,9 +445,7 @@ namespace VuToanThang_23110329.Forms
             try
             {
                 // Load employees for filter
-                var nhanViens = VuToanThang_23110329.Data.CurrentUser.IsHR || VuToanThang_23110329.Data.CurrentUser.IsQuanLy ? 
-                    _nhanVienRepository.GetAll() : 
-                    _nhanVienRepository.GetByRLS();
+                var nhanViens = _nhanVienRepository.GetAll();
 
                 var allOption = new NhanVien { MaNV = -1, HoTen = "-- Tất cả --" };
                 var employeeList = new[] { allOption }.Concat(nhanViens).ToList();

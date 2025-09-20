@@ -112,8 +112,6 @@ namespace VuToanThang_23110329.Repositories
                         PhongBan = row["PhongBan"]?.ToString()
                     };
 
-                    // Set session context for employee
-                    SetSessionContext(maNV);
                 }
 
                 return new LoginResult
@@ -134,22 +132,6 @@ namespace VuToanThang_23110329.Repositories
             }
         }
 
-        public void SetSessionContext(int maNV)
-        {
-            try
-            {
-                var parameters = new[]
-                {
-                    SqlHelper.CreateParameter("@MaNV", maNV)
-                };
-
-                SqlHelper.ExecuteNonQuery("sp_SetSessionContextNhanVien", parameters);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception($"Lỗi thiết lập session context: {ex.Message}", ex);
-            }
-        }
 
         public OperationResult CreateUserAccount(string tenDangNhap, string matKhau, string vaiTro)
         {

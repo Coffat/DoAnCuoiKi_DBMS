@@ -43,9 +43,7 @@ namespace VuToanThang_23110329.Forms
             try
             {
                 // Load employees and shifts
-                _employees = VuToanThang_23110329.Data.CurrentUser.IsHR ? 
-                    _nhanVienRepository.GetAll() : 
-                    _nhanVienRepository.GetByRLS();
+                _employees = _nhanVienRepository.GetAll();
                 _shifts = _caLamRepository.GetAll();
                 
                 // Validate data before setting up grid
