@@ -1197,14 +1197,5 @@ namespace VuToanThang_23110329.Forms
             btnCheckOut.BackColor = btnCheckOut.Enabled ? Color.FromArgb(244, 67, 54) : Color.Gray;
         }
 
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                _refreshTimer?.Stop();
-                _refreshTimer?.Dispose();
-            }
-            base.Dispose(disposing);
-        }
     }
 }
