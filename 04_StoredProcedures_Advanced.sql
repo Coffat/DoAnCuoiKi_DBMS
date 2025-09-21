@@ -442,6 +442,7 @@ BEGIN
             NULL AS TenCa,
             NULL AS GioBatDau,
             NULL AS GioKetThuc,
+            NULL AS GioSomNhatCheckIn,
             NULL AS TrangThaiLich,
             N'KhongCoLich' AS TrangThaiChamCong,
             N'KhongCoLich' AS TrangThaiHanhDong;

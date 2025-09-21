@@ -310,6 +310,11 @@ namespace VuToanThang_23110329.Repositories
                 if (dt.Rows.Count > 0)
                 {
                     var row = dt.Rows[0];
+                    System.Diagnostics.Debug.WriteLine($"Processing row data:");
+                    System.Diagnostics.Debug.WriteLine($"  TrangThaiHanhDong: {row["TrangThaiHanhDong"]}");
+                    System.Diagnostics.Debug.WriteLine($"  TenCa: {row["TenCa"]}");
+                    System.Diagnostics.Debug.WriteLine($"  GioBatDau: {row["GioBatDau"]}");
+                    
                     return new TrangThaiChamCong
                     {
                         MaNV = Convert.ToInt32(row["MaNV"]),
@@ -327,7 +332,8 @@ namespace VuToanThang_23110329.Repositories
                         TrangThaiLich = row["TrangThaiLich"]?.ToString(),
                         TrangThaiChamCongHienTai = row["TrangThaiChamCong"]?.ToString(),
                         TrangThaiHanhDong = row["TrangThaiHanhDong"]?.ToString(),
-                        GioSomNhatCheckIn = row["GioSomNhatCheckIn"] != DBNull.Value ? Convert.ToDateTime(row["GioSomNhatCheckIn"]) : (DateTime?)null
+                        GioSomNhatCheckIn = row.Table.Columns.Contains("GioSomNhatCheckIn") && row["GioSomNhatCheckIn"] != DBNull.Value ? 
+                                          Convert.ToDateTime(row["GioSomNhatCheckIn"]) : (DateTime?)null
                     };
                 }
                 
