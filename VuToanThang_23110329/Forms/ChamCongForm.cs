@@ -28,6 +28,7 @@ namespace VuToanThang_23110329.Forms
         private Label lblTongGioCong, lblDiTre, lblVeSom;
         private Label lblTrangThaiHienTai, lblThongTinCa, lblThongTinChamCong;
         private TrangThaiChamCong _currentStatus;
+        private System.Windows.Forms.Timer _refreshTimer;
 
         public ChamCongForm()
         {
@@ -694,6 +695,11 @@ namespace VuToanThang_23110329.Forms
             
             // Load status when tab is selected
             tabControl.SelectedIndexChanged += tabControl_SelectedIndexChanged;
+            
+            // Setup auto-refresh timer for check in/out status
+            _refreshTimer = new System.Windows.Forms.Timer();
+            _refreshTimer.Interval = 30000; // 30 seconds
+            _refreshTimer.Tick += RefreshTimer_Tick;
         }
 
         private void InitializeForm()
@@ -950,6 +956,20 @@ namespace VuToanThang_23110329.Forms
             if (tabControl.SelectedTab?.Text == "Check In/Out")
             {
                 LoadCurrentStatus();
+                _refreshTimer.Start(); // Start auto-refresh
+            }
+            else
+            {
+                _refreshTimer.Stop(); // Stop auto-refresh when not on check in/out tab
+            }
+        }
+
+        private void RefreshTimer_Tick(object sender, EventArgs e)
+        {
+            // Only refresh if we're on the check in/out tab
+            if (tabControl.SelectedTab?.Text == "Check In/Out")
+            {
+                LoadCurrentStatus();
             }
         }
 
@@ -1053,24 +1073,28 @@ namespace VuToanThang_23110329.Forms
             switch (_currentStatus.TrangThaiHanhDong)
             {
                 case "KhongCoLich":
-                    lblTrangThaiHienTai.Text = "Không có lịch làm việc hôm nay";
-                    lblTrangThaiHienTai.ForeColor = Color.Orange;
+                    lblTrangThaiHienTai.Text = "🏠 Hôm nay bạn được nghỉ";
+                    lblTrangThaiHienTai.ForeColor = Color.LightGreen;
                     break;
                 case "ChuaDenGioCheckIn":
                     var gioCheckIn = _currentStatus.GioSomNhatCheckIn?.ToString("HH:mm") ?? "N/A";
-                    lblTrangThaiHienTai.Text = $"Chưa đến giờ check in (từ {gioCheckIn})";
+                    var gioHienTai = DateTime.Now.ToString("HH:mm");
+                    lblTrangThaiHienTai.Text = $"⏳ Chưa đến giờ (hiện tại: {gioHienTai}, check in từ: {gioCheckIn})";
                     lblTrangThaiHienTai.ForeColor = Color.Orange;
                     break;
                 case "CoTheCheckIn":
-                    lblTrangThaiHienTai.Text = "Sẵn sàng check in";
+                    lblTrangThaiHienTai.Text = "✅ Sẵn sàng check in";
                     lblTrangThaiHienTai.ForeColor = Color.LightGreen;
                     break;
                 case "CoTheCheckOut":
-                    lblTrangThaiHienTai.Text = "Đã check in - Sẵn sàng check out";
+                    var gioVao = _currentStatus.GioVao?.ToString("HH:mm") ?? "N/A";
+                    lblTrangThaiHienTai.Text = $"🟡 Đã check in lúc {gioVao} - Sẵn sàng check out";
                     lblTrangThaiHienTai.ForeColor = Color.Yellow;
                     break;
                 case "DaHoanThanh":
-                    lblTrangThaiHienTai.Text = "Đã hoàn thành chấm công hôm nay";
+                    var gioVaoHT = _currentStatus.GioVao?.ToString("HH:mm") ?? "N/A";
+                    var gioRaHT = _currentStatus.GioRa?.ToString("HH:mm") ?? "N/A";
+                    lblTrangThaiHienTai.Text = $"🎉 Hoàn thành ({gioVaoHT} - {gioRaHT})";
                     lblTrangThaiHienTai.ForeColor = Color.LightBlue;
                     break;
                 case "LichDaKhoa":
@@ -1084,18 +1108,66 @@ namespace VuToanThang_23110329.Forms
                     break;
             }
 
-            // Update ca info
-            if (!string.IsNullOrEmpty(_currentStatus.TenCa))
+            // Update ca info based on status
+            if (_currentStatus.KhongCoLich)
             {
-                lblThongTinCa.Text = $"Ca làm việc: {_currentStatus.TenCa} ({_currentStatus.ThoiGianCa})";
+                lblThongTinCa.Text = "📅 Hôm nay không có ca làm việc";
+                lblThongTinCa.ForeColor = Color.Orange;
+                lblThongTinChamCong.Text = "Bạn không có lịch làm việc trong ngày hôm nay";
+                lblThongTinChamCong.ForeColor = Color.LightGray;
+            }
+            else if (!string.IsNullOrEmpty(_currentStatus.TenCa))
+            {
+                var ngayLam = _currentStatus.NgayLam.ToString("dd/MM/yyyy");
+                var thoiGianCa = _currentStatus.ThoiGianCa;
+                
+                lblThongTinCa.Text = $"📋 Ca hôm nay: {_currentStatus.TenCa}";
+                lblThongTinCa.ForeColor = Color.LightBlue;
+                
+                // Hiển thị thông tin chấm công thực tế
+                var thongTinChiTiet = $"🕐 Ca: {thoiGianCa} | 📅 {ngayLam}";
+                
+                if (_currentStatus.GioVao.HasValue && _currentStatus.GioRa.HasValue)
+                {
+                    // Đã hoàn thành chấm công
+                    var gioVao = _currentStatus.GioVao.Value.ToString("HH:mm");
+                    var gioRa = _currentStatus.GioRa.Value.ToString("HH:mm");
+                    var gioCong = _currentStatus.GioCong?.ToString("0.0") ?? "0";
+                    thongTinChiTiet = $"✅ Vào: {gioVao} | Ra: {gioRa} | Công: {gioCong}h";
+                    
+                    if (_currentStatus.DiTrePhut > 0 || _currentStatus.VeSomPhut > 0)
+                    {
+                        var diTre = _currentStatus.DiTrePhut > 0 ? $" | 🔴 Trễ: {_currentStatus.DiTrePhut}p" : "";
+                        var veSom = _currentStatus.VeSomPhut > 0 ? $" | 🟠 Sớm: {_currentStatus.VeSomPhut}p" : "";
+                        thongTinChiTiet += diTre + veSom;
+                    }
+                }
+                else if (_currentStatus.GioVao.HasValue)
+                {
+                    // Đã check in, chưa check out
+                    var gioVao = _currentStatus.GioVao.Value.ToString("HH:mm");
+                    thongTinChiTiet = $"🟡 Đã vào lúc: {gioVao} | Chưa check out";
+                }
+                else
+                {
+                    // Chưa check in
+                    if (_currentStatus.GioSomNhatCheckIn.HasValue)
+                    {
+                        var gioCheckIn = _currentStatus.GioSomNhatCheckIn.Value.ToString("HH:mm");
+                        thongTinChiTiet += $" | ⏰ Check in từ: {gioCheckIn}";
+                    }
+                }
+                
+                lblThongTinChamCong.Text = thongTinChiTiet;
+                lblThongTinChamCong.ForeColor = Color.LightGray;
             }
             else
             {
-                lblThongTinCa.Text = "Không có thông tin ca làm việc";
+                lblThongTinCa.Text = "⚠️ Không có thông tin ca làm việc";
+                lblThongTinCa.ForeColor = Color.Orange;
+                lblThongTinChamCong.Text = "Vui lòng liên hệ quản lý để được hỗ trợ";
+                lblThongTinChamCong.ForeColor = Color.LightGray;
             }
-
-            // Update attendance info
-            lblThongTinChamCong.Text = $"Chấm công: {_currentStatus.ThongTinChamCong}";
         }
 
         private void UpdateButtonStates()
@@ -1123,6 +1195,16 @@ namespace VuToanThang_23110329.Forms
             }
             
             btnCheckOut.BackColor = btnCheckOut.Enabled ? Color.FromArgb(244, 67, 54) : Color.Gray;
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                _refreshTimer?.Stop();
+                _refreshTimer?.Dispose();
+            }
+            base.Dispose(disposing);
         }
     }
 }
