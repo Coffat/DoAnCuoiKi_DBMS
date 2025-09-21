@@ -295,13 +295,17 @@ namespace VuToanThang_23110329.Repositories
         {
             try
             {
+                System.Diagnostics.Debug.WriteLine($"GetTrangThaiChamCong called with MaNV: {maNV}, NgayLam: {ngayLam}");
+                
                 var parameters = new[]
                 {
                     SqlHelper.CreateParameter("@MaNV", maNV),
                     SqlHelper.CreateParameter("@NgayLam", ngayLam)
                 };
 
+                System.Diagnostics.Debug.WriteLine("Calling sp_GetTrangThaiChamCong...");
                 var dt = SqlHelper.ExecuteDataTable("sp_GetTrangThaiChamCong", parameters);
+                System.Diagnostics.Debug.WriteLine($"Stored procedure returned {dt.Rows.Count} rows");
                 
                 if (dt.Rows.Count > 0)
                 {

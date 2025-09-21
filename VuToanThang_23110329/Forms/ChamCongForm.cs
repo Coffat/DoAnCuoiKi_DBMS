@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
-using VuToanThang_23110329.Data;
 using VuToanThang_23110329.Models;
 using VuToanThang_23110329.Repositories;
+using VuToanThang_23110329.Data;
 
 namespace VuToanThang_23110329.Forms
 {
@@ -952,15 +952,26 @@ namespace VuToanThang_23110329.Forms
         // Event Handlers for Check In/Out
         private void tabControl_SelectedIndexChanged(object sender, EventArgs e)
         {
-            // Load status when Check In/Out tab is selected
-            if (tabControl.SelectedTab?.Text == "Check In/Out")
+            try
             {
-                LoadCurrentStatus();
-                _refreshTimer.Start(); // Start auto-refresh
+                var selectedTabText = tabControl.SelectedTab?.Text ?? "null";
+                System.Diagnostics.Debug.WriteLine($"Tab changed to: {selectedTabText}");
+                
+                // Load status when Check In/Out tab is selected
+                if (tabControl.SelectedTab?.Text == "Check In/Out")
+                {
+                    System.Diagnostics.Debug.WriteLine("Loading status for Check In/Out tab");
+                    LoadCurrentStatus();
+                    _refreshTimer?.Start(); // Start auto-refresh
+                }
+                else
+                {
+                    _refreshTimer?.Stop(); // Stop auto-refresh when not on check in/out tab
+                }
             }
-            else
+            catch (Exception ex)
             {
-                _refreshTimer.Stop(); // Stop auto-refresh when not on check in/out tab
+                System.Diagnostics.Debug.WriteLine($"tabControl_SelectedIndexChanged Error: {ex}");
             }
         }
 
@@ -1031,37 +1042,89 @@ namespace VuToanThang_23110329.Forms
 
         private void btnRefreshStatus_Click(object sender, EventArgs e)
         {
+            // Test database connection first
+            TestDatabaseConnection();
             LoadCurrentStatus();
+        }
+
+        private void TestDatabaseConnection()
+        {
+            try
+            {
+                lblTrangThaiHienTai.Text = "🔄 Đang kiểm tra kết nối database...";
+                lblTrangThaiHienTai.ForeColor = Color.Yellow;
+                Application.DoEvents();
+
+                // Test simple query
+                var testResult = SqlHelper.ExecuteScalar("SELECT COUNT(*) FROM NhanVien");
+                System.Diagnostics.Debug.WriteLine($"Database test result: {testResult}");
+                
+                lblTrangThaiHienTai.Text = $"✅ Database OK - Có {testResult} nhân viên";
+                lblTrangThaiHienTai.ForeColor = Color.LightGreen;
+                Application.DoEvents();
+                
+                System.Threading.Thread.Sleep(1000); // Show result for 1 second
+            }
+            catch (Exception ex)
+            {
+                lblTrangThaiHienTai.Text = $"❌ Lỗi database: {ex.Message}";
+                lblTrangThaiHienTai.ForeColor = Color.Red;
+                System.Diagnostics.Debug.WriteLine($"Database connection error: {ex}");
+                throw; // Re-throw to stop further processing
+            }
         }
 
         private void LoadCurrentStatus()
         {
-            if (VuToanThang_23110329.Data.CurrentUser.CurrentEmployeeId == null)
-            {
-                lblTrangThaiHienTai.Text = "Không tìm thấy thông tin nhân viên";
-                lblTrangThaiHienTai.ForeColor = Color.Red;
-                return;
-            }
-
             try
             {
-                _currentStatus = _chamCongRepository.GetTrangThaiChamCong(VuToanThang_23110329.Data.CurrentUser.CurrentEmployeeId.Value);
+                // Debug info
+                lblTrangThaiHienTai.Text = "🔄 Đang kiểm tra thông tin nhân viên...";
+                lblTrangThaiHienTai.ForeColor = Color.Yellow;
+                Application.DoEvents(); // Force UI update
+
+                if (VuToanThang_23110329.Data.CurrentUser.CurrentEmployeeId == null)
+                {
+                    lblTrangThaiHienTai.Text = "❌ Không tìm thấy thông tin nhân viên";
+                    lblTrangThaiHienTai.ForeColor = Color.Red;
+                    lblThongTinCa.Text = "Vui lòng đăng nhập lại";
+                    lblThongTinChamCong.Text = "Không có thông tin nhân viên trong session";
+                    return;
+                }
+
+                var maNV = VuToanThang_23110329.Data.CurrentUser.CurrentEmployeeId.Value;
+                lblTrangThaiHienTai.Text = $"🔄 Đang tải trạng thái cho nhân viên {maNV}...";
+                lblTrangThaiHienTai.ForeColor = Color.Yellow;
+                Application.DoEvents(); // Force UI update
+
+                _currentStatus = _chamCongRepository.GetTrangThaiChamCong(maNV);
 
                 if (_currentStatus != null)
                 {
+                    lblTrangThaiHienTai.Text = "✅ Đã tải xong, đang cập nhật giao diện...";
+                    lblTrangThaiHienTai.ForeColor = Color.LightGreen;
+                    Application.DoEvents(); // Force UI update
+
                     UpdateStatusDisplay();
                     UpdateButtonStates();
                 }
                 else
                 {
-                    lblTrangThaiHienTai.Text = "Không thể tải trạng thái";
-                    lblTrangThaiHienTai.ForeColor = Color.Red;
+                    lblTrangThaiHienTai.Text = "⚠️ Không có dữ liệu trạng thái";
+                    lblTrangThaiHienTai.ForeColor = Color.Orange;
+                    lblThongTinCa.Text = "Không tìm thấy thông tin ca làm việc";
+                    lblThongTinChamCong.Text = "Vui lòng liên hệ quản lý để được hỗ trợ";
                 }
             }
             catch (Exception ex)
             {
-                lblTrangThaiHienTai.Text = $"Lỗi: {ex.Message}";
+                lblTrangThaiHienTai.Text = $"❌ Lỗi: {ex.Message}";
                 lblTrangThaiHienTai.ForeColor = Color.Red;
+                lblThongTinCa.Text = "Có lỗi xảy ra khi tải dữ liệu";
+                lblThongTinChamCong.Text = $"Chi tiết: {ex.GetType().Name}";
+                
+                // Log chi tiết để debug
+                System.Diagnostics.Debug.WriteLine($"LoadCurrentStatus Error: {ex}");
             }
         }
 
