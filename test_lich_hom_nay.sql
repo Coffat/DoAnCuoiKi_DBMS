@@ -15,14 +15,14 @@ DELETE FROM LichPhanCa WHERE NgayLam = @NgayHomNay;
 
 -- Thêm lịch mới cho từng nhân viên
 INSERT INTO LichPhanCa (MaNV, NgayLam, MaCa, TrangThai, GhiChu) VALUES
-(1, @NgayHomNay, 4, N'Mo', N'Ca hành chính - HR'),           -- Bích Hằng - HR
-(2, @NgayHomNay, 4, N'Mo', N'Ca hành chính - Kế toán'),      -- Văn An - Kế toán  
-(3, @NgayHomNay, 1, N'Mo', N'Ca sáng - Quản lý'),            -- Minh Tuấn - Quản lý
-(4, @NgayHomNay, 2, N'Mo', N'Ca chiều - Quản lý'),           -- Kim Chi - Quản lý
-(5, @NgayHomNay, 2, N'Mo', N'Ca chiều - Thu ngân'),          -- Văn Dũng - Thu ngân
-(6, @NgayHomNay, 1, N'Mo', N'Ca sáng - Kho hàng'),           -- Mỹ Linh - Kho
-(7, @NgayHomNay, 3, N'Mo', N'Ca đêm - Bảo vệ'),              -- Tiến Mạnh - Bảo vệ
-(8, @NgayHomNay, 2, N'Mo', N'Ca chiều - Thu ngân');          -- Thảo - Thu ngân (nếu có tài khoản)
+(1, @NgayHomNay, 4, N'DuKien', N'Ca hành chính - HR'),           -- Bích Hằng - HR
+(2, @NgayHomNay, 4, N'DuKien', N'Ca hành chính - Kế toán'),      -- Văn An - Kế toán  
+(3, @NgayHomNay, 1, N'DuKien', N'Ca sáng - Quản lý'),            -- Minh Tuấn - Quản lý
+(4, @NgayHomNay, 2, N'DuKien', N'Ca chiều - Quản lý'),           -- Kim Chi - Quản lý
+(5, @NgayHomNay, 2, N'DuKien', N'Ca chiều - Thu ngân'),          -- Văn Dũng - Thu ngân
+(6, @NgayHomNay, 1, N'DuKien', N'Ca sáng - Kho hàng'),           -- Mỹ Linh - Kho
+(7, @NgayHomNay, 3, N'DuKien', N'Ca đêm - Bảo vệ'),              -- Tiến Mạnh - Bảo vệ
+(8, @NgayHomNay, 2, N'DuKien', N'Ca chiều - Thu ngân');          -- Thảo - Thu ngân (nếu có tài khoản)
 
 PRINT N'Đã thêm ' + CAST(@@ROWCOUNT AS NVARCHAR) + N' lịch làm việc cho hôm nay';
 

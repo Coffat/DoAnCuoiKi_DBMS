@@ -260,6 +260,9 @@ namespace VuToanThang_23110329.Forms
 
         private void InitializeForm()
         {
+            CreateControls();
+            LayoutControls();
+            SetupEventHandlers();
             LoadData();
             SetFormMode(false);
         }
@@ -268,6 +271,14 @@ namespace VuToanThang_23110329.Forms
         {
             try
             {
+                System.Diagnostics.Debug.WriteLine("DonTuNVForm.LoadData() called");
+                
+                if (cmbTrangThai == null)
+                {
+                    System.Diagnostics.Debug.WriteLine("ERROR: cmbTrangThai is null in LoadData");
+                    return;
+                }
+                
                 if (!VuToanThang_23110329.Data.CurrentUser.CurrentEmployeeId.HasValue)
                 {
                     ShowMessage("Không xác định được nhân viên hiện tại!", "Lỗi", MessageBoxIcon.Error);

@@ -360,6 +360,9 @@ namespace VuToanThang_23110329.Forms
 
         private void InitializeForm()
         {
+            CreateControls();
+            LayoutControls();
+            SetupEventHandlers();
             LoadData();
         }
 
@@ -367,6 +370,14 @@ namespace VuToanThang_23110329.Forms
         {
             try
             {
+                System.Diagnostics.Debug.WriteLine("DonTuSMForm.LoadData() called");
+                
+                if (cmbTrangThai == null)
+                {
+                    System.Diagnostics.Debug.WriteLine("ERROR: cmbTrangThai is null in LoadData");
+                    return;
+                }
+                
                 var donTus = _donTuRepository.GetAll();
 
                 // Apply filters
