@@ -202,5 +202,253 @@ BEGIN
 END
 GO
 
+-- 7) Check In - Nhân viên chấm công vào
+IF OBJECT_ID('dbo.sp_CheckIn','P') IS NOT NULL DROP PROCEDURE dbo.sp_CheckIn;
+GO
+CREATE PROCEDURE dbo.sp_CheckIn
+    @MaNV INT,
+    @NgayLam DATE = NULL,
+    @GioVao DATETIME2(0) = NULL
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET XACT_ABORT ON;
+
+    -- Mặc định là ngày hôm nay và giờ hiện tại
+    IF @NgayLam IS NULL SET @NgayLam = CAST(GETDATE() AS DATE);
+    IF @GioVao IS NULL SET @GioVao = GETDATE();
+
+    DECLARE @GioBatDau TIME(0), @GioKetThuc TIME(0), @TenCa NVARCHAR(60);
+    DECLARE @GioCheckIn TIME(0) = CAST(@GioVao AS TIME(0));
+    DECLARE @GioBatDauToday DATETIME2(0), @GioSomNhat DATETIME2(0);
+
+    BEGIN TRAN;
+
+    -- Kiểm tra nhân viên có lịch làm việc hôm nay không và lấy thông tin ca
+    SELECT @GioBatDau = cl.GioBatDau, @GioKetThuc = cl.GioKetThuc, @TenCa = cl.TenCa
+    FROM dbo.LichPhanCa lpc
+    INNER JOIN dbo.CaLam cl ON lpc.MaCa = cl.MaCa
+    WHERE lpc.MaNV = @MaNV AND lpc.NgayLam = @NgayLam AND lpc.TrangThai IN (N'DuKien', N'Mo');
+
+    IF @GioBatDau IS NULL
+    BEGIN
+        RAISERROR(N'Nhân viên không có lịch làm việc hôm nay hoặc lịch đã bị khóa.', 16, 1);
+        ROLLBACK; RETURN;
+    END
+
+    -- Tính toán giờ bắt đầu ca hôm nay và giờ sớm nhất được check in (15 phút trước)
+    SET @GioBatDauToday = DATETIMEFROMPARTS(YEAR(@NgayLam), MONTH(@NgayLam), DAY(@NgayLam), 
+                                           DATEPART(HOUR, @GioBatDau), DATEPART(MINUTE, @GioBatDau), 0, 0);
+    SET @GioSomNhat = DATEADD(MINUTE, -15, @GioBatDauToday);
+
+    -- Kiểm tra check in không được sớm quá 15 phút
+    IF @GioVao < @GioSomNhat
+    BEGIN
+        DECLARE @ThongBaoSom NVARCHAR(200) = N'Chỉ được check in sớm tối đa 15 phút trước giờ bắt đầu ca. ' +
+                                           N'Ca ' + @TenCa + N' bắt đầu lúc ' + FORMAT(@GioBatDau, 'HH:mm') + 
+                                           N'. Có thể check in từ ' + FORMAT(@GioSomNhat, 'HH:mm') + N'.';
+        RAISERROR(@ThongBaoSom, 16, 1);
+        ROLLBACK; RETURN;
+    END
+
+    -- Kiểm tra đã check in chưa
+    IF EXISTS (
+        SELECT 1 FROM dbo.ChamCong 
+        WHERE MaNV = @MaNV AND NgayLam = @NgayLam AND GioVao IS NOT NULL
+    )
+    BEGIN
+        RAISERROR(N'Nhân viên đã check in hôm nay rồi.', 16, 1);
+        ROLLBACK; RETURN;
+    END
+
+    -- Kiểm tra công đã bị khóa chưa
+    IF EXISTS (
+        SELECT 1 FROM dbo.ChamCong 
+        WHERE MaNV = @MaNV AND NgayLam = @NgayLam AND Khoa = 1
+    )
+    BEGIN
+        RAISERROR(N'Công kỳ này đã bị khóa, không thể check in.', 16, 1);
+        ROLLBACK; RETURN;
+    END
+
+    -- Upsert vào bảng ChamCong
+    MERGE dbo.ChamCong AS T
+    USING (SELECT @MaNV AS MaNV, @NgayLam AS NgayLam, @GioVao AS GioVao) AS S
+    ON (T.MaNV = S.MaNV AND T.NgayLam = S.NgayLam)
+    WHEN MATCHED THEN
+        UPDATE SET GioVao = S.GioVao
+    WHEN NOT MATCHED THEN
+        INSERT (MaNV, NgayLam, GioVao, GioRa, GioCong, DiTrePhut, VeSomPhut, Khoa)
+        VALUES (S.MaNV, S.NgayLam, S.GioVao, NULL, 0, 0, 0, 0);
+
+    COMMIT;
+    
+    -- Trả về thông tin check in
+    SELECT 
+        @MaNV AS MaNV,
+        @NgayLam AS NgayLam,
+        @GioVao AS GioVao,
+        N'Check in thành công' AS ThongBao;
+END
+GO
+
+-- 8) Check Out - Nhân viên chấm công ra
+IF OBJECT_ID('dbo.sp_CheckOut','P') IS NOT NULL DROP PROCEDURE dbo.sp_CheckOut;
+GO
+CREATE PROCEDURE dbo.sp_CheckOut
+    @MaNV INT,
+    @NgayLam DATE = NULL,
+    @GioRa DATETIME2(0) = NULL
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET XACT_ABORT ON;
+
+    -- Mặc định là ngày hôm nay và giờ hiện tại
+    IF @NgayLam IS NULL SET @NgayLam = CAST(GETDATE() AS DATE);
+    IF @GioRa IS NULL SET @GioRa = GETDATE();
+
+    BEGIN TRAN;
+
+    -- Kiểm tra đã check in chưa
+    IF NOT EXISTS (
+        SELECT 1 FROM dbo.ChamCong 
+        WHERE MaNV = @MaNV AND NgayLam = @NgayLam AND GioVao IS NOT NULL
+    )
+    BEGIN
+        RAISERROR(N'Nhân viên chưa check in hôm nay.', 16, 1);
+        ROLLBACK; RETURN;
+    END
+
+    -- Kiểm tra đã check out chưa
+    IF EXISTS (
+        SELECT 1 FROM dbo.ChamCong 
+        WHERE MaNV = @MaNV AND NgayLam = @NgayLam AND GioRa IS NOT NULL
+    )
+    BEGIN
+        RAISERROR(N'Nhân viên đã check out hôm nay rồi.', 16, 1);
+        ROLLBACK; RETURN;
+    END
+
+    -- Kiểm tra công đã bị khóa chưa
+    IF EXISTS (
+        SELECT 1 FROM dbo.ChamCong 
+        WHERE MaNV = @MaNV AND NgayLam = @NgayLam AND Khoa = 1
+    )
+    BEGIN
+        RAISERROR(N'Công kỳ này đã bị khóa, không thể check out.', 16, 1);
+        ROLLBACK; RETURN;
+    END
+
+    -- Kiểm tra giờ ra phải sau giờ vào
+    DECLARE @GioVao DATETIME2(0);
+    SELECT @GioVao = GioVao FROM dbo.ChamCong 
+    WHERE MaNV = @MaNV AND NgayLam = @NgayLam;
+
+    IF @GioRa <= @GioVao
+    BEGIN
+        RAISERROR(N'Giờ check out phải sau giờ check in.', 16, 1);
+        ROLLBACK; RETURN;
+    END
+
+    -- Cập nhật giờ ra
+    UPDATE dbo.ChamCong 
+    SET GioRa = @GioRa
+    WHERE MaNV = @MaNV AND NgayLam = @NgayLam;
+
+    COMMIT;
+    
+    -- Trả về thông tin check out
+    SELECT 
+        @MaNV AS MaNV,
+        @NgayLam AS NgayLam,
+        @GioVao AS GioVao,
+        @GioRa AS GioRa,
+        N'Check out thành công' AS ThongBao;
+END
+GO
+
+-- 9) Lấy trạng thái check in/out của nhân viên hôm nay
+IF OBJECT_ID('dbo.sp_GetTrangThaiChamCong','P') IS NOT NULL DROP PROCEDURE dbo.sp_GetTrangThaiChamCong;
+GO
+CREATE PROCEDURE dbo.sp_GetTrangThaiChamCong
+    @MaNV INT,
+    @NgayLam DATE = NULL
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    IF @NgayLam IS NULL SET @NgayLam = CAST(GETDATE() AS DATE);
+
+    DECLARE @GioHienTai DATETIME2(0) = GETDATE();
+
+    SELECT 
+        cc.MaNV,
+        cc.NgayLam,
+        cc.GioVao,
+        cc.GioRa,
+        cc.GioCong,
+        cc.DiTrePhut,
+        cc.VeSomPhut,
+        cc.Khoa,
+        lpc.MaCa,
+        cl.TenCa,
+        cl.GioBatDau,
+        cl.GioKetThuc,
+        lpc.TrangThai AS TrangThaiLich,
+        -- Tính giờ sớm nhất được check in (15 phút trước giờ bắt đầu ca)
+        DATEADD(MINUTE, -15, 
+            DATETIMEFROMPARTS(YEAR(@NgayLam), MONTH(@NgayLam), DAY(@NgayLam), 
+                             DATEPART(HOUR, cl.GioBatDau), DATEPART(MINUTE, cl.GioBatDau), 0, 0)
+        ) AS GioSomNhatCheckIn,
+        CASE 
+            WHEN cc.GioVao IS NULL THEN N'ChuaCheckIn'
+            WHEN cc.GioRa IS NULL THEN N'DaCheckIn'
+            ELSE N'DaCheckOut'
+        END AS TrangThaiChamCong,
+        CASE 
+            WHEN lpc.MaLich IS NULL THEN N'KhongCoLich'
+            WHEN lpc.TrangThai = N'Khoa' THEN N'LichDaKhoa'
+            WHEN cc.Khoa = 1 THEN N'CongDaKhoa'
+            WHEN cc.GioVao IS NULL THEN 
+                CASE 
+                    WHEN @GioHienTai < DATEADD(MINUTE, -15, 
+                        DATETIMEFROMPARTS(YEAR(@NgayLam), MONTH(@NgayLam), DAY(@NgayLam), 
+                                         DATEPART(HOUR, cl.GioBatDau), DATEPART(MINUTE, cl.GioBatDau), 0, 0))
+                    THEN N'ChuaDenGioCheckIn'
+                    ELSE N'CoTheCheckIn'
+                END
+            WHEN cc.GioRa IS NULL THEN N'CoTheCheckOut'
+            ELSE N'DaHoanThanh'
+        END AS TrangThaiHanhDong
+    FROM dbo.ChamCong cc
+    RIGHT JOIN dbo.LichPhanCa lpc ON cc.MaNV = lpc.MaNV AND cc.NgayLam = lpc.NgayLam
+    LEFT JOIN dbo.CaLam cl ON lpc.MaCa = cl.MaCa
+    WHERE lpc.MaNV = @MaNV AND lpc.NgayLam = @NgayLam;
+
+    -- Nếu không có lịch làm việc hôm nay
+    IF @@ROWCOUNT = 0
+    BEGIN
+        SELECT 
+            @MaNV AS MaNV,
+            @NgayLam AS NgayLam,
+            NULL AS GioVao,
+            NULL AS GioRa,
+            NULL AS GioCong,
+            NULL AS DiTrePhut,
+            NULL AS VeSomPhut,
+            NULL AS Khoa,
+            NULL AS MaCa,
+            NULL AS TenCa,
+            NULL AS GioBatDau,
+            NULL AS GioKetThuc,
+            NULL AS TrangThaiLich,
+            N'KhongCoLich' AS TrangThaiChamCong,
+            N'KhongCoLich' AS TrangThaiHanhDong;
+    END
+END
+GO
+
 PRINT N'=== HOÀN TẤT TẠO STORED PROCEDURES NÂNG CAO ===';
+PRINT N'=== ĐÃ THÊM STORED PROCEDURES CHECK IN/CHECK OUT ===';
 PRINT N'Tiếp theo chạy file: 05_Security_Triggers.sql';

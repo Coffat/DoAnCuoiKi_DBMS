@@ -22,9 +22,12 @@ namespace VuToanThang_23110329.Forms
         private ComboBox cmbNhanVien, cmbThangKhoa, cmbNamKhoa;
         private TextBox txtGhiChu;
         private Button btnTimKiem, btnCapNhat, btnKhoaCong, btnLamMoi, btnXuatBaoCao;
-        private Panel pnlFilter, pnlThongTin;
+        private Button btnCheckIn, btnCheckOut, btnRefreshStatus;
+        private Panel pnlFilter, pnlThongTin, pnlCheckInOut;
         private TabControl tabControl;
         private Label lblTongGioCong, lblDiTre, lblVeSom;
+        private Label lblTrangThaiHienTai, lblThongTinCa, lblThongTinChamCong;
+        private TrangThaiChamCong _currentStatus;
 
         public ChamCongForm()
         {
@@ -71,7 +74,14 @@ namespace VuToanThang_23110329.Forms
                 ForeColor = Color.White
             };
 
-            // Tab 3: Lock Period
+            // Tab 3: Check In/Out for Employees
+            var tabCheckInOut = new TabPage("Check In/Out")
+            {
+                BackColor = Color.FromArgb(50, 50, 50),
+                ForeColor = Color.White
+            };
+
+            // Tab 4: Lock Period
             var tabKhoaCong = new TabPage("Khóa công kỳ")
             {
                 BackColor = Color.FromArgb(50, 50, 50),
@@ -80,9 +90,10 @@ namespace VuToanThang_23110329.Forms
 
             CreateTab1Controls(tabChamCong);
             CreateTab2Controls(tabLichChamCong);
-            CreateTab3Controls(tabKhoaCong);
+            CreateTab3Controls(tabCheckInOut);
+            CreateTab4Controls(tabKhoaCong);
 
-            tabControl.TabPages.AddRange(new TabPage[] { tabChamCong, tabLichChamCong, tabKhoaCong });
+            tabControl.TabPages.AddRange(new TabPage[] { tabChamCong, tabLichChamCong, tabCheckInOut, tabKhoaCong });
 
             this.Controls.AddRange(new Control[] { lblTitle, tabControl });
         }
@@ -181,6 +192,112 @@ namespace VuToanThang_23110329.Forms
         }
 
         private void CreateTab3Controls(TabPage tab)
+        {
+            var lblTitle3 = new Label
+            {
+                Text = "CHECK IN / CHECK OUT",
+                Font = new Font("Segoe UI", 18, FontStyle.Bold),
+                ForeColor = Color.FromArgb(124, 77, 255),
+                AutoSize = true,
+                Location = new Point(20, 20)
+            };
+
+            // Panel chính cho check in/out
+            pnlCheckInOut = new Panel
+            {
+                BackColor = Color.FromArgb(60, 60, 60),
+                BorderStyle = BorderStyle.FixedSingle,
+                Size = new Size(600, 400),
+                Location = new Point(20, 70)
+            };
+
+            // Trạng thái hiện tại
+            lblTrangThaiHienTai = new Label
+            {
+                Text = "Đang tải trạng thái...",
+                Font = new Font("Segoe UI", 14, FontStyle.Bold),
+                ForeColor = Color.White,
+                AutoSize = true,
+                Location = new Point(20, 20)
+            };
+
+            // Thông tin ca làm việc
+            lblThongTinCa = new Label
+            {
+                Text = "Thông tin ca: Đang tải...",
+                Font = new Font("Segoe UI", 12),
+                ForeColor = Color.LightGray,
+                AutoSize = true,
+                Location = new Point(20, 60)
+            };
+
+            // Thông tin chấm công
+            lblThongTinChamCong = new Label
+            {
+                Text = "Chấm công: Đang tải...",
+                Font = new Font("Segoe UI", 12),
+                ForeColor = Color.LightGray,
+                AutoSize = true,
+                Location = new Point(20, 90)
+            };
+
+            // Buttons
+            btnCheckIn = new Button
+            {
+                Text = "CHECK IN",
+                BackColor = Color.FromArgb(46, 125, 50),
+                ForeColor = Color.White,
+                FlatStyle = FlatStyle.Flat,
+                Size = new Size(120, 50),
+                Font = new Font("Segoe UI", 12, FontStyle.Bold),
+                Location = new Point(50, 150)
+            };
+
+            btnCheckOut = new Button
+            {
+                Text = "CHECK OUT",
+                BackColor = Color.FromArgb(244, 67, 54),
+                ForeColor = Color.White,
+                FlatStyle = FlatStyle.Flat,
+                Size = new Size(120, 50),
+                Font = new Font("Segoe UI", 12, FontStyle.Bold),
+                Location = new Point(200, 150)
+            };
+
+            btnRefreshStatus = new Button
+            {
+                Text = "Làm mới",
+                BackColor = Color.FromArgb(96, 125, 139),
+                ForeColor = Color.White,
+                FlatStyle = FlatStyle.Flat,
+                Size = new Size(100, 35),
+                Font = new Font("Segoe UI", 10, FontStyle.Bold),
+                Location = new Point(350, 165)
+            };
+
+            // Hướng dẫn
+            var lblHuongDan = new Label
+            {
+                Text = "• Check In: Chấm công vào khi bắt đầu ca làm việc\n" +
+                       "• Chỉ được check in sớm tối đa 15 phút trước giờ bắt đầu ca\n" +
+                       "• Check Out: Chấm công ra khi kết thúc ca làm việc\n" +
+                       "• Chỉ có thể check in/out trong ngày có lịch làm việc\n" +
+                       "• Không thể thay đổi sau khi công đã bị khóa",
+                Font = new Font("Segoe UI", 10),
+                ForeColor = Color.Orange,
+                Size = new Size(500, 120),
+                Location = new Point(20, 250)
+            };
+
+            pnlCheckInOut.Controls.AddRange(new Control[] {
+                lblTrangThaiHienTai, lblThongTinCa, lblThongTinChamCong,
+                btnCheckIn, btnCheckOut, btnRefreshStatus, lblHuongDan
+            });
+
+            tab.Controls.AddRange(new Control[] { lblTitle3, pnlCheckInOut });
+        }
+
+        private void CreateTab4Controls(TabPage tab)
         {
             var lblTitle3 = new Label
             {
@@ -440,6 +557,9 @@ namespace VuToanThang_23110329.Forms
 
             // Layout DataGridViews to be responsive
             LayoutDataGridViews();
+            
+            // Layout Check In/Out panel if exists
+            LayoutCheckInOutPanel();
         }
 
         private void LayoutFilterControlsVertical()
@@ -546,6 +666,21 @@ namespace VuToanThang_23110329.Forms
             }
         }
 
+        private void LayoutCheckInOutPanel()
+        {
+            if (pnlCheckInOut == null) return;
+
+            int formWidth = this.ClientSize.Width - 40;
+            int formHeight = this.ClientSize.Height - 40;
+
+            // Center the panel horizontally
+            int panelWidth = Math.Min(600, formWidth - 40);
+            int panelHeight = 400;
+            
+            pnlCheckInOut.Size = new Size(panelWidth, panelHeight);
+            pnlCheckInOut.Location = new Point((formWidth - panelWidth) / 2 + 20, 70);
+        }
+
         private void SetupEventHandlers()
         {
             dgvChamCong.SelectionChanged += dgvChamCong_SelectionChanged;
@@ -553,6 +688,12 @@ namespace VuToanThang_23110329.Forms
             btnLamMoi.Click += btnLamMoi_Click;
             btnCapNhat.Click += btnCapNhat_Click;
             btnKhoaCong.Click += btnKhoaCong_Click;
+            btnCheckIn.Click += btnCheckIn_Click;
+            btnCheckOut.Click += btnCheckOut_Click;
+            btnRefreshStatus.Click += btnRefreshStatus_Click;
+            
+            // Load status when tab is selected
+            tabControl.SelectedIndexChanged += tabControl_SelectedIndexChanged;
         }
 
         private void InitializeForm()
@@ -649,17 +790,32 @@ namespace VuToanThang_23110329.Forms
         private void SetFormPermissions()
         {
             bool canManageAttendance = VuToanThang_23110329.Data.CurrentUser.HasPermission("MANAGE_ATTENDANCE");
+            bool isEmployee = VuToanThang_23110329.Data.CurrentUser.VaiTro == "NhanVien";
             
             btnCapNhat.Enabled = canManageAttendance;
-            btnKhoaCong.Enabled = VuToanThang_23110329.Data.CurrentUser.IsHR;
+            if (btnKhoaCong != null)
+                btnKhoaCong.Enabled = VuToanThang_23110329.Data.CurrentUser.IsHR;
             
             dtpGioVao.Enabled = canManageAttendance;
             dtpGioRa.Enabled = canManageAttendance;
             txtGhiChu.Enabled = canManageAttendance;
 
-            if (!canManageAttendance)
+            // Hide/show tabs based on role
+            if (tabControl?.TabPages != null && tabControl.TabPages.Count > 0)
             {
-                tabControl.TabPages.RemoveAt(2); // Remove lock tab for non-HR users
+                if (isEmployee)
+                {
+                    // Nhân viên chỉ thấy tab Check In/Out
+                    var checkInOutTab = tabControl.TabPages[2]; // Save Check In/Out tab
+                    tabControl.TabPages.Clear();
+                    tabControl.TabPages.Add(checkInOutTab);
+                }
+                else if (!VuToanThang_23110329.Data.CurrentUser.IsHR)
+                {
+                    // Quản lý/Kế toán không thấy tab khóa công
+                    if (tabControl.TabPages.Count > 3)
+                        tabControl.TabPages.RemoveAt(3); // Remove lock tab
+                }
             }
         }
 
@@ -785,6 +941,188 @@ namespace VuToanThang_23110329.Forms
                     ShowMessage($"Lỗi khóa công: {ex.Message}", "Lỗi", MessageBoxIcon.Error);
                 }
             }
+        }
+
+        // Event Handlers for Check In/Out
+        private void tabControl_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            // Load status when Check In/Out tab is selected
+            if (tabControl.SelectedTab?.Text == "Check In/Out")
+            {
+                LoadCurrentStatus();
+            }
+        }
+
+        private void btnCheckIn_Click(object sender, EventArgs e)
+        {
+            if (VuToanThang_23110329.Data.CurrentUser.MaNV == null)
+            {
+                ShowMessage("Không tìm thấy thông tin nhân viên!", "Lỗi", MessageBoxIcon.Error);
+                return;
+            }
+
+            try
+            {
+                var result = _chamCongRepository.CheckIn(VuToanThang_23110329.Data.CurrentUser.MaNV.Value);
+
+                if (result.Success)
+                {
+                    ShowMessage(result.Message, "Thành công", MessageBoxIcon.Information);
+                    LoadCurrentStatus(); // Refresh status
+                }
+                else
+                {
+                    ShowMessage(result.Message, "Lỗi", MessageBoxIcon.Error);
+                }
+            }
+            catch (Exception ex)
+            {
+                ShowMessage($"Lỗi check in: {ex.Message}", "Lỗi", MessageBoxIcon.Error);
+            }
+        }
+
+        private void btnCheckOut_Click(object sender, EventArgs e)
+        {
+            if (VuToanThang_23110329.Data.CurrentUser.MaNV == null)
+            {
+                ShowMessage("Không tìm thấy thông tin nhân viên!", "Lỗi", MessageBoxIcon.Error);
+                return;
+            }
+
+            try
+            {
+                var result = _chamCongRepository.CheckOut(VuToanThang_23110329.Data.CurrentUser.MaNV.Value);
+
+                if (result.Success)
+                {
+                    ShowMessage(result.Message, "Thành công", MessageBoxIcon.Information);
+                    LoadCurrentStatus(); // Refresh status
+                }
+                else
+                {
+                    ShowMessage(result.Message, "Lỗi", MessageBoxIcon.Error);
+                }
+            }
+            catch (Exception ex)
+            {
+                ShowMessage($"Lỗi check out: {ex.Message}", "Lỗi", MessageBoxIcon.Error);
+            }
+        }
+
+        private void btnRefreshStatus_Click(object sender, EventArgs e)
+        {
+            LoadCurrentStatus();
+        }
+
+        private void LoadCurrentStatus()
+        {
+            if (VuToanThang_23110329.Data.CurrentUser.MaNV == null)
+            {
+                lblTrangThaiHienTai.Text = "Không tìm thấy thông tin nhân viên";
+                lblTrangThaiHienTai.ForeColor = Color.Red;
+                return;
+            }
+
+            try
+            {
+                _currentStatus = _chamCongRepository.GetTrangThaiChamCong(VuToanThang_23110329.Data.CurrentUser.MaNV.Value);
+
+                if (_currentStatus != null)
+                {
+                    UpdateStatusDisplay();
+                    UpdateButtonStates();
+                }
+                else
+                {
+                    lblTrangThaiHienTai.Text = "Không thể tải trạng thái";
+                    lblTrangThaiHienTai.ForeColor = Color.Red;
+                }
+            }
+            catch (Exception ex)
+            {
+                lblTrangThaiHienTai.Text = $"Lỗi: {ex.Message}";
+                lblTrangThaiHienTai.ForeColor = Color.Red;
+            }
+        }
+
+        private void UpdateStatusDisplay()
+        {
+            if (_currentStatus == null) return;
+
+            // Update status text and color
+            switch (_currentStatus.TrangThaiHanhDong)
+            {
+                case "KhongCoLich":
+                    lblTrangThaiHienTai.Text = "Không có lịch làm việc hôm nay";
+                    lblTrangThaiHienTai.ForeColor = Color.Orange;
+                    break;
+                case "ChuaDenGioCheckIn":
+                    var gioCheckIn = _currentStatus.GioSomNhatCheckIn?.ToString("HH:mm") ?? "N/A";
+                    lblTrangThaiHienTai.Text = $"Chưa đến giờ check in (từ {gioCheckIn})";
+                    lblTrangThaiHienTai.ForeColor = Color.Orange;
+                    break;
+                case "CoTheCheckIn":
+                    lblTrangThaiHienTai.Text = "Sẵn sàng check in";
+                    lblTrangThaiHienTai.ForeColor = Color.LightGreen;
+                    break;
+                case "CoTheCheckOut":
+                    lblTrangThaiHienTai.Text = "Đã check in - Sẵn sàng check out";
+                    lblTrangThaiHienTai.ForeColor = Color.Yellow;
+                    break;
+                case "DaHoanThanh":
+                    lblTrangThaiHienTai.Text = "Đã hoàn thành chấm công hôm nay";
+                    lblTrangThaiHienTai.ForeColor = Color.LightBlue;
+                    break;
+                case "LichDaKhoa":
+                case "CongDaKhoa":
+                    lblTrangThaiHienTai.Text = "Lịch/Công đã bị khóa";
+                    lblTrangThaiHienTai.ForeColor = Color.Red;
+                    break;
+                default:
+                    lblTrangThaiHienTai.Text = _currentStatus.TrangThaiHanhDong;
+                    lblTrangThaiHienTai.ForeColor = Color.White;
+                    break;
+            }
+
+            // Update ca info
+            if (!string.IsNullOrEmpty(_currentStatus.TenCa))
+            {
+                lblThongTinCa.Text = $"Ca làm việc: {_currentStatus.TenCa} ({_currentStatus.ThoiGianCa})";
+            }
+            else
+            {
+                lblThongTinCa.Text = "Không có thông tin ca làm việc";
+            }
+
+            // Update attendance info
+            lblThongTinChamCong.Text = $"Chấm công: {_currentStatus.ThongTinChamCong}";
+        }
+
+        private void UpdateButtonStates()
+        {
+            if (_currentStatus == null)
+            {
+                btnCheckIn.Enabled = false;
+                btnCheckOut.Enabled = false;
+                return;
+            }
+
+            btnCheckIn.Enabled = _currentStatus.CoTheCheckIn;
+            btnCheckOut.Enabled = _currentStatus.CoTheCheckOut;
+
+            // Update button appearance and text
+            if (_currentStatus.ChuaDenGioCheckIn)
+            {
+                btnCheckIn.BackColor = Color.Gray;
+                btnCheckIn.Text = "CHƯA ĐẾN GIỜ";
+            }
+            else
+            {
+                btnCheckIn.BackColor = btnCheckIn.Enabled ? Color.FromArgb(46, 125, 50) : Color.Gray;
+                btnCheckIn.Text = "CHECK IN";
+            }
+            
+            btnCheckOut.BackColor = btnCheckOut.Enabled ? Color.FromArgb(244, 67, 54) : Color.Gray;
         }
     }
 }
