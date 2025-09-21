@@ -71,6 +71,43 @@ namespace VuToanThang_23110329.Repositories
             return list;
         }
 
+        public List<LichPhanCa> SearchByEmployeeIdOrName(string searchText, DateTime tuNgay, DateTime denNgay)
+        {
+            var list = new List<LichPhanCa>();
+            try
+            {
+                var parameters = new[]
+                {
+                    SqlHelper.CreateParameter("@SearchText", $"%{searchText}%"),
+                    SqlHelper.CreateParameter("@TuNgay", tuNgay),
+                    SqlHelper.CreateParameter("@DenNgay", denNgay)
+                };
+
+                var dt = SqlHelper.ExecuteDataTable(@"
+                    SELECT lpc.*, nv.HoTen as TenNhanVien, cl.TenCa, cl.GioBatDau, cl.GioKetThuc, cl.HeSoCa
+                    FROM LichPhanCa lpc
+                    JOIN NhanVien nv ON lpc.MaNV = nv.MaNV
+                    JOIN CaLam cl ON lpc.MaCa = cl.MaCa
+                    WHERE lpc.NgayLam BETWEEN @TuNgay AND @DenNgay
+                    AND (
+                        CAST(lpc.MaNV AS NVARCHAR) LIKE @SearchText 
+                        OR nv.HoTen LIKE @SearchText
+                        OR CAST(nv.MaNV AS NVARCHAR) LIKE @SearchText
+                    )
+                    ORDER BY lpc.NgayLam DESC, nv.HoTen", parameters);
+                
+                foreach (DataRow row in dt.Rows)
+                {
+                    list.Add(MapFromDataRow(row));
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Lỗi tìm kiếm lịch phân ca: {ex.Message}", ex);
+            }
+            return list;
+        }
+
         public OperationResult Insert(LichPhanCa lichPhanCa)
         {
             try
@@ -193,10 +230,10 @@ namespace VuToanThang_23110329.Repositories
         {
             return new LichPhanCa
             {
-                MaLich = Convert.ToInt32(row["MaLich"]),
-                MaNV = Convert.ToInt32(row["MaNV"]),
-                MaCa = Convert.ToInt32(row["MaCa"]),
-                NgayLam = Convert.ToDateTime(row["NgayLam"]),
+                MaLich = row["MaLich"] != DBNull.Value ? Convert.ToInt32(row["MaLich"]) : 0,
+                MaNV = row["MaNV"] != DBNull.Value ? Convert.ToInt32(row["MaNV"]) : 0,
+                MaCa = row["MaCa"] != DBNull.Value ? Convert.ToInt32(row["MaCa"]) : 0,
+                NgayLam = row["NgayLam"] != DBNull.Value ? Convert.ToDateTime(row["NgayLam"]) : DateTime.Today,
                 TrangThai = row["TrangThai"]?.ToString(),
                 TenNhanVien = row["TenNhanVien"]?.ToString(),
                 TenCa = row["TenCa"]?.ToString(),

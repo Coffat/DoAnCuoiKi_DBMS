@@ -93,10 +93,10 @@ namespace VuToanThang_23110329.Repositories
                 var row = dt.Rows[0];
                 var user = new NguoiDung
                 {
-                    MaNguoiDung = Convert.ToInt32(row["MaNguoiDung"]),
-                    TenDangNhap = row["TenDangNhap"].ToString(),
-                    VaiTro = row["VaiTro"].ToString(),
-                    KichHoat = Convert.ToBoolean(row["KichHoat"])
+                    MaNguoiDung = row["MaNguoiDung"] != DBNull.Value ? Convert.ToInt32(row["MaNguoiDung"]) : 0,
+                    TenDangNhap = row["TenDangNhap"]?.ToString() ?? "",
+                    VaiTro = row["VaiTro"]?.ToString() ?? "",
+                    KichHoat = row["KichHoat"] != DBNull.Value ? Convert.ToBoolean(row["KichHoat"]) : false
                 };
 
                 NhanVien employee = null;

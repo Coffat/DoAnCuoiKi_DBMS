@@ -48,7 +48,7 @@ namespace VuToanThang_23110329.Forms
             {
                 BackColor = Color.FromArgb(60, 60, 60),
                 BorderStyle = BorderStyle.FixedSingle,
-                Size = new Size(750, 100)
+                Size = new Size(800, 100)
             };
 
             var lblThang = CreateLabel("Tháng:");
@@ -133,7 +133,7 @@ namespace VuToanThang_23110329.Forms
             // Attendance Summary Grid - responsive size
             dgvCongThang = CreateDataGridView();
             dgvCongThang.Location = new Point(20, 20);
-            dgvCongThang.Size = new Size(700, 400); // Smaller default size
+            dgvCongThang.Size = new Size(760, 380); // Fit within tab container
             dgvCongThang.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Bottom;
 
             var lblInfo = new Label
@@ -141,7 +141,7 @@ namespace VuToanThang_23110329.Forms
                 Text = "Tổng hợp công tháng - Dữ liệu từ view vw_CongThang",
                 ForeColor = Color.LightGray,
                 Font = new Font("Segoe UI", 10, FontStyle.Italic),
-                Location = new Point(20, 430),
+                Location = new Point(20, 410),
                 AutoSize = true,
                 Anchor = AnchorStyles.Bottom | AnchorStyles.Left
             };
@@ -156,7 +156,7 @@ namespace VuToanThang_23110329.Forms
             {
                 BackColor = Color.FromArgb(60, 60, 60),
                 BorderStyle = BorderStyle.FixedSingle,
-                Size = new Size(700, 60),
+                Size = new Size(760, 60),
                 Location = new Point(20, 20),
                 Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right
             };
@@ -170,7 +170,7 @@ namespace VuToanThang_23110329.Forms
             // Payroll Grid - responsive
             dgvBangLuong = CreateDataGridView();
             dgvBangLuong.Location = new Point(20, 100);
-            dgvBangLuong.Size = new Size(700, 300);
+            dgvBangLuong.Size = new Size(760, 280);
             dgvBangLuong.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Bottom;
 
             // Update Allowance Panel - responsive
@@ -178,8 +178,8 @@ namespace VuToanThang_23110329.Forms
             {
                 BackColor = Color.FromArgb(60, 60, 60),
                 BorderStyle = BorderStyle.FixedSingle,
-                Size = new Size(700, 80),
-                Location = new Point(20, 420),
+                Size = new Size(760, 70),
+                Location = new Point(20, 390),
                 Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right
             };
 
@@ -190,14 +190,15 @@ namespace VuToanThang_23110329.Forms
 
             tab.Controls.AddRange(new Control[] { pnlSummary, dgvBangLuong, pnlCapNhat });
 
-            // Layout summary controls
+            // Layout summary controls - fit within 760px panel
             lblTongNhanVien.Location = new Point(20, 20);
-            lblTongLuong.Location = new Point(200, 20);
-            lblTrangThai.Location = new Point(450, 20);
+            lblTongLuong.Location = new Point(250, 20);
+            lblTrangThai.Location = new Point(500, 20);
 
             // Layout update controls
             lblCapNhat.Location = new Point(20, 15);
-            btnCapNhatPhuCap.Location = new Point(20, 35);
+            btnCapNhatPhuCap.Location = new Point(20, 40);
+            btnCapNhatPhuCap.Size = new Size(150, 35);
         }
 
         private Label CreateStatLabel(string text, Color color)
@@ -292,15 +293,15 @@ namespace VuToanThang_23110329.Forms
             if (pnlThongSo != null)
             {
                 pnlThongSo.Location = new Point(20, 70);
-                pnlThongSo.Size = new Size(Math.Max(formWidth, 600), 100);
+                pnlThongSo.Size = new Size(Math.Max(formWidth, 760), 100);
 
                 // Adaptive parameter layout
-                if (formWidth < 600) // Small screen - vertical stacking
+                if (formWidth < 800) // Small screen - vertical stacking
                 {
                     LayoutParametersVertical();
                     pnlThongSo.Height = 140;
                 }
-                else if (formWidth < 900) // Medium screen - compact
+                else if (formWidth < 1100) // Medium screen - compact
                 {
                     LayoutParametersCompact();
                     pnlThongSo.Height = 100;
@@ -316,7 +317,7 @@ namespace VuToanThang_23110329.Forms
             if (tabControl != null)
             {
                 tabControl.Location = new Point(20, pnlThongSo != null ? pnlThongSo.Bottom + 20 : 190);
-                tabControl.Size = new Size(Math.Max(formWidth, 600), Math.Max(formHeight - (pnlThongSo != null ? pnlThongSo.Bottom + 40 : 210), 400));
+                tabControl.Size = new Size(Math.Max(formWidth, 760), Math.Max(formHeight - (pnlThongSo != null ? pnlThongSo.Bottom + 40 : 210), 480));
                 
                 // Layout tab contents
                 LayoutTabContents();
@@ -408,10 +409,13 @@ namespace VuToanThang_23110329.Forms
             nudHeSoOT.Location = new Point(320, 35);
             nudHeSoOT.Size = new Size(80, 25);
 
-            // Buttons
+            // Buttons - better spacing for larger form
             btnXemCong.Location = new Point(450, 25);
+            btnXemCong.Size = new Size(130, 35);
             btnChayLuong.Location = new Point(590, 25);
+            btnChayLuong.Size = new Size(130, 35);
             btnDongLuong.Location = new Point(730, 25);
+            btnDongLuong.Size = new Size(130, 35);
         }
 
         private void LayoutTabContents()
@@ -428,7 +432,17 @@ namespace VuToanThang_23110329.Forms
                     // Layout attendance tab
                     if (dgvCongThang != null)
                     {
-                        dgvCongThang.Size = new Size(Math.Max(tabWidth, 400), Math.Max(tabHeight - 60, 300));
+                        // Ensure DataGridView fits within tab bounds
+                        int maxWidth = Math.Min(tabWidth, 760);
+                        int maxHeight = Math.Min(tabHeight - 60, 380);
+                        dgvCongThang.Size = new Size(Math.Max(maxWidth, 400), Math.Max(maxHeight, 250));
+                        
+                        // Update info label position
+                        var lblInfo = dgvCongThang.Parent.Controls.OfType<Label>().FirstOrDefault();
+                        if (lblInfo != null)
+                        {
+                            lblInfo.Location = new Point(20, Math.Min(dgvCongThang.Bottom + 10, tabHeight - 30));
+                        }
                     }
                 }
                 else if (tab.Text == "Bảng lương")
@@ -440,17 +454,25 @@ namespace VuToanThang_23110329.Forms
                         {
                             if (panel.Location.Y == 20) // Summary panel
                             {
-                                panel.Size = new Size(Math.Max(tabWidth, 400), 60);
+                                // Ensure panel fits within tab width
+                                int maxWidth = Math.Min(tabWidth, 760);
+                                panel.Size = new Size(Math.Max(maxWidth, 400), 60);
                             }
-                            else if (panel.Location.Y > 400) // Update panel
+                            else if (panel.Location.Y > 300) // Update panel
                             {
-                                panel.Location = new Point(20, Math.Max(tabHeight - 60, 420));
-                                panel.Size = new Size(Math.Max(tabWidth, 400), 60);
+                                // Position at bottom but within tab bounds
+                                int maxWidth = Math.Min(tabWidth, 760);
+                                int bottomPos = Math.Min(tabHeight - 70, 390);
+                                panel.Location = new Point(20, Math.Max(bottomPos, 300));
+                                panel.Size = new Size(Math.Max(maxWidth, 400), 70);
                             }
                         }
                         else if (ctrl == dgvBangLuong)
                         {
-                            dgvBangLuong.Size = new Size(Math.Max(tabWidth, 400), Math.Max(tabHeight - 180, 250));
+                            // Ensure DataGridView fits within tab bounds
+                            int maxWidth = Math.Min(tabWidth, 760);
+                            int maxHeight = Math.Min(tabHeight - 160, 280);
+                            dgvBangLuong.Size = new Size(Math.Max(maxWidth, 400), Math.Max(maxHeight, 200));
                         }
                     }
                 }

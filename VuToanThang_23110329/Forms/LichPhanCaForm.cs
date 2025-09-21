@@ -63,12 +63,29 @@ namespace VuToanThang_23110329.Forms
         {
             try
             {
-                var lichPhanCas = VuToanThang_23110329.Data.CurrentUser.IsNhanVien && VuToanThang_23110329.Data.CurrentUser.CurrentEmployeeId.HasValue ?
-                    _lichPhanCaRepository.GetByEmployee(VuToanThang_23110329.Data.CurrentUser.CurrentEmployeeId.Value, dtpTuNgay.Value, dtpDenNgay.Value) :
-                    _lichPhanCaRepository.GetByPeriod(dtpTuNgay.Value, dtpDenNgay.Value);
+                List<LichPhanCa> lichPhanCas;
+
+                // Nếu có text tìm kiếm
+                if (!string.IsNullOrWhiteSpace(txtTimKiem?.Text))
+                {
+                    lichPhanCas = _lichPhanCaRepository.SearchByEmployeeIdOrName(txtTimKiem.Text.Trim(), dtpTuNgay.Value, dtpDenNgay.Value);
+                }
+                // Nếu là nhân viên thường, chỉ xem lịch của mình
+                else if (VuToanThang_23110329.Data.CurrentUser.IsNhanVien && VuToanThang_23110329.Data.CurrentUser.CurrentEmployeeId.HasValue)
+                {
+                    lichPhanCas = _lichPhanCaRepository.GetByEmployee(VuToanThang_23110329.Data.CurrentUser.CurrentEmployeeId.Value, dtpTuNgay.Value, dtpDenNgay.Value);
+                }
+                // Nếu là quản lý/HR, xem tất cả
+                else
+                {
+                    lichPhanCas = _lichPhanCaRepository.GetByPeriod(dtpTuNgay.Value, dtpDenNgay.Value);
+                }
 
                 dgvLichPhanCa.DataSource = lichPhanCas;
                 ConfigureDataGridView();
+                
+                // Cập nhật title với số kết quả
+                UpdateFormTitle(lichPhanCas.Count);
             }
             catch (Exception ex)
             {
@@ -204,11 +221,26 @@ namespace VuToanThang_23110329.Forms
                     control.Size = new Size(120, 25);
                     x += 130;
                 }
+                else if (control is TextBox)
+                {
+                    control.Location = new Point(x, y);
+                    control.Size = new Size(200, 25);
+                    x += 210;
+                }
                 else if (control is Button)
                 {
                     control.Location = new Point(x, y);
-                    control.Size = new Size(100, 30);
-                    x += 110;
+                    // Nút "Xóa" nhỏ hơn
+                    if (control.Text == "Xóa")
+                    {
+                        control.Size = new Size(60, 30);
+                        x += 70;
+                    }
+                    else
+                    {
+                        control.Size = new Size(100, 30);
+                        x += 110;
+                    }
                 }
             }
         }
@@ -216,7 +248,7 @@ namespace VuToanThang_23110329.Forms
         private void LayoutActionButtons()
         {
             var buttons = this.Controls.OfType<Button>()
-                .Where(b => b != btnTimKiem && b != btnTaoLichTuan)
+                .Where(b => b != btnTimKiem && b != btnTaoLichTuan && b != btnXoaTimKiem)
                 .ToList();
 
             if (buttons.Count == 0) return;
@@ -483,6 +515,20 @@ namespace VuToanThang_23110329.Forms
             MessageBox.Show(message, title, MessageBoxButtons.OK, icon);
         }
 
+        private void UpdateFormTitle(int resultCount)
+        {
+            string baseTitle = "LỊCH PHÂN CA";
+            
+            if (!string.IsNullOrWhiteSpace(txtTimKiem?.Text))
+            {
+                this.Text = $"{baseTitle} - Tìm kiếm: '{txtTimKiem.Text.Trim()}' ({resultCount} kết quả)";
+            }
+            else
+            {
+                this.Text = $"{baseTitle} ({resultCount} bản ghi)";
+            }
+        }
+
         // Event Handlers
         private void dgvLichPhanCa_SelectionChanged(object sender, EventArgs e)
         {
@@ -496,6 +542,21 @@ namespace VuToanThang_23110329.Forms
 
         private void btnTimKiem_Click(object sender, EventArgs e)
         {
+            LoadData();
+        }
+
+        private void txtTimKiem_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                LoadData();
+                e.Handled = true;
+            }
+        }
+
+        private void btnXoaTimKiem_Click(object sender, EventArgs e)
+        {
+            txtTimKiem.Text = "";
             LoadData();
         }
 

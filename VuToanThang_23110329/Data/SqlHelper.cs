@@ -193,5 +193,46 @@ namespace VuToanThang_23110329.Data
                 return false;
             }
         }
+
+        /// <summary>
+        /// Safe conversion methods to handle DBNull values
+        /// </summary>
+        public static class SafeConvert
+        {
+            public static int ToInt32(object value, int defaultValue = 0)
+            {
+                return value != DBNull.Value && value != null ? Convert.ToInt32(value) : defaultValue;
+            }
+
+            public static decimal ToDecimal(object value, decimal defaultValue = 0m)
+            {
+                return value != DBNull.Value && value != null ? Convert.ToDecimal(value) : defaultValue;
+            }
+
+            public static DateTime ToDateTime(object value, DateTime? defaultValue = null)
+            {
+                return value != DBNull.Value && value != null ? Convert.ToDateTime(value) : (defaultValue ?? DateTime.Today);
+            }
+
+            public static bool ToBoolean(object value, bool defaultValue = false)
+            {
+                return value != DBNull.Value && value != null ? Convert.ToBoolean(value) : defaultValue;
+            }
+
+            public static string ToString(object value, string defaultValue = "")
+            {
+                return value != DBNull.Value && value != null ? value.ToString() : defaultValue;
+            }
+
+            public static TimeSpan ToTimeSpan(object value, TimeSpan? defaultValue = null)
+            {
+                return value != DBNull.Value && value != null ? TimeSpan.Parse(value.ToString()) : (defaultValue ?? TimeSpan.Zero);
+            }
+
+            public static T? ToNullable<T>(object value) where T : struct
+            {
+                return value != DBNull.Value && value != null ? (T?)Convert.ChangeType(value, typeof(T)) : null;
+            }
+        }
     }
 }

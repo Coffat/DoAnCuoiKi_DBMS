@@ -148,14 +148,14 @@ namespace VuToanThang_23110329.Repositories
         {
             return new DonTu
             {
-                MaDon = Convert.ToInt32(row["MaDon"]),
-                MaNV = Convert.ToInt32(row["MaNV"]),
-                Loai = row["Loai"].ToString(),
-                TuLuc = Convert.ToDateTime(row["TuLuc"]),
-                DenLuc = Convert.ToDateTime(row["DenLuc"]),
+                MaDon = row["MaDon"] != DBNull.Value ? Convert.ToInt32(row["MaDon"]) : 0,
+                MaNV = row["MaNV"] != DBNull.Value ? Convert.ToInt32(row["MaNV"]) : 0,
+                Loai = row["Loai"]?.ToString() ?? "",
+                TuLuc = row["TuLuc"] != DBNull.Value ? Convert.ToDateTime(row["TuLuc"]) : DateTime.Today,
+                DenLuc = row["DenLuc"] != DBNull.Value ? Convert.ToDateTime(row["DenLuc"]) : DateTime.Today,
                 SoGio = row["SoGio"] != DBNull.Value ? Convert.ToDecimal(row["SoGio"]) : (decimal?)null,
                 LyDo = row["LyDo"]?.ToString(),
-                TrangThai = row["TrangThai"].ToString(),
+                TrangThai = row["TrangThai"]?.ToString() ?? "",
                 DuyetBoi = row["DuyetBoi"] != DBNull.Value ? Convert.ToInt32(row["DuyetBoi"]) : (int?)null,
                 TenNhanVien = row["TenNhanVien"]?.ToString(),
                 TenNguoiDuyet = row["TenNguoiDuyet"]?.ToString()

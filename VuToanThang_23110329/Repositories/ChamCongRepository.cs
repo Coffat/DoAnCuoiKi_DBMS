@@ -181,12 +181,12 @@ namespace VuToanThang_23110329.Repositories
                 {
                     list.Add(new vw_CongThang
                     {
-                        MaNV = Convert.ToInt32(row["MaNV"]),
-                        Nam = Convert.ToInt32(row["Nam"]),
-                        Thang = Convert.ToInt32(row["Thang"]),
-                        TongGioCong = Convert.ToDecimal(row["TongGioCong"]),
-                        TongPhutDiTre = Convert.ToInt32(row["TongPhutDiTre"]),
-                        TongPhutVeSom = Convert.ToInt32(row["TongPhutVeSom"])
+                        MaNV = row["MaNV"] != DBNull.Value ? Convert.ToInt32(row["MaNV"]) : 0,
+                        Nam = row["Nam"] != DBNull.Value ? Convert.ToInt32(row["Nam"]) : DateTime.Now.Year,
+                        Thang = row["Thang"] != DBNull.Value ? Convert.ToInt32(row["Thang"]) : DateTime.Now.Month,
+                        TongGioCong = row["TongGioCong"] != DBNull.Value ? Convert.ToDecimal(row["TongGioCong"]) : 0m,
+                        TongPhutDiTre = row["TongPhutDiTre"] != DBNull.Value ? Convert.ToInt32(row["TongPhutDiTre"]) : 0,
+                        TongPhutVeSom = row["TongPhutVeSom"] != DBNull.Value ? Convert.ToInt32(row["TongPhutVeSom"]) : 0
                     });
                 }
             }
@@ -220,9 +220,9 @@ namespace VuToanThang_23110329.Repositories
                         Message = row["ThongBao"].ToString(),
                         Data = new
                         {
-                            MaNV = Convert.ToInt32(row["MaNV"]),
-                            NgayLam = Convert.ToDateTime(row["NgayLam"]),
-                            GioVao = Convert.ToDateTime(row["GioVao"])
+                            MaNV = row["MaNV"] != DBNull.Value ? Convert.ToInt32(row["MaNV"]) : 0,
+                            NgayLam = row["NgayLam"] != DBNull.Value ? Convert.ToDateTime(row["NgayLam"]) : DateTime.Today,
+                            GioVao = row["GioVao"] != DBNull.Value ? Convert.ToDateTime(row["GioVao"]) : DateTime.Now
                         }
                     };
                 }
@@ -266,10 +266,10 @@ namespace VuToanThang_23110329.Repositories
                         Message = row["ThongBao"].ToString(),
                         Data = new
                         {
-                            MaNV = Convert.ToInt32(row["MaNV"]),
-                            NgayLam = Convert.ToDateTime(row["NgayLam"]),
-                            GioVao = Convert.ToDateTime(row["GioVao"]),
-                            GioRa = Convert.ToDateTime(row["GioRa"])
+                            MaNV = row["MaNV"] != DBNull.Value ? Convert.ToInt32(row["MaNV"]) : 0,
+                            NgayLam = row["NgayLam"] != DBNull.Value ? Convert.ToDateTime(row["NgayLam"]) : DateTime.Today,
+                            GioVao = row["GioVao"] != DBNull.Value ? Convert.ToDateTime(row["GioVao"]) : DateTime.Now,
+                            GioRa = row["GioRa"] != DBNull.Value ? Convert.ToDateTime(row["GioRa"]) : DateTime.Now
                         }
                     };
                 }
@@ -317,8 +317,8 @@ namespace VuToanThang_23110329.Repositories
                     
                     return new TrangThaiChamCong
                     {
-                        MaNV = Convert.ToInt32(row["MaNV"]),
-                        NgayLam = Convert.ToDateTime(row["NgayLam"]),
+                        MaNV = row["MaNV"] != DBNull.Value ? Convert.ToInt32(row["MaNV"]) : 0,
+                        NgayLam = row["NgayLam"] != DBNull.Value ? Convert.ToDateTime(row["NgayLam"]) : DateTime.Today,
                         GioVao = row["GioVao"] != DBNull.Value ? Convert.ToDateTime(row["GioVao"]) : (DateTime?)null,
                         GioRa = row["GioRa"] != DBNull.Value ? Convert.ToDateTime(row["GioRa"]) : (DateTime?)null,
                         GioCong = row["GioCong"] != DBNull.Value ? Convert.ToDecimal(row["GioCong"]) : (decimal?)null,
@@ -349,15 +349,15 @@ namespace VuToanThang_23110329.Repositories
         {
             return new ChamCong
             {
-                MaChamCong = Convert.ToInt32(row["MaChamCong"]),
-                MaNV = Convert.ToInt32(row["MaNV"]),
-                NgayLam = Convert.ToDateTime(row["NgayLam"]),
+                MaChamCong = row["MaChamCong"] != DBNull.Value ? Convert.ToInt32(row["MaChamCong"]) : 0,
+                MaNV = row["MaNV"] != DBNull.Value ? Convert.ToInt32(row["MaNV"]) : 0,
+                NgayLam = row["NgayLam"] != DBNull.Value ? Convert.ToDateTime(row["NgayLam"]) : DateTime.Today,
                 GioVao = row["GioVao"] != DBNull.Value ? Convert.ToDateTime(row["GioVao"]) : (DateTime?)null,
                 GioRa = row["GioRa"] != DBNull.Value ? Convert.ToDateTime(row["GioRa"]) : (DateTime?)null,
                 GioCong = row["GioCong"] != DBNull.Value ? Convert.ToDecimal(row["GioCong"]) : (decimal?)null,
                 DiTrePhut = row["DiTrePhut"] != DBNull.Value ? Convert.ToInt32(row["DiTrePhut"]) : (int?)null,
                 VeSomPhut = row["VeSomPhut"] != DBNull.Value ? Convert.ToInt32(row["VeSomPhut"]) : (int?)null,
-                Khoa = Convert.ToBoolean(row["Khoa"]),
+                Khoa = row["Khoa"] != DBNull.Value ? Convert.ToBoolean(row["Khoa"]) : false,
                 TenNhanVien = row["TenNhanVien"]?.ToString()
             };
         }
@@ -366,13 +366,13 @@ namespace VuToanThang_23110329.Repositories
         {
             return new vw_Lich_ChamCong_Ngay
             {
-                MaNV = Convert.ToInt32(row["MaNV"]),
-                HoTen = row["HoTen"].ToString(),
-                NgayLam = Convert.ToDateTime(row["NgayLam"]),
+                MaNV = row["MaNV"] != DBNull.Value ? Convert.ToInt32(row["MaNV"]) : 0,
+                HoTen = row["HoTen"]?.ToString() ?? "",
+                NgayLam = row["NgayLam"] != DBNull.Value ? Convert.ToDateTime(row["NgayLam"]) : DateTime.Today,
                 TenCa = row["TenCa"]?.ToString(),
-                GioBatDau = TimeSpan.Parse(row["GioBatDau"].ToString()),
-                GioKetThuc = TimeSpan.Parse(row["GioKetThuc"].ToString()),
-                HeSoCa = Convert.ToDecimal(row["HeSoCa"]),
+                GioBatDau = row["GioBatDau"] != DBNull.Value ? TimeSpan.Parse(row["GioBatDau"].ToString()) : TimeSpan.Zero,
+                GioKetThuc = row["GioKetThuc"] != DBNull.Value ? TimeSpan.Parse(row["GioKetThuc"].ToString()) : TimeSpan.Zero,
+                HeSoCa = row["HeSoCa"] != DBNull.Value ? Convert.ToDecimal(row["HeSoCa"]) : 1.0m,
                 TrangThaiLich = row["TrangThaiLich"]?.ToString(),
                 GioVao = row["GioVao"] != DBNull.Value ? Convert.ToDateTime(row["GioVao"]) : (DateTime?)null,
                 GioRa = row["GioRa"] != DBNull.Value ? Convert.ToDateTime(row["GioRa"]) : (DateTime?)null,

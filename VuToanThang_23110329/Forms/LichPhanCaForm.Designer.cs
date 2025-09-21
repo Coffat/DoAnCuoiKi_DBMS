@@ -16,8 +16,9 @@ namespace VuToanThang_23110329.Forms
         private DataGridView dgvLichPhanCa;
         private DateTimePicker dtpTuNgay, dtpDenNgay, dtpNgayLam;
         private ComboBox cmbNhanVien, cmbCaLam, cmbTrangThai;
-        private Button btnThem, btnSua, btnXoa, btnLuu, btnHuy, btnLamMoi, btnTimKiem, btnTaoLichTuan;
+        private Button btnThem, btnSua, btnXoa, btnLuu, btnHuy, btnLamMoi, btnTimKiem, btnTaoLichTuan, btnXoaTimKiem;
         private Panel pnlThongTin, pnlFilter;
+        private TextBox txtTimKiem;
 
         /// <summary>
         /// Clean up any resources being used.
@@ -78,14 +79,23 @@ namespace VuToanThang_23110329.Forms
             dtpDenNgay = CreateDatePicker();
             dtpDenNgay.Value = DateTime.Now.AddDays(7);
 
+            var lblTimKiem = CreateLabel("Tìm kiếm NV:");
+            txtTimKiem = CreateTextBox();
+            txtTimKiem.PlaceholderText = "Nhập ID hoặc tên nhân viên...";
+            txtTimKiem.Width = 200;
+
             btnTimKiem = CreateButton("Tìm kiếm", Color.FromArgb(33, 150, 243));
+            btnXoaTimKiem = CreateButton("Xóa", Color.FromArgb(158, 158, 158));
+            btnXoaTimKiem.Size = new Size(60, 30);
             btnTaoLichTuan = CreateButton("Tạo lịch tuần", Color.FromArgb(76, 175, 80));
 
             // Set up event handlers for filter buttons
             btnTimKiem.Click += btnTimKiem_Click;
+            btnXoaTimKiem.Click += btnXoaTimKiem_Click;
             btnTaoLichTuan.Click += btnTaoLichTuan_Click;
+            txtTimKiem.KeyDown += txtTimKiem_KeyDown;
 
-            pnlFilter.Controls.AddRange(new Control[] { lblTuNgay, dtpTuNgay, lblDenNgay, dtpDenNgay, btnTimKiem, btnTaoLichTuan });
+            pnlFilter.Controls.AddRange(new Control[] { lblTuNgay, dtpTuNgay, lblDenNgay, dtpDenNgay, lblTimKiem, txtTimKiem, btnTimKiem, btnXoaTimKiem, btnTaoLichTuan });
 
             // Buttons
             btnThem = CreateButton("Thêm", Color.FromArgb(46, 125, 50));

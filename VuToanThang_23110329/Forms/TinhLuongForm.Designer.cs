@@ -33,11 +33,13 @@ namespace VuToanThang_23110329.Forms
         private void InitializeComponent()
         {
             this.BackColor = Color.FromArgb(50, 50, 50);
-            this.Size = new Size(800, 550);
+            this.Size = new Size(1000, 700);
             this.Text = "Tính lương";
             this.Padding = new Padding(20);
-            this.MinimumSize = new Size(800, 550);
+            this.MinimumSize = new Size(900, 650);
             this.AutoScaleMode = AutoScaleMode.Dpi;
+            this.WindowState = FormWindowState.Normal;
+            this.StartPosition = FormStartPosition.CenterScreen;
             this.SuspendLayout();
             this.ResumeLayout(false);
         }
