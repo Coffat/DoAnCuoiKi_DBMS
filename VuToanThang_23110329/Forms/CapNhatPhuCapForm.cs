@@ -216,9 +216,9 @@ namespace VuToanThang_23110329.Forms
                         int maBangLuong = Convert.ToInt32(row.Cells["MaBangLuong"].Value);
                         var result = _repository.UpdatePhuCapKhauTru(
                             maBangLuong,
-                            (double)nudPhuCap.Value,
-                            (double)nudKhauTru.Value,
-                            (double)nudThueBH.Value
+                            nudPhuCap.Value,
+                            nudKhauTru.Value,
+                            nudThueBH.Value
                         );
 
                         if (result.Success)

@@ -166,6 +166,40 @@ namespace VuToanThang_23110329.Repositories
             return GetByEmployeeAndPeriod(maNV, nam, thang);
         }
 
+        public OperationResult GetBangLuongByThangNam(int thang, int nam)
+        {
+            try
+            {
+                var parameters = new[]
+                {
+                    SqlHelper.CreateParameter("@Nam", nam),
+                    SqlHelper.CreateParameter("@Thang", thang)
+                };
+
+                var dt = SqlHelper.ExecuteDataTable(@"
+                    SELECT bl.*, nv.HoTen as TenNhanVien, nv.ChucDanh, nv.PhongBan
+                    FROM BangLuong bl
+                    JOIN NhanVien nv ON bl.MaNV = nv.MaNV
+                    WHERE bl.Nam = @Nam AND bl.Thang = @Thang
+                    ORDER BY nv.HoTen", parameters);
+
+                return new OperationResult
+                {
+                    Success = true,
+                    Data = dt,
+                    Message = $"Lấy dữ liệu bảng lương tháng {thang}/{nam} thành công!"
+                };
+            }
+            catch (Exception ex)
+            {
+                return new OperationResult
+                {
+                    Success = false,
+                    Message = $"Lỗi lấy bảng lương: {ex.Message}"
+                };
+            }
+        }
+
         private BangLuong MapFromDataRow(DataRow row)
         {
             return new BangLuong

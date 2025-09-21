@@ -159,9 +159,9 @@ namespace VuToanThang_23110329.Forms
             {
                 var luongCB = _bangLuong.LuongCoBan;
                 var gioOT = _bangLuong.GioOT;
-                var luongOT = gioOT * (luongCB / 160) * 1.5; // 1.5x overtime rate
+                var luongOT = gioOT * (luongCB / 160m) * 1.5m; // 1.5x overtime rate
                 
-                var thucLanh = luongCB + luongOT + (double)nudPhuCap.Value - (double)nudKhauTru.Value - (double)nudThueBH.Value;
+                var thucLanh = luongCB + luongOT + nudPhuCap.Value - nudKhauTru.Value - nudThueBH.Value;
                 lblThucLanh.Text = $"Thực lãnh: {thucLanh:N0} VNĐ";
             }
             catch (Exception ex)
@@ -176,9 +176,9 @@ namespace VuToanThang_23110329.Forms
             {
                 var result = _repository.UpdatePhuCapKhauTru(
                     _bangLuong.MaBangLuong,
-                    (double)nudPhuCap.Value,
-                    (double)nudKhauTru.Value,
-                    (double)nudThueBH.Value
+                    nudPhuCap.Value,
+                    nudKhauTru.Value,
+                    nudThueBH.Value
                 );
 
                 if (result.Success)
