@@ -81,8 +81,13 @@ namespace VuToanThang_23110329.Forms
 
             var lblTimKiem = CreateLabel("Tìm kiếm NV:");
             txtTimKiem = CreateTextBox();
-            txtTimKiem.PlaceholderText = "Nhập ID hoặc tên nhân viên...";
             txtTimKiem.Width = 200;
+            txtTimKiem.ForeColor = Color.Gray;
+            txtTimKiem.Text = "Nhập ID hoặc tên nhân viên...";
+            
+            // Add placeholder behavior
+            txtTimKiem.Enter += txtTimKiem_Enter;
+            txtTimKiem.Leave += txtTimKiem_Leave;
 
             btnTimKiem = CreateButton("Tìm kiếm", Color.FromArgb(33, 150, 243));
             btnXoaTimKiem = CreateButton("Xóa", Color.FromArgb(158, 158, 158));

@@ -65,8 +65,8 @@ namespace VuToanThang_23110329.Forms
             {
                 List<LichPhanCa> lichPhanCas;
 
-                // Nếu có text tìm kiếm
-                if (!string.IsNullOrWhiteSpace(txtTimKiem?.Text))
+                // Nếu có text tìm kiếm (không phải placeholder)
+                if (!string.IsNullOrWhiteSpace(txtTimKiem?.Text) && txtTimKiem.Text != "Nhập ID hoặc tên nhân viên...")
                 {
                     lichPhanCas = _lichPhanCaRepository.SearchByEmployeeIdOrName(txtTimKiem.Text.Trim(), dtpTuNgay.Value, dtpDenNgay.Value);
                 }
@@ -519,7 +519,7 @@ namespace VuToanThang_23110329.Forms
         {
             string baseTitle = "LỊCH PHÂN CA";
             
-            if (!string.IsNullOrWhiteSpace(txtTimKiem?.Text))
+            if (!string.IsNullOrWhiteSpace(txtTimKiem?.Text) && txtTimKiem.Text != "Nhập ID hoặc tên nhân viên...")
             {
                 this.Text = $"{baseTitle} - Tìm kiếm: '{txtTimKiem.Text.Trim()}' ({resultCount} kết quả)";
             }
@@ -556,8 +556,32 @@ namespace VuToanThang_23110329.Forms
 
         private void btnXoaTimKiem_Click(object sender, EventArgs e)
         {
-            txtTimKiem.Text = "";
+            ClearSearchText();
             LoadData();
+        }
+
+        private void txtTimKiem_Enter(object sender, EventArgs e)
+        {
+            if (txtTimKiem.Text == "Nhập ID hoặc tên nhân viên...")
+            {
+                txtTimKiem.Text = "";
+                txtTimKiem.ForeColor = Color.White;
+            }
+        }
+
+        private void txtTimKiem_Leave(object sender, EventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace(txtTimKiem.Text))
+            {
+                txtTimKiem.Text = "Nhập ID hoặc tên nhân viên...";
+                txtTimKiem.ForeColor = Color.Gray;
+            }
+        }
+
+        private void ClearSearchText()
+        {
+            txtTimKiem.Text = "Nhập ID hoặc tên nhân viên...";
+            txtTimKiem.ForeColor = Color.Gray;
         }
 
         private void btnTaoLichTuan_Click(object sender, EventArgs e)
