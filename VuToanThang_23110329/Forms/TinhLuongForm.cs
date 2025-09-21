@@ -415,27 +415,49 @@ namespace VuToanThang_23110329.Forms
 
         private void InitializeForm()
         {
-            if (!VuToanThang_23110329.Data.CurrentUser.HasPermission("MANAGE_PAYROLL"))
+            try
             {
-                ShowMessage("Bạn không có quyền truy cập chức năng này!", "Cảnh báo", MessageBoxIcon.Warning);
-                this.Close();
-                return;
-            }
+                if (!VuToanThang_23110329.Data.CurrentUser.HasPermission("MANAGE_PAYROLL"))
+                {
+                    ShowMessage("Bạn không có quyền truy cập chức năng này!", "Cảnh báo", MessageBoxIcon.Warning);
+                    this.Close();
+                    return;
+                }
 
-            LoadAttendanceData();
-            LoadPayrollData();
+                // Create controls first
+                CreateControls();
+                LayoutControls();
+                SetupEventHandlers();
+                
+                // Then load data
+                LoadAttendanceData();
+                LoadPayrollData();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Lỗi khởi tạo form: {ex.Message}\n\nStack trace: {ex.StackTrace}", 
+                    "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void LoadAttendanceData()
         {
             try
             {
+                if (cmbThang?.SelectedItem == null || cmbNam?.SelectedItem == null)
+                {
+                    return; // Controls not ready yet
+                }
+
                 int thang = (int)cmbThang.SelectedItem;
                 int nam = (int)cmbNam.SelectedItem;
 
                 var congThang = _chamCongRepository.GetCongThang(nam, thang);
-                dgvCongThang.DataSource = congThang;
-                ConfigureAttendanceGrid();
+                if (dgvCongThang != null)
+                {
+                    dgvCongThang.DataSource = congThang;
+                    ConfigureAttendanceGrid();
+                }
             }
             catch (Exception ex)
             {
@@ -447,13 +469,21 @@ namespace VuToanThang_23110329.Forms
         {
             try
             {
+                if (cmbThang?.SelectedItem == null || cmbNam?.SelectedItem == null)
+                {
+                    return; // Controls not ready yet
+                }
+
                 int thang = (int)cmbThang.SelectedItem;
                 int nam = (int)cmbNam.SelectedItem;
 
                 var bangLuong = _bangLuongRepository.GetByPeriod(nam, thang);
-                dgvBangLuong.DataSource = bangLuong;
-                ConfigurePayrollGrid();
-                UpdatePayrollSummary(bangLuong);
+                if (dgvBangLuong != null)
+                {
+                    dgvBangLuong.DataSource = bangLuong;
+                    ConfigurePayrollGrid();
+                    UpdatePayrollSummary(bangLuong);
+                }
             }
             catch (Exception ex)
             {
@@ -581,6 +611,12 @@ namespace VuToanThang_23110329.Forms
 
         private void btnChayLuong_Click(object sender, EventArgs e)
         {
+            if (cmbThang?.SelectedItem == null || cmbNam?.SelectedItem == null)
+            {
+                ShowMessage("Vui lòng chọn tháng và năm!", "Cảnh báo", MessageBoxIcon.Warning);
+                return;
+            }
+
             int thang = (int)cmbThang.SelectedItem;
             int nam = (int)cmbNam.SelectedItem;
 
@@ -620,6 +656,12 @@ namespace VuToanThang_23110329.Forms
 
         private void btnDongLuong_Click(object sender, EventArgs e)
         {
+            if (cmbThang?.SelectedItem == null || cmbNam?.SelectedItem == null)
+            {
+                ShowMessage("Vui lòng chọn tháng và năm!", "Cảnh báo", MessageBoxIcon.Warning);
+                return;
+            }
+
             int thang = (int)cmbThang.SelectedItem;
             int nam = (int)cmbNam.SelectedItem;
 
@@ -656,6 +698,12 @@ namespace VuToanThang_23110329.Forms
 
         private void btnCapNhatPhuCap_Click(object sender, EventArgs e)
         {
+            if (cmbThang?.SelectedItem == null || cmbNam?.SelectedItem == null)
+            {
+                ShowMessage("Vui lòng chọn tháng và năm!", "Cảnh báo", MessageBoxIcon.Warning);
+                return;
+            }
+
             var form = new CapNhatPhuCapForm((int)cmbNam.SelectedItem, (int)cmbThang.SelectedItem);
             if (form.ShowDialog() == DialogResult.OK)
             {
