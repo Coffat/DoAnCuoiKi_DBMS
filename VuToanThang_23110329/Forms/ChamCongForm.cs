@@ -790,7 +790,7 @@ namespace VuToanThang_23110329.Forms
         private void SetFormPermissions()
         {
             bool canManageAttendance = VuToanThang_23110329.Data.CurrentUser.HasPermission("MANAGE_ATTENDANCE");
-            bool isEmployee = VuToanThang_23110329.Data.CurrentUser.VaiTro == "NhanVien";
+            bool isEmployee = VuToanThang_23110329.Data.CurrentUser.IsNhanVien;
             
             btnCapNhat.Enabled = canManageAttendance;
             if (btnKhoaCong != null)
@@ -955,7 +955,7 @@ namespace VuToanThang_23110329.Forms
 
         private void btnCheckIn_Click(object sender, EventArgs e)
         {
-            if (VuToanThang_23110329.Data.CurrentUser.MaNV == null)
+            if (VuToanThang_23110329.Data.CurrentUser.CurrentEmployeeId == null)
             {
                 ShowMessage("Không tìm thấy thông tin nhân viên!", "Lỗi", MessageBoxIcon.Error);
                 return;
@@ -963,7 +963,7 @@ namespace VuToanThang_23110329.Forms
 
             try
             {
-                var result = _chamCongRepository.CheckIn(VuToanThang_23110329.Data.CurrentUser.MaNV.Value);
+                var result = _chamCongRepository.CheckIn(VuToanThang_23110329.Data.CurrentUser.CurrentEmployeeId.Value);
 
                 if (result.Success)
                 {
@@ -983,7 +983,7 @@ namespace VuToanThang_23110329.Forms
 
         private void btnCheckOut_Click(object sender, EventArgs e)
         {
-            if (VuToanThang_23110329.Data.CurrentUser.MaNV == null)
+            if (VuToanThang_23110329.Data.CurrentUser.CurrentEmployeeId == null)
             {
                 ShowMessage("Không tìm thấy thông tin nhân viên!", "Lỗi", MessageBoxIcon.Error);
                 return;
@@ -991,7 +991,7 @@ namespace VuToanThang_23110329.Forms
 
             try
             {
-                var result = _chamCongRepository.CheckOut(VuToanThang_23110329.Data.CurrentUser.MaNV.Value);
+                var result = _chamCongRepository.CheckOut(VuToanThang_23110329.Data.CurrentUser.CurrentEmployeeId.Value);
 
                 if (result.Success)
                 {
@@ -1016,7 +1016,7 @@ namespace VuToanThang_23110329.Forms
 
         private void LoadCurrentStatus()
         {
-            if (VuToanThang_23110329.Data.CurrentUser.MaNV == null)
+            if (VuToanThang_23110329.Data.CurrentUser.CurrentEmployeeId == null)
             {
                 lblTrangThaiHienTai.Text = "Không tìm thấy thông tin nhân viên";
                 lblTrangThaiHienTai.ForeColor = Color.Red;
@@ -1025,7 +1025,7 @@ namespace VuToanThang_23110329.Forms
 
             try
             {
-                _currentStatus = _chamCongRepository.GetTrangThaiChamCong(VuToanThang_23110329.Data.CurrentUser.MaNV.Value);
+                _currentStatus = _chamCongRepository.GetTrangThaiChamCong(VuToanThang_23110329.Data.CurrentUser.CurrentEmployeeId.Value);
 
                 if (_currentStatus != null)
                 {

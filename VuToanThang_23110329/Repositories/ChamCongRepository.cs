@@ -321,7 +321,7 @@ namespace VuToanThang_23110329.Repositories
                         GioBatDau = row["GioBatDau"] != DBNull.Value ? TimeSpan.Parse(row["GioBatDau"].ToString()) : (TimeSpan?)null,
                         GioKetThuc = row["GioKetThuc"] != DBNull.Value ? TimeSpan.Parse(row["GioKetThuc"].ToString()) : (TimeSpan?)null,
                         TrangThaiLich = row["TrangThaiLich"]?.ToString(),
-                        TrangThaiChamCong = row["TrangThaiChamCong"]?.ToString(),
+                        TrangThaiChamCongHienTai = row["TrangThaiChamCong"]?.ToString(),
                         TrangThaiHanhDong = row["TrangThaiHanhDong"]?.ToString(),
                         GioSomNhatCheckIn = row["GioSomNhatCheckIn"] != DBNull.Value ? Convert.ToDateTime(row["GioSomNhatCheckIn"]) : (DateTime?)null
                     };

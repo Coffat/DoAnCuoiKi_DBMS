@@ -17,7 +17,7 @@ namespace VuToanThang_23110329.Models
         public TimeSpan? GioBatDau { get; set; }
         public TimeSpan? GioKetThuc { get; set; }
         public string TrangThaiLich { get; set; }
-        public string TrangThaiChamCong { get; set; }
+        public string TrangThaiChamCongHienTai { get; set; }
         public string TrangThaiHanhDong { get; set; }
         public DateTime? GioSomNhatCheckIn { get; set; }
 
@@ -54,6 +54,20 @@ namespace VuToanThang_23110329.Models
                     return $"Vào: {GioVao.Value:HH:mm} - Chưa ra";
                 }
                 return "Chưa chấm công";
+            }
+        }
+
+        public string TrangThaiDisplay
+        {
+            get
+            {
+                switch (TrangThaiChamCongHienTai)
+                {
+                    case "ChuaCheckIn": return "Chưa check in";
+                    case "DaCheckIn": return "Đã check in";
+                    case "DaCheckOut": return "Đã check out";
+                    default: return TrangThaiChamCongHienTai ?? "Không xác định";
+                }
             }
         }
     }
