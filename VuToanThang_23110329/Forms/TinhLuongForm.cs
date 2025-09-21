@@ -130,18 +130,20 @@ namespace VuToanThang_23110329.Forms
 
         private void CreateTab1Controls(TabPage tab)
         {
-            // Attendance Summary Grid
+            // Attendance Summary Grid - responsive size
             dgvCongThang = CreateDataGridView();
             dgvCongThang.Location = new Point(20, 20);
-            dgvCongThang.Size = new Size(1300, 500);
+            dgvCongThang.Size = new Size(700, 400); // Smaller default size
+            dgvCongThang.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Bottom;
 
             var lblInfo = new Label
             {
                 Text = "Tổng hợp công tháng - Dữ liệu từ view vw_CongThang",
                 ForeColor = Color.LightGray,
                 Font = new Font("Segoe UI", 10, FontStyle.Italic),
-                Location = new Point(20, 530),
-                AutoSize = true
+                Location = new Point(20, 430),
+                AutoSize = true,
+                Anchor = AnchorStyles.Bottom | AnchorStyles.Left
             };
 
             tab.Controls.AddRange(new Control[] { dgvCongThang, lblInfo });
@@ -149,13 +151,14 @@ namespace VuToanThang_23110329.Forms
 
         private void CreateTab2Controls(TabPage tab)
         {
-            // Summary Panel
+            // Summary Panel - responsive
             var pnlSummary = new Panel
             {
                 BackColor = Color.FromArgb(60, 60, 60),
                 BorderStyle = BorderStyle.FixedSingle,
-                Size = new Size(1300, 60),
-                Location = new Point(20, 20)
+                Size = new Size(700, 60),
+                Location = new Point(20, 20),
+                Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right
             };
 
             lblTongNhanVien = CreateStatLabel("Tổng nhân viên: 0", Color.White);
@@ -164,18 +167,20 @@ namespace VuToanThang_23110329.Forms
 
             pnlSummary.Controls.AddRange(new Control[] { lblTongNhanVien, lblTongLuong, lblTrangThai });
 
-            // Payroll Grid
+            // Payroll Grid - responsive
             dgvBangLuong = CreateDataGridView();
             dgvBangLuong.Location = new Point(20, 100);
-            dgvBangLuong.Size = new Size(1300, 400);
+            dgvBangLuong.Size = new Size(700, 300);
+            dgvBangLuong.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Bottom;
 
-            // Update Allowance Panel
+            // Update Allowance Panel - responsive
             var pnlCapNhat = new Panel
             {
                 BackColor = Color.FromArgb(60, 60, 60),
                 BorderStyle = BorderStyle.FixedSingle,
-                Size = new Size(1300, 80),
-                Location = new Point(20, 520)
+                Size = new Size(700, 80),
+                Location = new Point(20, 420),
+                Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right
             };
 
             var lblCapNhat = CreateLabel("Cập nhật phụ cấp/khấu trừ:");
@@ -284,29 +289,38 @@ namespace VuToanThang_23110329.Forms
             this.Controls[0].Location = new Point(20, 20);
 
             // Parameters Panel - responsive
-            pnlThongSo.Location = new Point(20, 70);
-            pnlThongSo.Size = new Size(formWidth, 100);
+            if (pnlThongSo != null)
+            {
+                pnlThongSo.Location = new Point(20, 70);
+                pnlThongSo.Size = new Size(Math.Max(formWidth, 600), 100);
 
-            // Adaptive parameter layout
-            if (formWidth < 600) // Small screen - vertical stacking
-            {
-                LayoutParametersVertical();
-                pnlThongSo.Height = 140;
-            }
-            else if (formWidth < 900) // Medium screen - compact
-            {
-                LayoutParametersCompact();
-                pnlThongSo.Height = 100;
-            }
-            else // Large screen - full layout
-            {
-                LayoutParametersFull();
-                pnlThongSo.Height = 100;
+                // Adaptive parameter layout
+                if (formWidth < 600) // Small screen - vertical stacking
+                {
+                    LayoutParametersVertical();
+                    pnlThongSo.Height = 140;
+                }
+                else if (formWidth < 900) // Medium screen - compact
+                {
+                    LayoutParametersCompact();
+                    pnlThongSo.Height = 100;
+                }
+                else // Large screen - full layout
+                {
+                    LayoutParametersFull();
+                    pnlThongSo.Height = 100;
+                }
             }
 
             // Tab Control - responsive
-            tabControl.Location = new Point(20, pnlThongSo.Bottom + 20);
-            tabControl.Size = new Size(formWidth, Math.Max(formHeight - (pnlThongSo.Bottom + 40), 350));
+            if (tabControl != null)
+            {
+                tabControl.Location = new Point(20, pnlThongSo != null ? pnlThongSo.Bottom + 20 : 190);
+                tabControl.Size = new Size(Math.Max(formWidth, 600), Math.Max(formHeight - (pnlThongSo != null ? pnlThongSo.Bottom + 40 : 210), 400));
+                
+                // Layout tab contents
+                LayoutTabContents();
+            }
         }
 
         private void LayoutParametersVertical()
@@ -398,6 +412,49 @@ namespace VuToanThang_23110329.Forms
             btnXemCong.Location = new Point(450, 25);
             btnChayLuong.Location = new Point(590, 25);
             btnDongLuong.Location = new Point(730, 25);
+        }
+
+        private void LayoutTabContents()
+        {
+            if (tabControl?.TabPages == null) return;
+
+            foreach (TabPage tab in tabControl.TabPages)
+            {
+                int tabWidth = tab.ClientSize.Width - 40;
+                int tabHeight = tab.ClientSize.Height - 40;
+
+                if (tab.Text == "Tổng hợp công tháng")
+                {
+                    // Layout attendance tab
+                    if (dgvCongThang != null)
+                    {
+                        dgvCongThang.Size = new Size(Math.Max(tabWidth, 400), Math.Max(tabHeight - 60, 300));
+                    }
+                }
+                else if (tab.Text == "Bảng lương")
+                {
+                    // Layout payroll tab
+                    foreach (Control ctrl in tab.Controls)
+                    {
+                        if (ctrl is Panel panel)
+                        {
+                            if (panel.Location.Y == 20) // Summary panel
+                            {
+                                panel.Size = new Size(Math.Max(tabWidth, 400), 60);
+                            }
+                            else if (panel.Location.Y > 400) // Update panel
+                            {
+                                panel.Location = new Point(20, Math.Max(tabHeight - 60, 420));
+                                panel.Size = new Size(Math.Max(tabWidth, 400), 60);
+                            }
+                        }
+                        else if (ctrl == dgvBangLuong)
+                        {
+                            dgvBangLuong.Size = new Size(Math.Max(tabWidth, 400), Math.Max(tabHeight - 180, 250));
+                        }
+                    }
+                }
+            }
         }
 
         private void SetupEventHandlers()
@@ -730,27 +787,128 @@ namespace VuToanThang_23110329.Forms
                 }
             }
         }
+
+        protected override void OnResize(EventArgs e)
+        {
+            base.OnResize(e);
+            PerformLayout();
+        }
     }
 
-    // Placeholder forms for payroll management
+    // Enhanced forms for payroll management
     public partial class CapNhatPhuCapForm : Form
     {
+        private readonly int _nam, _thang;
+        private readonly BangLuongRepository _repository;
+        private DataGridView dgvNhanVien;
+        private NumericUpDown nudPhuCap, nudKhauTru, nudThueBH;
+        private Button btnApplyAll, btnApplySelected;
+
         public CapNhatPhuCapForm(int nam, int thang)
         {
             InitializeComponent();
+            _nam = nam;
+            _thang = thang;
+            _repository = new BangLuongRepository();
             this.Text = $"Cập nhật phụ cấp - {thang}/{nam}";
+            this.Size = new Size(800, 600);
+            this.BackColor = Color.FromArgb(50, 50, 50);
             CreateControls();
+            LoadData();
         }
 
         private void CreateControls()
         {
             var lblTitle = new Label
             {
-                Text = "Cập nhật phụ cấp hàng loạt - Chức năng đang phát triển",
-                ForeColor = Color.White,
-                Font = new Font("Segoe UI", 14, FontStyle.Bold),
-                Location = new Point(50, 50),
+                Text = $"CẬP NHẬT PHỤ CẤP/KHẤU TRỪ - {_thang}/{_nam}",
+                ForeColor = Color.FromArgb(124, 77, 255),
+                Font = new Font("Segoe UI", 16, FontStyle.Bold),
+                Location = new Point(20, 20),
                 AutoSize = true
+            };
+
+            // Input panel
+            var pnlInput = new Panel
+            {
+                BackColor = Color.FromArgb(60, 60, 60),
+                BorderStyle = BorderStyle.FixedSingle,
+                Size = new Size(760, 80),
+                Location = new Point(20, 60)
+            };
+
+            var lblPhuCap = new Label { Text = "Phụ cấp:", ForeColor = Color.White, Location = new Point(20, 20), AutoSize = true };
+            nudPhuCap = new NumericUpDown
+            {
+                Maximum = 10000000,
+                DecimalPlaces = 0,
+                Increment = 50000,
+                BackColor = Color.FromArgb(70, 70, 70),
+                ForeColor = Color.White,
+                Size = new Size(100, 25),
+                Location = new Point(20, 40)
+            };
+
+            var lblKhauTru = new Label { Text = "Khấu trừ:", ForeColor = Color.White, Location = new Point(140, 20), AutoSize = true };
+            nudKhauTru = new NumericUpDown
+            {
+                Maximum = 10000000,
+                DecimalPlaces = 0,
+                Increment = 50000,
+                BackColor = Color.FromArgb(70, 70, 70),
+                ForeColor = Color.White,
+                Size = new Size(100, 25),
+                Location = new Point(140, 40)
+            };
+
+            var lblThueBH = new Label { Text = "Thuế BH:", ForeColor = Color.White, Location = new Point(260, 20), AutoSize = true };
+            nudThueBH = new NumericUpDown
+            {
+                Maximum = 10000000,
+                DecimalPlaces = 0,
+                Increment = 10000,
+                BackColor = Color.FromArgb(70, 70, 70),
+                ForeColor = Color.White,
+                Size = new Size(100, 25),
+                Location = new Point(260, 40)
+            };
+
+            btnApplyAll = new Button
+            {
+                Text = "Áp dụng tất cả",
+                BackColor = Color.FromArgb(46, 125, 50),
+                ForeColor = Color.White,
+                FlatStyle = FlatStyle.Flat,
+                Size = new Size(120, 35),
+                Location = new Point(400, 25)
+            };
+
+            btnApplySelected = new Button
+            {
+                Text = "Áp dụng đã chọn",
+                BackColor = Color.FromArgb(33, 150, 243),
+                ForeColor = Color.White,
+                FlatStyle = FlatStyle.Flat,
+                Size = new Size(120, 35),
+                Location = new Point(530, 25)
+            };
+
+            pnlInput.Controls.AddRange(new Control[] { lblPhuCap, nudPhuCap, lblKhauTru, nudKhauTru, lblThueBH, nudThueBH, btnApplyAll, btnApplySelected });
+
+            // DataGridView
+            dgvNhanVien = new DataGridView
+            {
+                BackgroundColor = Color.FromArgb(60, 60, 60),
+                ForeColor = Color.White,
+                BorderStyle = BorderStyle.None,
+                AllowUserToAddRows = false,
+                AllowUserToDeleteRows = false,
+                ReadOnly = false,
+                SelectionMode = DataGridViewSelectionMode.FullRowSelect,
+                MultiSelect = true,
+                AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill,
+                Size = new Size(760, 400),
+                Location = new Point(20, 160)
             };
 
             var btnClose = new Button
@@ -760,46 +918,261 @@ namespace VuToanThang_23110329.Forms
                 ForeColor = Color.White,
                 FlatStyle = FlatStyle.Flat,
                 Size = new Size(80, 35),
-                Location = new Point(250, 300),
+                Location = new Point(700, 570),
                 DialogResult = DialogResult.Cancel
             };
 
-            this.Controls.AddRange(new Control[] { lblTitle, btnClose });
+            this.Controls.AddRange(new Control[] { lblTitle, pnlInput, dgvNhanVien, btnClose });
+
+            // Event handlers
+            btnApplyAll.Click += BtnApplyAll_Click;
+            btnApplySelected.Click += BtnApplySelected_Click;
+        }
+
+        private void LoadData()
+        {
+            try
+            {
+                var bangLuongs = _repository.GetByPeriod(_nam, _thang);
+                dgvNhanVien.DataSource = bangLuongs;
+
+                if (dgvNhanVien.Columns.Count > 0)
+                {
+                    dgvNhanVien.Columns["MaBangLuong"].Visible = false;
+                    dgvNhanVien.Columns["MaNV"].Visible = false;
+                    dgvNhanVien.Columns["Nam"].Visible = false;
+                    dgvNhanVien.Columns["Thang"].Visible = false;
+                    dgvNhanVien.Columns["TenNhanVien"].HeaderText = "Nhân viên";
+                    dgvNhanVien.Columns["ChucDanh"].HeaderText = "Chức danh";
+                    dgvNhanVien.Columns["PhuCap"].HeaderText = "Phụ cấp";
+                    dgvNhanVien.Columns["KhauTru"].HeaderText = "Khấu trừ";
+                    dgvNhanVien.Columns["ThueBH"].HeaderText = "Thuế BH";
+                    dgvNhanVien.Columns["ThucLanh"].HeaderText = "Thực lãnh";
+
+                    // Make editable columns
+                    dgvNhanVien.Columns["PhuCap"].ReadOnly = false;
+                    dgvNhanVien.Columns["KhauTru"].ReadOnly = false;
+                    dgvNhanVien.Columns["ThueBH"].ReadOnly = false;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Lỗi tải dữ liệu: {ex.Message}", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void BtnApplyAll_Click(object sender, EventArgs e)
+        {
+            ApplyToRows(dgvNhanVien.Rows.Cast<DataGridViewRow>().ToList());
+        }
+
+        private void BtnApplySelected_Click(object sender, EventArgs e)
+        {
+            ApplyToRows(dgvNhanVien.SelectedRows.Cast<DataGridViewRow>().ToList());
+        }
+
+        private void ApplyToRows(List<DataGridViewRow> rows)
+        {
+            if (rows.Count == 0)
+            {
+                MessageBox.Show("Vui lòng chọn ít nhất một nhân viên!", "Cảnh báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            var result = MessageBox.Show($"Bạn có chắc chắn muốn cập nhật {rows.Count} nhân viên?", "Xác nhận", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+            if (result == DialogResult.Yes)
+            {
+                try
+                {
+                    int updated = 0;
+                    foreach (DataGridViewRow row in rows)
+                    {
+                        var bangLuong = (BangLuong)row.DataBoundItem;
+                        var updateResult = _repository.UpdatePhuCapKhauTru(bangLuong.MaBangLuong, nudPhuCap.Value, nudKhauTru.Value, nudThueBH.Value);
+                        if (updateResult.Success) updated++;
+                    }
+
+                    MessageBox.Show($"Đã cập nhật thành công {updated}/{rows.Count} nhân viên!", "Thành công", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    LoadData(); // Refresh data
+                    this.DialogResult = DialogResult.OK;
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Lỗi cập nhật: {ex.Message}", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
         }
     }
 
     public partial class ChinhSuaLuongForm : Form
     {
+        private readonly BangLuong _bangLuong;
+        private readonly BangLuongRepository _repository;
+        private NumericUpDown nudPhuCap, nudKhauTru, nudThueBH;
+        private Label lblThucLanh;
+
         public ChinhSuaLuongForm(BangLuong bangLuong)
         {
             InitializeComponent();
+            _bangLuong = bangLuong;
+            _repository = new BangLuongRepository();
             this.Text = $"Chỉnh sửa lương - {bangLuong.TenNhanVien}";
+            this.Size = new Size(500, 400);
+            this.BackColor = Color.FromArgb(50, 50, 50);
             CreateControls();
+            LoadData();
         }
 
         private void CreateControls()
         {
             var lblTitle = new Label
             {
-                Text = "Chỉnh sửa lương cá nhân - Chức năng đang phát triển",
-                ForeColor = Color.White,
-                Font = new Font("Segoe UI", 14, FontStyle.Bold),
-                Location = new Point(50, 50),
+                Text = $"CHỈNH SỬA LƯƠNG - {_bangLuong.TenNhanVien}",
+                ForeColor = Color.FromArgb(124, 77, 255),
+                Font = new Font("Segoe UI", 16, FontStyle.Bold),
+                Location = new Point(20, 20),
                 AutoSize = true
+            };
+
+            // Employee info panel
+            var pnlInfo = new Panel
+            {
+                BackColor = Color.FromArgb(60, 60, 60),
+                BorderStyle = BorderStyle.FixedSingle,
+                Size = new Size(460, 100),
+                Location = new Point(20, 60)
+            };
+
+            var lblNhanVien = new Label { Text = $"Nhân viên: {_bangLuong.TenNhanVien}", ForeColor = Color.White, Location = new Point(20, 15), AutoSize = true };
+            var lblChucDanh = new Label { Text = $"Chức danh: {_bangLuong.ChucDanh}", ForeColor = Color.White, Location = new Point(20, 35), AutoSize = true };
+            var lblLuongCB = new Label { Text = $"Lương cơ bản: {_bangLuong.LuongCoBan:N0} VNĐ", ForeColor = Color.White, Location = new Point(20, 55), AutoSize = true };
+            var lblGioCong = new Label { Text = $"Giờ công: {_bangLuong.TongGioCong:F2} | OT: {_bangLuong.GioOT:F2}", ForeColor = Color.White, Location = new Point(250, 55), AutoSize = true };
+
+            pnlInfo.Controls.AddRange(new Control[] { lblNhanVien, lblChucDanh, lblLuongCB, lblGioCong });
+
+            // Edit panel
+            var pnlEdit = new Panel
+            {
+                BackColor = Color.FromArgb(60, 60, 60),
+                BorderStyle = BorderStyle.FixedSingle,
+                Size = new Size(460, 120),
+                Location = new Point(20, 180)
+            };
+
+            var lblPhuCap = new Label { Text = "Phụ cấp:", ForeColor = Color.White, Location = new Point(20, 20), AutoSize = true };
+            nudPhuCap = new NumericUpDown
+            {
+                Maximum = 10000000,
+                DecimalPlaces = 0,
+                Increment = 50000,
+                BackColor = Color.FromArgb(70, 70, 70),
+                ForeColor = Color.White,
+                Size = new Size(120, 25),
+                Location = new Point(100, 18)
+            };
+
+            var lblKhauTru = new Label { Text = "Khấu trừ:", ForeColor = Color.White, Location = new Point(20, 50), AutoSize = true };
+            nudKhauTru = new NumericUpDown
+            {
+                Maximum = 10000000,
+                DecimalPlaces = 0,
+                Increment = 50000,
+                BackColor = Color.FromArgb(70, 70, 70),
+                ForeColor = Color.White,
+                Size = new Size(120, 25),
+                Location = new Point(100, 48)
+            };
+
+            var lblThueBH = new Label { Text = "Thuế BH:", ForeColor = Color.White, Location = new Point(20, 80), AutoSize = true };
+            nudThueBH = new NumericUpDown
+            {
+                Maximum = 10000000,
+                DecimalPlaces = 0,
+                Increment = 10000,
+                BackColor = Color.FromArgb(70, 70, 70),
+                ForeColor = Color.White,
+                Size = new Size(120, 25),
+                Location = new Point(100, 78)
+            };
+
+            lblThucLanh = new Label 
+            { 
+                Text = $"Thực lãnh: {_bangLuong.ThucLanh:N0} VNĐ", 
+                ForeColor = Color.LightGreen, 
+                Font = new Font("Segoe UI", 12, FontStyle.Bold),
+                Location = new Point(250, 50), 
+                AutoSize = true 
+            };
+
+            pnlEdit.Controls.AddRange(new Control[] { lblPhuCap, nudPhuCap, lblKhauTru, nudKhauTru, lblThueBH, nudThueBH, lblThucLanh });
+
+            // Buttons
+            var btnSave = new Button
+            {
+                Text = "Lưu",
+                BackColor = Color.FromArgb(46, 125, 50),
+                ForeColor = Color.White,
+                FlatStyle = FlatStyle.Flat,
+                Size = new Size(80, 35),
+                Location = new Point(300, 320),
+                DialogResult = DialogResult.OK
             };
 
             var btnClose = new Button
             {
-                Text = "Đóng",
+                Text = "Hủy",
                 BackColor = Color.FromArgb(158, 158, 158),
                 ForeColor = Color.White,
                 FlatStyle = FlatStyle.Flat,
                 Size = new Size(80, 35),
-                Location = new Point(200, 300),
+                Location = new Point(400, 320),
                 DialogResult = DialogResult.Cancel
             };
 
-            this.Controls.AddRange(new Control[] { lblTitle, btnClose });
+            this.Controls.AddRange(new Control[] { lblTitle, pnlInfo, pnlEdit, btnSave, btnClose });
+
+            // Event handlers
+            btnSave.Click += BtnSave_Click;
+            nudPhuCap.ValueChanged += UpdateThucLanh;
+            nudKhauTru.ValueChanged += UpdateThucLanh;
+            nudThueBH.ValueChanged += UpdateThucLanh;
+        }
+
+        private void LoadData()
+        {
+            nudPhuCap.Value = _bangLuong.PhuCap;
+            nudKhauTru.Value = _bangLuong.KhauTru;
+            nudThueBH.Value = _bangLuong.ThueBH;
+        }
+
+        private void UpdateThucLanh(object sender, EventArgs e)
+        {
+            // Calculate new ThucLanh
+            decimal luongGoc = _bangLuong.LuongCoBan + (_bangLuong.GioOT * _bangLuong.LuongCoBan / 208 * 1.5m);
+            decimal thucLanh = luongGoc + nudPhuCap.Value - nudKhauTru.Value - nudThueBH.Value;
+            lblThucLanh.Text = $"Thực lãnh: {thucLanh:N0} VNĐ";
+        }
+
+        private void BtnSave_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                var result = _repository.UpdatePhuCapKhauTru(_bangLuong.MaBangLuong, nudPhuCap.Value, nudKhauTru.Value, nudThueBH.Value);
+                if (result.Success)
+                {
+                    MessageBox.Show("Cập nhật thành công!", "Thành công", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                else
+                {
+                    MessageBox.Show(result.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    this.DialogResult = DialogResult.None;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Lỗi cập nhật: {ex.Message}", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                this.DialogResult = DialogResult.None;
+            }
         }
     }
 }
