@@ -37,23 +37,75 @@ namespace VuToanThang_23110329.Forms
             SetupMenuForRole(userRole);
             lblUserInfo.Text = $"Người dùng: {userRole}";
             lblStatus.Text = "Sẵn sàng";
-
-            // Thêm label chào mừng
-            Label lblWelcome = new Label();
             lblWelcome.Text = $"Chào mừng {userRole} đến với hệ thống quản lý nhân sự!";
-            lblWelcome.Font = new Font("Segoe UI", 14, FontStyle.Bold);
-            lblWelcome.ForeColor = Color.White;
-            lblWelcome.AutoSize = true;
-            lblWelcome.Location = new Point(50, 50);
-            pnlContent.Controls.Add(lblWelcome);
         }
 
-        private void mnuHeThong_DoiMatKhau_Click(object sender, EventArgs e)
+        // Sidebar Navigation Event Handlers
+        private void btnDashboard_Click(object sender, EventArgs e)
         {
-            MessageBox.Show("Chức năng đổi mật khẩu đang được phát triển.", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            SetActiveButton(btnDashboard);
+            lblWelcome.Text = "📊 Tổng quan hệ thống";
+            lblStatus.Text = "Đang xem tổng quan";
+            // TODO: Load dashboard content
         }
 
-        private void mnuHeThong_DangXuat_Click(object sender, EventArgs e)
+        private void btnQuanLy_Click(object sender, EventArgs e)
+        {
+            SetActiveButton(btnQuanLy);
+            lblWelcome.Text = "👥 Quản lý nhân sự";
+            lblStatus.Text = "Đang quản lý nhân sự";
+            // TODO: Load management forms
+        }
+
+        private void btnDanhMuc_Click(object sender, EventArgs e)
+        {
+            SetActiveButton(btnDanhMuc);
+            lblWelcome.Text = "📋 Danh mục hệ thống";
+            lblStatus.Text = "Đang quản lý danh mục";
+            // TODO: Load category forms
+        }
+
+        private void btnNghiepVu_Click(object sender, EventArgs e)
+        {
+            SetActiveButton(btnNghiepVu);
+            lblWelcome.Text = "⚙️ Nghiệp vụ";
+            lblStatus.Text = "Đang xử lý nghiệp vụ";
+            // TODO: Load business forms
+        }
+
+        private void btnTienLuong_Click(object sender, EventArgs e)
+        {
+            SetActiveButton(btnTienLuong);
+            lblWelcome.Text = "💰 Quản lý tiền lương";
+            lblStatus.Text = "Đang quản lý lương";
+            // TODO: Load salary forms
+        }
+
+        private void btnCaNhan_Click(object sender, EventArgs e)
+        {
+            SetActiveButton(btnCaNhan);
+            lblWelcome.Text = "👤 Thông tin cá nhân";
+            lblStatus.Text = "Đang xem thông tin cá nhân";
+            // TODO: Load personal forms
+        }
+
+        private void btnChamCong_Click(object sender, EventArgs e)
+        {
+            SetActiveButton(btnChamCong);
+            lblWelcome.Text = "⏰ Chấm công";
+            lblStatus.Text = "Đang chấm công";
+            // TODO: Load attendance forms
+        }
+
+        private void btnBaoCao_Click(object sender, EventArgs e)
+        {
+            SetActiveButton(btnBaoCao);
+            lblWelcome.Text = "📊 Báo cáo thống kê";
+            lblStatus.Text = "Đang xem báo cáo";
+            // TODO: Load report forms
+        }
+
+        private void btnDangXuat_Click(object sender, EventArgs e)
         {
             if (MessageBox.Show("Bạn có chắc muốn đăng xuất?", "Xác nhận", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
             {
@@ -62,153 +114,70 @@ namespace VuToanThang_23110329.Forms
             }
         }
 
-        private void mnuHeThong_Thoat_Click(object sender, EventArgs e)
-        {
-            if (MessageBox.Show("Bạn có chắc muốn thoát ứng dụng?", "Xác nhận", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
-            {
-                Application.Exit();
-            }
-        }
-
-        private void mnuQuanLy_HoSoNhanVien_Click(object sender, EventArgs e)
-        {
-            // OpenFormInPanel(new frmNhanVien());
-            MessageBox.Show("Mở form quản lý hồ sơ nhân viên.", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
-        }
-
-        private void mnuQuanLy_LichPhanCa_Click(object sender, EventArgs e)
-        {
-            // OpenFormInPanel(new frmPhanCa());
-            MessageBox.Show("Mở form quản lý lịch phân ca.", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
-        }
-
-        private void mnuQuanLy_DuyetDonTu_Click(object sender, EventArgs e)
-        {
-            // OpenFormInPanel(new frmDuyetDonTu());
-            MessageBox.Show("Mở form duyệt đơn từ.", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
-        }
-
-        private void mnuDanhMuc_CaLamViec_Click(object sender, EventArgs e)
-        {
-            // OpenFormInPanel(new frmCaLam());
-            MessageBox.Show("Mở form quản lý ca làm việc.", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
-        }
-
-        private void mnuDanhMuc_PhongBanChucVu_Click(object sender, EventArgs e)
-        {
-            // OpenFormInPanel(new frmPhongBan_ChucVu());
-            MessageBox.Show("Mở form quản lý phòng ban và chức vụ.", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
-        }
-
-        private void mnuNghiepVu_XemLichPhanCa_Click(object sender, EventArgs e)
-        {
-            // OpenFormInPanel(new frmXemLichPhanCa());
-            MessageBox.Show("Mở form xem lịch phân ca.", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
-        }
-
-        private void mnuNghiepVu_DuyetDonTu_Click(object sender, EventArgs e)
-        {
-            // OpenFormInPanel(new frmDuyetDonTu());
-            MessageBox.Show("Mở form duyệt đơn từ.", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
-        }
-
-        private void mnuTienLuong_QuanLyBangLuong_Click(object sender, EventArgs e)
-        {
-            // OpenFormInPanel(new frmBangLuong());
-            MessageBox.Show("Mở form quản lý bảng lương.", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
-        }
-
-        private void mnuCaNhan_ThongTinCuaToi_Click(object sender, EventArgs e)
-        {
-            // OpenFormInPanel(new frmThongTinCaNhan());
-            MessageBox.Show("Mở form thông tin cá nhân.", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
-        }
-
-        private void mnuCaNhan_GuiDonTu_Click(object sender, EventArgs e)
-        {
-            // OpenFormInPanel(new frmTaoDonTu());
-            MessageBox.Show("Mở form gửi đơn từ.", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
-        }
-
-        private void mnuChamCong_CheckInOut_Click(object sender, EventArgs e)
-        {
-            // OpenFormInPanel(new frmChamCong());
-            MessageBox.Show("Mở form chấm công check in/out.", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
-        }
-
-        private void mnuBaoCao_BaoCaoNhanSu_Click(object sender, EventArgs e)
-        {
-            MessageBox.Show("Mở báo cáo nhân sự.", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
-        }
-
-        private void mnuBaoCao_BangCongChiTiet_Click(object sender, EventArgs e)
-        {
-            MessageBox.Show("Mở báo cáo bảng công chi tiết.", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
-        }
-
-        private void mnuBaoCao_BangCongThang_Click(object sender, EventArgs e)
-        {
-            MessageBox.Show("Mở báo cáo bảng công tháng.", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
-        }
-
-        private void mnuBaoCao_BaoCaoLuong_Click(object sender, EventArgs e)
-        {
-            MessageBox.Show("Mở báo cáo lương.", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
-        }
-
-        private void mnuTroGiup_GioiThieu_Click(object sender, EventArgs e)
-        {
-            MessageBox.Show("Hệ thống quản lý nhân sự siêu thị mini\nPhiên bản 1.0\nĐồ án cuối kỳ DBMS", "Giới thiệu", MessageBoxButtons.OK, MessageBoxIcon.Information);
-        }
-
         private void SetupMenuForRole(string role)
         {
-            // Mặc định ẩn tất cả menu con
-            mnuQuanLy.Visible = false;
-            mnuDanhMuc.Visible = false;
-            mnuNghiepVu.Visible = false;
-            mnuTienLuong.Visible = false;
-            mnuCaNhan.Visible = false;
-            mnuChamCong.Visible = false;
-            mnuBaoCao.Visible = false;
+            // Mặc định ẩn tất cả buttons
+            btnQuanLy.Visible = false;
+            btnDanhMuc.Visible = false;
+            btnNghiepVu.Visible = false;
+            btnTienLuong.Visible = false;
+            btnCaNhan.Visible = false;
+            btnChamCong.Visible = false;
+            btnBaoCao.Visible = false;
 
             switch (role.ToLower())
             {
                 case "quanly": // Giám đốc - tất cả quyền
-                    mnuQuanLy.Visible = true;
-                    mnuDanhMuc.Visible = true;
-                    mnuNghiepVu.Visible = true;
-                    mnuTienLuong.Visible = true;
-                    mnuCaNhan.Visible = true;
-                    mnuChamCong.Visible = true;
-                    mnuBaoCao.Visible = true;
+                    btnQuanLy.Visible = true;
+                    btnDanhMuc.Visible = true;
+                    btnNghiepVu.Visible = true;
+                    btnTienLuong.Visible = true;
+                    btnCaNhan.Visible = true;
+                    btnChamCong.Visible = true;
+                    btnBaoCao.Visible = true;
                     break;
 
                 case "hr": // HR - quản lý nhân sự
-                    mnuQuanLy.Visible = true;
-                    mnuDanhMuc.Visible = true;
-                    mnuNghiepVu.Visible = true;
-                    mnuCaNhan.Visible = true;
-                    mnuChamCong.Visible = true;
+                    btnQuanLy.Visible = true;
+                    btnDanhMuc.Visible = true;
+                    btnNghiepVu.Visible = true;
+                    btnCaNhan.Visible = true;
+                    btnChamCong.Visible = true;
                     break;
 
                 case "ketoan": // Kế toán - quản lý lương
-                    mnuTienLuong.Visible = true;
-                    mnuBaoCao.Visible = true;
-                    mnuCaNhan.Visible = true;
+                    btnTienLuong.Visible = true;
+                    btnBaoCao.Visible = true;
+                    btnCaNhan.Visible = true;
                     break;
 
                 case "nhanvien": // Nhân viên - quyền cơ bản
-                    mnuNghiepVu.Visible = true;
-                    mnuCaNhan.Visible = true;
-                    mnuChamCong.Visible = true;
+                    btnNghiepVu.Visible = true;
+                    btnCaNhan.Visible = true;
+                    btnChamCong.Visible = true;
                     break;
 
                 default:
                     // Nếu vai trò không xác định, chỉ hiển thị cá nhân
-                    mnuCaNhan.Visible = true;
+                    btnCaNhan.Visible = true;
                     break;
             }
+        }
+
+        private void SetActiveButton(Guna.UI2.WinForms.Guna2Button activeButton)
+        {
+            // Reset all buttons to default state
+            Guna.UI2.WinForms.Guna2Button[] buttons = { btnDashboard, btnQuanLy, btnDanhMuc, btnNghiepVu, btnTienLuong, btnCaNhan, btnChamCong, btnBaoCao };
+            
+            foreach (var btn in buttons)
+            {
+                btn.FillColor = System.Drawing.Color.Transparent;
+                btn.ForeColor = System.Drawing.Color.White;
+            }
+
+            // Set active button
+            activeButton.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(84)))), ((int)(((byte)(138)))), ((int)(((byte)(245)))));
+            activeButton.ForeColor = System.Drawing.Color.White;
         }
 
         private void OpenFormInPanel(Form childForm)

@@ -29,398 +29,345 @@ namespace VuToanThang_23110329.Forms
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            this.menuStrip = new System.Windows.Forms.MenuStrip();
-            this.mnuHeThong = new System.Windows.Forms.ToolStripMenuItem();
-            this.mnuDoiMatKhau = new System.Windows.Forms.ToolStripMenuItem();
-            this.mnuDangXuat = new System.Windows.Forms.ToolStripMenuItem();
-            this.mnuThoat = new System.Windows.Forms.ToolStripMenuItem();
-            this.mnuQuanLy = new System.Windows.Forms.ToolStripMenuItem();
-            this.mnuHoSoNhanVien = new System.Windows.Forms.ToolStripMenuItem();
-            this.mnuLichPhanCa = new System.Windows.Forms.ToolStripMenuItem();
-            this.mnuDuyetDonTu = new System.Windows.Forms.ToolStripMenuItem();
-            this.mnuDanhMuc = new System.Windows.Forms.ToolStripMenuItem();
-            this.mnuCaLamViec = new System.Windows.Forms.ToolStripMenuItem();
-            this.mnuPhongBanChucVu = new System.Windows.Forms.ToolStripMenuItem();
-            this.mnuNghiepVu = new System.Windows.Forms.ToolStripMenuItem();
-            this.mnuXemLichPhanCa = new System.Windows.Forms.ToolStripMenuItem();
-            this.mnuTienLuong = new System.Windows.Forms.ToolStripMenuItem();
-            this.mnuQuanLyBangLuong = new System.Windows.Forms.ToolStripMenuItem();
-            this.mnuCaNhan = new System.Windows.Forms.ToolStripMenuItem();
-            this.mnuThongTinCuaToi = new System.Windows.Forms.ToolStripMenuItem();
-            this.mnuGuiDonTu = new System.Windows.Forms.ToolStripMenuItem();
-            this.mnuChamCong = new System.Windows.Forms.ToolStripMenuItem();
-            this.mnuCheckInOut = new System.Windows.Forms.ToolStripMenuItem();
-            this.mnuBaoCao = new System.Windows.Forms.ToolStripMenuItem();
-            this.mnuBaoCaoNhanSu = new System.Windows.Forms.ToolStripMenuItem();
-            this.mnuBangCongChiTiet = new System.Windows.Forms.ToolStripMenuItem();
-            this.mnuBangCongThang = new System.Windows.Forms.ToolStripMenuItem();
-            this.mnuBaoCaoLuong = new System.Windows.Forms.ToolStripMenuItem();
-            this.mnuTroGiup = new System.Windows.Forms.ToolStripMenuItem();
-            this.mnuGioiThieu = new System.Windows.Forms.ToolStripMenuItem();
-            this.statusStrip = new System.Windows.Forms.StatusStrip();
-            this.lblStatus = new System.Windows.Forms.ToolStripStatusLabel();
-            this.lblUserInfo = new System.Windows.Forms.ToolStripStatusLabel();
-            this.pnlContent = new System.Windows.Forms.Panel();
-            this.pnlTitle = new System.Windows.Forms.Panel();
-            this.lblTitle = new System.Windows.Forms.Label();
-            this.menuStrip.SuspendLayout();
-            this.statusStrip.SuspendLayout();
+            this.pnlMain = new Guna.UI2.WinForms.Guna2Panel();
+            this.pnlSidebar = new Guna.UI2.WinForms.Guna2Panel();
+            this.pnlHeader = new Guna.UI2.WinForms.Guna2Panel();
+            this.pnlContent = new Guna.UI2.WinForms.Guna2Panel();
+            this.lblUserInfo = new System.Windows.Forms.Label();
+            this.lblStatus = new System.Windows.Forms.Label();
+            this.lblWelcome = new System.Windows.Forms.Label();
+            this.btnDashboard = new Guna.UI2.WinForms.Guna2Button();
+            this.btnQuanLy = new Guna.UI2.WinForms.Guna2Button();
+            this.btnDanhMuc = new Guna.UI2.WinForms.Guna2Button();
+            this.btnNghiepVu = new Guna.UI2.WinForms.Guna2Button();
+            this.btnTienLuong = new Guna.UI2.WinForms.Guna2Button();
+            this.btnCaNhan = new Guna.UI2.WinForms.Guna2Button();
+            this.btnChamCong = new Guna.UI2.WinForms.Guna2Button();
+            this.btnBaoCao = new Guna.UI2.WinForms.Guna2Button();
+            this.btnDangXuat = new Guna.UI2.WinForms.Guna2Button();
+            this.pnlLogo = new Guna.UI2.WinForms.Guna2Panel();
+            this.lblLogo = new System.Windows.Forms.Label();
+            this.pnlMain.SuspendLayout();
+            this.pnlSidebar.SuspendLayout();
+            this.pnlHeader.SuspendLayout();
+            this.pnlContent.SuspendLayout();
+            this.pnlLogo.SuspendLayout();
             this.SuspendLayout();
             // 
-            // menuStrip
+            // pnlMain
             // 
-            this.menuStrip.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(124)))), ((int)(((byte)(77)))), ((int)(((byte)(255)))));
-            this.menuStrip.ForeColor = System.Drawing.Color.White;
-            this.menuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.mnuHeThong,
-            this.mnuQuanLy,
-            this.mnuDanhMuc,
-            this.mnuNghiepVu,
-            this.mnuTienLuong,
-            this.mnuCaNhan,
-            this.mnuChamCong,
-            this.mnuBaoCao,
-            this.mnuTroGiup});
-            this.menuStrip.Location = new System.Drawing.Point(0, 0);
-            this.menuStrip.Name = "menuStrip";
-            this.menuStrip.Size = new System.Drawing.Size(1200, 24);
-            this.menuStrip.TabIndex = 0;
-            this.menuStrip.Text = "MenuStrip";
+            this.pnlMain.BorderRadius = 0;
+            this.pnlMain.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(240)))), ((int)(((byte)(240)))), ((int)(((byte)(240)))));
+            this.pnlMain.Location = new System.Drawing.Point(0, 0);
+            this.pnlMain.Name = "pnlMain";
+            this.pnlMain.Size = new System.Drawing.Size(1200, 700);
+            this.pnlMain.TabIndex = 0;
             // 
-            // mnuHeThong
+            // pnlSidebar
             // 
-            this.mnuHeThong.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.mnuDoiMatKhau,
-            this.mnuDangXuat,
-            this.mnuThoat});
-            this.mnuHeThong.ForeColor = System.Drawing.Color.White;
-            this.mnuHeThong.Name = "mnuHeThong";
-            this.mnuHeThong.Size = new System.Drawing.Size(67, 20);
-            this.mnuHeThong.Text = "Hệ thống";
+            this.pnlSidebar.BorderRadius = 0;
+            this.pnlSidebar.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
+            this.pnlSidebar.Location = new System.Drawing.Point(0, 0);
+            this.pnlSidebar.Name = "pnlSidebar";
+            this.pnlSidebar.Size = new System.Drawing.Size(250, 700);
+            this.pnlSidebar.TabIndex = 1;
             // 
-            // mnuDoiMatKhau
+            // pnlHeader
             // 
-            this.mnuDoiMatKhau.ForeColor = System.Drawing.Color.White;
-            this.mnuDoiMatKhau.Name = "mnuDoiMatKhau";
-            this.mnuDoiMatKhau.Size = new System.Drawing.Size(180, 22);
-            this.mnuDoiMatKhau.Text = "Đổi mật khẩu";
-            // 
-            // mnuDangXuat
-            // 
-            this.mnuDangXuat.ForeColor = System.Drawing.Color.White;
-            this.mnuDangXuat.Name = "mnuDangXuat";
-            this.mnuDangXuat.Size = new System.Drawing.Size(180, 22);
-            this.mnuDangXuat.Text = "Đăng xuất";
-            // 
-            // mnuThoat
-            // 
-            this.mnuThoat.ForeColor = System.Drawing.Color.White;
-            this.mnuThoat.Name = "mnuThoat";
-            this.mnuThoat.Size = new System.Drawing.Size(180, 22);
-            this.mnuThoat.Text = "Thoát";
-            // 
-            // mnuQuanLy
-            // 
-            this.mnuQuanLy.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.mnuHoSoNhanVien,
-            this.mnuLichPhanCa,
-            this.mnuDuyetDonTu});
-            this.mnuQuanLy.ForeColor = System.Drawing.Color.White;
-            this.mnuQuanLy.Name = "mnuQuanLy";
-            this.mnuQuanLy.Size = new System.Drawing.Size(61, 20);
-            this.mnuQuanLy.Text = "Quản lý";
-            // 
-            // mnuHoSoNhanVien
-            // 
-            this.mnuHoSoNhanVien.ForeColor = System.Drawing.Color.White;
-            this.mnuHoSoNhanVien.Name = "mnuHoSoNhanVien";
-            this.mnuHoSoNhanVien.Size = new System.Drawing.Size(180, 22);
-            this.mnuHoSoNhanVien.Text = "Hồ sơ Nhân viên";
-            // 
-            // mnuLichPhanCa
-            // 
-            this.mnuLichPhanCa.ForeColor = System.Drawing.Color.White;
-            this.mnuLichPhanCa.Name = "mnuLichPhanCa";
-            this.mnuLichPhanCa.Size = new System.Drawing.Size(180, 22);
-            this.mnuLichPhanCa.Text = "Lịch phân ca";
-            // 
-            // mnuDuyetDonTu
-            // 
-            this.mnuDuyetDonTu.ForeColor = System.Drawing.Color.White;
-            this.mnuDuyetDonTu.Name = "mnuDuyetDonTu";
-            this.mnuDuyetDonTu.Size = new System.Drawing.Size(180, 22);
-            this.mnuDuyetDonTu.Text = "Duyệt Đơn từ";
-            // 
-            // mnuDanhMuc
-            // 
-            this.mnuDanhMuc.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.mnuCaLamViec,
-            this.mnuPhongBanChucVu});
-            this.mnuDanhMuc.ForeColor = System.Drawing.Color.White;
-            this.mnuDanhMuc.Name = "mnuDanhMuc";
-            this.mnuDanhMuc.Size = new System.Drawing.Size(71, 20);
-            this.mnuDanhMuc.Text = "Danh mục";
-            // 
-            // mnuCaLamViec
-            // 
-            this.mnuCaLamViec.ForeColor = System.Drawing.Color.White;
-            this.mnuCaLamViec.Name = "mnuCaLamViec";
-            this.mnuCaLamViec.Size = new System.Drawing.Size(180, 22);
-            this.mnuCaLamViec.Text = "Ca làm việc";
-            // 
-            // mnuPhongBanChucVu
-            // 
-            this.mnuPhongBanChucVu.ForeColor = System.Drawing.Color.White;
-            this.mnuPhongBanChucVu.Name = "mnuPhongBanChucVu";
-            this.mnuPhongBanChucVu.Size = new System.Drawing.Size(180, 22);
-            this.mnuPhongBanChucVu.Text = "Phòng ban & Chức vụ";
-            // 
-            // mnuNghiepVu
-            // 
-            this.mnuNghiepVu.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.mnuXemLichPhanCa,
-            this.mnuDuyetDonTu});
-            this.mnuNghiepVu.ForeColor = System.Drawing.Color.White;
-            this.mnuNghiepVu.Name = "mnuNghiepVu";
-            this.mnuNghiepVu.Size = new System.Drawing.Size(71, 20);
-            this.mnuNghiepVu.Text = "Nghiệp vụ";
-            // 
-            // mnuXemLichPhanCa
-            // 
-            this.mnuXemLichPhanCa.ForeColor = System.Drawing.Color.White;
-            this.mnuXemLichPhanCa.Name = "mnuXemLichPhanCa";
-            this.mnuXemLichPhanCa.Size = new System.Drawing.Size(180, 22);
-            this.mnuXemLichPhanCa.Text = "Xem Lịch phân ca";
-            // 
-            // mnuTienLuong
-            // 
-            this.mnuTienLuong.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.mnuQuanLyBangLuong});
-            this.mnuTienLuong.ForeColor = System.Drawing.Color.White;
-            this.mnuTienLuong.Name = "mnuTienLuong";
-            this.mnuTienLuong.Size = new System.Drawing.Size(76, 20);
-            this.mnuTienLuong.Text = "Tiền lương";
-            // 
-            // mnuQuanLyBangLuong
-            // 
-            this.mnuQuanLyBangLuong.ForeColor = System.Drawing.Color.White;
-            this.mnuQuanLyBangLuong.Name = "mnuQuanLyBangLuong";
-            this.mnuQuanLyBangLuong.Size = new System.Drawing.Size(180, 22);
-            this.mnuQuanLyBangLuong.Text = "Quản lý Bảng lương";
-            // 
-            // mnuCaNhan
-            // 
-            this.mnuCaNhan.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.mnuThongTinCuaToi,
-            this.mnuGuiDonTu});
-            this.mnuCaNhan.ForeColor = System.Drawing.Color.White;
-            this.mnuCaNhan.Name = "mnuCaNhan";
-            this.mnuCaNhan.Size = new System.Drawing.Size(59, 20);
-            this.mnuCaNhan.Text = "Cá nhân";
-            // 
-            // mnuThongTinCuaToi
-            // 
-            this.mnuThongTinCuaToi.ForeColor = System.Drawing.Color.White;
-            this.mnuThongTinCuaToi.Name = "mnuThongTinCuaToi";
-            this.mnuThongTinCuaToi.Size = new System.Drawing.Size(180, 22);
-            this.mnuThongTinCuaToi.Text = "Thông tin của tôi";
-            // 
-            // mnuGuiDonTu
-            // 
-            this.mnuGuiDonTu.ForeColor = System.Drawing.Color.White;
-            this.mnuGuiDonTu.Name = "mnuGuiDonTu";
-            this.mnuGuiDonTu.Size = new System.Drawing.Size(180, 22);
-            this.mnuGuiDonTu.Text = "Gửi Đơn từ";
-            // 
-            // mnuChamCong
-            // 
-            this.mnuChamCong.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.mnuCheckInOut});
-            this.mnuChamCong.ForeColor = System.Drawing.Color.White;
-            this.mnuChamCong.Name = "mnuChamCong";
-            this.mnuChamCong.Size = new System.Drawing.Size(77, 20);
-            this.mnuChamCong.Text = "Chấm công";
-            // 
-            // mnuCheckInOut
-            // 
-            this.mnuCheckInOut.ForeColor = System.Drawing.Color.White;
-            this.mnuCheckInOut.Name = "mnuCheckInOut";
-            this.mnuCheckInOut.Size = new System.Drawing.Size(180, 22);
-            this.mnuCheckInOut.Text = "Check-in / Check-out";
-            // 
-            // mnuBaoCao
-            // 
-            this.mnuBaoCao.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.mnuBaoCaoNhanSu,
-            this.mnuBangCongChiTiet,
-            this.mnuBangCongThang,
-            this.mnuBaoCaoLuong});
-            this.mnuBaoCao.ForeColor = System.Drawing.Color.White;
-            this.mnuBaoCao.Name = "mnuBaoCao";
-            this.mnuBaoCao.Size = new System.Drawing.Size(63, 20);
-            this.mnuBaoCao.Text = "Báo cáo";
-            // 
-            // mnuBaoCaoNhanSu
-            // 
-            this.mnuBaoCaoNhanSu.ForeColor = System.Drawing.Color.White;
-            this.mnuBaoCaoNhanSu.Name = "mnuBaoCaoNhanSu";
-            this.mnuBaoCaoNhanSu.Size = new System.Drawing.Size(180, 22);
-            this.mnuBaoCaoNhanSu.Text = "Báo cáo Nhân sự";
-            // 
-            // mnuBangCongChiTiet
-            // 
-            this.mnuBangCongChiTiet.ForeColor = System.Drawing.Color.White;
-            this.mnuBangCongChiTiet.Name = "mnuBangCongChiTiet";
-            this.mnuBangCongChiTiet.Size = new System.Drawing.Size(180, 22);
-            this.mnuBangCongChiTiet.Text = "Bảng công chi tiết";
-            // 
-            // mnuBangCongThang
-            // 
-            this.mnuBangCongThang.ForeColor = System.Drawing.Color.White;
-            this.mnuBangCongThang.Name = "mnuBangCongThang";
-            this.mnuBangCongThang.Size = new System.Drawing.Size(180, 22);
-            this.mnuBangCongThang.Text = "Xem Bảng công tháng";
-            // 
-            // mnuBaoCaoLuong
-            // 
-            this.mnuBaoCaoLuong.ForeColor = System.Drawing.Color.White;
-            this.mnuBaoCaoLuong.Name = "mnuBaoCaoLuong";
-            this.mnuBaoCaoLuong.Size = new System.Drawing.Size(180, 22);
-            this.mnuBaoCaoLuong.Text = "Báo cáo Lương";
-            // 
-            // mnuTroGiup
-            // 
-            this.mnuTroGiup.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.mnuGioiThieu});
-            this.mnuTroGiup.ForeColor = System.Drawing.Color.White;
-            this.mnuTroGiup.Name = "mnuTroGiup";
-            this.mnuTroGiup.Size = new System.Drawing.Size(64, 20);
-            this.mnuTroGiup.Text = "Trợ giúp";
-            // 
-            // mnuGioiThieu
-            // 
-            this.mnuGioiThieu.ForeColor = System.Drawing.Color.White;
-            this.mnuGioiThieu.Name = "mnuGioiThieu";
-            this.mnuGioiThieu.Size = new System.Drawing.Size(180, 22);
-            this.mnuGioiThieu.Text = "Giới thiệu";
-            // 
-            // statusStrip
-            // 
-            this.statusStrip.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(30)))), ((int)(((byte)(30)))));
-            this.statusStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.lblStatus,
-            this.lblUserInfo});
-            this.statusStrip.Location = new System.Drawing.Point(0, 671);
-            this.statusStrip.Name = "statusStrip";
-            this.statusStrip.Size = new System.Drawing.Size(1200, 22);
-            this.statusStrip.TabIndex = 1;
-            this.statusStrip.Text = "StatusStrip";
-            // 
-            // lblStatus
-            // 
-            this.lblStatus.ForeColor = System.Drawing.Color.White;
-            this.lblStatus.Name = "lblStatus";
-            this.lblStatus.Size = new System.Drawing.Size(100, 17);
-            this.lblStatus.Text = "Sẵn sàng";
-            // 
-            // lblUserInfo
-            // 
-            this.lblUserInfo.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
-            this.lblUserInfo.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(124)))), ((int)(((byte)(77)))), ((int)(((byte)(255)))));
-            this.lblUserInfo.Name = "lblUserInfo";
-            this.lblUserInfo.Size = new System.Drawing.Size(100, 17);
-            this.lblUserInfo.Text = "Chưa đăng nhập";
+            this.pnlHeader.BorderRadius = 0;
+            this.pnlHeader.FillColor = System.Drawing.Color.White;
+            this.pnlHeader.Location = new System.Drawing.Point(250, 0);
+            this.pnlHeader.Name = "pnlHeader";
+            this.pnlHeader.ShadowDecoration.BorderRadius = 0;
+            this.pnlHeader.ShadowDecoration.Color = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(10)))));
+            this.pnlHeader.ShadowDecoration.Depth = 5;
+            this.pnlHeader.ShadowDecoration.Enabled = true;
+            this.pnlHeader.Size = new System.Drawing.Size(950, 80);
+            this.pnlHeader.TabIndex = 2;
             // 
             // pnlContent
             // 
-            this.pnlContent.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(25)))), ((int)(((byte)(25)))), ((int)(((byte)(25)))));
-            this.pnlContent.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pnlContent.Location = new System.Drawing.Point(0, 49);
+            this.pnlContent.BorderRadius = 0;
+            this.pnlContent.FillColor = System.Drawing.Color.White;
+            this.pnlContent.Location = new System.Drawing.Point(250, 80);
             this.pnlContent.Name = "pnlContent";
-            this.pnlContent.Size = new System.Drawing.Size(1200, 622);
-            this.pnlContent.TabIndex = 2;
+            this.pnlContent.Size = new System.Drawing.Size(950, 620);
+            this.pnlContent.TabIndex = 3;
             // 
-            // pnlTitle
+            // lblUserInfo
             // 
-            this.pnlTitle.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(124)))), ((int)(((byte)(77)))), ((int)(((byte)(255)))));
-            this.pnlTitle.Location = new System.Drawing.Point(0, 25);
-            this.pnlTitle.Name = "pnlTitle";
-            this.pnlTitle.Size = new System.Drawing.Size(1200, 24);
-            this.pnlTitle.TabIndex = 3;
+            this.lblUserInfo.AutoSize = true;
+            this.lblUserInfo.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblUserInfo.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(100)))), ((int)(((byte)(100)))));
+            this.lblUserInfo.Location = new System.Drawing.Point(20, 20);
+            this.lblUserInfo.Name = "lblUserInfo";
+            this.lblUserInfo.Size = new System.Drawing.Size(100, 19);
+            this.lblUserInfo.TabIndex = 0;
+            this.lblUserInfo.Text = "Người dùng: ";
             // 
-            // lblTitle
+            // lblStatus
             // 
-            this.lblTitle.AutoSize = true;
-            this.lblTitle.Font = new System.Drawing.Font("Segoe UI", 14F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblTitle.ForeColor = System.Drawing.Color.White;
-            this.lblTitle.Location = new System.Drawing.Point(20, 30);
-            this.lblTitle.Name = "lblTitle";
-            this.lblTitle.Size = new System.Drawing.Size(250, 25);
-            this.lblTitle.TabIndex = 4;
-            this.lblTitle.Text = "Hệ thống Quản lý Nhân sự Siêu thị Mini";
+            this.lblStatus.AutoSize = true;
+            this.lblStatus.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblStatus.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(100)))), ((int)(((byte)(100)))));
+            this.lblStatus.Location = new System.Drawing.Point(20, 50);
+            this.lblStatus.Name = "lblStatus";
+            this.lblStatus.Size = new System.Drawing.Size(50, 15);
+            this.lblStatus.TabIndex = 1;
+            this.lblStatus.Text = "Sẵn sàng";
+            // 
+            // lblWelcome
+            // 
+            this.lblWelcome.AutoSize = true;
+            this.lblWelcome.Font = new System.Drawing.Font("Segoe UI", 18F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblWelcome.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.lblWelcome.Location = new System.Drawing.Point(50, 50);
+            this.lblWelcome.Name = "lblWelcome";
+            this.lblWelcome.Size = new System.Drawing.Size(400, 32);
+            this.lblWelcome.TabIndex = 0;
+            this.lblWelcome.Text = "Chào mừng đến với hệ thống quản lý";
+            // 
+            // pnlLogo
+            // 
+            this.pnlLogo.BorderRadius = 0;
+            this.pnlLogo.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(84)))), ((int)(((byte)(138)))), ((int)(((byte)(245)))));
+            this.pnlLogo.Location = new System.Drawing.Point(0, 0);
+            this.pnlLogo.Name = "pnlLogo";
+            this.pnlLogo.Size = new System.Drawing.Size(250, 80);
+            this.pnlLogo.TabIndex = 0;
+            // 
+            // lblLogo
+            // 
+            this.lblLogo.AutoSize = true;
+            this.lblLogo.Font = new System.Drawing.Font("Segoe UI", 16F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblLogo.ForeColor = System.Drawing.Color.White;
+            this.lblLogo.Location = new System.Drawing.Point(20, 25);
+            this.lblLogo.Name = "lblLogo";
+            this.lblLogo.Size = new System.Drawing.Size(200, 30);
+            this.lblLogo.TabIndex = 0;
+            this.lblLogo.Text = "HR Management";
+            // 
+            // btnDashboard
+            // 
+            this.btnDashboard.BorderRadius = 8;
+            this.btnDashboard.DisabledState.BorderColor = System.Drawing.Color.DarkGray;
+            this.btnDashboard.DisabledState.CustomBorderColor = System.Drawing.Color.DarkGray;
+            this.btnDashboard.DisabledState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(169)))), ((int)(((byte)(169)))), ((int)(((byte)(169)))));
+            this.btnDashboard.DisabledState.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(141)))), ((int)(((byte)(141)))), ((int)(((byte)(141)))));
+            this.btnDashboard.FillColor = System.Drawing.Color.Transparent;
+            this.btnDashboard.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnDashboard.ForeColor = System.Drawing.Color.White;
+            this.btnDashboard.Location = new System.Drawing.Point(10, 100);
+            this.btnDashboard.Name = "btnDashboard";
+            this.btnDashboard.Size = new System.Drawing.Size(230, 45);
+            this.btnDashboard.TabIndex = 1;
+            this.btnDashboard.Text = "📊 Tổng quan";
+            this.btnDashboard.TextAlign = System.Windows.Forms.HorizontalAlignment.Left;
+            this.btnDashboard.Click += new System.EventHandler(this.btnDashboard_Click);
+            // 
+            // btnQuanLy
+            // 
+            this.btnQuanLy.BorderRadius = 8;
+            this.btnQuanLy.DisabledState.BorderColor = System.Drawing.Color.DarkGray;
+            this.btnQuanLy.DisabledState.CustomBorderColor = System.Drawing.Color.DarkGray;
+            this.btnQuanLy.DisabledState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(169)))), ((int)(((byte)(169)))), ((int)(((byte)(169)))));
+            this.btnQuanLy.DisabledState.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(141)))), ((int)(((byte)(141)))), ((int)(((byte)(141)))));
+            this.btnQuanLy.FillColor = System.Drawing.Color.Transparent;
+            this.btnQuanLy.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnQuanLy.ForeColor = System.Drawing.Color.White;
+            this.btnQuanLy.Location = new System.Drawing.Point(10, 155);
+            this.btnQuanLy.Name = "btnQuanLy";
+            this.btnQuanLy.Size = new System.Drawing.Size(230, 45);
+            this.btnQuanLy.TabIndex = 2;
+            this.btnQuanLy.Text = "👥 Quản lý nhân sự";
+            this.btnQuanLy.TextAlign = System.Windows.Forms.HorizontalAlignment.Left;
+            this.btnQuanLy.Click += new System.EventHandler(this.btnQuanLy_Click);
+            // 
+            // btnDanhMuc
+            // 
+            this.btnDanhMuc.BorderRadius = 8;
+            this.btnDanhMuc.DisabledState.BorderColor = System.Drawing.Color.DarkGray;
+            this.btnDanhMuc.DisabledState.CustomBorderColor = System.Drawing.Color.DarkGray;
+            this.btnDanhMuc.DisabledState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(169)))), ((int)(((byte)(169)))), ((int)(((byte)(169)))));
+            this.btnDanhMuc.DisabledState.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(141)))), ((int)(((byte)(141)))), ((int)(((byte)(141)))));
+            this.btnDanhMuc.FillColor = System.Drawing.Color.Transparent;
+            this.btnDanhMuc.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnDanhMuc.ForeColor = System.Drawing.Color.White;
+            this.btnDanhMuc.Location = new System.Drawing.Point(10, 210);
+            this.btnDanhMuc.Name = "btnDanhMuc";
+            this.btnDanhMuc.Size = new System.Drawing.Size(230, 45);
+            this.btnDanhMuc.TabIndex = 3;
+            this.btnDanhMuc.Text = "📋 Danh mục";
+            this.btnDanhMuc.TextAlign = System.Windows.Forms.HorizontalAlignment.Left;
+            this.btnDanhMuc.Click += new System.EventHandler(this.btnDanhMuc_Click);
+            // 
+            // btnNghiepVu
+            // 
+            this.btnNghiepVu.BorderRadius = 8;
+            this.btnNghiepVu.DisabledState.BorderColor = System.Drawing.Color.DarkGray;
+            this.btnNghiepVu.DisabledState.CustomBorderColor = System.Drawing.Color.DarkGray;
+            this.btnNghiepVu.DisabledState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(169)))), ((int)(((byte)(169)))), ((int)(((byte)(169)))));
+            this.btnNghiepVu.DisabledState.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(141)))), ((int)(((byte)(141)))), ((int)(((byte)(141)))));
+            this.btnNghiepVu.FillColor = System.Drawing.Color.Transparent;
+            this.btnNghiepVu.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnNghiepVu.ForeColor = System.Drawing.Color.White;
+            this.btnNghiepVu.Location = new System.Drawing.Point(10, 265);
+            this.btnNghiepVu.Name = "btnNghiepVu";
+            this.btnNghiepVu.Size = new System.Drawing.Size(230, 45);
+            this.btnNghiepVu.TabIndex = 4;
+            this.btnNghiepVu.Text = "⚙️ Nghiệp vụ";
+            this.btnNghiepVu.TextAlign = System.Windows.Forms.HorizontalAlignment.Left;
+            this.btnNghiepVu.Click += new System.EventHandler(this.btnNghiepVu_Click);
+            // 
+            // btnTienLuong
+            // 
+            this.btnTienLuong.BorderRadius = 8;
+            this.btnTienLuong.DisabledState.BorderColor = System.Drawing.Color.DarkGray;
+            this.btnTienLuong.DisabledState.CustomBorderColor = System.Drawing.Color.DarkGray;
+            this.btnTienLuong.DisabledState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(169)))), ((int)(((byte)(169)))), ((int)(((byte)(169)))));
+            this.btnTienLuong.DisabledState.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(141)))), ((int)(((byte)(141)))), ((int)(((byte)(141)))));
+            this.btnTienLuong.FillColor = System.Drawing.Color.Transparent;
+            this.btnTienLuong.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnTienLuong.ForeColor = System.Drawing.Color.White;
+            this.btnTienLuong.Location = new System.Drawing.Point(10, 320);
+            this.btnTienLuong.Name = "btnTienLuong";
+            this.btnTienLuong.Size = new System.Drawing.Size(230, 45);
+            this.btnTienLuong.TabIndex = 5;
+            this.btnTienLuong.Text = "💰 Tiền lương";
+            this.btnTienLuong.TextAlign = System.Windows.Forms.HorizontalAlignment.Left;
+            this.btnTienLuong.Click += new System.EventHandler(this.btnTienLuong_Click);
+            // 
+            // btnCaNhan
+            // 
+            this.btnCaNhan.BorderRadius = 8;
+            this.btnCaNhan.DisabledState.BorderColor = System.Drawing.Color.DarkGray;
+            this.btnCaNhan.DisabledState.CustomBorderColor = System.Drawing.Color.DarkGray;
+            this.btnCaNhan.DisabledState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(169)))), ((int)(((byte)(169)))), ((int)(((byte)(169)))));
+            this.btnCaNhan.DisabledState.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(141)))), ((int)(((byte)(141)))), ((int)(((byte)(141)))));
+            this.btnCaNhan.FillColor = System.Drawing.Color.Transparent;
+            this.btnCaNhan.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnCaNhan.ForeColor = System.Drawing.Color.White;
+            this.btnCaNhan.Location = new System.Drawing.Point(10, 375);
+            this.btnCaNhan.Name = "btnCaNhan";
+            this.btnCaNhan.Size = new System.Drawing.Size(230, 45);
+            this.btnCaNhan.TabIndex = 6;
+            this.btnCaNhan.Text = "👤 Cá nhân";
+            this.btnCaNhan.TextAlign = System.Windows.Forms.HorizontalAlignment.Left;
+            this.btnCaNhan.Click += new System.EventHandler(this.btnCaNhan_Click);
+            // 
+            // btnChamCong
+            // 
+            this.btnChamCong.BorderRadius = 8;
+            this.btnChamCong.DisabledState.BorderColor = System.Drawing.Color.DarkGray;
+            this.btnChamCong.DisabledState.CustomBorderColor = System.Drawing.Color.DarkGray;
+            this.btnChamCong.DisabledState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(169)))), ((int)(((byte)(169)))), ((int)(((byte)(169)))));
+            this.btnChamCong.DisabledState.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(141)))), ((int)(((byte)(141)))), ((int)(((byte)(141)))));
+            this.btnChamCong.FillColor = System.Drawing.Color.Transparent;
+            this.btnChamCong.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnChamCong.ForeColor = System.Drawing.Color.White;
+            this.btnChamCong.Location = new System.Drawing.Point(10, 430);
+            this.btnChamCong.Name = "btnChamCong";
+            this.btnChamCong.Size = new System.Drawing.Size(230, 45);
+            this.btnChamCong.TabIndex = 7;
+            this.btnChamCong.Text = "⏰ Chấm công";
+            this.btnChamCong.TextAlign = System.Windows.Forms.HorizontalAlignment.Left;
+            this.btnChamCong.Click += new System.EventHandler(this.btnChamCong_Click);
+            // 
+            // btnBaoCao
+            // 
+            this.btnBaoCao.BorderRadius = 8;
+            this.btnBaoCao.DisabledState.BorderColor = System.Drawing.Color.DarkGray;
+            this.btnBaoCao.DisabledState.CustomBorderColor = System.Drawing.Color.DarkGray;
+            this.btnBaoCao.DisabledState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(169)))), ((int)(((byte)(169)))), ((int)(((byte)(169)))));
+            this.btnBaoCao.DisabledState.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(141)))), ((int)(((byte)(141)))), ((int)(((byte)(141)))));
+            this.btnBaoCao.FillColor = System.Drawing.Color.Transparent;
+            this.btnBaoCao.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnBaoCao.ForeColor = System.Drawing.Color.White;
+            this.btnBaoCao.Location = new System.Drawing.Point(10, 485);
+            this.btnBaoCao.Name = "btnBaoCao";
+            this.btnBaoCao.Size = new System.Drawing.Size(230, 45);
+            this.btnBaoCao.TabIndex = 8;
+            this.btnBaoCao.Text = "📊 Báo cáo";
+            this.btnBaoCao.TextAlign = System.Windows.Forms.HorizontalAlignment.Left;
+            this.btnBaoCao.Click += new System.EventHandler(this.btnBaoCao_Click);
+            // 
+            // btnDangXuat
+            // 
+            this.btnDangXuat.BorderRadius = 8;
+            this.btnDangXuat.DisabledState.BorderColor = System.Drawing.Color.DarkGray;
+            this.btnDangXuat.DisabledState.CustomBorderColor = System.Drawing.Color.DarkGray;
+            this.btnDangXuat.DisabledState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(169)))), ((int)(((byte)(169)))), ((int)(((byte)(169)))));
+            this.btnDangXuat.DisabledState.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(141)))), ((int)(((byte)(141)))), ((int)(((byte)(141)))));
+            this.btnDangXuat.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(220)))), ((int)(((byte)(53)))), ((int)(((byte)(69)))));
+            this.btnDangXuat.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnDangXuat.ForeColor = System.Drawing.Color.White;
+            this.btnDangXuat.Location = new System.Drawing.Point(10, 600);
+            this.btnDangXuat.Name = "btnDangXuat";
+            this.btnDangXuat.Size = new System.Drawing.Size(230, 45);
+            this.btnDangXuat.TabIndex = 9;
+            this.btnDangXuat.Text = "🚪 Đăng xuất";
+            this.btnDangXuat.TextAlign = System.Windows.Forms.HorizontalAlignment.Left;
+            this.btnDangXuat.Click += new System.EventHandler(this.btnDangXuat_Click);
             // 
             // frmMain
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(20)))), ((int)(((byte)(20)))), ((int)(((byte)(20)))));
+            this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(240)))), ((int)(((byte)(240)))), ((int)(((byte)(240)))));
             this.ClientSize = new System.Drawing.Size(1200, 700);
-            this.Controls.Add(this.lblTitle);
-            this.Controls.Add(this.pnlTitle);
-            this.Controls.Add(this.pnlContent);
-            this.Controls.Add(this.statusStrip);
-            this.Controls.Add(this.menuStrip);
+            this.Controls.Add(this.pnlMain);
+            this.pnlMain.Controls.Add(this.pnlSidebar);
+            this.pnlMain.Controls.Add(this.pnlHeader);
+            this.pnlMain.Controls.Add(this.pnlContent);
+            this.pnlSidebar.Controls.Add(this.pnlLogo);
+            this.pnlSidebar.Controls.Add(this.btnDashboard);
+            this.pnlSidebar.Controls.Add(this.btnQuanLy);
+            this.pnlSidebar.Controls.Add(this.btnDanhMuc);
+            this.pnlSidebar.Controls.Add(this.btnNghiepVu);
+            this.pnlSidebar.Controls.Add(this.btnTienLuong);
+            this.pnlSidebar.Controls.Add(this.btnCaNhan);
+            this.pnlSidebar.Controls.Add(this.btnChamCong);
+            this.pnlSidebar.Controls.Add(this.btnBaoCao);
+            this.pnlSidebar.Controls.Add(this.btnDangXuat);
+            this.pnlLogo.Controls.Add(this.lblLogo);
+            this.pnlHeader.Controls.Add(this.lblUserInfo);
+            this.pnlHeader.Controls.Add(this.lblStatus);
+            this.pnlContent.Controls.Add(this.lblWelcome);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
-            this.IsMdiContainer = true;
-            this.MainMenuStrip = this.menuStrip;
             this.Name = "frmMain";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Hệ thống Quản lý Nhân sự Siêu thị Mini";
+            this.Text = "Hệ thống quản lý nhân sự";
             this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
-            this.menuStrip.ResumeLayout(false);
-            this.menuStrip.PerformLayout();
-            this.statusStrip.ResumeLayout(false);
-            this.statusStrip.PerformLayout();
+            this.Load += new System.EventHandler(this.frmMain_Load);
+            this.pnlMain.ResumeLayout(false);
+            this.pnlSidebar.ResumeLayout(false);
+            this.pnlHeader.ResumeLayout(false);
+            this.pnlHeader.PerformLayout();
+            this.pnlContent.ResumeLayout(false);
+            this.pnlContent.PerformLayout();
+            this.pnlLogo.ResumeLayout(false);
+            this.pnlLogo.PerformLayout();
             this.ResumeLayout(false);
-            this.PerformLayout();
 
         }
 
         #endregion
 
-        private System.Windows.Forms.MenuStrip menuStrip;
-        private System.Windows.Forms.ToolStripMenuItem mnuHeThong;
-        private System.Windows.Forms.ToolStripMenuItem mnuDoiMatKhau;
-        private System.Windows.Forms.ToolStripMenuItem mnuDangXuat;
-        private System.Windows.Forms.ToolStripMenuItem mnuThoat;
-        private System.Windows.Forms.ToolStripMenuItem mnuQuanLy;
-        private System.Windows.Forms.ToolStripMenuItem mnuHoSoNhanVien;
-        private System.Windows.Forms.ToolStripMenuItem mnuLichPhanCa;
-        private System.Windows.Forms.ToolStripMenuItem mnuDuyetDonTu;
-        private System.Windows.Forms.ToolStripMenuItem mnuDanhMuc;
-        private System.Windows.Forms.ToolStripMenuItem mnuCaLamViec;
-        private System.Windows.Forms.ToolStripMenuItem mnuPhongBanChucVu;
-        private System.Windows.Forms.ToolStripMenuItem mnuNghiepVu;
-        private System.Windows.Forms.ToolStripMenuItem mnuXemLichPhanCa;
-        private System.Windows.Forms.ToolStripMenuItem mnuTienLuong;
-        private System.Windows.Forms.ToolStripMenuItem mnuQuanLyBangLuong;
-        private System.Windows.Forms.ToolStripMenuItem mnuCaNhan;
-        private System.Windows.Forms.ToolStripMenuItem mnuThongTinCuaToi;
-        private System.Windows.Forms.ToolStripMenuItem mnuGuiDonTu;
-        private System.Windows.Forms.ToolStripMenuItem mnuChamCong;
-        private System.Windows.Forms.ToolStripMenuItem mnuCheckInOut;
-        private System.Windows.Forms.ToolStripMenuItem mnuBaoCao;
-        private System.Windows.Forms.ToolStripMenuItem mnuBaoCaoNhanSu;
-        private System.Windows.Forms.ToolStripMenuItem mnuBangCongChiTiet;
-        private System.Windows.Forms.ToolStripMenuItem mnuBangCongThang;
-        private System.Windows.Forms.ToolStripMenuItem mnuBaoCaoLuong;
-        private System.Windows.Forms.ToolStripMenuItem mnuTroGiup;
-        private System.Windows.Forms.ToolStripMenuItem mnuGioiThieu;
-        private System.Windows.Forms.StatusStrip statusStrip;
-        private System.Windows.Forms.ToolStripStatusLabel lblStatus;
-        private System.Windows.Forms.ToolStripStatusLabel lblUserInfo;
-        private System.Windows.Forms.Panel pnlContent;
-        private System.Windows.Forms.Panel pnlTitle;
-        private System.Windows.Forms.Label lblTitle;
+        private Guna.UI2.WinForms.Guna2Panel pnlMain;
+        private Guna.UI2.WinForms.Guna2Panel pnlSidebar;
+        private Guna.UI2.WinForms.Guna2Panel pnlHeader;
+        private Guna.UI2.WinForms.Guna2Panel pnlContent;
+        private Guna.UI2.WinForms.Guna2Panel pnlLogo;
+        private System.Windows.Forms.Label lblLogo;
+        private System.Windows.Forms.Label lblUserInfo;
+        private System.Windows.Forms.Label lblStatus;
+        private System.Windows.Forms.Label lblWelcome;
+        private Guna.UI2.WinForms.Guna2Button btnDashboard;
+        private Guna.UI2.WinForms.Guna2Button btnQuanLy;
+        private Guna.UI2.WinForms.Guna2Button btnDanhMuc;
+        private Guna.UI2.WinForms.Guna2Button btnNghiepVu;
+        private Guna.UI2.WinForms.Guna2Button btnTienLuong;
+        private Guna.UI2.WinForms.Guna2Button btnCaNhan;
+        private Guna.UI2.WinForms.Guna2Button btnChamCong;
+        private Guna.UI2.WinForms.Guna2Button btnBaoCao;
+        private Guna.UI2.WinForms.Guna2Button btnDangXuat;
     }
 }
