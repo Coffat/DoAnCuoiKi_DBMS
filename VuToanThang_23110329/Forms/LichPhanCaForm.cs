@@ -17,6 +17,14 @@ namespace VuToanThang_23110329.Forms
         private LichPhanCa _currentLichPhanCa;
         private bool _isEditing = false;
 
+        // UI Controls - khai báo để sử dụng trong code
+        private ComboBox cmbNhanVien, cmbCaLam, cmbTrangThai;
+        private DateTimePicker dtpTuNgay, dtpDenNgay, dtpNgayLam;
+        private TextBox txtTimKiem;
+        private Button btnTimKiem, btnXoaTimKiem, btnTaoLichTuan;
+        private Button btnThem, btnSua, btnXoa, btnLuu, btnHuy, btnLamMoi;
+        private DataGridView dgvLichPhanCa;
+        private Panel pnlThongTin;
 
         public LichPhanCaForm()
         {

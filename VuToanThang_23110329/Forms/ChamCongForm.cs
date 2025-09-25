@@ -18,6 +18,17 @@ namespace VuToanThang_23110329.Forms
         private TrangThaiChamCong _currentStatus;
         private System.Windows.Forms.Timer _refreshTimer;
 
+        // UI Controls - khai báo để sử dụng trong code
+        private ComboBox cmbNhanVien, cmbThang, cmbNam, cmbThangKhoa, cmbNamKhoa;
+        private DateTimePicker dtpTuNgay, dtpDenNgay, dtpGioVao, dtpGioRa;
+        private Button btnTimKiem, btnLamMoi, btnCapNhat, btnKhoaCong, btnMoKhoaCong;
+        private Button btnCheckIn, btnCheckOut, btnRefreshStatus;
+        private DataGridView dgvChamCong, dgvLichChamCong;
+        private Label lblTrangThaiHienTai, lblThongTinCa, lblThongTinChamCong;
+        private Label lblTongGioCong, lblDiTre, lblVeSom;
+        private TextBox txtGhiChu;
+        private TabControl tabControl;
+
         public ChamCongForm()
         {
             InitializeComponent();

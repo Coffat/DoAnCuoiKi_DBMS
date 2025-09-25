@@ -15,6 +15,14 @@ namespace VuToanThang_23110329.Forms
         private readonly ChamCongRepository _chamCongRepository;
         private readonly DonTuRepository _donTuRepository;
 
+        // UI Controls - khai báo để sử dụng trong code
+        private ComboBox cmbPhongBan, cmbTrangThai, cmbThang, cmbNam;
+        private DateTimePicker dtpTuNgay, dtpDenNgay;
+        private Button btnXemBaoCaoCong, btnXemBaoCaoDonTu, btnXuatBaoCao, btnLamMoi;
+        private DataGridView dgvTongQuan, dgvChamCong, dgvDonTu;
+        private Label lblTongNV, lblDangLam, lblNghi, lblTongCong, lblTongDonTu;
+        private TabControl tabControl;
+
         public BaoCaoNhanSuForm()
         {
             InitializeComponent();

@@ -15,6 +15,14 @@ namespace VuToanThang_23110329.Forms
         private CaLam _currentCaLam;
         private bool _isEditing = false;
 
+        // UI Controls - khai báo để sử dụng trong code
+        private TextBox txtSearch, txtTenCa, txtHeSoCa, txtMoTa;
+        private DateTimePicker dtpGioBatDau, dtpGioKetThuc;
+        private CheckBox chkKichHoat;
+        private Button btnThem, btnSua, btnXoa, btnLuu, btnHuy, btnLamMoi;
+        private DataGridView dgvCaLam;
+        private Panel pnlThongTin;
+
         public CaLamForm()
         {
             InitializeComponent();

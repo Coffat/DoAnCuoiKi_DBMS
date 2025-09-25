@@ -15,6 +15,14 @@ namespace VuToanThang_23110329.Forms
         private DonTu _currentDonTu;
         private bool _isEditing = false;
 
+        // UI Controls - khai báo để sử dụng trong code
+        private ComboBox cmbTrangThai, cmbLoai;
+        private DateTimePicker dtpTuLuc, dtpDenLuc;
+        private TextBox txtSoGio, txtLyDo;
+        private Button btnThem, btnSua, btnXoa, btnLuu, btnHuy, btnLamMoi;
+        private DataGridView dgvDonTu;
+        private Panel pnlThongTin;
+
         public DonTuNVForm()
         {
             InitializeComponent();

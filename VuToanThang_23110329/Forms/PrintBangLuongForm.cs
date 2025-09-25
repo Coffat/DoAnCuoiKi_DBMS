@@ -18,6 +18,9 @@ namespace VuToanThang_23110329.Forms
         private int _nam;
         private int _thang;
 
+        // UI Controls - khai báo để sử dụng trong code
+        private Button btnPrint, btnClose;
+
         public PrintBangLuongForm(int nam, int thang)
         {
             InitializeComponent();

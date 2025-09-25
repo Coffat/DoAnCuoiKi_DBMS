@@ -14,6 +14,13 @@ namespace VuToanThang_23110329.Forms
         private readonly BangLuongRepository _bangLuongRepository;
         private readonly NhanVienRepository _nhanVienRepository;
 
+        // UI Controls - khai báo để sử dụng trong code
+        private ComboBox cmbThang, cmbNam, cmbPhongBan;
+        private Button btnXemBaoCao, btnXuatExcel, btnLamMoi;
+        private DataGridView dgvBaoCaoThang, dgvBaoCaoNam, dgvSoSanh;
+        private Label lblTongNV, lblTongLuong, lblLuongTB, lblCaoNhat, lblThapNhat;
+        private TabControl tabControl;
+
         public BaoCaoLuongForm()
         {
             InitializeComponent();

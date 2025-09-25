@@ -12,6 +12,14 @@ namespace VuToanThang_23110329.Forms
     {
         private Form currentChildForm;
 
+        // UI Controls - khai báo để sử dụng trong code
+        private Label lblUserName, lblUserRole, lblWelcome, lblCurrentForm;
+        private Guna.UI2.WinForms.Guna2Button btnDashboard, btnNhanVien, btnCaLam, btnLichPhanCa, btnChamCong;
+        private Guna.UI2.WinForms.Guna2Button btnDonTu, btnTinhLuong, btnBangLuong, btnPhieuLuong;
+        private Guna.UI2.WinForms.Guna2Button btnBaoCaoNhanSu, btnBaoCaoLuong, btnLogout;
+        private Guna.UI2.WinForms.Guna2Button btnClose, btnMaximize, btnMinimize;
+        private Panel pnlContent;
+
         public MainForm()
         {
             InitializeComponent();
