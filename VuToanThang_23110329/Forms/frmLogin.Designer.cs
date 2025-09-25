@@ -31,56 +31,94 @@ namespace VuToanThang_23110329.Forms
         {
             this.components = new System.ComponentModel.Container();
             this.lblTitle = new System.Windows.Forms.Label();
+            this.lblSubtitle = new System.Windows.Forms.Label();
             this.lblUsername = new System.Windows.Forms.Label();
             this.lblPassword = new System.Windows.Forms.Label();
             this.txtUsername = new Guna.UI2.WinForms.Guna2TextBox();
             this.txtPassword = new Guna.UI2.WinForms.Guna2TextBox();
             this.btnLogin = new Guna.UI2.WinForms.Guna2Button();
             this.btnExit = new Guna.UI2.WinForms.Guna2Button();
-            this.lblTitleBar = new System.Windows.Forms.Label();
             this.pictureBoxLogo = new System.Windows.Forms.PictureBox();
             this.pnlMain = new Guna.UI2.WinForms.Guna2Panel();
-            this.pnlContent = new Guna.UI2.WinForms.Guna2Panel();
-            this.pnlTitle = new Guna.UI2.WinForms.Guna2Panel();
+            this.pnlLeft = new Guna.UI2.WinForms.Guna2Panel();
+            this.pnlRight = new Guna.UI2.WinForms.Guna2Panel();
+            this.pnlForm = new Guna.UI2.WinForms.Guna2Panel();
+            this.lblWelcome = new System.Windows.Forms.Label();
+            this.lblSystemName = new System.Windows.Forms.Label();
             this.pnlButtons = new Guna.UI2.WinForms.Guna2Panel();
+            this.chkRememberMe = new Guna.UI2.WinForms.Guna2CheckBox();
+            this.lblForgotPassword = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // lblTitle
             // 
             this.lblTitle.AutoSize = true;
-            this.lblTitle.Font = new System.Drawing.Font("Segoe UI", 20F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblTitle.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(124)))), ((int)(((byte)(77)))), ((int)(((byte)(255)))));
-            this.lblTitle.Location = new System.Drawing.Point(100, 20);
+            this.lblTitle.Font = new System.Drawing.Font("Segoe UI", 28F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblTitle.ForeColor = System.Drawing.Color.White;
+            this.lblTitle.Location = new System.Drawing.Point(50, 80);
             this.lblTitle.Name = "lblTitle";
-            this.lblTitle.Size = new System.Drawing.Size(200, 32);
+            this.lblTitle.Size = new System.Drawing.Size(300, 51);
             this.lblTitle.TabIndex = 0;
-            this.lblTitle.Text = "Đăng nhập hệ thống";
+            this.lblTitle.Text = "Chào mừng trở lại";
+            // 
+            // lblSubtitle
+            // 
+            this.lblSubtitle.AutoSize = true;
+            this.lblSubtitle.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblSubtitle.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(200)))), ((int)(((byte)(200)))), ((int)(((byte)(200)))));
+            this.lblSubtitle.Location = new System.Drawing.Point(50, 140);
+            this.lblSubtitle.Name = "lblSubtitle";
+            this.lblSubtitle.Size = new System.Drawing.Size(250, 21);
+            this.lblSubtitle.TabIndex = 1;
+            this.lblSubtitle.Text = "Đăng nhập để tiếp tục sử dụng hệ thống";
+            // 
+            // lblWelcome
+            // 
+            this.lblWelcome.AutoSize = true;
+            this.lblWelcome.Font = new System.Drawing.Font("Segoe UI", 24F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblWelcome.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.lblWelcome.Location = new System.Drawing.Point(50, 40);
+            this.lblWelcome.Name = "lblWelcome";
+            this.lblWelcome.Size = new System.Drawing.Size(200, 45);
+            this.lblWelcome.TabIndex = 0;
+            this.lblWelcome.Text = "Đăng nhập";
+            // 
+            // lblSystemName
+            // 
+            this.lblSystemName.AutoSize = true;
+            this.lblSystemName.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblSystemName.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(100)))), ((int)(((byte)(100)))));
+            this.lblSystemName.Location = new System.Drawing.Point(50, 90);
+            this.lblSystemName.Name = "lblSystemName";
+            this.lblSystemName.Size = new System.Drawing.Size(150, 19);
+            this.lblSystemName.TabIndex = 1;
+            this.lblSystemName.Text = "Hệ thống quản lý nhân sự";
             // 
             // lblUsername
             // 
             this.lblUsername.AutoSize = true;
-            this.lblUsername.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblUsername.ForeColor = System.Drawing.Color.Black;
-            this.lblUsername.Location = new System.Drawing.Point(75, 100);
+            this.lblUsername.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Medium, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblUsername.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.lblUsername.Location = new System.Drawing.Point(50, 140);
             this.lblUsername.Name = "lblUsername";
-            this.lblUsername.Size = new System.Drawing.Size(76, 19);
-            this.lblUsername.TabIndex = 1;
-            this.lblUsername.Text = "Tên đăng nhập:";
+            this.lblUsername.Size = new System.Drawing.Size(100, 19);
+            this.lblUsername.TabIndex = 2;
+            this.lblUsername.Text = "Tên đăng nhập";
             // 
             // lblPassword
             // 
             this.lblPassword.AutoSize = true;
-            this.lblPassword.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblPassword.ForeColor = System.Drawing.Color.Black;
-            this.lblPassword.Location = new System.Drawing.Point(75, 175);
+            this.lblPassword.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Medium, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblPassword.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.lblPassword.Location = new System.Drawing.Point(50, 220);
             this.lblPassword.Name = "lblPassword";
-            this.lblPassword.Size = new System.Drawing.Size(57, 19);
-            this.lblPassword.TabIndex = 2;
-            this.lblPassword.Text = "Mật khẩu:";
+            this.lblPassword.Size = new System.Drawing.Size(70, 19);
+            this.lblPassword.TabIndex = 3;
+            this.lblPassword.Text = "Mật khẩu";
             // 
             // txtUsername
             // 
-            this.txtUsername.BorderRadius = 10;
+            this.txtUsername.BorderRadius = 12;
             this.txtUsername.Cursor = System.Windows.Forms.Cursors.IBeam;
             this.txtUsername.DefaultText = "";
             this.txtUsername.DisabledState.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(208)))), ((int)(((byte)(208)))), ((int)(((byte)(208)))));
@@ -88,24 +126,25 @@ namespace VuToanThang_23110329.Forms
             this.txtUsername.DisabledState.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(138)))), ((int)(((byte)(138)))), ((int)(((byte)(138)))));
             this.txtUsername.DisabledState.Parent = this.txtUsername;
             this.txtUsername.DisabledState.PlaceholderForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(138)))), ((int)(((byte)(138)))), ((int)(((byte)(138)))));
-            this.txtUsername.FillColor = System.Drawing.Color.White;
-            this.txtUsername.FocusedState.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(124)))), ((int)(((byte)(77)))), ((int)(((byte)(255)))));
+            this.txtUsername.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(248)))), ((int)(((byte)(249)))), ((int)(((byte)(250)))));
+            this.txtUsername.FocusedState.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
             this.txtUsername.FocusedState.Parent = this.txtUsername;
-            this.txtUsername.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txtUsername.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtUsername.ForeColor = System.Drawing.Color.Black;
-            this.txtUsername.HoverState.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(124)))), ((int)(((byte)(77)))), ((int)(((byte)(255)))));
+            this.txtUsername.HoverState.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
             this.txtUsername.HoverState.Parent = this.txtUsername;
-            this.txtUsername.Location = new System.Drawing.Point(75, 125);
+            this.txtUsername.Location = new System.Drawing.Point(50, 165);
+            this.txtUsername.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.txtUsername.Name = "txtUsername";
             this.txtUsername.PasswordChar = '\0';
-            this.txtUsername.PlaceholderText = "Nhập tên đăng nhập...";
+            this.txtUsername.PlaceholderText = "Nhập tên đăng nhập của bạn";
             this.txtUsername.SelectedText = "";
-            this.txtUsername.Size = new System.Drawing.Size(200, 36);
-            this.txtUsername.TabIndex = 3;
+            this.txtUsername.Size = new System.Drawing.Size(300, 44);
+            this.txtUsername.TabIndex = 4;
             // 
             // txtPassword
             // 
-            this.txtPassword.BorderRadius = 10;
+            this.txtPassword.BorderRadius = 12;
             this.txtPassword.Cursor = System.Windows.Forms.Cursors.IBeam;
             this.txtPassword.DefaultText = "";
             this.txtPassword.DisabledState.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(208)))), ((int)(((byte)(208)))), ((int)(((byte)(208)))));
@@ -113,125 +152,156 @@ namespace VuToanThang_23110329.Forms
             this.txtPassword.DisabledState.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(138)))), ((int)(((byte)(138)))), ((int)(((byte)(138)))));
             this.txtPassword.DisabledState.Parent = this.txtPassword;
             this.txtPassword.DisabledState.PlaceholderForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(138)))), ((int)(((byte)(138)))), ((int)(((byte)(138)))));
-            this.txtPassword.FillColor = System.Drawing.Color.White;
-            this.txtPassword.FocusedState.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(124)))), ((int)(((byte)(77)))), ((int)(((byte)(255)))));
+            this.txtPassword.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(248)))), ((int)(((byte)(249)))), ((int)(((byte)(250)))));
+            this.txtPassword.FocusedState.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
             this.txtPassword.FocusedState.Parent = this.txtPassword;
-            this.txtPassword.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txtPassword.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtPassword.ForeColor = System.Drawing.Color.Black;
-            this.txtPassword.HoverState.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(124)))), ((int)(((byte)(77)))), ((int)(((byte)(255)))));
+            this.txtPassword.HoverState.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
             this.txtPassword.HoverState.Parent = this.txtPassword;
-            this.txtPassword.Location = new System.Drawing.Point(75, 200);
+            this.txtPassword.Location = new System.Drawing.Point(50, 245);
+            this.txtPassword.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.txtPassword.Name = "txtPassword";
             this.txtPassword.PasswordChar = '●';
-            this.txtPassword.PlaceholderText = "Nhập mật khẩu...";
+            this.txtPassword.PlaceholderText = "Nhập mật khẩu của bạn";
             this.txtPassword.SelectedText = "";
-            this.txtPassword.Size = new System.Drawing.Size(200, 36);
-            this.txtPassword.TabIndex = 4;
+            this.txtPassword.Size = new System.Drawing.Size(300, 44);
+            this.txtPassword.TabIndex = 5;
+            // 
+            // chkRememberMe
+            // 
+            this.chkRememberMe.AutoSize = true;
+            this.chkRememberMe.CheckedState.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
+            this.chkRememberMe.CheckedState.BorderRadius = 2;
+            this.chkRememberMe.CheckedState.BorderThickness = 0;
+            this.chkRememberMe.CheckedState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
+            this.chkRememberMe.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.chkRememberMe.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(100)))), ((int)(((byte)(100)))));
+            this.chkRememberMe.Location = new System.Drawing.Point(50, 305);
+            this.chkRememberMe.Name = "chkRememberMe";
+            this.chkRememberMe.Size = new System.Drawing.Size(120, 19);
+            this.chkRememberMe.TabIndex = 6;
+            this.chkRememberMe.Text = "Ghi nhớ đăng nhập";
+            this.chkRememberMe.UncheckedState.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(125)))), ((int)(((byte)(137)))), ((int)(((byte)(149)))));
+            this.chkRememberMe.UncheckedState.BorderRadius = 2;
+            this.chkRememberMe.UncheckedState.BorderThickness = 1;
+            this.chkRememberMe.UncheckedState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(125)))), ((int)(((byte)(137)))), ((int)(((byte)(149)))));
+            // 
+            // lblForgotPassword
+            // 
+            this.lblForgotPassword.AutoSize = true;
+            this.lblForgotPassword.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.lblForgotPassword.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblForgotPassword.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
+            this.lblForgotPassword.Location = new System.Drawing.Point(250, 305);
+            this.lblForgotPassword.Name = "lblForgotPassword";
+            this.lblForgotPassword.Size = new System.Drawing.Size(100, 15);
+            this.lblForgotPassword.TabIndex = 7;
+            this.lblForgotPassword.Text = "Quên mật khẩu?";
             // 
             // btnLogin
             // 
-            this.btnLogin.BorderRadius = 10;
+            this.btnLogin.BorderRadius = 12;
             this.btnLogin.DisabledState.BorderColor = System.Drawing.Color.DarkGray;
             this.btnLogin.DisabledState.CustomBorderColor = System.Drawing.Color.DarkGray;
             this.btnLogin.DisabledState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(169)))), ((int)(((byte)(169)))), ((int)(((byte)(169)))));
             this.btnLogin.DisabledState.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(141)))), ((int)(((byte)(141)))), ((int)(((byte)(141)))));
-            this.btnLogin.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(124)))), ((int)(((byte)(77)))), ((int)(((byte)(255)))));
-            this.btnLogin.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnLogin.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
+            this.btnLogin.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnLogin.ForeColor = System.Drawing.Color.White;
-            this.btnLogin.Location = new System.Drawing.Point(35, 7);
+            this.btnLogin.Location = new System.Drawing.Point(50, 350);
             this.btnLogin.Name = "btnLogin";
-            this.btnLogin.Size = new System.Drawing.Size(90, 35);
-            this.btnLogin.TabIndex = 5;
+            this.btnLogin.Size = new System.Drawing.Size(300, 45);
+            this.btnLogin.TabIndex = 8;
             this.btnLogin.Text = "Đăng nhập";
             // 
             // btnExit
             // 
-            this.btnExit.BorderRadius = 10;
+            this.btnExit.BorderRadius = 12;
             this.btnExit.DisabledState.BorderColor = System.Drawing.Color.DarkGray;
             this.btnExit.DisabledState.CustomBorderColor = System.Drawing.Color.DarkGray;
             this.btnExit.DisabledState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(169)))), ((int)(((byte)(169)))), ((int)(((byte)(169)))));
             this.btnExit.DisabledState.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(141)))), ((int)(((byte)(141)))), ((int)(((byte)(141)))));
-            this.btnExit.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(77)))), ((int)(((byte)(77)))));
-            this.btnExit.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnExit.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(108)))), ((int)(((byte)(117)))), ((int)(((byte)(125)))));
+            this.btnExit.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnExit.ForeColor = System.Drawing.Color.White;
-            this.btnExit.Location = new System.Drawing.Point(160, 7);
+            this.btnExit.Location = new System.Drawing.Point(50, 410);
             this.btnExit.Name = "btnExit";
-            this.btnExit.Size = new System.Drawing.Size(90, 35);
-            this.btnExit.TabIndex = 6;
+            this.btnExit.Size = new System.Drawing.Size(300, 40);
+            this.btnExit.TabIndex = 9;
             this.btnExit.Text = "Thoát";
             // 
             // pictureBoxLogo
             // 
             this.pictureBoxLogo.BackColor = System.Drawing.Color.Transparent;
-            this.pictureBoxLogo.Location = new System.Drawing.Point(225, 60);
+            this.pictureBoxLogo.Location = new System.Drawing.Point(50, 200);
             this.pictureBoxLogo.Name = "pictureBoxLogo";
-            this.pictureBoxLogo.Size = new System.Drawing.Size(50, 50);
-            this.pictureBoxLogo.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-            this.pictureBoxLogo.TabIndex = 7;
+            this.pictureBoxLogo.Size = new System.Drawing.Size(80, 80);
+            this.pictureBoxLogo.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.pictureBoxLogo.TabIndex = 10;
             this.pictureBoxLogo.TabStop = false;
-            // 
-            // lblTitleBar
-            // 
-            this.lblTitleBar.AutoSize = true;
-            this.lblTitleBar.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblTitleBar.ForeColor = System.Drawing.Color.White;
-            this.lblTitleBar.Location = new System.Drawing.Point(200, 10);
-            this.lblTitleBar.Name = "lblTitleBar";
-            this.lblTitleBar.Size = new System.Drawing.Size(100, 21);
-            this.lblTitleBar.TabIndex = 0;
-            this.lblTitleBar.Text = "ĐĂNG NHẬP";
             // 
             // pnlMain
             // 
-            this.pnlMain.BorderRadius = 15;
-            this.pnlMain.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(30)))), ((int)(((byte)(30)))));
+            this.pnlMain.BorderRadius = 20;
+            this.pnlMain.FillColor = System.Drawing.Color.White;
             this.pnlMain.Location = new System.Drawing.Point(0, 0);
             this.pnlMain.Name = "pnlMain";
-            this.pnlMain.Size = new System.Drawing.Size(500, 350);
+            this.pnlMain.ShadowDecoration.BorderRadius = 20;
+            this.pnlMain.ShadowDecoration.Color = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(25)))));
+            this.pnlMain.ShadowDecoration.Depth = 20;
+            this.pnlMain.ShadowDecoration.Enabled = true;
+            this.pnlMain.Size = new System.Drawing.Size(900, 500);
             this.pnlMain.TabIndex = 0;
             // 
-            // pnlContent
+            // pnlLeft
             // 
-            this.pnlContent.BorderRadius = 15;
-            this.pnlContent.FillColor = System.Drawing.Color.White;
-            this.pnlContent.Location = new System.Drawing.Point(50, 50);
-            this.pnlContent.Name = "pnlContent";
-            this.pnlContent.Size = new System.Drawing.Size(400, 300);
-            this.pnlContent.TabIndex = 1;
+            this.pnlLeft.BorderRadius = 20;
+            this.pnlLeft.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
+            this.pnlLeft.Location = new System.Drawing.Point(0, 0);
+            this.pnlLeft.Name = "pnlLeft";
+            this.pnlLeft.Size = new System.Drawing.Size(450, 500);
+            this.pnlLeft.TabIndex = 1;
             // 
-            // pnlTitle
+            // pnlRight
             // 
-            this.pnlTitle.BorderRadius = 0;
-            this.pnlTitle.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(124)))), ((int)(((byte)(77)))), ((int)(((byte)(255)))));
-            this.pnlTitle.Location = new System.Drawing.Point(0, 0);
-            this.pnlTitle.Name = "pnlTitle";
-            this.pnlTitle.Size = new System.Drawing.Size(500, 50);
-            this.pnlTitle.TabIndex = 2;
+            this.pnlRight.BorderRadius = 0;
+            this.pnlRight.FillColor = System.Drawing.Color.White;
+            this.pnlRight.Location = new System.Drawing.Point(450, 0);
+            this.pnlRight.Name = "pnlRight";
+            this.pnlRight.Size = new System.Drawing.Size(450, 500);
+            this.pnlRight.TabIndex = 2;
             // 
-            // pnlButtons
+            // pnlForm
             // 
-            this.pnlButtons.BorderRadius = 10;
-            this.pnlButtons.FillColor = System.Drawing.Color.White;
-            this.pnlButtons.Location = new System.Drawing.Point(75, 250);
-            this.pnlButtons.Name = "pnlButtons";
-            this.pnlButtons.Size = new System.Drawing.Size(250, 50);
-            this.pnlButtons.TabIndex = 3;
+            this.pnlForm.BorderRadius = 0;
+            this.pnlForm.FillColor = System.Drawing.Color.Transparent;
+            this.pnlForm.Location = new System.Drawing.Point(450, 0);
+            this.pnlForm.Name = "pnlForm";
+            this.pnlForm.Size = new System.Drawing.Size(450, 500);
+            this.pnlForm.TabIndex = 3;
             // 
             // frmLogin
             // 
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(240)))), ((int)(((byte)(240)))), ((int)(((byte)(240)))));
-            this.ClientSize = new System.Drawing.Size(500, 400);
+            this.ClientSize = new System.Drawing.Size(900, 500);
             this.Controls.Add(this.pnlMain);
-            this.pnlMain.Controls.Add(this.pnlTitle);
-            this.pnlMain.Controls.Add(this.pnlContent);
-            this.pnlMain.Controls.Add(this.pnlButtons);
-            this.pnlTitle.Controls.Add(this.lblTitleBar);
-            this.pnlContent.Controls.Add(this.pictureBoxLogo);
-            this.pnlContent.Controls.Add(this.lblTitle);
-            this.pnlContent.Controls.Add(this.lblUsername);
-            this.pnlContent.Controls.Add(this.lblPassword);
-            this.pnlButtons.Controls.Add(this.btnLogin);
-            this.pnlButtons.Controls.Add(this.btnExit);
+            this.pnlMain.Controls.Add(this.pnlLeft);
+            this.pnlMain.Controls.Add(this.pnlRight);
+            this.pnlMain.Controls.Add(this.pnlForm);
+            this.pnlLeft.Controls.Add(this.pictureBoxLogo);
+            this.pnlLeft.Controls.Add(this.lblTitle);
+            this.pnlLeft.Controls.Add(this.lblSubtitle);
+            this.pnlForm.Controls.Add(this.lblWelcome);
+            this.pnlForm.Controls.Add(this.lblSystemName);
+            this.pnlForm.Controls.Add(this.lblUsername);
+            this.pnlForm.Controls.Add(this.lblPassword);
+            this.pnlForm.Controls.Add(this.txtUsername);
+            this.pnlForm.Controls.Add(this.txtPassword);
+            this.pnlForm.Controls.Add(this.chkRememberMe);
+            this.pnlForm.Controls.Add(this.lblForgotPassword);
+            this.pnlForm.Controls.Add(this.btnLogin);
+            this.pnlForm.Controls.Add(this.btnExit);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Name = "frmLogin";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
@@ -243,6 +313,9 @@ namespace VuToanThang_23110329.Forms
         #endregion
 
         private System.Windows.Forms.Label lblTitle;
+        private System.Windows.Forms.Label lblSubtitle;
+        private System.Windows.Forms.Label lblWelcome;
+        private System.Windows.Forms.Label lblSystemName;
         private System.Windows.Forms.Label lblUsername;
         private System.Windows.Forms.Label lblPassword;
         private Guna.UI2.WinForms.Guna2TextBox txtUsername;
@@ -250,10 +323,12 @@ namespace VuToanThang_23110329.Forms
         private Guna.UI2.WinForms.Guna2Button btnLogin;
         private Guna.UI2.WinForms.Guna2Button btnExit;
         private Guna.UI2.WinForms.Guna2Panel pnlMain;
-        private Guna.UI2.WinForms.Guna2Panel pnlContent;
-        private Guna.UI2.WinForms.Guna2Panel pnlTitle;
+        private Guna.UI2.WinForms.Guna2Panel pnlLeft;
+        private Guna.UI2.WinForms.Guna2Panel pnlRight;
+        private Guna.UI2.WinForms.Guna2Panel pnlForm;
         private Guna.UI2.WinForms.Guna2Panel pnlButtons;
+        private Guna.UI2.WinForms.Guna2CheckBox chkRememberMe;
+        private System.Windows.Forms.Label lblForgotPassword;
         private System.Windows.Forms.PictureBox pictureBoxLogo;
-        private System.Windows.Forms.Label lblTitleBar;
     }
 }

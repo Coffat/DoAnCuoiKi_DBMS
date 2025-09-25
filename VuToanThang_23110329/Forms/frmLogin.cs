@@ -17,6 +17,9 @@ namespace VuToanThang_23110329.Forms
         private void frmLogin_Load(object sender, EventArgs e)
         {
             txtUsername.Focus();
+            // Thêm event handlers cho các controls mới
+            lblForgotPassword.Click += LblForgotPassword_Click;
+            chkRememberMe.CheckedChanged += ChkRememberMe_CheckedChanged;
         }
 
         private void btnLogin_Click(object sender, EventArgs e)
@@ -91,6 +94,21 @@ namespace VuToanThang_23110329.Forms
             if (e.KeyCode == Keys.Enter)
             {
                 btnLogin.PerformClick();
+            }
+        }
+
+        private void LblForgotPassword_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show("Tính năng quên mật khẩu sẽ được phát triển trong phiên bản tiếp theo.", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        private void ChkRememberMe_CheckedChanged(object sender, EventArgs e)
+        {
+            // Xử lý logic ghi nhớ đăng nhập
+            if (chkRememberMe.Checked)
+            {
+                // Có thể lưu thông tin đăng nhập vào registry hoặc file config
+                MessageBox.Show("Tính năng ghi nhớ đăng nhập đã được kích hoạt.", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
     }
