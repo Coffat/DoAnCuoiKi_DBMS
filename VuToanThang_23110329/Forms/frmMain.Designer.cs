@@ -166,7 +166,7 @@ namespace VuToanThang_23110329.Forms
             // 
             // btnDashboard
             // 
-            this.btnDashboard.BorderRadius = 8;
+            this.btnDashboard.BorderRadius = 12;
             this.btnDashboard.DisabledState.BorderColor = System.Drawing.Color.DarkGray;
             this.btnDashboard.DisabledState.CustomBorderColor = System.Drawing.Color.DarkGray;
             this.btnDashboard.DisabledState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(169)))), ((int)(((byte)(169)))), ((int)(((byte)(169)))));
@@ -176,8 +176,6 @@ namespace VuToanThang_23110329.Forms
             this.btnDashboard.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
             this.btnDashboard.HoverState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(30)))));
             this.btnDashboard.HoverState.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
-            this.btnDashboard.PressedState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(40)))));
-            this.btnDashboard.PressedState.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
             this.btnDashboard.Location = new System.Drawing.Point(10, 100);
             this.btnDashboard.Name = "btnDashboard";
             this.btnDashboard.Size = new System.Drawing.Size(230, 45);
@@ -188,7 +186,7 @@ namespace VuToanThang_23110329.Forms
             // 
             // btnQuanLy
             // 
-            this.btnQuanLy.BorderRadius = 8;
+            this.btnQuanLy.BorderRadius = 12;
             this.btnQuanLy.DisabledState.BorderColor = System.Drawing.Color.DarkGray;
             this.btnQuanLy.DisabledState.CustomBorderColor = System.Drawing.Color.DarkGray;
             this.btnQuanLy.DisabledState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(169)))), ((int)(((byte)(169)))), ((int)(((byte)(169)))));
@@ -198,8 +196,6 @@ namespace VuToanThang_23110329.Forms
             this.btnQuanLy.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
             this.btnQuanLy.HoverState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(30)))));
             this.btnQuanLy.HoverState.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
-            this.btnQuanLy.PressedState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(40)))));
-            this.btnQuanLy.PressedState.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
             this.btnQuanLy.Location = new System.Drawing.Point(10, 155);
             this.btnQuanLy.Name = "btnQuanLy";
             this.btnQuanLy.Size = new System.Drawing.Size(230, 45);
@@ -210,7 +206,7 @@ namespace VuToanThang_23110329.Forms
             // 
             // btnDanhMuc
             // 
-            this.btnDanhMuc.BorderRadius = 8;
+            this.btnDanhMuc.BorderRadius = 12;
             this.btnDanhMuc.DisabledState.BorderColor = System.Drawing.Color.DarkGray;
             this.btnDanhMuc.DisabledState.CustomBorderColor = System.Drawing.Color.DarkGray;
             this.btnDanhMuc.DisabledState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(169)))), ((int)(((byte)(169)))), ((int)(((byte)(169)))));
@@ -220,8 +216,6 @@ namespace VuToanThang_23110329.Forms
             this.btnDanhMuc.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
             this.btnDanhMuc.HoverState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(30)))));
             this.btnDanhMuc.HoverState.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
-            this.btnDanhMuc.PressedState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(40)))));
-            this.btnDanhMuc.PressedState.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
             this.btnDanhMuc.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnDanhMuc.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
             this.btnDanhMuc.Location = new System.Drawing.Point(10, 210);
@@ -234,7 +228,7 @@ namespace VuToanThang_23110329.Forms
             // 
             // btnNghiepVu
             // 
-            this.btnNghiepVu.BorderRadius = 8;
+            this.btnNghiepVu.BorderRadius = 12;
             this.btnNghiepVu.DisabledState.BorderColor = System.Drawing.Color.DarkGray;
             this.btnNghiepVu.DisabledState.CustomBorderColor = System.Drawing.Color.DarkGray;
             this.btnNghiepVu.DisabledState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(169)))), ((int)(((byte)(169)))), ((int)(((byte)(169)))));
@@ -244,8 +238,6 @@ namespace VuToanThang_23110329.Forms
             this.btnNghiepVu.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
             this.btnNghiepVu.HoverState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(30)))));
             this.btnNghiepVu.HoverState.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
-            this.btnNghiepVu.PressedState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(40)))));
-            this.btnNghiepVu.PressedState.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
             this.btnNghiepVu.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnNghiepVu.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
             this.btnNghiepVu.Location = new System.Drawing.Point(10, 265);
@@ -258,7 +250,7 @@ namespace VuToanThang_23110329.Forms
             // 
             // btnTienLuong
             // 
-            this.btnTienLuong.BorderRadius = 8;
+            this.btnTienLuong.BorderRadius = 12;
             this.btnTienLuong.DisabledState.BorderColor = System.Drawing.Color.DarkGray;
             this.btnTienLuong.DisabledState.CustomBorderColor = System.Drawing.Color.DarkGray;
             this.btnTienLuong.DisabledState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(169)))), ((int)(((byte)(169)))), ((int)(((byte)(169)))));
@@ -268,8 +260,6 @@ namespace VuToanThang_23110329.Forms
             this.btnTienLuong.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
             this.btnTienLuong.HoverState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(30)))));
             this.btnTienLuong.HoverState.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
-            this.btnTienLuong.PressedState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(40)))));
-            this.btnTienLuong.PressedState.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
             this.btnTienLuong.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnTienLuong.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
             this.btnTienLuong.Location = new System.Drawing.Point(10, 320);
@@ -282,7 +272,7 @@ namespace VuToanThang_23110329.Forms
             // 
             // btnCaNhan
             // 
-            this.btnCaNhan.BorderRadius = 8;
+            this.btnCaNhan.BorderRadius = 12;
             this.btnCaNhan.DisabledState.BorderColor = System.Drawing.Color.DarkGray;
             this.btnCaNhan.DisabledState.CustomBorderColor = System.Drawing.Color.DarkGray;
             this.btnCaNhan.DisabledState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(169)))), ((int)(((byte)(169)))), ((int)(((byte)(169)))));
@@ -292,8 +282,6 @@ namespace VuToanThang_23110329.Forms
             this.btnCaNhan.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
             this.btnCaNhan.HoverState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(30)))));
             this.btnCaNhan.HoverState.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
-            this.btnCaNhan.PressedState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(40)))));
-            this.btnCaNhan.PressedState.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
             this.btnCaNhan.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnCaNhan.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
             this.btnCaNhan.Location = new System.Drawing.Point(10, 375);
@@ -306,7 +294,7 @@ namespace VuToanThang_23110329.Forms
             // 
             // btnChamCong
             // 
-            this.btnChamCong.BorderRadius = 8;
+            this.btnChamCong.BorderRadius = 12;
             this.btnChamCong.DisabledState.BorderColor = System.Drawing.Color.DarkGray;
             this.btnChamCong.DisabledState.CustomBorderColor = System.Drawing.Color.DarkGray;
             this.btnChamCong.DisabledState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(169)))), ((int)(((byte)(169)))), ((int)(((byte)(169)))));
@@ -316,8 +304,6 @@ namespace VuToanThang_23110329.Forms
             this.btnChamCong.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
             this.btnChamCong.HoverState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(30)))));
             this.btnChamCong.HoverState.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
-            this.btnChamCong.PressedState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(40)))));
-            this.btnChamCong.PressedState.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
             this.btnChamCong.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnChamCong.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
             this.btnChamCong.Location = new System.Drawing.Point(10, 430);
@@ -330,7 +316,7 @@ namespace VuToanThang_23110329.Forms
             // 
             // btnBaoCao
             // 
-            this.btnBaoCao.BorderRadius = 8;
+            this.btnBaoCao.BorderRadius = 12;
             this.btnBaoCao.DisabledState.BorderColor = System.Drawing.Color.DarkGray;
             this.btnBaoCao.DisabledState.CustomBorderColor = System.Drawing.Color.DarkGray;
             this.btnBaoCao.DisabledState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(169)))), ((int)(((byte)(169)))), ((int)(((byte)(169)))));
@@ -340,8 +326,6 @@ namespace VuToanThang_23110329.Forms
             this.btnBaoCao.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
             this.btnBaoCao.HoverState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(30)))));
             this.btnBaoCao.HoverState.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
-            this.btnBaoCao.PressedState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(40)))));
-            this.btnBaoCao.PressedState.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
             this.btnBaoCao.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnBaoCao.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
             this.btnBaoCao.Location = new System.Drawing.Point(10, 485);
@@ -354,7 +338,7 @@ namespace VuToanThang_23110329.Forms
             // 
             // btnDangXuat
             // 
-            this.btnDangXuat.BorderRadius = 8;
+            this.btnDangXuat.BorderRadius = 12;
             this.btnDangXuat.DisabledState.BorderColor = System.Drawing.Color.DarkGray;
             this.btnDangXuat.DisabledState.CustomBorderColor = System.Drawing.Color.DarkGray;
             this.btnDangXuat.DisabledState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(169)))), ((int)(((byte)(169)))), ((int)(((byte)(169)))));
