@@ -28,84 +28,115 @@ namespace VuToanThang_23110329.Forms
 
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.SuspendLayout();
-            
+
             // Form properties
-            this.BackColor = Color.FromArgb(50, 50, 50);
-            this.Size = new Size(900, 650);
+            this.BackColor = System.Drawing.Color.FromArgb(50, 50, 50);
+            this.Size = new System.Drawing.Size(900, 650);
             this.Text = "Bảng lương";
-            this.Padding = new Padding(20);
-            this.MinimumSize = new Size(900, 650);
-            this.AutoScaleMode = AutoScaleMode.Dpi;
-            this.StartPosition = FormStartPosition.CenterParent;
-            
-            // Add a sample label for Designer preview
-            var lblPreview = new Label
+            this.Padding = new System.Windows.Forms.Padding(20);
+            this.MinimumSize = new System.Drawing.Size(900, 650);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
+
+            // Add preview title for Designer
+            var lblPreview = new System.Windows.Forms.Label
             {
-                Text = "BẢNG LƯƠNG NHÂN VIÊN\n(Preview in Designer)",
-                Font = new Font("Segoe UI", 16, FontStyle.Bold),
-                ForeColor = Color.FromArgb(124, 77, 255),
-                Location = new Point(50, 50),
+                Text = "BẢNG LƯƠNG NHÂN VIÊN\n(Designer Preview)",
+                Font = new System.Drawing.Font("Segoe UI", 18, System.Drawing.FontStyle.Bold),
+                ForeColor = System.Drawing.Color.FromArgb(124, 77, 255),
+                Location = new System.Drawing.Point(50, 20),
                 AutoSize = true
             };
-            this.Controls.Add(lblPreview);
+
+            // Filter Panel Preview
+            var pnlFilterPreview = new System.Windows.Forms.Panel
+            {
+                BackColor = System.Drawing.Color.FromArgb(60, 60, 60),
+                BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle,
+                Size = new System.Drawing.Size(800, 80),
+                Location = new System.Drawing.Point(50, 80)
+            };
+
+            var lblFilterPreview = new System.Windows.Forms.Label
+            {
+                Text = "🔍 BỘ LỌC TÌM KIẾM\n\nTháng: [1-12] | Năm: [2023-2025] | Trạng thái: [Tất cả/Mở/Đóng]\n\nButtons: [Tìm kiếm] [Xuất Excel] [In bảng lương] [Làm mới]",
+                ForeColor = System.Drawing.Color.White,
+                Location = new System.Drawing.Point(20, 15),
+                Size = new System.Drawing.Size(760, 50),
+                Font = new System.Drawing.Font("Segoe UI", 9)
+            };
+            pnlFilterPreview.Controls.Add(lblFilterPreview);
+
+            // Summary Panel Preview
+            var pnlSummaryPreview = new System.Windows.Forms.Panel
+            {
+                BackColor = System.Drawing.Color.FromArgb(60, 60, 60),
+                BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle,
+                Size = new System.Drawing.Size(800, 60),
+                Location = new System.Drawing.Point(50, 180)
+            };
+
+            var lblSummaryPreview = new System.Windows.Forms.Label
+            {
+                Text = "📊 THỐNG KÊ TỔNG HỢP\n\n👥 Tổng nhân viên: 150 | 💰 Tổng chi lương: 1,500,000,000 VNĐ | 📈 Lương TB: 10,000,000 VNĐ",
+                ForeColor = System.Drawing.Color.White,
+                Location = new System.Drawing.Point(20, 15),
+                Size = new System.Drawing.Size(760, 30),
+                Font = new System.Drawing.Font("Segoe UI", 9)
+            };
+            pnlSummaryPreview.Controls.Add(lblSummaryPreview);
+
+            // DataGridView Preview
+            var pnlDataGridPreview = new System.Windows.Forms.Panel
+            {
+                BackColor = System.Drawing.Color.FromArgb(60, 60, 60),
+                BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle,
+                Size = new System.Drawing.Size(800, 300),
+                Location = new System.Drawing.Point(50, 260)
+            };
+
+            var lblDataGridPreview = new System.Windows.Forms.Label
+            {
+                Text = "📋 DANH SÁCH BẢNG LƯƠNG\n\n" +
+                       "┌─────────────────────────────────────────────────────────────────────────────┐\n" +
+                       "│ STT │   Mã NV   │    Họ tên     │  Lương CB  │  Phụ cấp  │  Khấu trừ  │  Thuế BH  │  Thực lãnh  │\n" +
+                       "├─────────────────────────────────────────────────────────────────────────────┤\n" +
+                       "│  1  │  NV001    │ Nguyễn Văn A  │ 8,000,000 │  500,000  │  200,000  │  400,000  │ 8,900,000  │\n" +
+                       "│  2  │  NV002    │ Trần Thị B    │ 7,500,000 │  300,000  │  150,000  │  375,000  │ 7,650,000  │\n" +
+                       "│  3  │  NV003    │ Lê Văn C      │ 9,000,000 │  800,000  │  250,000  │  450,000  │ 10,100,000 │\n" +
+                       "└─────────────────────────────────────────────────────────────────────────────┘\n\n" +
+                       "Double-click để chỉnh sửa chi tiết",
+                ForeColor = System.Drawing.Color.White,
+                Location = new System.Drawing.Point(20, 20),
+                Size = new System.Drawing.Size(760, 260),
+                Font = new System.Drawing.Font("Consolas", 8)
+            };
+            pnlDataGridPreview.Controls.Add(lblDataGridPreview);
+
+            // Action Panel Preview
+            var pnlActionPreview = new System.Windows.Forms.Panel
+            {
+                BackColor = System.Drawing.Color.FromArgb(70, 70, 70),
+                Size = new System.Drawing.Size(800, 60),
+                Location = new System.Drawing.Point(50, 580)
+            };
+
+            var lblActionPreview = new System.Windows.Forms.Label
+            {
+                Text = "⚡ CHỨC NĂNG\n\n• Tìm kiếm: Lọc theo tháng/năm/trạng thái\n• Xuất Excel: Export ra file Excel\n• In bảng lương: In báo cáo chi tiết\n• Làm mới: Reset bộ lọc\n• Double-click row: Chỉnh sửa chi tiết",
+                ForeColor = System.Drawing.Color.White,
+                Location = new System.Drawing.Point(20, 10),
+                Size = new System.Drawing.Size(760, 40),
+                Font = new System.Drawing.Font("Segoe UI", 9)
+            };
+            pnlActionPreview.Controls.Add(lblActionPreview);
+
+            this.Controls.AddRange(new Control[] { lblPreview, pnlFilterPreview, pnlSummaryPreview, pnlDataGridPreview, pnlActionPreview });
 
             this.ResumeLayout(false);
             this.PerformLayout();
         }
-
-        private void CreateControls()
-        {
-            lblTitle = new Label { Text = "BẢNG LƯƠNG NHÂN VIÊN", Font = new Font("Segoe UI", 20, FontStyle.Bold), ForeColor = Color.FromArgb(124, 77, 255), AutoSize = true };
-
-            pnlFilter = new Panel { BackColor = Color.FromArgb(60, 60, 60), BorderStyle = BorderStyle.FixedSingle };
-            cmbThang = CreateComboBox();
-            for (int i = 1; i <= 12; i++) cmbThang.Items.Add(i);
-            cmbThang.SelectedItem = DateTime.Now.Month;
-            cmbNam = CreateComboBox();
-            for (int i = DateTime.Now.Year - 2; i <= DateTime.Now.Year + 1; i++) cmbNam.Items.Add(i);
-            cmbNam.SelectedItem = DateTime.Now.Year;
-            cmbTrangThai = CreateComboBox();
-            cmbTrangThai.Items.AddRange(new[] { "Tất cả", "Mo", "Dong" });
-            cmbTrangThai.SelectedIndex = 0;
-            btnTimKiem = CreateButton("Tìm kiếm", Color.FromArgb(33, 150, 243));
-            btnXuatExcel = CreateButton("Xuất Excel", Color.FromArgb(46, 125, 50));
-            btnInBangLuong = CreateButton("In bảng lương", Color.FromArgb(156, 39, 176));
-            btnLamMoi = CreateButton("Làm mới", Color.FromArgb(96, 125, 139));
-            pnlFilter.Controls.AddRange(new Control[] { CreateLabel("Tháng:"), cmbThang, CreateLabel("Năm:"), cmbNam, CreateLabel("Trạng thái:"), cmbTrangThai, btnTimKiem, btnXuatExcel, btnInBangLuong, btnLamMoi });
-
-            pnlSummary = new Panel { BackColor = Color.FromArgb(60, 60, 60), BorderStyle = BorderStyle.FixedSingle };
-            lblTongNhanVien = CreateStatLabel("Tổng nhân viên: 0", Color.White);
-            lblTongLuong = CreateStatLabel("Tổng chi lương: 0 VNĐ", Color.LightGreen);
-            lblLuongTB = CreateStatLabel("Lương TB: 0 VNĐ", Color.LightBlue);
-            pnlSummary.Controls.AddRange(new Control[] { lblTongNhanVien, lblTongLuong, lblLuongTB });
-
-            dgvBangLuong = CreateDataGridView();
-
-            this.Controls.AddRange(new Control[] { lblTitle, pnlFilter, pnlSummary, dgvBangLuong });
-        }
-
-        private void SetupEventHandlers()
-        {
-            btnTimKiem.Click += btnTimKiem_Click;
-            btnXuatExcel.Click += btnXuatExcel_Click;
-            btnInBangLuong.Click += btnInBangLuong_Click;
-            btnLamMoi.Click += btnLamMoi_Click;
-            dgvBangLuong.CellDoubleClick += dgvBangLuong_CellDoubleClick;
-        }
-
-        #region Layout Logic
-        private void PerformLayoutLayout() { /* Omitted for brevity */ }
-        #endregion
-
-        #region Control Factory Methods
-        private Label CreateStatLabel(string text, Color color) => new Label { Text = text, ForeColor = color, Font = new Font("Segoe UI", 12, FontStyle.Bold), AutoSize = true };
-        private Button CreateButton(string text, Color backColor) => new Button { Text = text, BackColor = backColor, ForeColor = Color.White, FlatStyle = FlatStyle.Flat, Size = new Size(100, 35), Font = new Font("Segoe UI", 9, FontStyle.Bold) };
-        private ComboBox CreateComboBox() => new ComboBox { BackColor = Color.FromArgb(70, 70, 70), ForeColor = Color.White, FlatStyle = FlatStyle.Flat, DropDownStyle = ComboBoxStyle.DropDownList, Font = new Font("Segoe UI", 9), Size = new Size(80, 25) };
-        private DataGridView CreateDataGridView() => new DataGridView { BackgroundColor = Color.FromArgb(60, 60, 60), ForeColor = Color.White, BorderStyle = BorderStyle.None, AllowUserToAddRows = false, AllowUserToDeleteRows = false, ReadOnly = true, SelectionMode = DataGridViewSelectionMode.FullRowSelect, MultiSelect = false, AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill, ColumnHeadersDefaultCellStyle = new DataGridViewCellStyle { BackColor = Color.FromArgb(124, 77, 255), ForeColor = Color.White, Font = new Font("Segoe UI", 10.5F, FontStyle.Bold) }, DefaultCellStyle = new DataGridViewCellStyle { BackColor = Color.FromArgb(60, 60, 60), ForeColor = Color.White, SelectionBackColor = Color.FromArgb(124, 77, 255) } };
-        private Label CreateLabel(string text) => new Label { Text = text, ForeColor = Color.White, AutoSize = true, Font = new Font("Segoe UI", 9) };
-        #endregion
-
-        #endregion
     }
 }
