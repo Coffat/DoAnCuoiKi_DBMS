@@ -29,16 +29,67 @@ namespace VuToanThang_23110329.Forms
 
         private void InitializeComponent()
         {
+            this.SuspendLayout();
+            
+            // Form properties
             this.BackColor = Color.FromArgb(50, 50, 50);
             this.Size = new Size(900, 650);
             this.Text = "Báo cáo lương";
             this.Padding = new Padding(20);
             this.MinimumSize = new Size(900, 650);
-            this.AutoScaleMode = AutoScaleMode.Dpi;
+            this.StartPosition = FormStartPosition.CenterParent;
+            
+            // Add preview controls for Designer
+            var lblPreview = new Label
+            {
+                Text = "BÁO CÁO LƯƠNG\n(Designer Preview)",
+                Font = new Font("Segoe UI", 18, FontStyle.Bold),
+                ForeColor = Color.FromArgb(124, 77, 255),
+                Location = new Point(50, 50),
+                AutoSize = true
+            };
+            
+            var pnlStats = new Panel
+            {
+                BackColor = Color.FromArgb(60, 60, 60),
+                BorderStyle = BorderStyle.FixedSingle,
+                Size = new Size(800, 100),
+                Location = new Point(50, 120)
+            };
+            
+            var lblStats = new Label
+            {
+                Text = "Thống kê: Tổng lương | Trung bình | Cao nhất | Thấp nhất | Tổng nhân viên",
+                ForeColor = Color.White,
+                Location = new Point(20, 40),
+                AutoSize = true,
+                Font = new Font("Segoe UI", 10)
+            };
+            pnlStats.Controls.Add(lblStats);
+            
+            var pnlReport = new Panel
+            {
+                BackColor = Color.FromArgb(60, 60, 60),
+                BorderStyle = BorderStyle.FixedSingle,
+                Size = new Size(800, 350),
+                Location = new Point(50, 240)
+            };
+            
+            var lblReport = new Label
+            {
+                Text = "DataGridView: Báo cáo chi tiết lương nhân viên\nButtons: Xuất Excel | In báo cáo",
+                ForeColor = Color.White,
+                Location = new Point(20, 150),
+                AutoSize = true,
+                Font = new Font("Segoe UI", 12)
+            };
+            pnlReport.Controls.Add(lblReport);
+            
+            this.Controls.AddRange(new Control[] { lblPreview, pnlStats, pnlReport });
 
-            CreateControls();
-            SetupEventHandlers();
-
+            this.ResumeLayout(false);
+            this.PerformLayout();
+            
             this.Load += (s, e) => PerformLayoutLayout();
             this.Resize += (s, e) => PerformLayoutLayout();
         }

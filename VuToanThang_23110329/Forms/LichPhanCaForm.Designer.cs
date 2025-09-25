@@ -31,13 +31,84 @@ namespace VuToanThang_23110329.Forms
 
         private void InitializeComponent()
         {
+            this.SuspendLayout();
+            
+            // Form properties
             this.BackColor = Color.FromArgb(50, 50, 50);
             this.Size = new Size(900, 650);
             this.Text = "Lịch phân ca";
             this.Padding = new Padding(20);
             this.MinimumSize = new Size(900, 650);
+            this.StartPosition = FormStartPosition.CenterParent;
+            
+            // Add preview controls for Designer
+            var lblPreview = new Label
+            {
+                Text = "LỊCH PHÂN CA\n(Designer Preview)",
+                Font = new Font("Segoe UI", 18, FontStyle.Bold),
+                ForeColor = Color.FromArgb(124, 77, 255),
+                Location = new Point(50, 50),
+                AutoSize = true
+            };
+            
+            var pnlFilter = new Panel
+            {
+                BackColor = Color.FromArgb(60, 60, 60),
+                BorderStyle = BorderStyle.FixedSingle,
+                Size = new Size(800, 80),
+                Location = new Point(50, 120)
+            };
+            
+            var lblFilter = new Label
+            {
+                Text = "Bộ lọc: Tuần | Tháng | Năm | Nhân viên | Ca làm | Trạng thái",
+                ForeColor = Color.White,
+                Location = new Point(20, 30),
+                AutoSize = true,
+                Font = new Font("Segoe UI", 10)
+            };
+            pnlFilter.Controls.Add(lblFilter);
+            
+            var pnlButtons = new Panel
+            {
+                BackColor = Color.FromArgb(70, 70, 70),
+                Size = new Size(800, 50),
+                Location = new Point(50, 220)
+            };
+            
+            var lblButtons = new Label
+            {
+                Text = "Buttons: Thêm | Sửa | Xóa | Lưu | Hủy | Làm mới | Tạo lịch tuần",
+                ForeColor = Color.White,
+                Location = new Point(20, 15),
+                AutoSize = true,
+                Font = new Font("Segoe UI", 10)
+            };
+            pnlButtons.Controls.Add(lblButtons);
+            
+            var pnlContent = new Panel
+            {
+                BackColor = Color.FromArgb(60, 60, 60),
+                BorderStyle = BorderStyle.FixedSingle,
+                Size = new Size(800, 300),
+                Location = new Point(50, 290)
+            };
+            
+            var lblContent = new Label
+            {
+                Text = "DataGridView: Danh sách lịch phân ca\nInfo Panel: Thông tin chi tiết lịch được chọn",
+                ForeColor = Color.White,
+                Location = new Point(20, 130),
+                AutoSize = true,
+                Font = new Font("Segoe UI", 12)
+            };
+            pnlContent.Controls.Add(lblContent);
+            
+            this.Controls.AddRange(new Control[] { lblPreview, pnlFilter, pnlButtons, pnlContent });
 
-            CreateControls();
+            this.ResumeLayout(false);
+            this.PerformLayout();
+            
             this.Resize += (sender, e) => PerformLayoutLayout();
             this.Load += (sender, e) => PerformLayoutLayout(); // Initial layout
         }

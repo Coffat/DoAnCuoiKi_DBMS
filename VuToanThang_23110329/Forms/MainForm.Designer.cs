@@ -51,13 +51,96 @@ namespace VuToanThang_23110329.Forms
             this.pnlTopbar.SuspendLayout();
             this.pnlContent.SuspendLayout();
             this.SuspendLayout();
-            
+
+            // Add preview title for Designer
+            var lblPreview = new System.Windows.Forms.Label
+            {
+                Text = "MAIN FORM - HR MANAGEMENT SYSTEM\n(Designer Preview)",
+                Font = new System.Drawing.Font("Segoe UI", 18, System.Drawing.FontStyle.Bold),
+                ForeColor = System.Drawing.Color.FromArgb(124, 77, 255),
+                Location = new System.Drawing.Point(300, 20),
+                AutoSize = true
+            };
+
+            var pnlPreviewLeft = new Guna.UI2.WinForms.Guna2Panel
+            {
+                BackColor = System.Drawing.Color.FromArgb(60, 60, 60),
+                BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle,
+                Size = new System.Drawing.Size(260, 200),
+                Location = new System.Drawing.Point(300, 80)
+            };
+
+            var lblPreviewLeft = new System.Windows.Forms.Label
+            {
+                Text = "📱 SIDEBAR MENU\n\n🏠 Trang chủ\n👥 Nhân viên\n🕐 Ca làm\n📅 Lịch phân ca\n⏰ Chấm công\n📝 Đơn từ\n🧮 Tính lương\n💰 Bảng lương\n🧾 Phiếu lương\n📈 Báo cáo nhân sự\n📊 Báo cáo lương\n🚪 Đăng xuất",
+                ForeColor = System.Drawing.Color.White,
+                Location = new System.Drawing.Point(10, 10),
+                Size = new System.Drawing.Size(240, 180),
+                Font = new System.Drawing.Font("Segoe UI", 9)
+            };
+            pnlPreviewLeft.Controls.Add(lblPreviewLeft);
+
+            var pnlPreviewTop = new Guna.UI2.WinForms.Guna2Panel
+            {
+                BackColor = System.Drawing.Color.FromArgb(60, 60, 60),
+                BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle,
+                Size = new System.Drawing.Size(400, 60),
+                Location = new System.Drawing.Point(580, 80)
+            };
+
+            var lblPreviewTop = new System.Windows.Forms.Label
+            {
+                Text = "🔧 TOPBAR CONTROLS\n\n× □ − (Close/Maximize/Minimize) | Current Form Title | Drag to move",
+                ForeColor = System.Drawing.Color.White,
+                Location = new System.Drawing.Point(10, 10),
+                Size = new System.Drawing.Size(380, 40),
+                Font = new System.Drawing.Font("Segoe UI", 9)
+            };
+            pnlPreviewTop.Controls.Add(lblPreviewTop);
+
+            var pnlPreviewContent = new Guna.UI2.WinForms.Guna2Panel
+            {
+                BackColor = System.Drawing.Color.FromArgb(60, 60, 60),
+                BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle,
+                Size = new System.Drawing.Size(400, 300),
+                Location = new System.Drawing.Point(580, 160)
+            };
+
+            var lblPreviewContent = new System.Windows.Forms.Label
+            {
+                Text = "📋 MAIN CONTENT AREA\n\nDynamic content area where child forms are loaded:\n• Dashboard with statistics\n• Employee management\n• Shift scheduling\n• Time tracking\n• Request approval\n• Payroll calculation\n• Reports and analytics\n\nSize: 920x750px (responsive)",
+                ForeColor = System.Drawing.Color.White,
+                Location = new System.Drawing.Point(10, 10),
+                Size = new System.Drawing.Size(380, 280),
+                Font = new System.Drawing.Font("Segoe UI", 9)
+            };
+            pnlPreviewContent.Controls.Add(lblPreviewContent);
+
+            var pnlPreviewUser = new Guna.UI2.WinForms.Guna2Panel
+            {
+                BackColor = System.Drawing.Color.FromArgb(70, 70, 70),
+                Size = new System.Drawing.Size(260, 80),
+                Location = new System.Drawing.Point(300, 300)
+            };
+
+            var lblPreviewUser = new System.Windows.Forms.Label
+            {
+                Text = "👤 USER INFO PANEL\n\nAvatar | Username | Role\n\n📍 Logo Panel\nHR Management System\n(Purple brand color #7C4DFF)",
+                ForeColor = System.Drawing.Color.White,
+                Location = new System.Drawing.Point(10, 10),
+                Size = new System.Drawing.Size(240, 60),
+                Font = new System.Drawing.Font("Segoe UI", 9)
+            };
+            pnlPreviewUser.Controls.Add(lblPreviewUser);
+
+            this.Controls.AddRange(new Control[] { lblPreview, pnlPreviewLeft, pnlPreviewTop, pnlPreviewContent, pnlPreviewUser });
+
             // guna2BorderlessForm1
             this.guna2BorderlessForm1.BorderRadius = 10;
             this.guna2BorderlessForm1.ContainerControl = this;
             this.guna2BorderlessForm1.DockIndicatorTransparencyValue = 0.6D;
             this.guna2BorderlessForm1.TransparentWhileDrag = true;
-            
+
             // pnlSidebar
             this.pnlSidebar.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(30)))), ((int)(((byte)(30)))));
             this.pnlSidebar.Controls.Add(this.btnLogout);
@@ -79,7 +162,7 @@ namespace VuToanThang_23110329.Forms
             this.pnlSidebar.Name = "pnlSidebar";
             this.pnlSidebar.Size = new System.Drawing.Size(280, 800);
             this.pnlSidebar.TabIndex = 0;
-            
+
             // Configure all buttons with similar styling
             ConfigureMenuButton(this.btnDashboard, "btnDashboard", "🏠 Trang chủ", 150, true);
             ConfigureMenuButton(this.btnNhanVien, "btnNhanVien", "👥 Nhân viên", 200, false);
@@ -92,7 +175,7 @@ namespace VuToanThang_23110329.Forms
             ConfigureMenuButton(this.btnPhieuLuong, "btnPhieuLuong", "🧾 Phiếu lương", 550, false);
             ConfigureMenuButton(this.btnBaoCaoNhanSu, "btnBaoCaoNhanSu", "📈 Báo cáo nhân sự", 600, false);
             ConfigureMenuButton(this.btnBaoCaoLuong, "btnBaoCaoLuong", "📊 Báo cáo lương", 650, false);
-            
+
             // btnLogout
             this.btnLogout.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.btnLogout.BorderRadius = 8;
@@ -107,7 +190,7 @@ namespace VuToanThang_23110329.Forms
             this.btnLogout.Text = "🚪 Đăng xuất";
             this.btnLogout.TextAlign = System.Windows.Forms.HorizontalAlignment.Left;
             this.btnLogout.Click += new System.EventHandler(this.btnLogout_Click);
-            
+
             // pnlUserInfo
             this.pnlUserInfo.Controls.Add(this.lblUserRole);
             this.pnlUserInfo.Controls.Add(this.lblUserName);
@@ -117,7 +200,7 @@ namespace VuToanThang_23110329.Forms
             this.pnlUserInfo.Name = "pnlUserInfo";
             this.pnlUserInfo.Size = new System.Drawing.Size(280, 60);
             this.pnlUserInfo.TabIndex = 1;
-            
+
             // picUserAvatar
             this.picUserAvatar.BackColor = System.Drawing.Color.Transparent;
             this.picUserAvatar.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(124)))), ((int)(((byte)(77)))), ((int)(((byte)(255)))));
@@ -129,7 +212,7 @@ namespace VuToanThang_23110329.Forms
             this.picUserAvatar.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.picUserAvatar.TabIndex = 2;
             this.picUserAvatar.TabStop = false;
-            
+
             // lblUserName
             this.lblUserName.AutoSize = true;
             this.lblUserName.Font = new System.Drawing.Font("Segoe UI", 10.5F, System.Drawing.FontStyle.Bold);
@@ -139,7 +222,7 @@ namespace VuToanThang_23110329.Forms
             this.lblUserName.Size = new System.Drawing.Size(89, 19);
             this.lblUserName.TabIndex = 1;
             this.lblUserName.Text = "Tên hiển thị";
-            
+
             // lblUserRole
             this.lblUserRole.AutoSize = true;
             this.lblUserRole.Font = new System.Drawing.Font("Segoe UI", 9F);
@@ -149,7 +232,7 @@ namespace VuToanThang_23110329.Forms
             this.lblUserRole.Size = new System.Drawing.Size(44, 15);
             this.lblUserRole.TabIndex = 0;
             this.lblUserRole.Text = "Vai trò";
-            
+
             // pnlLogo
             this.pnlLogo.Controls.Add(this.lblAppTitle);
             this.pnlLogo.Dock = System.Windows.Forms.DockStyle.Top;
@@ -157,7 +240,7 @@ namespace VuToanThang_23110329.Forms
             this.pnlLogo.Name = "pnlLogo";
             this.pnlLogo.Size = new System.Drawing.Size(280, 80);
             this.pnlLogo.TabIndex = 0;
-            
+
             // lblAppTitle
             this.lblAppTitle.AutoSize = true;
             this.lblAppTitle.Font = new System.Drawing.Font("Segoe UI", 16F, System.Drawing.FontStyle.Bold);
@@ -167,7 +250,7 @@ namespace VuToanThang_23110329.Forms
             this.lblAppTitle.Size = new System.Drawing.Size(240, 30);
             this.lblAppTitle.TabIndex = 0;
             this.lblAppTitle.Text = "HR Management System";
-            
+
             // pnlTopbar
             this.pnlTopbar.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(40)))), ((int)(((byte)(40)))), ((int)(((byte)(40)))));
             this.pnlTopbar.Controls.Add(this.btnMinimize);
@@ -179,12 +262,12 @@ namespace VuToanThang_23110329.Forms
             this.pnlTopbar.Name = "pnlTopbar";
             this.pnlTopbar.Size = new System.Drawing.Size(920, 50);
             this.pnlTopbar.TabIndex = 1;
-            
+
             // Configure window control buttons
             ConfigureWindowButton(this.btnClose, "×", 870, System.Drawing.Color.FromArgb(232, 17, 35));
             ConfigureWindowButton(this.btnMaximize, "□", 825, System.Drawing.Color.FromArgb(60, 60, 60));
             ConfigureWindowButton(this.btnMinimize, "−", 780, System.Drawing.Color.FromArgb(60, 60, 60));
-            
+
             // lblCurrentForm
             this.lblCurrentForm.AutoSize = true;
             this.lblCurrentForm.Font = new System.Drawing.Font("Segoe UI", 14F, System.Drawing.FontStyle.Bold);
@@ -194,7 +277,7 @@ namespace VuToanThang_23110329.Forms
             this.lblCurrentForm.Size = new System.Drawing.Size(95, 25);
             this.lblCurrentForm.TabIndex = 0;
             this.lblCurrentForm.Text = "Trang chủ";
-            
+
             // pnlContent
             this.pnlContent.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(50)))), ((int)(((byte)(50)))), ((int)(((byte)(50)))));
             this.pnlContent.Controls.Add(this.lblWelcome);
@@ -204,7 +287,7 @@ namespace VuToanThang_23110329.Forms
             this.pnlContent.Padding = new System.Windows.Forms.Padding(20);
             this.pnlContent.Size = new System.Drawing.Size(920, 750);
             this.pnlContent.TabIndex = 2;
-            
+
             // lblWelcome
             this.lblWelcome.AutoSize = true;
             this.lblWelcome.Font = new System.Drawing.Font("Segoe UI", 18F, System.Drawing.FontStyle.Bold);
@@ -214,12 +297,12 @@ namespace VuToanThang_23110329.Forms
             this.lblWelcome.Size = new System.Drawing.Size(400, 32);
             this.lblWelcome.TabIndex = 0;
             this.lblWelcome.Text = "Chào mừng đến với hệ thống HR!";
-            
+
             // guna2DragControl1
             this.guna2DragControl1.DockIndicatorTransparencyValue = 0.6D;
             this.guna2DragControl1.TargetControl = this.pnlTopbar;
             this.guna2DragControl1.UseTransparentDrag = true;
-            
+
             // MainForm
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -245,6 +328,7 @@ namespace VuToanThang_23110329.Forms
             this.pnlContent.ResumeLayout(false);
             this.pnlContent.PerformLayout();
             this.ResumeLayout(false);
+        }
         }
 
         private void ConfigureMenuButton(Guna.UI2.WinForms.Guna2Button button, string name, string text, int top, bool isActive)

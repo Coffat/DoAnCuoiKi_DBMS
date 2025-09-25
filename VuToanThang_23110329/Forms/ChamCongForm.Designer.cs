@@ -40,13 +40,66 @@ namespace VuToanThang_23110329.Forms
 
         private void InitializeComponent()
         {
+            this.SuspendLayout();
+            
+            // Form properties
             this.BackColor = Color.FromArgb(50, 50, 50);
             this.Size = new Size(900, 650);
             this.Text = "Quản lý Chấm công";
             this.Padding = new Padding(20);
             this.MinimumSize = new Size(900, 650);
+            this.StartPosition = FormStartPosition.CenterParent;
+            
+            // Add preview controls for Designer
+            var lblPreview = new Label
+            {
+                Text = "QUẢN LÝ CHẤM CÔNG\n(Designer Preview)",
+                Font = new Font("Segoe UI", 18, FontStyle.Bold),
+                ForeColor = Color.FromArgb(124, 77, 255),
+                Location = new Point(50, 50),
+                AutoSize = true
+            };
+            
+            var pnlCheckInOut = new Panel
+            {
+                BackColor = Color.FromArgb(60, 60, 60),
+                BorderStyle = BorderStyle.FixedSingle,
+                Size = new Size(300, 120),
+                Location = new Point(50, 120)
+            };
+            
+            var lblCheckInOut = new Label
+            {
+                Text = "🕐 CHECK IN/OUT\nTrạng thái: Chưa vào ca\nButtons: Check In | Check Out",
+                ForeColor = Color.White,
+                Location = new Point(20, 20),
+                Size = new Size(260, 80),
+                Font = new Font("Segoe UI", 10)
+            };
+            pnlCheckInOut.Controls.Add(lblCheckInOut);
+            
+            var pnlFilter = new Panel
+            {
+                BackColor = Color.FromArgb(60, 60, 60),
+                BorderStyle = BorderStyle.FixedSingle,
+                Size = new Size(500, 120),
+                Location = new Point(370, 120)
+            };
+            
+            var lblFilter = new Label
+            {
+                Text = "BỘ LỌC CHẤM CÔNG\nTháng/Năm | Nhân viên | Trạng thái\nDataGridView: Danh sách chấm công",
+                ForeColor = Color.White,
+                Location = new Point(20, 20),
+                Size = new Size(460, 80),
+                Font = new Font("Segoe UI", 10)
+            };
+            pnlFilter.Controls.Add(lblFilter);
+            
+            this.Controls.AddRange(new Control[] { lblPreview, pnlCheckInOut, pnlFilter });
 
-            CreateControls();
+            this.ResumeLayout(false);
+            this.PerformLayout();
             SetupEventHandlers();
 
             this.Load += (sender, e) => PerformLayoutLayout();

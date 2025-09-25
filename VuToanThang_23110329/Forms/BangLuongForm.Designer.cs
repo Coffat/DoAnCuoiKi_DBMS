@@ -28,18 +28,30 @@ namespace VuToanThang_23110329.Forms
 
         private void InitializeComponent()
         {
+            this.SuspendLayout();
+            
+            // Form properties
             this.BackColor = Color.FromArgb(50, 50, 50);
             this.Size = new Size(900, 650);
             this.Text = "Bảng lương";
             this.Padding = new Padding(20);
             this.MinimumSize = new Size(900, 650);
             this.AutoScaleMode = AutoScaleMode.Dpi;
+            this.StartPosition = FormStartPosition.CenterParent;
+            
+            // Add a sample label for Designer preview
+            var lblPreview = new Label
+            {
+                Text = "BẢNG LƯƠNG NHÂN VIÊN\n(Preview in Designer)",
+                Font = new Font("Segoe UI", 16, FontStyle.Bold),
+                ForeColor = Color.FromArgb(124, 77, 255),
+                Location = new Point(50, 50),
+                AutoSize = true
+            };
+            this.Controls.Add(lblPreview);
 
-            CreateControls();
-            SetupEventHandlers();
-
-            this.Load += (s, e) => PerformLayoutLayout();
-            this.Resize += (s, e) => PerformLayoutLayout();
+            this.ResumeLayout(false);
+            this.PerformLayout();
         }
 
         private void CreateControls()
