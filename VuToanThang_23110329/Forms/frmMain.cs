@@ -245,7 +245,7 @@ namespace VuToanThang_23110329.Forms
             foreach (var btn in buttons)
             {
                 btn.FillColor = System.Drawing.Color.White;
-                btn.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64))))); // Dark gray text
+                btn.ForeColor = System.Drawing.Color.Black; // Black text
             }
 
             // Set active button
