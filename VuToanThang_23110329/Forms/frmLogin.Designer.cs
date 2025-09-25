@@ -194,7 +194,6 @@ namespace VuToanThang_23110329.Forms
             this.pnlContent.FillColor = System.Drawing.Color.White;
             this.pnlContent.Location = new System.Drawing.Point(50, 50);
             this.pnlContent.Name = "pnlContent";
-            this.pnlContent.ShadowDepth = 10;
             this.pnlContent.Size = new System.Drawing.Size(400, 300);
             this.pnlContent.TabIndex = 1;
             // 
