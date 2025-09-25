@@ -37,10 +37,10 @@ namespace VuToanThang_23110329.Forms
             this.btnLogin = new Guna.UI2.WinForms.Guna2Button();
             this.btnExit = new Guna.UI2.WinForms.Guna2Button();
             this.pictureBoxLogo = new System.Windows.Forms.PictureBox();
-            this.pnlMain = new System.Windows.Forms.Panel();
-            this.pnlContent = new System.Windows.Forms.Panel();
-            this.pnlTitle = new System.Windows.Forms.Panel();
-            this.pnlButtons = new System.Windows.Forms.Panel();
+            this.pnlMain = new Guna.UI2.WinForms.Guna2GradientPanel();
+            this.pnlContent = new Guna.UI2.WinForms.Guna2Panel();
+            this.pnlTitle = new Guna.UI2.WinForms.Guna2Panel();
+            this.pnlButtons = new Guna.UI2.WinForms.Guna2Panel();
             this.SuspendLayout();
             // 
             // lblTitle
@@ -170,8 +170,11 @@ namespace VuToanThang_23110329.Forms
             // 
             // pnlMain
             // 
-            this.pnlMain.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(20)))), ((int)(((byte)(20)))), ((int)(((byte)(20)))));
-            this.pnlMain.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pnlMain.BorderRadius = 15;
+            this.pnlMain.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(20)))), ((int)(((byte)(20)))), ((int)(((byte)(20)))));
+            this.pnlMain.GradientColor1 = System.Drawing.Color.FromArgb(((int)(((byte)(20)))), ((int)(((byte)(20)))), ((int)(((byte)(20)))));
+            this.pnlMain.GradientColor2 = System.Drawing.Color.FromArgb(((int)(((byte)(40)))), ((int)(((byte)(40)))), ((int)(((byte)(40)))));
+            this.pnlMain.GradientMode = System.Drawing.Drawing2D.LinearGradientMode.Vertical;
             this.pnlMain.Location = new System.Drawing.Point(0, 0);
             this.pnlMain.Name = "pnlMain";
             this.pnlMain.Size = new System.Drawing.Size(500, 350);
@@ -179,7 +182,8 @@ namespace VuToanThang_23110329.Forms
             // 
             // pnlContent
             // 
-            this.pnlContent.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(25)))), ((int)(((byte)(25)))), ((int)(((byte)(25)))));
+            this.pnlContent.BorderRadius = 10;
+            this.pnlContent.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(25)))), ((int)(((byte)(25)))), ((int)(((byte)(25)))));
             this.pnlContent.Location = new System.Drawing.Point(75, 50);
             this.pnlContent.Name = "pnlContent";
             this.pnlContent.Size = new System.Drawing.Size(350, 250);
@@ -187,7 +191,11 @@ namespace VuToanThang_23110329.Forms
             // 
             // pnlTitle
             // 
-            this.pnlTitle.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(124)))), ((int)(((byte)(77)))), ((int)(((byte)(255)))));
+            this.pnlTitle.BorderRadius = 0;
+            this.pnlTitle.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(124)))), ((int)(((byte)(77)))), ((int)(((byte)(255)))));
+            this.pnlTitle.GradientColor1 = System.Drawing.Color.FromArgb(((int)(((byte)(124)))), ((int)(((byte)(77)))), ((int)(((byte)(255)))));
+            this.pnlTitle.GradientColor2 = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(50)))), ((int)(((byte)(200)))));
+            this.pnlTitle.GradientMode = System.Drawing.Drawing2D.LinearGradientMode.Horizontal;
             this.pnlTitle.Location = new System.Drawing.Point(0, 0);
             this.pnlTitle.Name = "pnlTitle";
             this.pnlTitle.Size = new System.Drawing.Size(500, 15);
@@ -195,7 +203,8 @@ namespace VuToanThang_23110329.Forms
             // 
             // pnlButtons
             // 
-            this.pnlButtons.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(25)))), ((int)(((byte)(25)))), ((int)(((byte)(25)))));
+            this.pnlButtons.BorderRadius = 10;
+            this.pnlButtons.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(25)))), ((int)(((byte)(25)))), ((int)(((byte)(25)))));
             this.pnlButtons.Location = new System.Drawing.Point(75, 270);
             this.pnlButtons.Name = "pnlButtons";
             this.pnlButtons.Size = new System.Drawing.Size(350, 50);
@@ -239,10 +248,10 @@ namespace VuToanThang_23110329.Forms
         private Guna.UI2.WinForms.Guna2TextBox txtPassword;
         private Guna.UI2.WinForms.Guna2Button btnLogin;
         private Guna.UI2.WinForms.Guna2Button btnExit;
-        private System.Windows.Forms.Panel pnlMain;
-        private System.Windows.Forms.Panel pnlContent;
-        private System.Windows.Forms.Panel pnlTitle;
-        private System.Windows.Forms.Panel pnlButtons;
+        private Guna.UI2.WinForms.Guna2GradientPanel pnlMain;
+        private Guna.UI2.WinForms.Guna2Panel pnlContent;
+        private Guna.UI2.WinForms.Guna2Panel pnlTitle;
+        private Guna.UI2.WinForms.Guna2Panel pnlButtons;
         private System.Windows.Forms.PictureBox pictureBoxLogo;
     }
 }
