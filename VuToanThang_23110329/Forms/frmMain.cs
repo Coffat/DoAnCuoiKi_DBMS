@@ -32,6 +32,25 @@ namespace VuToanThang_23110329.Forms
             base.OnFormClosing(e);
         }
 
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                // Dispose dynamic controls
+                if (pnlContent != null)
+                {
+                    foreach (Control control in pnlContent.Controls)
+                    {
+                        if (control is IDisposable disposable)
+                        {
+                            disposable.Dispose();
+                        }
+                    }
+                }
+            }
+            base.Dispose(disposing);
+        }
+
         private void frmMain_Load(object sender, EventArgs e)
         {
             SetupMenuForRole(userRole);
@@ -54,7 +73,17 @@ namespace VuToanThang_23110329.Forms
             SetActiveButton(btnQuanLy);
             lblWelcome.Text = "👥 Quản lý nhân sự";
             lblStatus.Text = "Đang quản lý nhân sự";
-            // TODO: Load management forms
+            
+            // Hiển thị menu con cho HR
+            if (userRole.ToLower() == "r_hr")
+            {
+                ShowSubMenu("Quản lý nhân sự", new string[] 
+                { 
+                    "Hồ sơ Nhân viên", 
+                    "Lịch phân ca", 
+                    "Duyệt Đơn từ" 
+                });
+            }
         }
 
         private void btnDanhMuc_Click(object sender, EventArgs e)
@@ -62,7 +91,16 @@ namespace VuToanThang_23110329.Forms
             SetActiveButton(btnDanhMuc);
             lblWelcome.Text = "📋 Danh mục hệ thống";
             lblStatus.Text = "Đang quản lý danh mục";
-            // TODO: Load category forms
+            
+            // Hiển thị menu con cho HR
+            if (userRole.ToLower() == "r_hr")
+            {
+                ShowSubMenu("Danh mục", new string[] 
+                { 
+                    "Ca làm việc", 
+                    "Phòng ban & Chức vụ" 
+                });
+            }
         }
 
         private void btnNghiepVu_Click(object sender, EventArgs e)
@@ -70,7 +108,16 @@ namespace VuToanThang_23110329.Forms
             SetActiveButton(btnNghiepVu);
             lblWelcome.Text = "⚙️ Nghiệp vụ";
             lblStatus.Text = "Đang xử lý nghiệp vụ";
-            // TODO: Load business forms
+            
+            // Hiển thị menu con theo vai trò
+            if (userRole.ToLower() == "r_quanly")
+            {
+                ShowSubMenu("Nghiệp vụ Quản lý", new string[] 
+                { 
+                    "Xem Lịch phân ca", 
+                    "Duyệt Đơn từ" 
+                });
+            }
         }
 
         private void btnTienLuong_Click(object sender, EventArgs e)
@@ -78,7 +125,15 @@ namespace VuToanThang_23110329.Forms
             SetActiveButton(btnTienLuong);
             lblWelcome.Text = "💰 Quản lý tiền lương";
             lblStatus.Text = "Đang quản lý lương";
-            // TODO: Load salary forms
+            
+            // Hiển thị menu con cho Kế toán
+            if (userRole.ToLower() == "r_ketoan")
+            {
+                ShowSubMenu("Tiền lương", new string[] 
+                { 
+                    "Quản lý Bảng lương" 
+                });
+            }
         }
 
         private void btnCaNhan_Click(object sender, EventArgs e)
@@ -86,7 +141,25 @@ namespace VuToanThang_23110329.Forms
             SetActiveButton(btnCaNhan);
             lblWelcome.Text = "👤 Thông tin cá nhân";
             lblStatus.Text = "Đang xem thông tin cá nhân";
-            // TODO: Load personal forms
+            
+            // Hiển thị menu con theo vai trò
+            if (userRole.ToLower() == "r_nhanvien")
+            {
+                ShowSubMenu("Cá nhân", new string[] 
+                { 
+                    "Thông tin của tôi", 
+                    "Gửi Đơn từ" 
+                });
+            }
+            else
+            {
+                ShowSubMenu("Cá nhân", new string[] 
+                { 
+                    "Đổi mật khẩu", 
+                    "Đăng xuất", 
+                    "Thoát" 
+                });
+            }
         }
 
         private void btnChamCong_Click(object sender, EventArgs e)
@@ -94,7 +167,15 @@ namespace VuToanThang_23110329.Forms
             SetActiveButton(btnChamCong);
             lblWelcome.Text = "⏰ Chấm công";
             lblStatus.Text = "Đang chấm công";
-            // TODO: Load attendance forms
+            
+            // Hiển thị menu con cho Nhân viên
+            if (userRole.ToLower() == "r_nhanvien")
+            {
+                ShowSubMenu("Chấm công", new string[] 
+                { 
+                    "Check-in / Check-out" 
+                });
+            }
         }
 
         private void btnBaoCao_Click(object sender, EventArgs e)
@@ -102,7 +183,24 @@ namespace VuToanThang_23110329.Forms
             SetActiveButton(btnBaoCao);
             lblWelcome.Text = "📊 Báo cáo thống kê";
             lblStatus.Text = "Đang xem báo cáo";
-            // TODO: Load report forms
+            
+            // Hiển thị menu con theo vai trò
+            if (userRole.ToLower() == "r_hr")
+            {
+                ShowSubMenu("Báo cáo HR", new string[] 
+                { 
+                    "Báo cáo Nhân sự", 
+                    "Bảng công chi tiết" 
+                });
+            }
+            else if (userRole.ToLower() == "r_ketoan")
+            {
+                ShowSubMenu("Báo cáo Kế toán", new string[] 
+                { 
+                    "Xem Bảng công tháng", 
+                    "Báo cáo Lương" 
+                });
+            }
         }
 
         private void btnDangXuat_Click(object sender, EventArgs e)
@@ -127,34 +225,27 @@ namespace VuToanThang_23110329.Forms
 
             switch (role.ToLower())
             {
-                case "quanly": // Giám đốc - tất cả quyền
-                    btnQuanLy.Visible = true;
-                    btnDanhMuc.Visible = true;
-                    btnNghiepVu.Visible = true;
-                    btnTienLuong.Visible = true;
-                    btnCaNhan.Visible = true;
-                    btnChamCong.Visible = true;
-                    btnBaoCao.Visible = true;
+                case "r_quanly": // Quản lý - xem lịch phân ca và duyệt đơn từ
+                    btnNghiepVu.Visible = true; // Xem lịch phân ca, duyệt đơn từ
+                    btnCaNhan.Visible = true;   // Đổi mật khẩu, đăng xuất, thoát
                     break;
 
-                case "hr": // HR - quản lý nhân sự
-                    btnQuanLy.Visible = true;
-                    btnDanhMuc.Visible = true;
-                    btnNghiepVu.Visible = true;
-                    btnCaNhan.Visible = true;
-                    btnChamCong.Visible = true;
+                case "r_hr": // HR - quản lý nhân sự đầy đủ
+                    btnQuanLy.Visible = true;   // Hồ sơ nhân viên, lịch phân ca, duyệt đơn từ
+                    btnDanhMuc.Visible = true;  // Ca làm việc, phòng ban & chức vụ
+                    btnBaoCao.Visible = true;   // Báo cáo nhân sự, bảng công chi tiết
+                    btnCaNhan.Visible = true;   // Đổi mật khẩu, đăng xuất, thoát
                     break;
 
-                case "ketoan": // Kế toán - quản lý lương
-                    btnTienLuong.Visible = true;
-                    btnBaoCao.Visible = true;
-                    btnCaNhan.Visible = true;
+                case "r_ketoan": // Kế toán - quản lý lương
+                    btnTienLuong.Visible = true; // Quản lý bảng lương
+                    btnBaoCao.Visible = true;    // Báo cáo lương, bảng công tháng
+                    btnCaNhan.Visible = true;    // Đổi mật khẩu, đăng xuất, thoát
                     break;
 
-                case "nhanvien": // Nhân viên - quyền cơ bản
-                    btnNghiepVu.Visible = true;
-                    btnCaNhan.Visible = true;
-                    btnChamCong.Visible = true;
+                case "r_nhanvien": // Nhân viên - quyền cơ bản
+                    btnCaNhan.Visible = true;    // Thông tin cá nhân, gửi đơn từ, đổi mật khẩu
+                    btnChamCong.Visible = true;  // Chấm công check-in/out
                     break;
 
                 default:
@@ -171,7 +262,7 @@ namespace VuToanThang_23110329.Forms
             
             foreach (var btn in buttons)
             {
-                btn.FillColor = System.Drawing.Color.Transparent;
+                btn.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(20)))));
                 btn.ForeColor = System.Drawing.Color.White;
             }
 
@@ -180,9 +271,70 @@ namespace VuToanThang_23110329.Forms
             activeButton.ForeColor = System.Drawing.Color.White;
         }
 
+        private void ShowSubMenu(string title, string[] menuItems)
+        {
+            // Dispose controls cũ trước khi xóa
+            foreach (Control control in pnlContent.Controls)
+            {
+                if (control is IDisposable disposable)
+                {
+                    disposable.Dispose();
+                }
+            }
+            pnlContent.Controls.Clear();
+            
+            // Tạo label tiêu đề
+            Label lblTitle = new Label();
+            lblTitle.Name = "lblSubMenuTitle";
+            lblTitle.Text = title;
+            lblTitle.Font = new Font("Segoe UI", 16, FontStyle.Bold);
+            lblTitle.ForeColor = Color.FromArgb(64, 64, 64);
+            lblTitle.Location = new Point(50, 50);
+            lblTitle.AutoSize = true;
+            pnlContent.Controls.Add(lblTitle);
+            
+            // Tạo các button menu con
+            int yPos = 100;
+            for (int i = 0; i < menuItems.Length; i++)
+            {
+                string item = menuItems[i];
+                Guna.UI2.WinForms.Guna2Button btn = new Guna.UI2.WinForms.Guna2Button();
+                btn.Name = $"btnSubMenu_{i}";
+                btn.Text = item;
+                btn.Font = new Font("Segoe UI", 12, FontStyle.Regular);
+                btn.ForeColor = Color.FromArgb(64, 64, 64);
+                btn.FillColor = Color.FromArgb(248, 249, 250);
+                btn.BorderRadius = 8;
+                btn.Size = new Size(300, 45);
+                btn.Location = new Point(50, yPos);
+                btn.TextAlign = HorizontalAlignment.Left;
+                btn.Tag = item; // Lưu tên chức năng vào Tag
+                btn.Click += BtnSubMenu_Click;
+                pnlContent.Controls.Add(btn);
+                yPos += 60;
+            }
+        }
+
+        private void BtnSubMenu_Click(object sender, EventArgs e)
+        {
+            if (sender is Guna.UI2.WinForms.Guna2Button btn && btn.Tag is string functionName)
+            {
+                MessageBox.Show($"Mở chức năng: {functionName}", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+        }
+
         private void OpenFormInPanel(Form childForm)
         {
+            // Dispose controls cũ trước khi xóa
+            foreach (Control control in pnlContent.Controls)
+            {
+                if (control is IDisposable disposable)
+                {
+                    disposable.Dispose();
+                }
+            }
             pnlContent.Controls.Clear();
+            
             childForm.TopLevel = false;
             childForm.FormBorderStyle = FormBorderStyle.None;
             childForm.Dock = DockStyle.Fill;
