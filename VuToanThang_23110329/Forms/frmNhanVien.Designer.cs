@@ -337,8 +337,6 @@ namespace VuToanThang_23110329.Forms
             this.dgvNhanVien.Theme = Guna.UI2.WinForms.Enums.DataGridViewPresetThemes.Dark;
             this.dgvNhanVien.ThemeStyle.HeaderStyle.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(124)))), ((int)(((byte)(77)))), ((int)(((byte)(255)))));
             this.dgvNhanVien.ThemeStyle.HeaderStyle.ForeColor = System.Drawing.Color.White;
-            this.dgvNhanVien.ThemeStyle.HeaderStyle.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(124)))), ((int)(((byte)(77)))), ((int)(((byte)(255)))));
-            this.dgvNhanVien.ThemeStyle.HeaderStyle.SelectionForeColor = System.Drawing.Color.White;
             this.dgvNhanVien.ThemeStyle.RowsStyle.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(25)))), ((int)(((byte)(25)))), ((int)(((byte)(25)))));
             this.dgvNhanVien.ThemeStyle.RowsStyle.ForeColor = System.Drawing.Color.White;
             this.dgvNhanVien.ThemeStyle.RowsStyle.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(124)))), ((int)(((byte)(77)))), ((int)(((byte)(255)))));
@@ -482,8 +480,6 @@ namespace VuToanThang_23110329.Forms
             // dtpNgaySinh
             // 
             this.dtpNgaySinh.BorderRadius = 6;
-            this.dtpNgaySinh.CalendarBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(25)))), ((int)(((byte)(25)))), ((int)(((byte)(25)))));
-            this.dtpNgaySinh.CalendarForeColor = System.Drawing.Color.White;
             this.dtpNgaySinh.CheckedState.Parent = this.dtpNgaySinh;
             this.dtpNgaySinh.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(35)))), ((int)(((byte)(35)))), ((int)(((byte)(35)))));
             this.dtpNgaySinh.Font = new System.Drawing.Font("Segoe UI", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));

@@ -265,8 +265,6 @@ namespace VuToanThang_23110329.Forms
             this.dgvCaLam.Theme = Guna.UI2.WinForms.Enums.DataGridViewPresetThemes.Dark;
             this.dgvCaLam.ThemeStyle.HeaderStyle.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(124)))), ((int)(((byte)(77)))), ((int)(((byte)(255)))));
             this.dgvCaLam.ThemeStyle.HeaderStyle.ForeColor = System.Drawing.Color.White;
-            this.dgvCaLam.ThemeStyle.HeaderStyle.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(124)))), ((int)(((byte)(77)))), ((int)(((byte)(255)))));
-            this.dgvCaLam.ThemeStyle.HeaderStyle.SelectionForeColor = System.Drawing.Color.White;
             this.dgvCaLam.ThemeStyle.RowsStyle.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(25)))), ((int)(((byte)(25)))), ((int)(((byte)(25)))));
             this.dgvCaLam.ThemeStyle.RowsStyle.ForeColor = System.Drawing.Color.White;
             this.dgvCaLam.ThemeStyle.RowsStyle.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(124)))), ((int)(((byte)(77)))), ((int)(((byte)(255)))));
@@ -402,8 +400,6 @@ namespace VuToanThang_23110329.Forms
             // dtpGioBatDau
             // 
             this.dtpGioBatDau.BorderRadius = 6;
-            this.dtpGioBatDau.CalendarBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(25)))), ((int)(((byte)(25)))), ((int)(((byte)(25)))));
-            this.dtpGioBatDau.CalendarForeColor = System.Drawing.Color.White;
             this.dtpGioBatDau.CheckedState.Parent = this.dtpGioBatDau;
             this.dtpGioBatDau.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(35)))), ((int)(((byte)(35)))), ((int)(((byte)(35)))));
             this.dtpGioBatDau.Font = new System.Drawing.Font("Segoe UI", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -428,8 +424,6 @@ namespace VuToanThang_23110329.Forms
             // dtpGioKetThuc
             // 
             this.dtpGioKetThuc.BorderRadius = 6;
-            this.dtpGioKetThuc.CalendarBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(25)))), ((int)(((byte)(25)))), ((int)(((byte)(25)))));
-            this.dtpGioKetThuc.CalendarForeColor = System.Drawing.Color.White;
             this.dtpGioKetThuc.CheckedState.Parent = this.dtpGioKetThuc;
             this.dtpGioKetThuc.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(35)))), ((int)(((byte)(35)))), ((int)(((byte)(35)))));
             this.dtpGioKetThuc.Font = new System.Drawing.Font("Segoe UI", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -530,8 +524,6 @@ namespace VuToanThang_23110329.Forms
             this.chkKichHoat.CheckedState.BorderRadius = 2;
             this.chkKichHoat.CheckedState.BorderThickness = 2;
             this.chkKichHoat.CheckedState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(124)))), ((int)(((byte)(77)))), ((int)(((byte)(255)))));
-            this.chkKichHoat.CheckedState.InnerBorderColor = System.Drawing.Color.White;
-            this.chkKichHoat.CheckedState.InnerColor = System.Drawing.Color.FromArgb(((int)(((byte)(124)))), ((int)(((byte)(77)))), ((int)(((byte)(255)))));
             this.chkKichHoat.CheckMarkColor = System.Drawing.Color.White;
             this.chkKichHoat.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.chkKichHoat.ForeColor = System.Drawing.Color.White;
@@ -543,8 +535,6 @@ namespace VuToanThang_23110329.Forms
             this.chkKichHoat.UncheckedState.BorderRadius = 2;
             this.chkKichHoat.UncheckedState.BorderThickness = 2;
             this.chkKichHoat.UncheckedState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(35)))), ((int)(((byte)(35)))), ((int)(((byte)(35)))));
-            this.chkKichHoat.UncheckedState.InnerBorderColor = System.Drawing.Color.DarkGray;
-            this.chkKichHoat.UncheckedState.InnerColor = System.Drawing.Color.FromArgb(((int)(((byte)(35)))), ((int)(((byte)(35)))), ((int)(((byte)(35)))));
             // 
             // frmCaLam
             // 

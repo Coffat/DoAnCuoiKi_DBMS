@@ -387,8 +387,6 @@ namespace VuToanThang_23110329.Forms
             // dtpNgayVaoLam
             // 
             this.dtpNgayVaoLam.BorderRadius = 8;
-            this.dtpNgayVaoLam.CalendarBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(25)))), ((int)(((byte)(25)))), ((int)(((byte)(25)))));
-            this.dtpNgayVaoLam.CalendarForeColor = System.Drawing.Color.White;
             this.dtpNgayVaoLam.CheckedState.Parent = this.dtpNgayVaoLam;
             this.dtpNgayVaoLam.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(35)))), ((int)(((byte)(35)))), ((int)(((byte)(35)))));
             this.dtpNgayVaoLam.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));

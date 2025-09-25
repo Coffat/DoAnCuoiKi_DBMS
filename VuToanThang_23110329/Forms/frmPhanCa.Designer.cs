@@ -97,8 +97,6 @@ namespace VuToanThang_23110329.Forms
             // dtpTuNgay
             // 
             this.dtpTuNgay.BorderRadius = 8;
-            this.dtpTuNgay.CalendarBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(25)))), ((int)(((byte)(25)))), ((int)(((byte)(25)))));
-            this.dtpTuNgay.CalendarForeColor = System.Drawing.Color.White;
             this.dtpTuNgay.CheckedState.Parent = this.dtpTuNgay;
             this.dtpTuNgay.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(35)))), ((int)(((byte)(35)))), ((int)(((byte)(35)))));
             this.dtpTuNgay.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -123,8 +121,6 @@ namespace VuToanThang_23110329.Forms
             // dtpDenNgay
             // 
             this.dtpDenNgay.BorderRadius = 8;
-            this.dtpDenNgay.CalendarBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(25)))), ((int)(((byte)(25)))), ((int)(((byte)(25)))));
-            this.dtpDenNgay.CalendarForeColor = System.Drawing.Color.White;
             this.dtpDenNgay.CheckedState.Parent = this.dtpDenNgay;
             this.dtpDenNgay.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(35)))), ((int)(((byte)(35)))), ((int)(((byte)(35)))));
             this.dtpDenNgay.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
