@@ -221,27 +221,21 @@ namespace VuToanThang_23110329.Forms
             // 
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(240)))), ((int)(((byte)(240)))), ((int)(((byte)(240)))));
             this.ClientSize = new System.Drawing.Size(500, 400);
-            this.Controls.Add(this.pnlTitle);
-            this.Controls.Add(this.pnlContent);
-            this.Controls.Add(this.pnlButtons);
+            this.Controls.Add(this.pnlMain);
+            this.pnlMain.Controls.Add(this.pnlTitle);
             this.pnlMain.Controls.Add(this.pnlContent);
             this.pnlMain.Controls.Add(this.pnlButtons);
+            this.pnlTitle.Controls.Add(this.lblTitleBar);
             this.pnlContent.Controls.Add(this.pictureBoxLogo);
             this.pnlContent.Controls.Add(this.lblTitle);
             this.pnlContent.Controls.Add(this.lblUsername);
             this.pnlContent.Controls.Add(this.lblPassword);
             this.pnlButtons.Controls.Add(this.btnLogin);
             this.pnlButtons.Controls.Add(this.btnExit);
-            this.pnlTitle.Controls.Add(this.lblTitleBar);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Name = "frmLogin";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Đăng nhập hệ thống";
-            this.pnlMain.ResumeLayout(false);
-            this.pnlMain.PerformLayout();
-            this.pnlContent.ResumeLayout(false);
-            this.pnlContent.PerformLayout();
-            this.pnlButtons.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
