@@ -1,17 +1,17 @@
-IF DB_ID(N'QLNhanSuSieuThiMini') IS NOT NULL
-BEGIN
-    ALTER DATABASE QLNhanSuSieuThiMini SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
-    DROP DATABASE QLNhanSuSieuThiMini;
-    PRINT N'Đã xóa database cũ QLNhanSuSieuThiMini';
-END
+-- IF DB_ID(N'QLNhanSuSieuThiMini') IS NOT NULL
+-- BEGIN
+--     ALTER DATABASE QLNhanSuSieuThiMini SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
+--     DROP DATABASE QLNhanSuSieuThiMini;
+--     PRINT N'Đã xóa database cũ QLNhanSuSieuThiMini';
+-- END
 
-CREATE DATABASE QLNhanSuSieuThiMini;
-PRINT N'Đã tạo database QLNhanSuSieuThiMini';
-GO
+-- CREATE DATABASE QLNhanSuSieuThiMini;
+-- PRINT N'Đã tạo database QLNhanSuSieuThiMini';
+-- GO
 
-USE QLNhanSuSieuThiMini;
-PRINT N'Đã chuyển sang database QLNhanSuSieuThiMini';
-GO
+-- USE QLNhanSuSieuThiMini;
+-- PRINT N'Đã chuyển sang database QLNhanSuSieuThiMini';
+-- GO
 
 --1,User
 IF OBJECT_ID('dbo.NguoiDung','U') IS NOT NULL DROP TABLE dbo.NguoiDung;
