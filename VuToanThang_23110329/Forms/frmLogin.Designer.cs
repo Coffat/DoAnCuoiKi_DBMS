@@ -209,9 +209,14 @@ namespace VuToanThang_23110329.Forms
             this.ClientSize = new System.Drawing.Size(500, 350);
             this.Controls.Add(this.pnlTitle);
             this.Controls.Add(this.pnlMain);
-            this.Controls.Add(this.pnlContent);
-            this.Controls.Add(this.pnlButtons);
-            this.Controls.Add(this.pictureBoxLogo);
+            this.pnlMain.Controls.Add(this.pnlContent);
+            this.pnlMain.Controls.Add(this.pnlButtons);
+            this.pnlContent.Controls.Add(this.pictureBoxLogo);
+            this.pnlContent.Controls.Add(this.lblTitle);
+            this.pnlContent.Controls.Add(this.lblUsername);
+            this.pnlContent.Controls.Add(this.lblPassword);
+            this.pnlButtons.Controls.Add(this.btnLogin);
+            this.pnlButtons.Controls.Add(this.btnExit);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Name = "frmLogin";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
