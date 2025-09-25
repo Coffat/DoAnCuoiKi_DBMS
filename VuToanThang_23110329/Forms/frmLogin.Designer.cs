@@ -139,6 +139,7 @@ namespace VuToanThang_23110329.Forms
             this.txtUsername.SelectedText = "";
             this.txtUsername.Size = new System.Drawing.Size(300, 44);
             this.txtUsername.TabIndex = 4;
+            this.txtUsername.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtUsername_KeyDown);
             // 
             // txtPassword
             // 
@@ -165,6 +166,7 @@ namespace VuToanThang_23110329.Forms
             this.txtPassword.SelectedText = "";
             this.txtPassword.Size = new System.Drawing.Size(300, 44);
             this.txtPassword.TabIndex = 5;
+            this.txtPassword.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtPassword_KeyDown);
             // 
             // chkRememberMe
             // 
@@ -212,6 +214,7 @@ namespace VuToanThang_23110329.Forms
             this.btnLogin.Size = new System.Drawing.Size(300, 45);
             this.btnLogin.TabIndex = 8;
             this.btnLogin.Text = "Đăng nhập";
+            this.btnLogin.Click += new System.EventHandler(this.btnLogin_Click);
             // 
             // btnExit
             // 
@@ -228,6 +231,7 @@ namespace VuToanThang_23110329.Forms
             this.btnExit.Size = new System.Drawing.Size(300, 40);
             this.btnExit.TabIndex = 9;
             this.btnExit.Text = "Thoát";
+            this.btnExit.Click += new System.EventHandler(this.btnExit_Click);
             // 
             // 
             // pnlMain
@@ -284,6 +288,7 @@ namespace VuToanThang_23110329.Forms
             this.Name = "frmLogin";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Đăng nhập hệ thống";
+            this.Load += new System.EventHandler(this.frmLogin_Load);
             this.ResumeLayout(false);
 
         }
