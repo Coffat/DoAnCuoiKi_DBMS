@@ -244,13 +244,13 @@ namespace VuToanThang_23110329.Forms
             
             foreach (var btn in buttons)
             {
-                btn.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(20)))));
-                btn.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
+                btn.FillColor = System.Drawing.Color.White;
+                btn.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64))))); // Dark gray text
             }
 
             // Set active button
-            activeButton.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(84)))), ((int)(((byte)(138)))), ((int)(((byte)(245)))));
-            activeButton.ForeColor = System.Drawing.Color.White;
+            activeButton.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(220)))), ((int)(((byte)(53)))), ((int)(((byte)(69))))); // Red background
+            activeButton.ForeColor = System.Drawing.Color.White; // White text
         }
 
         private void ShowSubMenu(string title, string[] menuItems)
