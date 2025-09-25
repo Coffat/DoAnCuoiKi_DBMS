@@ -1,5 +1,6 @@
 namespace VuToanThang_23110329.Forms
 {
+    using Guna.UI2.WinForms;
     partial class frmLogin
     {
         /// <summary>
