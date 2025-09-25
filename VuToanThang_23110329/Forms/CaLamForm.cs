@@ -15,31 +15,11 @@ namespace VuToanThang_23110329.Forms
         private CaLam _currentCaLam;
         private bool _isEditing = false;
 
-        // UI Controls
-        private DataGridView dgvCaLam;
-        private TextBox txtSearch, txtTenCa, txtHeSoCa, txtMoTa;
-        private DateTimePicker dtpGioBatDau, dtpGioKetThuc;
-        private CheckBox chkKichHoat;
-        private Button btnThem, btnSua, btnXoa, btnLuu, btnHuy, btnLamMoi;
-        private Panel pnlThongTin;
-
         public CaLamForm()
         {
             InitializeComponent();
             _caLamRepository = new CaLamRepository();
             InitializeForm();
-        }
-
-
-        private void SetupEventHandlers()
-        {
-            // Only set up DataGridView and TextBox event handlers here
-            // Button event handlers are now set up in Designer.cs
-            if (txtSearch != null)
-                txtSearch.TextChanged += txtSearch_TextChanged;
-            
-            if (dgvCaLam != null)
-                dgvCaLam.SelectionChanged += dgvCaLam_SelectionChanged;
         }
 
         private void InitializeForm()

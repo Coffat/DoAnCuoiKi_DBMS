@@ -17,12 +17,6 @@ namespace VuToanThang_23110329.Forms
         private NhanVien _currentNhanVien;
         private bool _isEditing = false;
 
-        // UI Controls
-        private DataGridView dgvNhanVien;
-        private TextBox txtSearch;
-        private ComboBox cmbFilterTrangThai;
-        private ModernButton btnThem, btnSua, btnXoa, btnLamMoi, btnKhoiPhuc;
-
         public NhanVienForm()
         {
             InitializeComponent();

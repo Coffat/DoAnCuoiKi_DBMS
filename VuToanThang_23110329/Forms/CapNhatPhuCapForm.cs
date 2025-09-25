@@ -1,6 +1,5 @@
 using System;
 using System.Data;
-using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
 using VuToanThang_23110329.Repositories;
@@ -11,9 +10,6 @@ namespace VuToanThang_23110329.Forms
     {
         private readonly int _nam, _thang;
         private readonly BangLuongRepository _repository;
-        private DataGridView dgvNhanVien;
-        private NumericUpDown nudPhuCap, nudKhauTru, nudThueBH;
-        private Button btnApplyAll, btnApplySelected;
 
         public CapNhatPhuCapForm(int nam, int thang)
         {
@@ -22,121 +18,29 @@ namespace VuToanThang_23110329.Forms
             _thang = thang;
             _repository = new BangLuongRepository();
             this.Text = $"Cập nhật phụ cấp - {thang}/{nam}";
-            this.Size = new Size(800, 600);
-            this.BackColor = Color.FromArgb(50, 50, 50);
-            CreateControls();
-            LoadData();
+            InitializeForm();
         }
 
-        private void CreateControls()
+        private void InitializeForm()
         {
+            // Update title with period
+            this.Controls.OfType<Label>().FirstOrDefault()?.Dispose();
             var lblTitle = new Label
             {
                 Text = $"CẬP NHẬT PHỤ CẤP/KHẤU TRỪ - {_thang}/{_nam}",
-                ForeColor = Color.FromArgb(124, 77, 255),
-                Font = new Font("Segoe UI", 16, FontStyle.Bold),
-                Location = new Point(20, 20),
+                ForeColor = System.Drawing.Color.FromArgb(124, 77, 255),
+                Font = new System.Drawing.Font("Segoe UI", 16, System.Drawing.FontStyle.Bold),
+                Location = new System.Drawing.Point(20, 20),
                 AutoSize = true
             };
+            this.Controls.Add(lblTitle);
+            lblTitle.BringToFront();
 
-            // Input panel
-            var pnlInput = new Panel
-            {
-                BackColor = Color.FromArgb(60, 60, 60),
-                BorderStyle = BorderStyle.FixedSingle,
-                Size = new Size(760, 80),
-                Location = new Point(20, 60)
-            };
-
-            var lblPhuCap = new Label { Text = "Phụ cấp:", ForeColor = Color.White, Location = new Point(20, 20), AutoSize = true };
-            nudPhuCap = new NumericUpDown
-            {
-                Maximum = 10000000,
-                DecimalPlaces = 0,
-                Increment = 50000,
-                BackColor = Color.FromArgb(70, 70, 70),
-                ForeColor = Color.White,
-                Size = new Size(100, 25),
-                Location = new Point(20, 40)
-            };
-
-            var lblKhauTru = new Label { Text = "Khấu trừ:", ForeColor = Color.White, Location = new Point(150, 20), AutoSize = true };
-            nudKhauTru = new NumericUpDown
-            {
-                Maximum = 10000000,
-                DecimalPlaces = 0,
-                Increment = 50000,
-                BackColor = Color.FromArgb(70, 70, 70),
-                ForeColor = Color.White,
-                Size = new Size(100, 25),
-                Location = new Point(150, 40)
-            };
-
-            var lblThueBH = new Label { Text = "Thuế BH:", ForeColor = Color.White, Location = new Point(280, 20), AutoSize = true };
-            nudThueBH = new NumericUpDown
-            {
-                Maximum = 10000000,
-                DecimalPlaces = 0,
-                Increment = 10000,
-                BackColor = Color.FromArgb(70, 70, 70),
-                ForeColor = Color.White,
-                Size = new Size(100, 25),
-                Location = new Point(280, 40)
-            };
-
-            btnApplyAll = new Button
-            {
-                Text = "Áp dụng tất cả",
-                BackColor = Color.FromArgb(124, 77, 255),
-                ForeColor = Color.White,
-                FlatStyle = FlatStyle.Flat,
-                Size = new Size(120, 30),
-                Location = new Point(420, 25)
-            };
+            // Setup event handlers
             btnApplyAll.Click += BtnApplyAll_Click;
-
-            btnApplySelected = new Button
-            {
-                Text = "Áp dụng đã chọn",
-                BackColor = Color.FromArgb(80, 160, 80),
-                ForeColor = Color.White,
-                FlatStyle = FlatStyle.Flat,
-                Size = new Size(120, 30),
-                Location = new Point(550, 25)
-            };
             btnApplySelected.Click += BtnApplySelected_Click;
 
-            pnlInput.Controls.AddRange(new Control[] { lblPhuCap, nudPhuCap, lblKhauTru, nudKhauTru, lblThueBH, nudThueBH, btnApplyAll, btnApplySelected });
-
-            // DataGridView
-            dgvNhanVien = new DataGridView
-            {
-                BackgroundColor = Color.FromArgb(60, 60, 60),
-                ForeColor = Color.White,
-                GridColor = Color.FromArgb(80, 80, 80),
-                BorderStyle = BorderStyle.None,
-                AllowUserToAddRows = false,
-                AllowUserToDeleteRows = false,
-                SelectionMode = DataGridViewSelectionMode.FullRowSelect,
-                MultiSelect = true,
-                Size = new Size(760, 400),
-                Location = new Point(20, 160),
-                AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill
-            };
-
-            // Close button
-            var btnClose = new Button
-            {
-                Text = "Đóng",
-                BackColor = Color.FromArgb(80, 80, 80),
-                ForeColor = Color.White,
-                FlatStyle = FlatStyle.Flat,
-                Size = new Size(100, 35),
-                Location = new Point(680, 570),
-                DialogResult = DialogResult.OK
-            };
-
-            this.Controls.AddRange(new Control[] { lblTitle, pnlInput, dgvNhanVien, btnClose });
+            LoadData();
         }
 
         private void LoadData()

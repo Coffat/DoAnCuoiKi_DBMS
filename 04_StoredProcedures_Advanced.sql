@@ -100,6 +100,35 @@ BEGIN
 END
 GO
 
+-- 4.1) Mở khóa công kỳ (tháng/năm): LichPhanCa.TrangThai='DuKien', ChamCong.Khoa=0
+IF OBJECT_ID('dbo.sp_MoKhoaCongThang','P') IS NOT NULL DROP PROCEDURE dbo.sp_MoKhoaCongThang;
+GO
+CREATE PROCEDURE dbo.sp_MoKhoaCongThang
+    @Nam   INT,
+    @Thang INT
+AS
+BEGIN
+    SET NOCOUNT ON; SET XACT_ABORT ON;
+
+    DECLARE @D0 DATE = DATEFROMPARTS(@Nam,@Thang,1);
+    DECLARE @D1 DATE = EOMONTH(@D0);
+
+    BEGIN TRAN;
+
+    UPDATE dbo.LichPhanCa
+      SET TrangThai = N'DuKien'
+    WHERE NgayLam BETWEEN @D0 AND @D1 AND TrangThai = N'Khoa';
+
+    UPDATE dbo.ChamCong
+      SET Khoa = 0
+    WHERE NgayLam BETWEEN @D0 AND @D1 AND Khoa = 1;
+
+    COMMIT;
+    
+    PRINT N'Đã mở khóa công tháng ' + CAST(@Thang AS NVARCHAR) + '/' + CAST(@Nam AS NVARCHAR);
+END
+GO
+
 -- 5) Chạy bảng lương (Serializable): upsert BangLuong ở trạng thái 'Mo'
 IF OBJECT_ID('dbo.sp_ChayBangLuong','P') IS NOT NULL DROP PROCEDURE dbo.sp_ChayBangLuong;
 GO
@@ -174,13 +203,14 @@ BEGIN
           T.LuongCoBan  = S.LuongCoBan,
           T.TongGioCong = S.TongGioCong,
           T.GioOT       = S.GioOT,
-          T.ThucLanh    = S.LuongCoBan 
+          T.ThucLanh    = (CASE WHEN @StdHours>0 THEN (S.TongGioCong*(S.LuongCoBan/@StdHours)) ELSE S.LuongCoBan END)
                          + (CASE WHEN @StdHours>0 THEN (S.GioOT*(S.LuongCoBan/@StdHours)*@OtRate) ELSE 0 END)
                          + T.PhuCap - T.KhauTru - T.ThueBH
     WHEN NOT MATCHED THEN
         INSERT (Nam,Thang,MaNV,LuongCoBan,TongGioCong,GioOT,PhuCap,KhauTru,ThueBH,ThucLanh,TrangThai)
         VALUES(@Nam,@Thang,S.MaNV,S.LuongCoBan,S.TongGioCong,S.GioOT,0,0,0,
-               S.LuongCoBan + (CASE WHEN @StdHours>0 THEN (S.GioOT*(S.LuongCoBan/@StdHours)*@OtRate) ELSE 0 END),
+               (CASE WHEN @StdHours>0 THEN (S.TongGioCong*(S.LuongCoBan/@StdHours)) ELSE S.LuongCoBan END)
+               + (CASE WHEN @StdHours>0 THEN (S.GioOT*(S.LuongCoBan/@StdHours)*@OtRate) ELSE 0 END),
                N'Mo');
 
     COMMIT;

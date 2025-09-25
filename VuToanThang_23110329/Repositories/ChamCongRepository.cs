@@ -382,5 +382,33 @@ namespace VuToanThang_23110329.Repositories
                 KhoaChamCong = row["KhoaChamCong"] != DBNull.Value ? Convert.ToBoolean(row["KhoaChamCong"]) : (bool?)null
             };
         }
+
+        public OperationResult MoKhoaCongThang(int nam, int thang)
+        {
+            try
+            {
+                var parameters = new[]
+                {
+                    SqlHelper.CreateParameter("@Nam", nam),
+                    SqlHelper.CreateParameter("@Thang", thang)
+                };
+
+                SqlHelper.ExecuteNonQuery("sp_MoKhoaCongThang", parameters);
+
+                return new OperationResult
+                {
+                    Success = true,
+                    Message = $"Đã mở khóa công tháng {thang}/{nam} thành công"
+                };
+            }
+            catch (Exception ex)
+            {
+                return new OperationResult
+                {
+                    Success = false,
+                    Message = $"Lỗi mở khóa công tháng: {ex.Message}"
+                };
+            }
+        }
     }
 }

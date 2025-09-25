@@ -126,6 +126,7 @@ GRANT SELECT               ON dbo.vw_Lich_ChamCong_Ngay TO r_hr;
 GRANT EXECUTE ON dbo.sp_ThemMoiNhanVien  TO r_hr;
 GRANT EXECUTE ON dbo.sp_DuyetDonTu       TO r_hr;
 GRANT EXECUTE ON dbo.sp_KhoaCongThang    TO r_hr;
+GRANT EXECUTE ON dbo.sp_MoKhoaCongThang  TO r_hr;
 -- CaLam stored procedures
 GRANT EXECUTE ON dbo.sp_CaLam_GetAll TO r_hr, r_quanly, r_nhanvien;
 GRANT EXECUTE ON dbo.sp_CaLam_GetById TO r_hr, r_quanly, r_nhanvien;

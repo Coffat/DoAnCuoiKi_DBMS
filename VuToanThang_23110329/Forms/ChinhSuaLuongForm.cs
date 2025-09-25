@@ -1,5 +1,5 @@
 using System;
-using System.Drawing;
+using System.Linq;
 using System.Windows.Forms;
 using VuToanThang_23110329.Models;
 using VuToanThang_23110329.Repositories;
@@ -10,8 +10,6 @@ namespace VuToanThang_23110329.Forms
     {
         private readonly BangLuong _bangLuong;
         private readonly BangLuongRepository _repository;
-        private NumericUpDown nudPhuCap, nudKhauTru, nudThueBH;
-        private Label lblThucLanh;
 
         public ChinhSuaLuongForm(BangLuong bangLuong)
         {
@@ -19,123 +17,51 @@ namespace VuToanThang_23110329.Forms
             _bangLuong = bangLuong;
             _repository = new BangLuongRepository();
             this.Text = $"Chỉnh sửa lương - {bangLuong.TenNhanVien}";
-            this.Size = new Size(500, 400);
-            this.BackColor = Color.FromArgb(50, 50, 50);
-            CreateControls();
+            InitializeForm();
+        }
+
+        private void InitializeForm()
+        {
+            // Update employee info labels
+            UpdateEmployeeInfo();
+
+            // Setup event handlers
+            nudPhuCap.ValueChanged += (s, e) => UpdateThucLanh();
+            nudKhauTru.ValueChanged += (s, e) => UpdateThucLanh();
+            nudThueBH.ValueChanged += (s, e) => UpdateThucLanh();
+            btnSave.Click += BtnSave_Click;
+
             LoadData();
         }
 
-        private void CreateControls()
+        private void UpdateEmployeeInfo()
         {
+            // Update title
+            this.Controls.OfType<Label>().FirstOrDefault()?.Dispose();
             var lblTitle = new Label
             {
                 Text = $"CHỈNH SỬA LƯƠNG - {_bangLuong.TenNhanVien}",
-                ForeColor = Color.FromArgb(124, 77, 255),
-                Font = new Font("Segoe UI", 16, FontStyle.Bold),
-                Location = new Point(20, 20),
+                ForeColor = System.Drawing.Color.FromArgb(124, 77, 255),
+                Font = new System.Drawing.Font("Segoe UI", 16, System.Drawing.FontStyle.Bold),
+                Location = new System.Drawing.Point(20, 20),
                 AutoSize = true
             };
+            this.Controls.Add(lblTitle);
+            lblTitle.BringToFront();
 
-            // Employee info panel
-            var pnlInfo = new Panel
+            // Update employee info in panel
+            var pnlInfo = this.Controls.OfType<Panel>().FirstOrDefault();
+            if (pnlInfo != null)
             {
-                BackColor = Color.FromArgb(60, 60, 60),
-                BorderStyle = BorderStyle.FixedSingle,
-                Size = new Size(460, 100),
-                Location = new Point(20, 60)
-            };
-
-            var lblNhanVien = new Label { Text = $"Nhân viên: {_bangLuong.TenNhanVien}", ForeColor = Color.White, Location = new Point(20, 15), AutoSize = true };
-            var lblChucDanh = new Label { Text = $"Chức danh: {_bangLuong.ChucDanh}", ForeColor = Color.White, Location = new Point(20, 35), AutoSize = true };
-            var lblLuongCB = new Label { Text = $"Lương cơ bản: {_bangLuong.LuongCoBan:N0} VNĐ", ForeColor = Color.White, Location = new Point(20, 55), AutoSize = true };
-            var lblGioCong = new Label { Text = $"Giờ công: {_bangLuong.TongGioCong:F2} | OT: {_bangLuong.GioOT:F2}", ForeColor = Color.White, Location = new Point(250, 55), AutoSize = true };
-
-            pnlInfo.Controls.AddRange(new Control[] { lblNhanVien, lblChucDanh, lblLuongCB, lblGioCong });
-
-            // Edit panel
-            var pnlEdit = new Panel
-            {
-                BackColor = Color.FromArgb(60, 60, 60),
-                BorderStyle = BorderStyle.FixedSingle,
-                Size = new Size(460, 120),
-                Location = new Point(20, 180)
-            };
-
-            var lblPhuCap = new Label { Text = "Phụ cấp:", ForeColor = Color.White, Location = new Point(20, 20), AutoSize = true };
-            nudPhuCap = new NumericUpDown
-            {
-                Maximum = 10000000,
-                DecimalPlaces = 0,
-                Increment = 50000,
-                BackColor = Color.FromArgb(70, 70, 70),
-                ForeColor = Color.White,
-                Size = new Size(120, 25),
-                Location = new Point(100, 17)
-            };
-            nudPhuCap.ValueChanged += (s, e) => UpdateThucLanh();
-
-            var lblKhauTru = new Label { Text = "Khấu trừ:", ForeColor = Color.White, Location = new Point(240, 20), AutoSize = true };
-            nudKhauTru = new NumericUpDown
-            {
-                Maximum = 10000000,
-                DecimalPlaces = 0,
-                Increment = 50000,
-                BackColor = Color.FromArgb(70, 70, 70),
-                ForeColor = Color.White,
-                Size = new Size(120, 25),
-                Location = new Point(320, 17)
-            };
-            nudKhauTru.ValueChanged += (s, e) => UpdateThucLanh();
-
-            var lblThueBH = new Label { Text = "Thuế BH:", ForeColor = Color.White, Location = new Point(20, 50), AutoSize = true };
-            nudThueBH = new NumericUpDown
-            {
-                Maximum = 10000000,
-                DecimalPlaces = 0,
-                Increment = 10000,
-                BackColor = Color.FromArgb(70, 70, 70),
-                ForeColor = Color.White,
-                Size = new Size(120, 25),
-                Location = new Point(100, 47)
-            };
-            nudThueBH.ValueChanged += (s, e) => UpdateThucLanh();
-
-            lblThucLanh = new Label
-            {
-                Text = "Thực lãnh: 0 VNĐ",
-                ForeColor = Color.FromArgb(124, 77, 255),
-                Font = new Font("Segoe UI", 12, FontStyle.Bold),
-                Location = new Point(240, 50),
-                AutoSize = true
-            };
-
-            pnlEdit.Controls.AddRange(new Control[] { lblPhuCap, nudPhuCap, lblKhauTru, nudKhauTru, lblThueBH, nudThueBH, lblThucLanh });
-
-            // Buttons
-            var btnSave = new Button
-            {
-                Text = "Lưu",
-                BackColor = Color.FromArgb(124, 77, 255),
-                ForeColor = Color.White,
-                FlatStyle = FlatStyle.Flat,
-                Size = new Size(100, 35),
-                Location = new Point(280, 320),
-                DialogResult = DialogResult.OK
-            };
-            btnSave.Click += BtnSave_Click;
-
-            var btnCancel = new Button
-            {
-                Text = "Hủy",
-                BackColor = Color.FromArgb(80, 80, 80),
-                ForeColor = Color.White,
-                FlatStyle = FlatStyle.Flat,
-                Size = new Size(100, 35),
-                Location = new Point(390, 320),
-                DialogResult = DialogResult.Cancel
-            };
-
-            this.Controls.AddRange(new Control[] { lblTitle, pnlInfo, pnlEdit, btnSave, btnCancel });
+                var labels = pnlInfo.Controls.OfType<Label>().ToArray();
+                if (labels.Length >= 4)
+                {
+                    labels[0].Text = $"Nhân viên: {_bangLuong.TenNhanVien}";
+                    labels[1].Text = $"Chức danh: {_bangLuong.ChucDanh}";
+                    labels[2].Text = $"Lương cơ bản: {_bangLuong.LuongCoBan:N0} VNĐ";
+                    labels[3].Text = $"Giờ công: {_bangLuong.TongGioCong:F2} | OT: {_bangLuong.GioOT:F2}";
+                }
+            }
         }
 
         private void LoadData()
