@@ -38,10 +38,8 @@ namespace VuToanThang_23110329.Forms
             this.txtPassword = new Guna.UI2.WinForms.Guna2TextBox();
             this.btnLogin = new Guna.UI2.WinForms.Guna2Button();
             this.btnExit = new Guna.UI2.WinForms.Guna2Button();
-            this.pictureBoxLogo = new System.Windows.Forms.PictureBox();
             this.pnlMain = new Guna.UI2.WinForms.Guna2Panel();
             this.pnlLeft = new Guna.UI2.WinForms.Guna2Panel();
-            this.pnlRight = new Guna.UI2.WinForms.Guna2Panel();
             this.pnlForm = new Guna.UI2.WinForms.Guna2Panel();
             this.lblWelcome = new System.Windows.Forms.Label();
             this.lblSystemName = new System.Windows.Forms.Label();
@@ -231,15 +229,6 @@ namespace VuToanThang_23110329.Forms
             this.btnExit.TabIndex = 9;
             this.btnExit.Text = "Thoát";
             // 
-            // pictureBoxLogo
-            // 
-            this.pictureBoxLogo.BackColor = System.Drawing.Color.Transparent;
-            this.pictureBoxLogo.Location = new System.Drawing.Point(50, 200);
-            this.pictureBoxLogo.Name = "pictureBoxLogo";
-            this.pictureBoxLogo.Size = new System.Drawing.Size(80, 80);
-            this.pictureBoxLogo.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
-            this.pictureBoxLogo.TabIndex = 10;
-            this.pictureBoxLogo.TabStop = false;
             // 
             // pnlMain
             // 
@@ -263,19 +252,10 @@ namespace VuToanThang_23110329.Forms
             this.pnlLeft.Size = new System.Drawing.Size(450, 500);
             this.pnlLeft.TabIndex = 1;
             // 
-            // pnlRight
-            // 
-            this.pnlRight.BorderRadius = 0;
-            this.pnlRight.FillColor = System.Drawing.Color.White;
-            this.pnlRight.Location = new System.Drawing.Point(450, 0);
-            this.pnlRight.Name = "pnlRight";
-            this.pnlRight.Size = new System.Drawing.Size(450, 500);
-            this.pnlRight.TabIndex = 2;
-            // 
             // pnlForm
             // 
             this.pnlForm.BorderRadius = 0;
-            this.pnlForm.FillColor = System.Drawing.Color.Transparent;
+            this.pnlForm.FillColor = System.Drawing.Color.White;
             this.pnlForm.Location = new System.Drawing.Point(450, 0);
             this.pnlForm.Name = "pnlForm";
             this.pnlForm.Size = new System.Drawing.Size(450, 500);
@@ -287,9 +267,7 @@ namespace VuToanThang_23110329.Forms
             this.ClientSize = new System.Drawing.Size(900, 500);
             this.Controls.Add(this.pnlMain);
             this.pnlMain.Controls.Add(this.pnlLeft);
-            this.pnlMain.Controls.Add(this.pnlRight);
             this.pnlMain.Controls.Add(this.pnlForm);
-            this.pnlLeft.Controls.Add(this.pictureBoxLogo);
             this.pnlLeft.Controls.Add(this.lblTitle);
             this.pnlLeft.Controls.Add(this.lblSubtitle);
             this.pnlForm.Controls.Add(this.lblWelcome);
@@ -324,11 +302,9 @@ namespace VuToanThang_23110329.Forms
         private Guna.UI2.WinForms.Guna2Button btnExit;
         private Guna.UI2.WinForms.Guna2Panel pnlMain;
         private Guna.UI2.WinForms.Guna2Panel pnlLeft;
-        private Guna.UI2.WinForms.Guna2Panel pnlRight;
         private Guna.UI2.WinForms.Guna2Panel pnlForm;
         private Guna.UI2.WinForms.Guna2Panel pnlButtons;
         private Guna.UI2.WinForms.Guna2CheckBox chkRememberMe;
         private System.Windows.Forms.Label lblForgotPassword;
-        private System.Windows.Forms.PictureBox pictureBoxLogo;
     }
 }
