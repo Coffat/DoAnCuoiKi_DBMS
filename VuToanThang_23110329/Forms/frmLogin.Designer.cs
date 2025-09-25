@@ -37,7 +37,7 @@ namespace VuToanThang_23110329.Forms
             this.btnLogin = new Guna.UI2.WinForms.Guna2Button();
             this.btnExit = new Guna.UI2.WinForms.Guna2Button();
             this.pictureBoxLogo = new System.Windows.Forms.PictureBox();
-            this.pnlMain = new Guna.UI2.WinForms.Guna2GradientPanel();
+            this.pnlMain = new Guna.UI2.WinForms.Guna2Panel();
             this.pnlContent = new Guna.UI2.WinForms.Guna2Panel();
             this.pnlTitle = new Guna.UI2.WinForms.Guna2Panel();
             this.pnlButtons = new Guna.UI2.WinForms.Guna2Panel();
@@ -171,10 +171,7 @@ namespace VuToanThang_23110329.Forms
             // pnlMain
             // 
             this.pnlMain.BorderRadius = 15;
-            this.pnlMain.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(20)))), ((int)(((byte)(20)))), ((int)(((byte)(20)))));
-            this.pnlMain.GradientColor1 = System.Drawing.Color.FromArgb(((int)(((byte)(20)))), ((int)(((byte)(20)))), ((int)(((byte)(20)))));
-            this.pnlMain.GradientColor2 = System.Drawing.Color.FromArgb(((int)(((byte)(40)))), ((int)(((byte)(40)))), ((int)(((byte)(40)))));
-            this.pnlMain.GradientMode = System.Drawing.Drawing2D.LinearGradientMode.Vertical;
+            this.pnlMain.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(30)))), ((int)(((byte)(30)))));
             this.pnlMain.Location = new System.Drawing.Point(0, 0);
             this.pnlMain.Name = "pnlMain";
             this.pnlMain.Size = new System.Drawing.Size(500, 350);
@@ -193,9 +190,6 @@ namespace VuToanThang_23110329.Forms
             // 
             this.pnlTitle.BorderRadius = 0;
             this.pnlTitle.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(124)))), ((int)(((byte)(77)))), ((int)(((byte)(255)))));
-            this.pnlTitle.GradientColor1 = System.Drawing.Color.FromArgb(((int)(((byte)(124)))), ((int)(((byte)(77)))), ((int)(((byte)(255)))));
-            this.pnlTitle.GradientColor2 = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(50)))), ((int)(((byte)(200)))));
-            this.pnlTitle.GradientMode = System.Drawing.Drawing2D.LinearGradientMode.Horizontal;
             this.pnlTitle.Location = new System.Drawing.Point(0, 0);
             this.pnlTitle.Name = "pnlTitle";
             this.pnlTitle.Size = new System.Drawing.Size(500, 15);
@@ -248,7 +242,7 @@ namespace VuToanThang_23110329.Forms
         private Guna.UI2.WinForms.Guna2TextBox txtPassword;
         private Guna.UI2.WinForms.Guna2Button btnLogin;
         private Guna.UI2.WinForms.Guna2Button btnExit;
-        private Guna.UI2.WinForms.Guna2GradientPanel pnlMain;
+        private Guna.UI2.WinForms.Guna2Panel pnlMain;
         private Guna.UI2.WinForms.Guna2Panel pnlContent;
         private Guna.UI2.WinForms.Guna2Panel pnlTitle;
         private Guna.UI2.WinForms.Guna2Panel pnlButtons;
