@@ -35,6 +35,17 @@ namespace VuToanThang_23110329.Forms
         private void frmMain_Load(object sender, EventArgs e)
         {
             SetupMenuForRole(userRole);
+            lblUserInfo.Text = $"Người dùng: {userRole}";
+            lblStatus.Text = "Sẵn sàng";
+
+            // Thêm label chào mừng
+            Label lblWelcome = new Label();
+            lblWelcome.Text = $"Chào mừng {userRole} đến với hệ thống quản lý nhân sự!";
+            lblWelcome.Font = new Font("Segoe UI", 14, FontStyle.Bold);
+            lblWelcome.ForeColor = Color.White;
+            lblWelcome.AutoSize = true;
+            lblWelcome.Location = new Point(50, 50);
+            pnlContent.Controls.Add(lblWelcome);
         }
 
         private void mnuHeThong_DoiMatKhau_Click(object sender, EventArgs e)

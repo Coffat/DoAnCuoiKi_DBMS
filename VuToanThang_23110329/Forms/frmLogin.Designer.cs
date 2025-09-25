@@ -36,6 +36,7 @@ namespace VuToanThang_23110329.Forms
             this.txtPassword = new Guna.UI2.WinForms.Guna2TextBox();
             this.btnLogin = new Guna.UI2.WinForms.Guna2Button();
             this.btnExit = new Guna.UI2.WinForms.Guna2Button();
+            this.pictureBoxLogo = new System.Windows.Forms.PictureBox();
             this.pnlMain = new System.Windows.Forms.Panel();
             this.pnlContent = new System.Windows.Forms.Panel();
             this.pnlTitle = new System.Windows.Forms.Panel();
@@ -45,9 +46,9 @@ namespace VuToanThang_23110329.Forms
             // lblTitle
             // 
             this.lblTitle.AutoSize = true;
-            this.lblTitle.Font = new System.Drawing.Font("Segoe UI", 18F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblTitle.Font = new System.Drawing.Font("Segoe UI", 20F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblTitle.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(124)))), ((int)(((byte)(77)))), ((int)(((byte)(255)))));
-            this.lblTitle.Location = new System.Drawing.Point(150, 30);
+            this.lblTitle.Location = new System.Drawing.Point(175, 20);
             this.lblTitle.Name = "lblTitle";
             this.lblTitle.Size = new System.Drawing.Size(200, 32);
             this.lblTitle.TabIndex = 0;
@@ -58,7 +59,7 @@ namespace VuToanThang_23110329.Forms
             this.lblUsername.AutoSize = true;
             this.lblUsername.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblUsername.ForeColor = System.Drawing.Color.White;
-            this.lblUsername.Location = new System.Drawing.Point(50, 80);
+            this.lblUsername.Location = new System.Drawing.Point(75, 100);
             this.lblUsername.Name = "lblUsername";
             this.lblUsername.Size = new System.Drawing.Size(76, 19);
             this.lblUsername.TabIndex = 1;
@@ -69,7 +70,7 @@ namespace VuToanThang_23110329.Forms
             this.lblPassword.AutoSize = true;
             this.lblPassword.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblPassword.ForeColor = System.Drawing.Color.White;
-            this.lblPassword.Location = new System.Drawing.Point(50, 130);
+            this.lblPassword.Location = new System.Drawing.Point(75, 150);
             this.lblPassword.Name = "lblPassword";
             this.lblPassword.Size = new System.Drawing.Size(57, 19);
             this.lblPassword.TabIndex = 2;
@@ -92,7 +93,7 @@ namespace VuToanThang_23110329.Forms
             this.txtUsername.ForeColor = System.Drawing.Color.White;
             this.txtUsername.HoverState.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(124)))), ((int)(((byte)(77)))), ((int)(((byte)(255)))));
             this.txtUsername.HoverState.Parent = this.txtUsername;
-            this.txtUsername.Location = new System.Drawing.Point(150, 75);
+            this.txtUsername.Location = new System.Drawing.Point(175, 95);
             this.txtUsername.Name = "txtUsername";
             this.txtUsername.PasswordChar = '\0';
             this.txtUsername.PlaceholderText = "Nhập tên đăng nhập...";
@@ -117,7 +118,7 @@ namespace VuToanThang_23110329.Forms
             this.txtPassword.ForeColor = System.Drawing.Color.White;
             this.txtPassword.HoverState.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(124)))), ((int)(((byte)(77)))), ((int)(((byte)(255)))));
             this.txtPassword.HoverState.Parent = this.txtPassword;
-            this.txtPassword.Location = new System.Drawing.Point(150, 125);
+            this.txtPassword.Location = new System.Drawing.Point(175, 145);
             this.txtPassword.Name = "txtPassword";
             this.txtPassword.PasswordChar = '●';
             this.txtPassword.PlaceholderText = "Nhập mật khẩu...";
@@ -135,7 +136,7 @@ namespace VuToanThang_23110329.Forms
             this.btnLogin.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(124)))), ((int)(((byte)(77)))), ((int)(((byte)(255)))));
             this.btnLogin.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnLogin.ForeColor = System.Drawing.Color.White;
-            this.btnLogin.Location = new System.Drawing.Point(150, 180);
+            this.btnLogin.Location = new System.Drawing.Point(175, 200);
             this.btnLogin.Name = "btnLogin";
             this.btnLogin.Size = new System.Drawing.Size(90, 35);
             this.btnLogin.TabIndex = 5;
@@ -151,11 +152,21 @@ namespace VuToanThang_23110329.Forms
             this.btnExit.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(77)))), ((int)(((byte)(77)))));
             this.btnExit.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnExit.ForeColor = System.Drawing.Color.White;
-            this.btnExit.Location = new System.Drawing.Point(260, 180);
+            this.btnExit.Location = new System.Drawing.Point(285, 200);
             this.btnExit.Name = "btnExit";
             this.btnExit.Size = new System.Drawing.Size(90, 35);
             this.btnExit.TabIndex = 6;
             this.btnExit.Text = "Thoát";
+            // 
+            // pictureBoxLogo
+            // 
+            this.pictureBoxLogo.BackColor = System.Drawing.Color.Transparent;
+            this.pictureBoxLogo.Location = new System.Drawing.Point(225, 60);
+            this.pictureBoxLogo.Name = "pictureBoxLogo";
+            this.pictureBoxLogo.Size = new System.Drawing.Size(50, 50);
+            this.pictureBoxLogo.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.pictureBoxLogo.TabIndex = 7;
+            this.pictureBoxLogo.TabStop = false;
             // 
             // pnlMain
             // 
@@ -163,15 +174,15 @@ namespace VuToanThang_23110329.Forms
             this.pnlMain.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pnlMain.Location = new System.Drawing.Point(0, 0);
             this.pnlMain.Name = "pnlMain";
-            this.pnlMain.Size = new System.Drawing.Size(400, 250);
+            this.pnlMain.Size = new System.Drawing.Size(500, 350);
             this.pnlMain.TabIndex = 0;
             // 
             // pnlContent
             // 
             this.pnlContent.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(25)))), ((int)(((byte)(25)))), ((int)(((byte)(25)))));
-            this.pnlContent.Location = new System.Drawing.Point(50, 25);
+            this.pnlContent.Location = new System.Drawing.Point(75, 50);
             this.pnlContent.Name = "pnlContent";
-            this.pnlContent.Size = new System.Drawing.Size(300, 200);
+            this.pnlContent.Size = new System.Drawing.Size(350, 250);
             this.pnlContent.TabIndex = 1;
             // 
             // pnlTitle
@@ -179,15 +190,15 @@ namespace VuToanThang_23110329.Forms
             this.pnlTitle.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(124)))), ((int)(((byte)(77)))), ((int)(((byte)(255)))));
             this.pnlTitle.Location = new System.Drawing.Point(0, 0);
             this.pnlTitle.Name = "pnlTitle";
-            this.pnlTitle.Size = new System.Drawing.Size(400, 10);
+            this.pnlTitle.Size = new System.Drawing.Size(500, 15);
             this.pnlTitle.TabIndex = 2;
             // 
             // pnlButtons
             // 
             this.pnlButtons.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(25)))), ((int)(((byte)(25)))), ((int)(((byte)(25)))));
-            this.pnlButtons.Location = new System.Drawing.Point(50, 170);
+            this.pnlButtons.Location = new System.Drawing.Point(75, 270);
             this.pnlButtons.Name = "pnlButtons";
-            this.pnlButtons.Size = new System.Drawing.Size(300, 50);
+            this.pnlButtons.Size = new System.Drawing.Size(350, 50);
             this.pnlButtons.TabIndex = 3;
             // 
             // frmLogin
@@ -195,11 +206,12 @@ namespace VuToanThang_23110329.Forms
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(20)))), ((int)(((byte)(20)))), ((int)(((byte)(20)))));
-            this.ClientSize = new System.Drawing.Size(400, 250);
+            this.ClientSize = new System.Drawing.Size(500, 350);
             this.Controls.Add(this.pnlTitle);
             this.Controls.Add(this.pnlMain);
             this.Controls.Add(this.pnlContent);
             this.Controls.Add(this.pnlButtons);
+            this.Controls.Add(this.pictureBoxLogo);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Name = "frmLogin";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
@@ -226,5 +238,6 @@ namespace VuToanThang_23110329.Forms
         private System.Windows.Forms.Panel pnlContent;
         private System.Windows.Forms.Panel pnlTitle;
         private System.Windows.Forms.Panel pnlButtons;
+        private System.Windows.Forms.PictureBox pictureBoxLogo;
     }
 }
