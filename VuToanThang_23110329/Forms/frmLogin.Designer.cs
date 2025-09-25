@@ -50,7 +50,7 @@ namespace VuToanThang_23110329.Forms
             this.lblTitle.AutoSize = true;
             this.lblTitle.Font = new System.Drawing.Font("Segoe UI", 20F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblTitle.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(124)))), ((int)(((byte)(77)))), ((int)(((byte)(255)))));
-            this.lblTitle.Location = new System.Drawing.Point(150, 20);
+            this.lblTitle.Location = new System.Drawing.Point(100, 20);
             this.lblTitle.Name = "lblTitle";
             this.lblTitle.Size = new System.Drawing.Size(200, 32);
             this.lblTitle.TabIndex = 0;
@@ -219,7 +219,7 @@ namespace VuToanThang_23110329.Forms
             // 
             // frmLogin
             // 
-            this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(20)))), ((int)(((byte)(20)))), ((int)(((byte)(20)))));
+            this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(240)))), ((int)(((byte)(240)))), ((int)(((byte)(240)))));
             this.ClientSize = new System.Drawing.Size(500, 400);
             this.Controls.Add(this.pnlTitle);
             this.Controls.Add(this.pnlContent);
