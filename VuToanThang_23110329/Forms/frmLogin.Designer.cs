@@ -48,7 +48,7 @@ namespace VuToanThang_23110329.Forms
             this.lblTitle.AutoSize = true;
             this.lblTitle.Font = new System.Drawing.Font("Segoe UI", 20F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblTitle.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(124)))), ((int)(((byte)(77)))), ((int)(((byte)(255)))));
-            this.lblTitle.Location = new System.Drawing.Point(175, 20);
+            this.lblTitle.Location = new System.Drawing.Point(150, 80);
             this.lblTitle.Name = "lblTitle";
             this.lblTitle.Size = new System.Drawing.Size(200, 32);
             this.lblTitle.TabIndex = 0;
@@ -179,11 +179,12 @@ namespace VuToanThang_23110329.Forms
             // 
             // pnlContent
             // 
-            this.pnlContent.BorderRadius = 10;
-            this.pnlContent.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(25)))), ((int)(((byte)(25)))), ((int)(((byte)(25)))));
-            this.pnlContent.Location = new System.Drawing.Point(75, 50);
+            this.pnlContent.BorderRadius = 15;
+            this.pnlContent.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(30)))), ((int)(((byte)(30)))));
+            this.pnlContent.Location = new System.Drawing.Point(50, 50);
             this.pnlContent.Name = "pnlContent";
-            this.pnlContent.Size = new System.Drawing.Size(350, 250);
+            this.pnlContent.ShadowDepth = 10;
+            this.pnlContent.Size = new System.Drawing.Size(400, 300);
             this.pnlContent.TabIndex = 1;
             // 
             // pnlTitle
@@ -199,19 +200,18 @@ namespace VuToanThang_23110329.Forms
             // 
             this.pnlButtons.BorderRadius = 10;
             this.pnlButtons.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(25)))), ((int)(((byte)(25)))), ((int)(((byte)(25)))));
-            this.pnlButtons.Location = new System.Drawing.Point(75, 270);
+            this.pnlButtons.Location = new System.Drawing.Point(50, 240);
             this.pnlButtons.Name = "pnlButtons";
-            this.pnlButtons.Size = new System.Drawing.Size(350, 50);
+            this.pnlButtons.Size = new System.Drawing.Size(300, 50);
             this.pnlButtons.TabIndex = 3;
             // 
             // frmLogin
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(20)))), ((int)(((byte)(20)))), ((int)(((byte)(20)))));
-            this.ClientSize = new System.Drawing.Size(500, 350);
+            this.ClientSize = new System.Drawing.Size(500, 400);
             this.Controls.Add(this.pnlTitle);
-            this.Controls.Add(this.pnlMain);
+            this.Controls.Add(this.pnlContent);
+            this.Controls.Add(this.pnlButtons);
             this.pnlMain.Controls.Add(this.pnlContent);
             this.pnlMain.Controls.Add(this.pnlButtons);
             this.pnlContent.Controls.Add(this.pictureBoxLogo);
