@@ -1,3 +1,6 @@
+using System;
+using System.Windows.Forms;
+
 namespace VuToanThang_23110329.Forms
 {
     partial class frmMain
