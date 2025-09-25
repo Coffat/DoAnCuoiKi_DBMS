@@ -7,52 +7,6 @@ USE QLNhanSuSieuThiMini;
 GO
 
 -- Thêm các stored procedures còn thiếu
-IF OBJECT_ID('dbo.sp_CapNhatNhanVien','P') IS NOT NULL DROP PROCEDURE dbo.sp_CapNhatNhanVien;
-GO
-CREATE PROCEDURE dbo.sp_CapNhatNhanVien
-    @MaNV        INT,
-    @HoTen       NVARCHAR(120),
-    @NgaySinh    DATE         = NULL,
-    @GioiTinh    NVARCHAR(10) = NULL,
-    @DienThoai   NVARCHAR(20) = NULL,
-    @Email       NVARCHAR(120)= NULL,
-    @DiaChi      NVARCHAR(255)= NULL,
-    @NgayVaoLam  DATE         = NULL,
-    @TrangThai   NVARCHAR(10) = NULL,
-    @PhongBan    NVARCHAR(80) = NULL,
-    @ChucDanh    NVARCHAR(80) = NULL,
-    @LuongCoBan  DECIMAL(12,2)= NULL,
-    @MaNguoiDung INT          = NULL
-AS
-BEGIN
-    SET NOCOUNT ON;
-    SET XACT_ABORT ON;
-
-    IF NOT EXISTS (SELECT 1 FROM dbo.NhanVien WHERE MaNV = @MaNV)
-    BEGIN
-        RAISERROR(N'Nhân viên không tồn tại.', 16, 1);
-        RETURN;
-    END
-
-    BEGIN TRAN;
-
-    UPDATE dbo.NhanVien 
-    SET HoTen = ISNULL(@HoTen, HoTen),
-        NgaySinh = ISNULL(@NgaySinh, NgaySinh),
-        GioiTinh = ISNULL(@GioiTinh, GioiTinh),
-        DienThoai = ISNULL(@DienThoai, DienThoai),
-        Email = ISNULL(@Email, Email),
-        DiaChi = ISNULL(@DiaChi, DiaChi),
-        NgayVaoLam = ISNULL(@NgayVaoLam, NgayVaoLam),
-        TrangThai = ISNULL(@TrangThai, TrangThai),
-        PhongBan = ISNULL(@PhongBan, PhongBan),
-        ChucDanh = ISNULL(@ChucDanh, ChucDanh),
-        LuongCoBan = ISNULL(@LuongCoBan, LuongCoBan)
-    WHERE MaNV = @MaNV;
-
-    COMMIT;
-END
-GO
 
 IF OBJECT_ID('dbo.sp_KiemTraQuyenTruyCap','P') IS NOT NULL DROP PROCEDURE dbo.sp_KiemTraQuyenTruyCap;
 GO
@@ -217,53 +171,17 @@ END
 GO
 
 -- 2) CALAM: Kiểm tra trùng lặp thời gian ca làm việc (hỗ trợ ca qua đêm)
-IF OBJECT_ID('dbo.tr_CaLam_CheckOverlap','TR') IS NOT NULL DROP TRIGGER dbo.tr_CaLam_CheckOverlap;
-GO
-CREATE TRIGGER dbo.tr_CaLam_CheckOverlap
-ON dbo.CaLam
-AFTER INSERT, UPDATE
-AS
-BEGIN
-    SET NOCOUNT ON;
-    IF TRY_CONVERT(INT, SESSION_CONTEXT(N'SkipTrigger')) = 1 RETURN;
+-- LOGIC ĐÃ ĐƯỢC DI CHUYỂN VÀO STORED PROCEDURES sp_CaLam_Insert VÀ sp_CaLam_Update
+-- XÓA TRIGGER ĐỂ GIẢM PHỨC TẠP HỆ THỐNG
+--
+-- LOGIC MỚI:
+-- - Nhân viên được làm nhiều ca trong 1 ngày nhưng phải hợp lý
+-- - Tổng thời gian làm việc không vượt quá 16 tiếng/ngày (960 phút)
+-- - Không được làm 2 ca cùng loại trong cùng ngày (ví dụ: 2 ca sáng)
+-- - Vẫn kiểm tra overlap thời gian giữa các ca
+-- - Cho phép overlap hợp lý giữa ca chính và ca hành chính/part-time
+-- - Hỗ trợ đầy đủ ca qua đêm với logic tính toán bằng phút từ midnight
 
-    -- Số phút trong 1 ngày
-    DECLARE @MinutesPerDay INT = 1440; -- 24*60
-
-    -- Kiểm tra overlap giữa ca vừa insert/update và các ca khác
-    -- Cho phép một số overlap hợp lý (ca hành chính, part-time)
-    IF EXISTS (
-        SELECT 1
-        FROM inserted i
-        CROSS APPLY (
-            SELECT 
-                CAST(DATEDIFF(MINUTE, '00:00:00', i.GioBatDau) AS INT) AS StartMin1,
-                CAST(DATEDIFF(MINUTE, '00:00:00', i.GioKetThuc) AS INT) 
-                    + CASE WHEN i.GioKetThuc < i.GioBatDau THEN @MinutesPerDay ELSE 0 END AS EndMin1
-        ) t1
-        JOIN dbo.CaLam c2 ON c2.MaCa <> i.MaCa AND c2.KichHoat = 1
-        CROSS APPLY (
-            SELECT 
-                CAST(DATEDIFF(MINUTE, '00:00:00', c2.GioBatDau) AS INT) AS StartMin2,
-                CAST(DATEDIFF(MINUTE, '00:00:00', c2.GioKetThuc) AS INT) 
-                    + CASE WHEN c2.GioKetThuc < c2.GioBatDau THEN @MinutesPerDay ELSE 0 END AS EndMin2
-        ) t2
-        WHERE i.KichHoat = 1
-          AND t1.StartMin1 < t2.EndMin2
-          AND t1.EndMin1 > t2.StartMin2
-          -- Cho phép overlap giữa ca chính và ca hành chính/part-time
-          AND NOT (
-              (i.TenCa LIKE N'%Hành chính%' OR c2.TenCa LIKE N'%Hành chính%') OR
-              (i.TenCa LIKE N'%Part-time%' OR c2.TenCa LIKE N'%Part-time%')
-          )
-    )
-    BEGIN
-        RAISERROR (N'Thời gian của ca làm bị trùng lặp với một ca khác.', 16, 1);
-        ROLLBACK TRANSACTION;
-        RETURN;
-    END
-END
-GO
 
 -- 3) CHAMCONG: Chặn UPDATE/DELETE khi đã khóa (Khoa = 1)
 IF OBJECT_ID('dbo.tr_ChamCong_BlockWhenLocked_U','TR') IS NOT NULL DROP TRIGGER dbo.tr_ChamCong_BlockWhenLocked_U;
@@ -412,6 +330,65 @@ BEGIN
     WHERE i.TrangThai = N'DangLam' AND d.TrangThai <> N'DangLam' AND i.MaNguoiDung IS NOT NULL;
 END
 GO
+
+-- 6) NHANVIEN: Đồng bộ kích hoạt tài khoản theo trạng thái NV
+IF OBJECT_ID('dbo.tr_NhanVien_ToggleAccount','TR') IS NOT NULL DROP TRIGGER dbo.tr_NhanVien_ToggleAccount;
+GO
+CREATE TRIGGER dbo.tr_NhanVien_ToggleAccount
+ON dbo.NhanVien
+AFTER UPDATE
+AS
+BEGIN
+    SET NOCOUNT ON;
+    IF TRY_CONVERT(INT, SESSION_CONTEXT(N'SkipTrigger')) = 1 RETURN;
+
+    -- Khóa tài khoản khi NV nghỉ
+    UPDATE nd
+    SET nd.KichHoat = 0
+    FROM dbo.NguoiDung nd
+    JOIN inserted i   ON i.MaNguoiDung = nd.MaNguoiDung
+    JOIN deleted  d   ON d.MaNV = i.MaNV
+    WHERE i.TrangThai = N'Nghi' AND d.TrangThai <> N'Nghi' AND i.MaNguoiDung IS NOT NULL;
+
+    -- Mở tài khoản lại khi NV quay về Đang làm
+    UPDATE nd
+    SET nd.KichHoat = 1
+    FROM dbo.NguoiDung nd
+    JOIN inserted i   ON i.MaNguoiDung = nd.MaNguoiDung
+    JOIN deleted  d   ON d.MaNV = i.MaNV
+    WHERE i.TrangThai = N'DangLam' AND d.TrangThai <> N'DangLam' AND i.MaNguoiDung IS NOT NULL;
+END
+GO
+
+------------------------------------------------------------
+-- V) PHÂN QUYỀN CHO CÁC STORED PROCEDURES MỚI
+------------------------------------------------------------
+
+-- Quyền cho sp_PhongBan_Insert, sp_PhongBan_Update, sp_PhongBan_Delete
+GRANT EXECUTE ON dbo.sp_PhongBan_Insert TO r_hr;
+GRANT EXECUTE ON dbo.sp_PhongBan_Update TO r_hr;
+GRANT EXECUTE ON dbo.sp_PhongBan_Delete TO r_hr;
+
+-- Quyền cho sp_ChucVu_Insert, sp_ChucVu_Update, sp_ChucVu_Delete
+GRANT EXECUTE ON dbo.sp_ChucVu_Insert TO r_hr;
+GRANT EXECUTE ON dbo.sp_ChucVu_Update TO r_hr;
+GRANT EXECUTE ON dbo.sp_ChucVu_Delete TO r_hr;
+
+-- Quyền cho sp_GetPhongBanChucVu (tất cả role đều cần để hiển thị dropdown)
+GRANT EXECUTE ON dbo.sp_GetPhongBanChucVu TO r_hr;
+GRANT EXECUTE ON dbo.sp_GetPhongBanChucVu TO r_quanly;
+GRANT EXECUTE ON dbo.sp_GetPhongBanChucVu TO r_ketoan;
+GRANT EXECUTE ON dbo.sp_GetPhongBanChucVu TO r_nhanvien;
+
+-- Quyền cho sp_GetNhanVienFull (tất cả role đều cần)
+GRANT EXECUTE ON dbo.sp_GetNhanVienFull TO r_hr;
+GRANT EXECUTE ON dbo.sp_GetNhanVienFull TO r_quanly;
+GRANT EXECUTE ON dbo.sp_GetNhanVienFull TO r_ketoan;
+GRANT EXECUTE ON dbo.sp_GetNhanVienFull TO r_nhanvien;
+
+-- Quyền cho sp_UpdateNhanVienWithPhongBanChucVu
+GRANT EXECUTE ON dbo.sp_UpdateNhanVienWithPhongBanChucVu TO r_hr;
+GRANT EXECUTE ON dbo.sp_UpdateNhanVienWithPhongBanChucVu TO r_quanly;
 
 ------------------------------------------------------------
 -- VI) HOÀN TẤT KHỞI TẠO

@@ -42,6 +42,107 @@ JOIN dbo.CaLam cl     ON cl.MaCa = lpc.MaCa
 LEFT JOIN dbo.ChamCong cc ON cc.MaNV = lpc.MaNV AND cc.NgayLam = lpc.NgayLam;
 GO
 
+-- 3) Thông tin nhân viên đầy đủ (bao gồm phòng ban và chức vụ)
+IF OBJECT_ID('dbo.vw_NhanVien_Full','V') IS NOT NULL DROP VIEW dbo.vw_NhanVien_Full;
+GO
+CREATE VIEW dbo.vw_NhanVien_Full
+AS
+SELECT
+    nv.MaNV,
+    nv.MaNguoiDung,
+    nv.HoTen,
+    nv.NgaySinh,
+    nv.GioiTinh,
+    nv.DienThoai,
+    nv.Email,
+    nv.DiaChi,
+    nv.NgayVaoLam,
+    nv.TrangThai,
+    nv.LuongCoBan,
+    -- Thông tin phòng ban
+    pb.MaPhongBan,
+    pb.TenPhongBan,
+    pb.MoTa AS MoTaPhongBan,
+    pb.KichHoat AS PhongBanKichHoat,
+    -- Thông tin chức vụ
+    cv.MaChucVu,
+    cv.TenChucVu,
+    cv.MoTa AS MoTaChucVu,
+    cv.KichHoat AS ChucVuKichHoat
+FROM dbo.NhanVien nv
+LEFT JOIN dbo.PhongBan pb ON pb.MaPhongBan = nv.MaPhongBan
+LEFT JOIN dbo.ChucVu cv ON cv.MaChucVu = nv.MaChucVu;
+GO
+
+-- 4) Báo cáo nhân sự theo phòng ban và chức vụ
+IF OBJECT_ID('dbo.vw_BaoCaoNhanSu','V') IS NOT NULL DROP VIEW dbo.vw_BaoCaoNhanSu;
+GO
+CREATE VIEW dbo.vw_BaoCaoNhanSu
+AS
+SELECT
+    pb.TenPhongBan,
+    cv.TenChucVu,
+    COUNT(*) AS SoLuongNhanVien,
+    AVG(nv.LuongCoBan) AS LuongTrungBinh,
+    MIN(nv.LuongCoBan) AS LuongThapNhat,
+    MAX(nv.LuongCoBan) AS LuongCaoNhat,
+    COUNT(CASE WHEN nv.TrangThai = N'DangLam' THEN 1 END) AS DangLamViec,
+    COUNT(CASE WHEN nv.TrangThai = N'Nghi' THEN 1 END) AS DaNghiViec
+FROM dbo.NhanVien nv
+LEFT JOIN dbo.PhongBan pb ON pb.MaPhongBan = nv.MaPhongBan
+LEFT JOIN dbo.ChucVu cv ON cv.MaChucVu = nv.MaChucVu
+GROUP BY pb.TenPhongBan, cv.TenChucVu;
+GO
+
+-- 5) Đơn từ chi tiết (hiển thị tên nhân viên và người duyệt)
+IF OBJECT_ID('dbo.vw_DonTu_ChiTiet','V') IS NOT NULL DROP VIEW dbo.vw_DonTu_ChiTiet;
+GO
+CREATE VIEW dbo.vw_DonTu_ChiTiet
+AS
+SELECT
+    dt.MaDon,
+    dt.MaNV,
+    nv.HoTen AS TenNhanVien,
+    dt.Loai,
+    dt.TuLuc,
+    dt.DenLuc,
+    dt.SoGio,
+    dt.LyDo,
+    dt.TrangThai,
+    dt.DuyetBoi AS MaNguoiDuyet,
+    nd.TenDangNhap AS TenNguoiDuyet
+FROM dbo.DonTu dt
+JOIN dbo.NhanVien nv ON dt.MaNV = nv.MaNV
+LEFT JOIN dbo.NguoiDung nd ON dt.DuyetBoi = nd.MaNguoiDung;
+GO
+
+-- 6) Bảng lương chi tiết (hiển thị tên nhân viên, phòng ban, chức danh)
+IF OBJECT_ID('dbo.vw_BangLuong_ChiTiet','V') IS NOT NULL DROP VIEW dbo.vw_BangLuong_ChiTiet;
+GO
+CREATE VIEW dbo.vw_BangLuong_ChiTiet
+AS
+SELECT
+    bl.MaBangLuong,
+    bl.Nam,
+    bl.Thang,
+    bl.MaNV,
+    nv.HoTen,
+    pb.TenPhongBan AS PhongBan,
+    cv.TenChucVu AS ChucDanh,
+    bl.LuongCoBan,
+    bl.TongGioCong,
+    bl.GioOT,
+    bl.PhuCap,
+    bl.KhauTru,
+    bl.ThueBH,
+    bl.ThucLanh,
+    bl.TrangThai
+FROM dbo.BangLuong bl
+JOIN dbo.NhanVien nv ON bl.MaNV = nv.MaNV
+LEFT JOIN dbo.PhongBan pb ON pb.MaPhongBan = nv.MaPhongBan
+LEFT JOIN dbo.ChucVu cv ON cv.MaChucVu = nv.MaChucVu;
+GO
+
 ------------------------------------------------------------
 -- II) FUNCTIONS
 ------------------------------------------------------------

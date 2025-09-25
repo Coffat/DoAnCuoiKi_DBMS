@@ -136,7 +136,8 @@ CREATE PROCEDURE dbo.sp_ChayBangLuong
     @Nam INT,
     @Thang INT,
     @StdHours DECIMAL(7,2) = 208,  -- giờ chuẩn/tháng
-    @OtRate   DECIMAL(4,2) = 1.5   -- hệ số OT
+    @OtRate   DECIMAL(4,2) = 1.5,  -- hệ số OT
+    @PhatTre  DECIMAL(5,2) = 0     -- % khấu trừ mỗi phút trễ/sớm (ví dụ: 0.01 = 1% lương/giờ cho mỗi phút)
 AS
 BEGIN
     SET NOCOUNT ON; SET XACT_ABORT ON;
@@ -156,9 +157,11 @@ BEGIN
     END
 
     ;WITH Cong AS (
-        SELECT MaNV, SUM(ISNULL(GioCong,0)) AS TongGioCong
-        FROM dbo.ChamCong
-        WHERE NgayLam BETWEEN @D0 AND @D1
+        SELECT MaNV,
+               SUM(ISNULL(TongGioCong,0)) AS TongGioCong,
+               SUM(ISNULL(TongPhutDiTre,0) + ISNULL(TongPhutVeSom,0)) AS TongPhutPhat
+        FROM dbo.vw_CongThang
+        WHERE Nam = @Nam AND Thang = @Thang
         GROUP BY MaNV
     ),
     OT AS (
@@ -190,7 +193,8 @@ BEGIN
         SELECT nv.MaNV,
                nv.LuongCoBan,
                ISNULL(c.TongGioCong,0) AS TongGioCong,
-               ISNULL(o.GioOT,0)       AS GioOT
+               ISNULL(o.GioOT,0)       AS GioOT,
+               ISNULL(c.TongPhutPhat,0) AS TongPhutPhat
         FROM dbo.NhanVien nv
         LEFT JOIN Cong c ON c.MaNV = nv.MaNV
         LEFT JOIN OT   o ON o.MaNV = nv.MaNV
@@ -199,16 +203,19 @@ BEGIN
     USING Src AS S
     ON (T.Nam=@Nam AND T.Thang=@Thang AND T.MaNV=S.MaNV)
     WHEN MATCHED AND T.TrangThai=N'Mo' THEN
-        UPDATE SET 
+        UPDATE SET
           T.LuongCoBan  = S.LuongCoBan,
           T.TongGioCong = S.TongGioCong,
           T.GioOT       = S.GioOT,
+          T.KhauTru     = T.KhauTru + (S.TongPhutPhat * (S.LuongCoBan / @StdHours / 60) * @PhatTre),
           T.ThucLanh    = (CASE WHEN @StdHours>0 THEN (S.TongGioCong*(S.LuongCoBan/@StdHours)) ELSE S.LuongCoBan END)
                          + (CASE WHEN @StdHours>0 THEN (S.GioOT*(S.LuongCoBan/@StdHours)*@OtRate) ELSE 0 END)
                          + T.PhuCap - T.KhauTru - T.ThueBH
     WHEN NOT MATCHED THEN
         INSERT (Nam,Thang,MaNV,LuongCoBan,TongGioCong,GioOT,PhuCap,KhauTru,ThueBH,ThucLanh,TrangThai)
-        VALUES(@Nam,@Thang,S.MaNV,S.LuongCoBan,S.TongGioCong,S.GioOT,0,0,0,
+        VALUES(@Nam,@Thang,S.MaNV,S.LuongCoBan,S.TongGioCong,S.GioOT,0,
+               (S.TongPhutPhat * (S.LuongCoBan / @StdHours / 60) * @PhatTre),
+               0,
                (CASE WHEN @StdHours>0 THEN (S.TongGioCong*(S.LuongCoBan/@StdHours)) ELSE S.LuongCoBan END)
                + (CASE WHEN @StdHours>0 THEN (S.GioOT*(S.LuongCoBan/@StdHours)*@OtRate) ELSE 0 END),
                N'Mo');
