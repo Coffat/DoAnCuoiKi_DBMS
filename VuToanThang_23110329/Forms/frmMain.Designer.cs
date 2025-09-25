@@ -179,8 +179,6 @@ namespace VuToanThang_23110329.Forms
             this.btnQuanLy.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
             this.btnQuanLy.HoverState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(25)))));
             this.btnQuanLy.HoverState.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
-            this.btnQuanLy.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnQuanLy.ForeColor = System.Drawing.Color.White;
             this.btnQuanLy.Location = new System.Drawing.Point(10, 155);
             this.btnQuanLy.Name = "btnQuanLy";
             this.btnQuanLy.Size = new System.Drawing.Size(230, 45);
@@ -202,7 +200,7 @@ namespace VuToanThang_23110329.Forms
             this.btnDanhMuc.HoverState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(25)))));
             this.btnDanhMuc.HoverState.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
             this.btnDanhMuc.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnDanhMuc.ForeColor = System.Drawing.Color.White;
+            this.btnDanhMuc.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
             this.btnDanhMuc.Location = new System.Drawing.Point(10, 210);
             this.btnDanhMuc.Name = "btnDanhMuc";
             this.btnDanhMuc.Size = new System.Drawing.Size(230, 45);
@@ -224,7 +222,7 @@ namespace VuToanThang_23110329.Forms
             this.btnNghiepVu.HoverState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(25)))));
             this.btnNghiepVu.HoverState.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
             this.btnNghiepVu.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnNghiepVu.ForeColor = System.Drawing.Color.White;
+            this.btnNghiepVu.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
             this.btnNghiepVu.Location = new System.Drawing.Point(10, 265);
             this.btnNghiepVu.Name = "btnNghiepVu";
             this.btnNghiepVu.Size = new System.Drawing.Size(230, 45);
@@ -246,7 +244,7 @@ namespace VuToanThang_23110329.Forms
             this.btnTienLuong.HoverState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(25)))));
             this.btnTienLuong.HoverState.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
             this.btnTienLuong.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnTienLuong.ForeColor = System.Drawing.Color.White;
+            this.btnTienLuong.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
             this.btnTienLuong.Location = new System.Drawing.Point(10, 320);
             this.btnTienLuong.Name = "btnTienLuong";
             this.btnTienLuong.Size = new System.Drawing.Size(230, 45);
@@ -268,7 +266,7 @@ namespace VuToanThang_23110329.Forms
             this.btnCaNhan.HoverState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(25)))));
             this.btnCaNhan.HoverState.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
             this.btnCaNhan.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnCaNhan.ForeColor = System.Drawing.Color.White;
+            this.btnCaNhan.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
             this.btnCaNhan.Location = new System.Drawing.Point(10, 375);
             this.btnCaNhan.Name = "btnCaNhan";
             this.btnCaNhan.Size = new System.Drawing.Size(230, 45);
@@ -290,7 +288,7 @@ namespace VuToanThang_23110329.Forms
             this.btnChamCong.HoverState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(25)))));
             this.btnChamCong.HoverState.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
             this.btnChamCong.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnChamCong.ForeColor = System.Drawing.Color.White;
+            this.btnChamCong.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
             this.btnChamCong.Location = new System.Drawing.Point(10, 430);
             this.btnChamCong.Name = "btnChamCong";
             this.btnChamCong.Size = new System.Drawing.Size(230, 45);
@@ -312,7 +310,7 @@ namespace VuToanThang_23110329.Forms
             this.btnBaoCao.HoverState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(25)))));
             this.btnBaoCao.HoverState.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
             this.btnBaoCao.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnBaoCao.ForeColor = System.Drawing.Color.White;
+            this.btnBaoCao.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
             this.btnBaoCao.Location = new System.Drawing.Point(10, 485);
             this.btnBaoCao.Name = "btnBaoCao";
             this.btnBaoCao.Size = new System.Drawing.Size(230, 45);
