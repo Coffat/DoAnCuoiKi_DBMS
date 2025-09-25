@@ -32,24 +32,6 @@ namespace VuToanThang_23110329.Forms
             base.OnFormClosing(e);
         }
 
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                // Dispose dynamic controls
-                if (pnlContent != null)
-                {
-                    foreach (Control control in pnlContent.Controls)
-                    {
-                        if (control is IDisposable disposable)
-                        {
-                            disposable.Dispose();
-                        }
-                    }
-                }
-            }
-            base.Dispose(disposing);
-        }
 
         private void frmMain_Load(object sender, EventArgs e)
         {

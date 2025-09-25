@@ -13,9 +13,23 @@ namespace VuToanThang_23110329.Forms
         /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         protected override void Dispose(bool disposing)
         {
-            if (disposing && (components != null))
+            if (disposing)
+            {
+                if (components != null)
             {
                 components.Dispose();
+                }
+                // Dispose dynamic controls
+                if (pnlContent != null)
+                {
+                    foreach (Control control in pnlContent.Controls)
+                    {
+                        if (control is IDisposable disposable)
+                        {
+                            disposable.Dispose();
+                        }
+                    }
+                }
             }
             base.Dispose(disposing);
         }
