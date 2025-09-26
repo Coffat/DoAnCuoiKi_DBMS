@@ -75,6 +75,7 @@ namespace VuToanThang_23110329.Forms
             // pnlMain
             // 
             this.pnlMain.BorderRadius = 0;
+            this.pnlMain.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pnlMain.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(240)))), ((int)(((byte)(240)))), ((int)(((byte)(240)))));
             this.pnlMain.Location = new System.Drawing.Point(0, 0);
             this.pnlMain.Name = "pnlMain";
@@ -84,6 +85,7 @@ namespace VuToanThang_23110329.Forms
             // pnlSidebar
             // 
             this.pnlSidebar.BorderRadius = 0;
+            this.pnlSidebar.Dock = System.Windows.Forms.DockStyle.Left;
             this.pnlSidebar.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
             this.pnlSidebar.Location = new System.Drawing.Point(0, 0);
             this.pnlSidebar.Name = "pnlSidebar";
@@ -93,6 +95,7 @@ namespace VuToanThang_23110329.Forms
             // pnlHeader
             // 
             this.pnlHeader.BorderRadius = 0;
+            this.pnlHeader.Dock = System.Windows.Forms.DockStyle.Top;
             this.pnlHeader.FillColor = System.Drawing.Color.White;
             this.pnlHeader.Location = new System.Drawing.Point(250, 0);
             this.pnlHeader.Name = "pnlHeader";
@@ -106,6 +109,7 @@ namespace VuToanThang_23110329.Forms
             // pnlContent
             // 
             this.pnlContent.BorderRadius = 0;
+            this.pnlContent.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pnlContent.FillColor = System.Drawing.Color.White;
             this.pnlContent.Location = new System.Drawing.Point(250, 80);
             this.pnlContent.Name = "pnlContent";
@@ -368,9 +372,9 @@ namespace VuToanThang_23110329.Forms
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(240)))), ((int)(((byte)(240)))), ((int)(((byte)(240)))));
             this.ClientSize = new System.Drawing.Size(1200, 700);
             this.Controls.Add(this.pnlMain);
-            this.pnlMain.Controls.Add(this.pnlSidebar);
-            this.pnlMain.Controls.Add(this.pnlHeader);
             this.pnlMain.Controls.Add(this.pnlContent);
+            this.pnlMain.Controls.Add(this.pnlHeader);
+            this.pnlMain.Controls.Add(this.pnlSidebar);
             this.pnlSidebar.Controls.Add(this.pnlLogo);
             this.pnlSidebar.Controls.Add(this.btnDashboard);
             this.pnlSidebar.Controls.Add(this.btnQuanLy);

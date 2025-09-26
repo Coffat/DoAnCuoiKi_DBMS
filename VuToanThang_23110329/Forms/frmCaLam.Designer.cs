@@ -295,7 +295,7 @@ namespace VuToanThang_23110329.Forms
             this.txtMaCa.Name = "txtMaCa";
             this.txtMaCa.PasswordChar = '\0';
             this.txtMaCa.PlaceholderText = "Nhập mã ca";
-            this.txtMaCa.ReadOnly = true;
+            this.txtMaCa.ReadOnly = false;
             this.txtMaCa.SelectedText = "";
             this.txtMaCa.Size = new System.Drawing.Size(120, 30);
             this.txtMaCa.TabIndex = 1;

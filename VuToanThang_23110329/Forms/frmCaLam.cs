@@ -310,6 +310,12 @@ namespace VuToanThang_23110329.Forms
                     {
                         cmd.CommandType = CommandType.StoredProcedure;
                         
+                        // Thêm mã ca nếu có
+                        if (!string.IsNullOrEmpty(txtMaCa.Text.Trim()))
+                        {
+                            cmd.Parameters.AddWithValue("@MaCa", int.Parse(txtMaCa.Text.Trim()));
+                        }
+                        
                         cmd.Parameters.AddWithValue("@TenCa", txtTenCa.Text.Trim());
                         cmd.Parameters.AddWithValue("@GioBatDau", dtpGioBatDau.Value.TimeOfDay);
                         cmd.Parameters.AddWithValue("@GioKetThuc", dtpGioKetThuc.Value.TimeOfDay);
@@ -416,6 +422,18 @@ namespace VuToanThang_23110329.Forms
 
         private bool ValidateInput()
         {
+            // Kiểm tra mã ca (chỉ khi thêm mới)
+            if (currentMaCa == 0 && !string.IsNullOrWhiteSpace(txtMaCa.Text))
+            {
+                if (!int.TryParse(txtMaCa.Text.Trim(), out int maCa) || maCa <= 0)
+                {
+                    MessageBox.Show("Mã ca phải là số nguyên dương!", "Thông báo", 
+                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    txtMaCa.Focus();
+                    return false;
+                }
+            }
+            
             // Kiểm tra tên ca
             if (string.IsNullOrWhiteSpace(txtTenCa.Text))
             {
@@ -469,12 +487,28 @@ namespace VuToanThang_23110329.Forms
             }
             
             // Enable/Disable form controls
+            txtMaCa.Enabled = editing;
             txtTenCa.Enabled = editing;
             dtpGioBatDau.Enabled = editing;
             dtpGioKetThuc.Enabled = editing;
             txtHeSoCa.Enabled = editing;
             txtMoTa.Enabled = editing;
             chkKichHoat.Enabled = editing;
+            
+            // Quản lý ReadOnly cho txtMaCa
+            if (editing)
+            {
+                // Khi thêm mới: Cho phép nhập mã ca
+                if (currentMaCa == 0)
+                {
+                    txtMaCa.ReadOnly = false;
+                }
+                else
+                {
+                    // Khi sửa: Không cho phép sửa mã ca (khóa chính)
+                    txtMaCa.ReadOnly = true;
+                }
+            }
             
             // Enable/Disable buttons theo role
             if (userRole == "HR")
@@ -542,6 +576,7 @@ namespace VuToanThang_23110329.Forms
                 btnLamMoi.Enabled = true;
                 
                 // Disable tất cả input controls
+                txtMaCa.Enabled = false;
                 txtTenCa.Enabled = false;
                 dtpGioBatDau.Enabled = false;
                 dtpGioKetThuc.Enabled = false;
