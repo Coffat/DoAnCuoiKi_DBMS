@@ -31,6 +31,8 @@ namespace VuToanThang_23110329.Forms
             this.components = new System.ComponentModel.Container();
             this.lblTitle = new System.Windows.Forms.Label();
             this.pnlFilter = new System.Windows.Forms.Panel();
+            this.lblNhanVien = new System.Windows.Forms.Label();
+            this.cboNhanVien = new Guna.UI2.WinForms.Guna2ComboBox();
             this.lblTuNgay = new System.Windows.Forms.Label();
             this.dtpTuNgay = new Guna.UI2.WinForms.Guna2DateTimePicker();
             this.lblDenNgay = new System.Windows.Forms.Label();
@@ -48,6 +50,11 @@ namespace VuToanThang_23110329.Forms
             this.pnlMain = new System.Windows.Forms.Panel();
             this.pnlTitle = new System.Windows.Forms.Panel();
             this.pnlContent = new System.Windows.Forms.Panel();
+            this.pnlCalendar = new System.Windows.Forms.Panel();
+            this.lblWeek = new System.Windows.Forms.Label();
+            this.btnPrevWeek = new Guna.UI2.WinForms.Guna2Button();
+            this.btnNextWeek = new Guna.UI2.WinForms.Guna2Button();
+            this.dgvTuan = new Guna.UI2.WinForms.Guna2DataGridView();
             this.pnlInfo = new System.Windows.Forms.Panel();
             this.lblThongTinCa = new System.Windows.Forms.Label();
             this.lblChiTietLich = new System.Windows.Forms.Label();
@@ -55,6 +62,8 @@ namespace VuToanThang_23110329.Forms
             this.pnlFilter.SuspendLayout();
             this.pnlButtons.SuspendLayout();
             this.pnlContent.SuspendLayout();
+            this.pnlCalendar.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dgvTuan)).BeginInit();
             this.pnlInfo.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -72,6 +81,8 @@ namespace VuToanThang_23110329.Forms
             // pnlFilter
             // 
             this.pnlFilter.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(30)))), ((int)(((byte)(30)))));
+            this.pnlFilter.Controls.Add(this.lblNhanVien);
+            this.pnlFilter.Controls.Add(this.cboNhanVien);
             this.pnlFilter.Controls.Add(this.lblTuNgay);
             this.pnlFilter.Controls.Add(this.dtpTuNgay);
             this.pnlFilter.Controls.Add(this.lblDenNgay);
@@ -82,6 +93,38 @@ namespace VuToanThang_23110329.Forms
             this.pnlFilter.Name = "pnlFilter";
             this.pnlFilter.Size = new System.Drawing.Size(1160, 60);
             this.pnlFilter.TabIndex = 1;
+            // 
+            // lblNhanVien
+            // 
+            this.lblNhanVien.AutoSize = true;
+            this.lblNhanVien.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblNhanVien.ForeColor = System.Drawing.Color.White;
+            this.lblNhanVien.Location = new System.Drawing.Point(720, 20);
+            this.lblNhanVien.Name = "lblNhanVien";
+            this.lblNhanVien.Size = new System.Drawing.Size(67, 19);
+            this.lblNhanVien.TabIndex = 6;
+            this.lblNhanVien.Text = "Nhân viên:";
+            // 
+            // cboNhanVien
+            // 
+            this.cboNhanVien.BackColor = System.Drawing.Color.Transparent;
+            this.cboNhanVien.BorderRadius = 8;
+            this.cboNhanVien.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawFixed;
+            this.cboNhanVien.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cboNhanVien.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(25)))), ((int)(((byte)(25)))), ((int)(((byte)(25)))));
+            this.cboNhanVien.FocusedColor = System.Drawing.Color.FromArgb(((int)(((byte)(124)))), ((int)(((byte)(77)))), ((int)(((byte)(255)))));
+            this.cboNhanVien.FocusedState.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(124)))), ((int)(((byte)(77)))), ((int)(((byte)(255)))));
+            this.cboNhanVien.FocusedState.Parent = this.cboNhanVien;
+            this.cboNhanVien.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.cboNhanVien.ForeColor = System.Drawing.Color.White;
+            this.cboNhanVien.HoverState.Parent = this.cboNhanVien;
+            this.cboNhanVien.ItemHeight = 24;
+            this.cboNhanVien.ItemsAppearance.Parent = this.cboNhanVien;
+            this.cboNhanVien.Location = new System.Drawing.Point(795, 15);
+            this.cboNhanVien.Name = "cboNhanVien";
+            this.cboNhanVien.Size = new System.Drawing.Size(220, 30);
+            this.cboNhanVien.TabIndex = 7;
+            this.cboNhanVien.SelectedIndexChanged += new System.EventHandler(this.cboNhanVien_SelectedIndexChanged);
             // 
             // lblTuNgay
             // 
@@ -314,11 +357,98 @@ namespace VuToanThang_23110329.Forms
             // pnlContent
             // 
             this.pnlContent.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(25)))), ((int)(((byte)(25)))), ((int)(((byte)(25)))));
+            this.pnlContent.Controls.Add(this.pnlCalendar);
             this.pnlContent.Controls.Add(this.pnlInfo);
             this.pnlContent.Location = new System.Drawing.Point(20, 190);
             this.pnlContent.Name = "pnlContent";
             this.pnlContent.Size = new System.Drawing.Size(1160, 490);
             this.pnlContent.TabIndex = 4;
+            // 
+            // pnlCalendar
+            // 
+            this.pnlCalendar.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(30)))), ((int)(((byte)(30)))));
+            this.pnlCalendar.Controls.Add(this.lblWeek);
+            this.pnlCalendar.Controls.Add(this.btnPrevWeek);
+            this.pnlCalendar.Controls.Add(this.btnNextWeek);
+            this.pnlCalendar.Controls.Add(this.dgvTuan);
+            this.pnlCalendar.Location = new System.Drawing.Point(0, 0);
+            this.pnlCalendar.Name = "pnlCalendar";
+            this.pnlCalendar.Size = new System.Drawing.Size(800, 490);
+            this.pnlCalendar.TabIndex = 2;
+            // 
+            // lblWeek
+            // 
+            this.lblWeek.AutoSize = true;
+            this.lblWeek.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblWeek.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(124)))), ((int)(((byte)(77)))), ((int)(((byte)(255)))));
+            this.lblWeek.Location = new System.Drawing.Point(20, 15);
+            this.lblWeek.Name = "lblWeek";
+            this.lblWeek.Size = new System.Drawing.Size(160, 21);
+            this.lblWeek.TabIndex = 0;
+            this.lblWeek.Text = "Tuần: 01/01 - 07/01";
+            // 
+            // btnPrevWeek
+            // 
+            this.btnPrevWeek.BorderRadius = 8;
+            this.btnPrevWeek.DisabledState.BorderColor = System.Drawing.Color.DarkGray;
+            this.btnPrevWeek.DisabledState.CustomBorderColor = System.Drawing.Color.DarkGray;
+            this.btnPrevWeek.DisabledState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(169)))), ((int)(((byte)(169)))), ((int)(((byte)(169)))));
+            this.btnPrevWeek.DisabledState.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(141)))), ((int)(((byte)(141)))), ((int)(((byte)(141)))));
+            this.btnPrevWeek.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(33)))), ((int)(((byte)(150)))), ((int)(((byte)(243)))));
+            this.btnPrevWeek.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            this.btnPrevWeek.ForeColor = System.Drawing.Color.White;
+            this.btnPrevWeek.Location = new System.Drawing.Point(600, 10);
+            this.btnPrevWeek.Name = "btnPrevWeek";
+            this.btnPrevWeek.Size = new System.Drawing.Size(90, 30);
+            this.btnPrevWeek.TabIndex = 1;
+            this.btnPrevWeek.Text = "← Tuần trước";
+            this.btnPrevWeek.Click += new System.EventHandler(this.btnPrevWeek_Click);
+            // 
+            // btnNextWeek
+            // 
+            this.btnNextWeek.BorderRadius = 8;
+            this.btnNextWeek.DisabledState.BorderColor = System.Drawing.Color.DarkGray;
+            this.btnNextWeek.DisabledState.CustomBorderColor = System.Drawing.Color.DarkGray;
+            this.btnNextWeek.DisabledState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(169)))), ((int)(((byte)(169)))), ((int)(((byte)(169)))));
+            this.btnNextWeek.DisabledState.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(141)))), ((int)(((byte)(141)))), ((int)(((byte)(141)))));
+            this.btnNextWeek.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(33)))), ((int)(((byte)(150)))), ((int)(((byte)(243)))));
+            this.btnNextWeek.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            this.btnNextWeek.ForeColor = System.Drawing.Color.White;
+            this.btnNextWeek.Location = new System.Drawing.Point(696, 10);
+            this.btnNextWeek.Name = "btnNextWeek";
+            this.btnNextWeek.Size = new System.Drawing.Size(90, 30);
+            this.btnNextWeek.TabIndex = 2;
+            this.btnNextWeek.Text = "Tuần sau →";
+            this.btnNextWeek.Click += new System.EventHandler(this.btnNextWeek_Click);
+            // 
+            // dgvTuan
+            // 
+            this.dgvTuan.AllowUserToAddRows = false;
+            this.dgvTuan.AllowUserToDeleteRows = false;
+            this.dgvTuan.AllowUserToResizeRows = false;
+            this.dgvTuan.AlternatingRowsDefaultCellStyle.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(45)))), ((int)(((byte)(45)))));
+            this.dgvTuan.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(25)))), ((int)(((byte)(25)))), ((int)(((byte)(25)))));
+            this.dgvTuan.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.dgvTuan.CellBorderStyle = System.Windows.Forms.DataGridViewCellBorderStyle.SingleHorizontal;
+            this.dgvTuan.ColumnHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.None;
+            this.dgvTuan.ColumnHeadersDefaultCellStyle.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.dgvTuan.ColumnHeadersDefaultCellStyle.ForeColor = System.Drawing.Color.White;
+            this.dgvTuan.ColumnHeadersDefaultCellStyle.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
+            this.dgvTuan.ColumnHeadersHeight = 40;
+            this.dgvTuan.EnableHeadersVisualStyles = false;
+            this.dgvTuan.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(50)))), ((int)(((byte)(50)))), ((int)(((byte)(50)))));
+            this.dgvTuan.Location = new System.Drawing.Point(20, 50);
+            this.dgvTuan.MultiSelect = false;
+            this.dgvTuan.Name = "dgvTuan";
+            this.dgvTuan.ReadOnly = false;
+            this.dgvTuan.RowHeadersVisible = false;
+            this.dgvTuan.RowTemplate.Height = 40;
+            this.dgvTuan.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.CellSelect;
+            this.dgvTuan.Size = new System.Drawing.Size(766, 420);
+            this.dgvTuan.TabIndex = 3;
+            this.dgvTuan.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvTuan_CellClick);
+            this.dgvTuan.CellFormatting += new System.Windows.Forms.DataGridViewCellFormattingEventHandler(this.dgvTuan_CellFormatting);
+            this.dgvTuan.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvTuan_CellDoubleClick);
             // 
             // pnlInfo
             // 
@@ -369,12 +499,16 @@ namespace VuToanThang_23110329.Forms
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Quản lý Lịch phân ca";
             this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
+            this.Load += new System.EventHandler(this.frmPhanCa_Load);
             this.pnlMain.ResumeLayout(false);
             this.pnlMain.PerformLayout();
             this.pnlFilter.ResumeLayout(false);
             this.pnlFilter.PerformLayout();
             this.pnlButtons.ResumeLayout(false);
             this.pnlContent.ResumeLayout(false);
+            this.pnlCalendar.ResumeLayout(false);
+            this.pnlCalendar.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dgvTuan)).EndInit();
             this.pnlInfo.ResumeLayout(false);
             this.pnlInfo.PerformLayout();
             this.ResumeLayout(false);
@@ -403,8 +537,15 @@ namespace VuToanThang_23110329.Forms
         private System.Windows.Forms.Panel pnlMain;
         private System.Windows.Forms.Panel pnlTitle;
         private System.Windows.Forms.Panel pnlContent;
+        private System.Windows.Forms.Panel pnlCalendar;
         private System.Windows.Forms.Panel pnlInfo;
         private System.Windows.Forms.Label lblThongTinCa;
         private System.Windows.Forms.Label lblChiTietLich;
+        private System.Windows.Forms.Label lblNhanVien;
+        private Guna.UI2.WinForms.Guna2ComboBox cboNhanVien;
+        private System.Windows.Forms.Label lblWeek;
+        private Guna.UI2.WinForms.Guna2Button btnPrevWeek;
+        private Guna.UI2.WinForms.Guna2Button btnNextWeek;
+        private Guna.UI2.WinForms.Guna2DataGridView dgvTuan;
     }
 }
