@@ -26,6 +26,9 @@ namespace VuToanThang_23110329.Forms
             InitializeComponent();
             currentUserRole = userRole;
             InitializeConnectionString();
+            
+            // Debug: Kiểm tra userRole được truyền vào
+            MessageBox.Show($"DEBUG Constructor - userRole được truyền: '{userRole}'", "Debug Constructor", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         private void InitializeConnectionString()
@@ -367,9 +370,14 @@ namespace VuToanThang_23110329.Forms
 
         private void SetPermissions()
         {
+            // Debug: Hiển thị vai trò hiện tại
+            MessageBox.Show($"DEBUG - Vai trò hiện tại: '{currentUserRole}'", "Debug Role", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            
             bool isHR = currentUserRole == "HR";
             bool isQuanLy = currentUserRole == "QuanLy";
             bool isKeToan = currentUserRole == "KeToan";
+
+            MessageBox.Show($"DEBUG - isHR: {isHR}, isQuanLy: {isQuanLy}, isKeToan: {isKeToan}", "Debug Boolean", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
             // HR và QuanLy có toàn quyền CRUD nhân viên
             if (isHR || isQuanLy)
@@ -377,6 +385,7 @@ namespace VuToanThang_23110329.Forms
                 btnThem.Enabled = true;
                 btnSua.Enabled = true;
                 btnVoHieuHoa.Enabled = true;
+                MessageBox.Show("DEBUG - HR/QuanLy: Các button CRUD được ENABLE", "Debug Permission", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             // Kế toán chỉ xem (không được thêm/sửa/xóa)
             else if (isKeToan)
@@ -384,6 +393,7 @@ namespace VuToanThang_23110329.Forms
                 btnThem.Enabled = false;
                 btnSua.Enabled = false;
                 btnVoHieuHoa.Enabled = false;
+                MessageBox.Show("DEBUG - KeToan: Các button CRUD được DISABLE", "Debug Permission", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             // Nhân viên không có quyền
             else
@@ -391,6 +401,7 @@ namespace VuToanThang_23110329.Forms
                 btnThem.Enabled = false;
                 btnSua.Enabled = false;
                 btnVoHieuHoa.Enabled = false;
+                MessageBox.Show($"DEBUG - Role khác ({currentUserRole}): Các button CRUD được DISABLE", "Debug Permission", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
 
             btnLamMoi.Enabled = true;

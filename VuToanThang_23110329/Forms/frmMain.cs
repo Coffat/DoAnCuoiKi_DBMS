@@ -323,6 +323,8 @@ namespace VuToanThang_23110329.Forms
                 switch (functionName)
                 {
                     case "Hồ sơ Nhân viên":
+                        // Debug: Kiểm tra userRole trước khi mở form
+                        MessageBox.Show($"DEBUG frmMain - userRole: '{userRole}'", "Debug frmMain", MessageBoxButtons.OK, MessageBoxIcon.Information);
                         OpenFormInPanel(new frmNhanVien(userRole));
                         lblStatus.Text = "Đang quản lý hồ sơ nhân viên";
                         break;
