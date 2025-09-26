@@ -342,9 +342,6 @@ namespace VuToanThang_23110329.Forms
                         OpenFormInPanel(new frmCaLam(userRole));
                         lblStatus.Text = "Đang quản lý ca làm việc";
                         break;
-                    case "Phòng ban & Chức vụ":
-                        MessageBox.Show($"Mở chức năng: {functionName}", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                        break;
                     default:
                         MessageBox.Show($"Mở chức năng: {functionName}", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
                         break;
