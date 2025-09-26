@@ -56,8 +56,8 @@ namespace VuToanThang_23110329.Forms
             lblWelcome.Text = "👥 Quản lý nhân sự";
             lblStatus.Text = "Đang quản lý nhân sự";
             
-            // Hiển thị menu con cho HR và QuanLy
-            if (userRole == "HR" || userRole == "QuanLy")
+            // Hiển thị menu con cho HR, QuanLy và KeToan
+            if (userRole == "HR" || userRole == "QuanLy" || userRole == "KeToan")
             {
                 ShowSubMenu("Quản lý nhân sự", new string[] 
                 { 
@@ -239,6 +239,7 @@ namespace VuToanThang_23110329.Forms
                     break;
                     
                 case "KeToan": // Kế toán
+                    btnQuanLy.Visible = true;      // Quản lý nhân sự (để xem nhân viên)
                     btnTienLuong.Visible = true;   // Tiền lương
                     btnBaoCao.Visible = true;      // Báo cáo
                     btnCaNhan.Visible = true;      // Cá nhân
