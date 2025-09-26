@@ -10,7 +10,7 @@ namespace VuToanThang_23110329.Forms
 {
     public partial class frmNhanVien : Form
     {
-        private string connectionString = System.Configuration.ConfigurationManager.ConnectionStrings["QLNhanSuSieuThiMini"].ConnectionString;
+        private string connectionString;
         private DataTable dtNhanVien;
         private DataTable dtPhongBan;
         private DataTable dtChucVu;
@@ -21,12 +21,36 @@ namespace VuToanThang_23110329.Forms
         public frmNhanVien()
         {
             InitializeComponent();
+            InitializeConnectionString();
         }
 
         public frmNhanVien(string userRole)
         {
             InitializeComponent();
             currentUserRole = userRole;
+            InitializeConnectionString();
+        }
+
+        private void InitializeConnectionString()
+        {
+            try
+            {
+                var connectionStringSettings = System.Configuration.ConfigurationManager.ConnectionStrings["HrDb"];
+                if (connectionStringSettings != null)
+                {
+                    connectionString = connectionStringSettings.ConnectionString;
+                }
+                else
+                {
+                    MessageBox.Show("Không tìm thấy connection string 'HrDb' trong App.config", "Lỗi cấu hình", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    connectionString = "";
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Lỗi khi khởi tạo connection string: {ex.Message}", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                connectionString = "";
+            }
         }
 
         private void frmNhanVien_Load(object sender, EventArgs e)
@@ -191,6 +215,12 @@ namespace VuToanThang_23110329.Forms
 
         private void LoadPhongBanChucVu()
         {
+            if (string.IsNullOrEmpty(connectionString))
+            {
+                MessageBox.Show("Connection string chưa được khởi tạo.", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
             try
             {
                 using (SqlConnection conn = new SqlConnection(connectionString))
@@ -246,6 +276,12 @@ namespace VuToanThang_23110329.Forms
 
         private void LoadData()
         {
+            if (string.IsNullOrEmpty(connectionString))
+            {
+                MessageBox.Show("Connection string chưa được khởi tạo.", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
             try
             {
                 using (SqlConnection conn = new SqlConnection(connectionString))

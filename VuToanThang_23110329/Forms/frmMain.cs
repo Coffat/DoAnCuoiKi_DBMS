@@ -56,9 +56,6 @@ namespace VuToanThang_23110329.Forms
             lblWelcome.Text = "👥 Quản lý nhân sự";
             lblStatus.Text = "Đang quản lý nhân sự";
             
-            // Debug: Hiển thị vai trò hiện tại
-            MessageBox.Show($"Vai trò hiện tại: '{userRole}'", "Debug Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            
             // Hiển thị menu con cho HR và QuanLy
             if (userRole == "HR" || userRole == "QuanLy")
             {
@@ -71,7 +68,7 @@ namespace VuToanThang_23110329.Forms
             }
             else
             {
-                MessageBox.Show($"Bạn không có quyền truy cập chức năng này. Vai trò: '{userRole}'", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show($"Bạn không có quyền truy cập chức năng này.", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
         }
 
