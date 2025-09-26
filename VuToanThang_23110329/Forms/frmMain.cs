@@ -35,9 +35,6 @@ namespace VuToanThang_23110329.Forms
 
         private void frmMain_Load(object sender, EventArgs e)
         {
-            // Debug: Hiển thị role để kiểm tra
-            MessageBox.Show($"Role nhận được: '{userRole}'", "Debug Role", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            
             SetupMenuForRole(userRole);
             lblUserInfo.Text = $"Người dùng: {userRole}";
             lblStatus.Text = "Sẵn sàng";
@@ -307,7 +304,19 @@ namespace VuToanThang_23110329.Forms
         {
             if (sender is Guna.UI2.WinForms.Guna2Button btn && btn.Tag is string functionName)
             {
-                MessageBox.Show($"Mở chức năng: {functionName}", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                switch (functionName)
+                {
+                    case "Ca làm việc":
+                        OpenFormInPanel(new frmCaLam());
+                        lblStatus.Text = "Đang quản lý ca làm việc";
+                        break;
+                    case "Phòng ban & Chức vụ":
+                        MessageBox.Show($"Mở chức năng: {functionName}", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        break;
+                    default:
+                        MessageBox.Show($"Mở chức năng: {functionName}", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        break;
+                }
             }
         }
 
