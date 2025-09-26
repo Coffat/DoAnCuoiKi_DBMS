@@ -87,6 +87,7 @@ namespace VuToanThang_23110329.Forms
             this.lblTitle.Size = new System.Drawing.Size(280, 32);
             this.lblTitle.TabIndex = 0;
             this.lblTitle.Text = "Quản lý Hồ sơ Nhân viên";
+            this.lblTitle.BackColor = System.Drawing.Color.Transparent;
             
             // pnlContent
             this.pnlContent.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -161,16 +162,28 @@ namespace VuToanThang_23110329.Forms
             this.txtTimKiem.Location = new System.Drawing.Point(460, 12);
             this.txtTimKiem.PlaceholderText = "Tìm kiếm nhân viên...";
             this.txtTimKiem.BorderRadius = 8;
+            this.txtTimKiem.FillColor = System.Drawing.Color.White;
+            this.txtTimKiem.ForeColor = System.Drawing.Color.Black;
+            this.txtTimKiem.BorderColor = System.Drawing.Color.FromArgb(200, 200, 200);
+            this.txtTimKiem.FocusedBorderColor = System.Drawing.Color.FromArgb(94, 148, 255);
             this.txtTimKiem.TextChanged += new System.EventHandler(this.txtTimKiem_TextChanged);
             
             this.cmbPhongBan.Size = new System.Drawing.Size(150, 35);
             this.cmbPhongBan.Location = new System.Drawing.Point(670, 12);
             this.cmbPhongBan.BorderRadius = 8;
+            this.cmbPhongBan.FillColor = System.Drawing.Color.White;
+            this.cmbPhongBan.ForeColor = System.Drawing.Color.Black;
+            this.cmbPhongBan.BorderColor = System.Drawing.Color.FromArgb(200, 200, 200);
+            this.cmbPhongBan.FocusedBorderColor = System.Drawing.Color.FromArgb(94, 148, 255);
             this.cmbPhongBan.SelectedIndexChanged += new System.EventHandler(this.cmbPhongBan_SelectedIndexChanged);
             
             this.cmbTrangThai.Size = new System.Drawing.Size(120, 35);
             this.cmbTrangThai.Location = new System.Drawing.Point(830, 12);
             this.cmbTrangThai.BorderRadius = 8;
+            this.cmbTrangThai.FillColor = System.Drawing.Color.White;
+            this.cmbTrangThai.ForeColor = System.Drawing.Color.Black;
+            this.cmbTrangThai.BorderColor = System.Drawing.Color.FromArgb(200, 200, 200);
+            this.cmbTrangThai.FocusedBorderColor = System.Drawing.Color.FromArgb(94, 148, 255);
             this.cmbTrangThai.Items.AddRange(new object[] { "Tất cả", "Đang làm", "Nghỉ việc" });
             this.cmbTrangThai.SelectedIndex = 0;
             this.cmbTrangThai.SelectedIndexChanged += new System.EventHandler(this.cmbTrangThai_SelectedIndexChanged);
@@ -224,6 +237,7 @@ namespace VuToanThang_23110329.Forms
             var lblHoTen = new System.Windows.Forms.Label();
             lblHoTen.Text = "Họ tên *";
             lblHoTen.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            lblHoTen.ForeColor = System.Drawing.Color.FromArgb(64, 64, 64);
             lblHoTen.Location = new System.Drawing.Point(15, 15);
             lblHoTen.Size = new System.Drawing.Size(100, 20);
             
@@ -231,10 +245,15 @@ namespace VuToanThang_23110329.Forms
             this.txtHoTen.Size = new System.Drawing.Size(350, 36);
             this.txtHoTen.BorderRadius = 8;
             this.txtHoTen.PlaceholderText = "Nhập họ tên nhân viên";
+            this.txtHoTen.FillColor = System.Drawing.Color.White;
+            this.txtHoTen.ForeColor = System.Drawing.Color.Black;
+            this.txtHoTen.BorderColor = System.Drawing.Color.FromArgb(200, 200, 200);
+            this.txtHoTen.FocusedBorderColor = System.Drawing.Color.FromArgb(94, 148, 255);
             
             var lblNgaySinh = new System.Windows.Forms.Label();
             lblNgaySinh.Text = "Ngày sinh";
             lblNgaySinh.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            lblNgaySinh.ForeColor = System.Drawing.Color.FromArgb(64, 64, 64);
             lblNgaySinh.Location = new System.Drawing.Point(15, 80);
             lblNgaySinh.Size = new System.Drawing.Size(100, 20);
             
@@ -247,6 +266,7 @@ namespace VuToanThang_23110329.Forms
             var lblGioiTinh = new System.Windows.Forms.Label();
             lblGioiTinh.Text = "Giới tính";
             lblGioiTinh.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            lblGioiTinh.ForeColor = System.Drawing.Color.FromArgb(64, 64, 64);
             lblGioiTinh.Location = new System.Drawing.Point(195, 80);
             lblGioiTinh.Size = new System.Drawing.Size(100, 20);
             
@@ -254,10 +274,15 @@ namespace VuToanThang_23110329.Forms
             this.cmbGioiTinh.Size = new System.Drawing.Size(170, 36);
             this.cmbGioiTinh.BorderRadius = 8;
             this.cmbGioiTinh.Items.AddRange(new object[] { "Nam", "Nữ", "Khác" });
+            this.cmbGioiTinh.FillColor = System.Drawing.Color.White;
+            this.cmbGioiTinh.ForeColor = System.Drawing.Color.Black;
+            this.cmbGioiTinh.BorderColor = System.Drawing.Color.FromArgb(200, 200, 200);
+            this.cmbGioiTinh.FocusedBorderColor = System.Drawing.Color.FromArgb(94, 148, 255);
             
             var lblDienThoai = new System.Windows.Forms.Label();
             lblDienThoai.Text = "Điện thoại";
             lblDienThoai.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            lblDienThoai.ForeColor = System.Drawing.Color.FromArgb(64, 64, 64);
             lblDienThoai.Location = new System.Drawing.Point(15, 145);
             lblDienThoai.Size = new System.Drawing.Size(100, 20);
             
@@ -265,10 +290,15 @@ namespace VuToanThang_23110329.Forms
             this.txtDienThoai.Size = new System.Drawing.Size(170, 36);
             this.txtDienThoai.BorderRadius = 8;
             this.txtDienThoai.PlaceholderText = "Số điện thoại";
+            this.txtDienThoai.FillColor = System.Drawing.Color.White;
+            this.txtDienThoai.ForeColor = System.Drawing.Color.Black;
+            this.txtDienThoai.BorderColor = System.Drawing.Color.FromArgb(200, 200, 200);
+            this.txtDienThoai.FocusedBorderColor = System.Drawing.Color.FromArgb(94, 148, 255);
             
             var lblEmail = new System.Windows.Forms.Label();
             lblEmail.Text = "Email";
             lblEmail.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            lblEmail.ForeColor = System.Drawing.Color.FromArgb(64, 64, 64);
             lblEmail.Location = new System.Drawing.Point(195, 145);
             lblEmail.Size = new System.Drawing.Size(100, 20);
             
@@ -276,10 +306,15 @@ namespace VuToanThang_23110329.Forms
             this.txtEmail.Size = new System.Drawing.Size(170, 36);
             this.txtEmail.BorderRadius = 8;
             this.txtEmail.PlaceholderText = "Email";
+            this.txtEmail.FillColor = System.Drawing.Color.White;
+            this.txtEmail.ForeColor = System.Drawing.Color.Black;
+            this.txtEmail.BorderColor = System.Drawing.Color.FromArgb(200, 200, 200);
+            this.txtEmail.FocusedBorderColor = System.Drawing.Color.FromArgb(94, 148, 255);
             
             var lblDiaChi = new System.Windows.Forms.Label();
             lblDiaChi.Text = "Địa chỉ";
             lblDiaChi.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            lblDiaChi.ForeColor = System.Drawing.Color.FromArgb(64, 64, 64);
             lblDiaChi.Location = new System.Drawing.Point(15, 210);
             lblDiaChi.Size = new System.Drawing.Size(100, 20);
             
@@ -287,10 +322,15 @@ namespace VuToanThang_23110329.Forms
             this.txtDiaChi.Size = new System.Drawing.Size(350, 36);
             this.txtDiaChi.BorderRadius = 8;
             this.txtDiaChi.PlaceholderText = "Địa chỉ";
-            
+            this.txtDiaChi.FillColor = System.Drawing.Color.White;
+            this.txtDiaChi.ForeColor = System.Drawing.Color.Black;
+            this.txtDiaChi.BorderColor = System.Drawing.Color.FromArgb(200, 200, 200);
+            this.txtDiaChi.FocusedBorderColor = System.Drawing.Color.FromArgb(94, 148, 255);
+           
             var lblNgayVaoLam = new System.Windows.Forms.Label();
             lblNgayVaoLam.Text = "Ngày vào làm *";
             lblNgayVaoLam.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            lblNgayVaoLam.ForeColor = System.Drawing.Color.FromArgb(64, 64, 64);
             lblNgayVaoLam.Location = new System.Drawing.Point(15, 275);
             lblNgayVaoLam.Size = new System.Drawing.Size(100, 20);
             
@@ -304,6 +344,7 @@ namespace VuToanThang_23110329.Forms
             var lblLuongCoBan = new System.Windows.Forms.Label();
             lblLuongCoBan.Text = "Lương cơ bản *";
             lblLuongCoBan.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            lblLuongCoBan.ForeColor = System.Drawing.Color.FromArgb(64, 64, 64);
             lblLuongCoBan.Location = new System.Drawing.Point(195, 275);
             lblLuongCoBan.Size = new System.Drawing.Size(100, 20);
             
@@ -317,22 +358,32 @@ namespace VuToanThang_23110329.Forms
             var lblPhongBan = new System.Windows.Forms.Label();
             lblPhongBan.Text = "Phòng ban";
             lblPhongBan.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            lblPhongBan.ForeColor = System.Drawing.Color.FromArgb(64, 64, 64);
             lblPhongBan.Location = new System.Drawing.Point(15, 340);
             lblPhongBan.Size = new System.Drawing.Size(100, 20);
             
             this.cmbPhongBanForm.Location = new System.Drawing.Point(15, 360);
             this.cmbPhongBanForm.Size = new System.Drawing.Size(170, 36);
             this.cmbPhongBanForm.BorderRadius = 8;
+            this.cmbPhongBanForm.FillColor = System.Drawing.Color.White;
+            this.cmbPhongBanForm.ForeColor = System.Drawing.Color.Black;
+            this.cmbPhongBanForm.BorderColor = System.Drawing.Color.FromArgb(200, 200, 200);
+            this.cmbPhongBanForm.FocusedBorderColor = System.Drawing.Color.FromArgb(94, 148, 255);
             
             var lblChucVu = new System.Windows.Forms.Label();
             lblChucVu.Text = "Chức vụ";
             lblChucVu.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            lblChucVu.ForeColor = System.Drawing.Color.FromArgb(64, 64, 64);
             lblChucVu.Location = new System.Drawing.Point(195, 340);
             lblChucVu.Size = new System.Drawing.Size(100, 20);
             
             this.cmbChucVu.Location = new System.Drawing.Point(195, 360);
             this.cmbChucVu.Size = new System.Drawing.Size(170, 36);
             this.cmbChucVu.BorderRadius = 8;
+            this.cmbChucVu.FillColor = System.Drawing.Color.White;
+            this.cmbChucVu.ForeColor = System.Drawing.Color.Black;
+            this.cmbChucVu.BorderColor = System.Drawing.Color.FromArgb(200, 200, 200);
+            this.cmbChucVu.FocusedBorderColor = System.Drawing.Color.FromArgb(94, 148, 255);
             
             // Action buttons
             this.btnLuu.Location = new System.Drawing.Point(15, 420);

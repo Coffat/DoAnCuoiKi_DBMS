@@ -1,10 +1,7 @@
 using System;
 using System.Data;
 using System.Data.SqlClient;
-using System.Drawing;
-using System.Linq;
 using System.Windows.Forms;
-using Guna.UI2.WinForms;
 
 namespace VuToanThang_23110329.Forms
 {
@@ -73,36 +70,9 @@ namespace VuToanThang_23110329.Forms
             }
         }
 
-        private void SetPermissions()
-        {
-            // Phân quyền theo vai trò
-            switch (currentUserRole)
-            {
-                case "HR":
-                    // HR có toàn quyền
-                    btnThem.Enabled = true;
-                    btnSua.Enabled = true;
-                    btnVoHieuHoa.Enabled = true;
-                    break;
-                case "QuanLy":
-                case "KeToan":
-                    // Quản lý và Kế toán chỉ xem
-                    btnThem.Enabled = false;
-                    btnSua.Enabled = false;
-                    btnVoHieuHoa.Enabled = false;
-                    break;
-                default:
-                    // Nhân viên thường chỉ xem
-                    btnThem.Enabled = false;
-                    btnSua.Enabled = false;
-                    btnVoHieuHoa.Enabled = false;
-                    break;
-            }
-        }
-
         private void SetupDataGridView()
         {
-            dgvNhanVien.AutoGenerateColumns = false;
+            // Xóa các cột hiện tại
             dgvNhanVien.Columns.Clear();
 
             // Thêm các cột
@@ -120,43 +90,6 @@ namespace VuToanThang_23110329.Forms
                 Name = "HoTen",
                 HeaderText = "Họ tên",
                 DataPropertyName = "HoTen",
-                Width = 150,
-                ReadOnly = true
-            });
-
-            dgvNhanVien.Columns.Add(new DataGridViewTextBoxColumn
-            {
-                Name = "NgaySinh",
-                HeaderText = "Ngày sinh",
-                DataPropertyName = "NgaySinh",
-                Width = 100,
-                ReadOnly = true,
-                DefaultCellStyle = new DataGridViewCellStyle { Format = "dd/MM/yyyy" }
-            });
-
-            dgvNhanVien.Columns.Add(new DataGridViewTextBoxColumn
-            {
-                Name = "GioiTinh",
-                HeaderText = "Giới tính",
-                DataPropertyName = "GioiTinh",
-                Width = 80,
-                ReadOnly = true
-            });
-
-            dgvNhanVien.Columns.Add(new DataGridViewTextBoxColumn
-            {
-                Name = "DienThoai",
-                HeaderText = "Điện thoại",
-                DataPropertyName = "DienThoai",
-                Width = 120,
-                ReadOnly = true
-            });
-
-            dgvNhanVien.Columns.Add(new DataGridViewTextBoxColumn
-            {
-                Name = "Email",
-                HeaderText = "Email",
-                DataPropertyName = "Email",
                 Width = 150,
                 ReadOnly = true
             });
@@ -181,16 +114,20 @@ namespace VuToanThang_23110329.Forms
 
             dgvNhanVien.Columns.Add(new DataGridViewTextBoxColumn
             {
-                Name = "LuongCoBan",
-                HeaderText = "Lương cơ bản",
-                DataPropertyName = "LuongCoBan",
+                Name = "DienThoai",
+                HeaderText = "Điện thoại",
+                DataPropertyName = "DienThoai",
                 Width = 120,
-                ReadOnly = true,
-                DefaultCellStyle = new DataGridViewCellStyle 
-                { 
-                    Format = "N0",
-                    Alignment = DataGridViewContentAlignment.MiddleRight
-                }
+                ReadOnly = true
+            });
+
+            dgvNhanVien.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                Name = "Email",
+                HeaderText = "Email",
+                DataPropertyName = "Email",
+                Width = 150,
+                ReadOnly = true
             });
 
             dgvNhanVien.Columns.Add(new DataGridViewTextBoxColumn
@@ -198,9 +135,8 @@ namespace VuToanThang_23110329.Forms
                 Name = "NgayVaoLam",
                 HeaderText = "Ngày vào làm",
                 DataPropertyName = "NgayVaoLam",
-                Width = 120,
-                ReadOnly = true,
-                DefaultCellStyle = new DataGridViewCellStyle { Format = "dd/MM/yyyy" }
+                Width = 100,
+                ReadOnly = true
             });
 
             dgvNhanVien.Columns.Add(new DataGridViewTextBoxColumn
@@ -290,7 +226,73 @@ namespace VuToanThang_23110329.Forms
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Lỗi khi tải phòng ban và chức vụ: {ex.Message}", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($"Lỗi khi tải phòng ban và chức vụ: {ex.Message}\n\nĐang thử phương pháp dự phòng...", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                LoadPhongBanChucVuFallback();
+            }
+        }
+
+        private void LoadPhongBanChucVuFallback()
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(connectionString))
+                {
+                    conn.Open();
+                    
+                    // Load phòng ban trực tiếp
+                    using (SqlCommand cmd = new SqlCommand("SELECT MaPhongBan, TenPhongBan FROM dbo.PhongBan WHERE KichHoat = 1 ORDER BY TenPhongBan", conn))
+                    {
+                        using (SqlDataAdapter adapter = new SqlDataAdapter(cmd))
+                        {
+                            dtPhongBan = new DataTable();
+                            adapter.Fill(dtPhongBan);
+                            
+                            var phongBanBinding = dtPhongBan.Copy();
+                            var newRowPB = phongBanBinding.NewRow();
+                            newRowPB["MaPhongBan"] = DBNull.Value;
+                            newRowPB["TenPhongBan"] = "-- Chọn phòng ban --";
+                            phongBanBinding.Rows.InsertAt(newRowPB, 0);
+
+                            cmbPhongBan.DataSource = phongBanBinding.Copy();
+                            cmbPhongBan.DisplayMember = "TenPhongBan";
+                            cmbPhongBan.ValueMember = "MaPhongBan";
+                            if (cmbPhongBan.Items.Count > 0)
+                                cmbPhongBan.SelectedIndex = 0;
+
+                            cmbPhongBanForm.DataSource = phongBanBinding.Copy();
+                            cmbPhongBanForm.DisplayMember = "TenPhongBan";
+                            cmbPhongBanForm.ValueMember = "MaPhongBan";
+                            if (cmbPhongBanForm.Items.Count > 0)
+                                cmbPhongBanForm.SelectedIndex = 0;
+                        }
+                    }
+                    
+                    // Load chức vụ trực tiếp
+                    using (SqlCommand cmd = new SqlCommand("SELECT MaChucVu, TenChucVu FROM dbo.ChucVu WHERE KichHoat = 1 ORDER BY TenChucVu", conn))
+                    {
+                        using (SqlDataAdapter adapter = new SqlDataAdapter(cmd))
+                        {
+                            dtChucVu = new DataTable();
+                            adapter.Fill(dtChucVu);
+                            
+                            var chucVuBinding = dtChucVu.Copy();
+                            var newRowCV = chucVuBinding.NewRow();
+                            newRowCV["MaChucVu"] = DBNull.Value;
+                            newRowCV["TenChucVu"] = "-- Chọn chức vụ --";
+                            chucVuBinding.Rows.InsertAt(newRowCV, 0);
+
+                            cmbChucVu.DataSource = chucVuBinding;
+                            cmbChucVu.DisplayMember = "TenChucVu";
+                            cmbChucVu.ValueMember = "MaChucVu";
+                            if (cmbChucVu.Items.Count > 0)
+                                cmbChucVu.SelectedIndex = 0;
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Lỗi khi tải dữ liệu dự phòng: {ex.Message}\n\nVui lòng kiểm tra database và dữ liệu mẫu.", "Lỗi nghiêm trọng", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -314,7 +316,7 @@ namespace VuToanThang_23110329.Forms
                         {
                             dtNhanVien = new DataTable();
                             adapter.Fill(dtNhanVien);
-                            FilterData();
+                            dgvNhanVien.DataSource = dtNhanVien;
                         }
                     }
                 }
@@ -329,55 +331,80 @@ namespace VuToanThang_23110329.Forms
         {
             if (dtNhanVien == null) return;
 
-            string filter = "1=1";
+            string searchText = txtTimKiem.Text.ToLower();
+            string phongBanFilter = cmbPhongBan.SelectedValue?.ToString();
+            string trangThaiFilter = cmbTrangThai.SelectedItem?.ToString();
 
-            // Lọc theo tìm kiếm
-            if (!string.IsNullOrEmpty(txtTimKiem.Text.Trim()))
+            DataView dv = new DataView(dtNhanVien);
+            string filterExpression = "";
+
+            // Tìm kiếm theo tên
+            if (!string.IsNullOrEmpty(searchText))
             {
-                string searchText = txtTimKiem.Text.Trim();
-                filter += $" AND (HoTen LIKE '%{searchText}%' OR DienThoai LIKE '%{searchText}%' OR Email LIKE '%{searchText}%')";
+                filterExpression += $"HoTen LIKE '%{searchText}%'";
             }
 
             // Lọc theo phòng ban
-            if (cmbPhongBan.SelectedValue != null && cmbPhongBan.SelectedValue != DBNull.Value)
+            if (!string.IsNullOrEmpty(phongBanFilter) && phongBanFilter != "System.DBNull")
             {
-                filter += $" AND MaPhongBan = {cmbPhongBan.SelectedValue}";
+                if (!string.IsNullOrEmpty(filterExpression))
+                    filterExpression += " AND ";
+                filterExpression += $"MaPhongBan = {phongBanFilter}";
             }
 
             // Lọc theo trạng thái
-            if (cmbTrangThai.SelectedIndex > 0)
+            if (!string.IsNullOrEmpty(trangThaiFilter) && trangThaiFilter != "Tất cả")
             {
-                string trangThai = cmbTrangThai.SelectedIndex == 1 ? "DangLam" : "Nghi";
-                filter += $" AND TrangThai = '{trangThai}'";
+                if (!string.IsNullOrEmpty(filterExpression))
+                    filterExpression += " AND ";
+                filterExpression += $"TrangThai = '{trangThaiFilter}'";
             }
 
-            DataView dv = dtNhanVien.DefaultView;
-            dv.RowFilter = filter;
-            dgvNhanVien.DataSource = dv.ToTable();
+            dv.RowFilter = filterExpression;
+            dgvNhanVien.DataSource = dv;
+        }
+
+        private void SetPermissions()
+        {
+            bool isHR = currentUserRole == "HR";
+            bool isQuanLy = currentUserRole == "QuanLy";
+
+            // HR có toàn quyền
+            if (isHR)
+            {
+                btnThem.Enabled = true;
+                btnSua.Enabled = true;
+                btnVoHieuHoa.Enabled = true;
+            }
+            // Quản lý và Kế toán chỉ xem
+            else if (isQuanLy || currentUserRole == "KeToan")
+            {
+                btnThem.Enabled = false;
+                btnSua.Enabled = false;
+                btnVoHieuHoa.Enabled = false;
+            }
+            // Nhân viên không có quyền
+            else
+            {
+                btnThem.Enabled = false;
+                btnSua.Enabled = false;
+                btnVoHieuHoa.Enabled = false;
+            }
+
+            btnLamMoi.Enabled = true;
         }
 
         private void btnThem_Click(object sender, EventArgs e)
         {
-            if (currentUserRole != "HR")
-            {
-                MessageBox.Show("Bạn không có quyền thêm nhân viên.", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
-
             isEditing = false;
             currentMaNV = -1;
             ClearForm();
             pnlRight.Visible = true;
+            txtHoTen.Focus();
         }
 
         private void btnSua_Click(object sender, EventArgs e)
         {
-            if (currentUserRole != "HR")
-            {
-                MessageBox.Show("Bạn không có quyền sửa thông tin nhân viên.", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
-
             if (dgvNhanVien.SelectedRows.Count == 0)
             {
                 MessageBox.Show("Vui lòng chọn nhân viên cần sửa.", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -392,47 +419,39 @@ namespace VuToanThang_23110329.Forms
 
         private void btnVoHieuHoa_Click(object sender, EventArgs e)
         {
-            if (currentUserRole != "HR")
-            {
-                MessageBox.Show("Bạn không có quyền vô hiệu hóa nhân viên.", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
-
             if (dgvNhanVien.SelectedRows.Count == 0)
             {
                 MessageBox.Show("Vui lòng chọn nhân viên cần vô hiệu hóa.", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
-            int maNV = Convert.ToInt32(dgvNhanVien.SelectedRows[0].Cells["MaNV"].Value);
-            string hoTen = dgvNhanVien.SelectedRows[0].Cells["HoTen"].Value.ToString();
-            string trangThai = dgvNhanVien.SelectedRows[0].Cells["TrangThai"].Value.ToString();
-
-            string action = trangThai == "DangLam" ? "vô hiệu hóa" : "kích hoạt lại";
-            string newStatus = trangThai == "DangLam" ? "Nghi" : "DangLam";
-
-            if (MessageBox.Show($"Bạn có chắc chắn muốn {action} nhân viên {hoTen}?", "Xác nhận", 
-                MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+            if (MessageBox.Show("Bạn có chắc chắn muốn vô hiệu hóa nhân viên này?", "Xác nhận", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
             {
-                try
+                int maNV = Convert.ToInt32(dgvNhanVien.SelectedRows[0].Cells["MaNV"].Value);
+                UpdateEmployeeStatus(maNV, "Nghỉ việc");
+            }
+        }
+
+        private void UpdateEmployeeStatus(int maNV, string trangThai)
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(connectionString))
                 {
-                    using (SqlConnection conn = new SqlConnection(connectionString))
+                    conn.Open();
+                    using (SqlCommand cmd = new SqlCommand("UPDATE dbo.NhanVien SET TrangThai = @TrangThai WHERE MaNV = @MaNV", conn))
                     {
-                        conn.Open();
-                        using (SqlCommand cmd = new SqlCommand("UPDATE NhanVien SET TrangThai = @TrangThai WHERE MaNV = @MaNV", conn))
-                        {
-                            cmd.Parameters.AddWithValue("@TrangThai", newStatus);
-                            cmd.Parameters.AddWithValue("@MaNV", maNV);
-                            cmd.ExecuteNonQuery();
-                        }
+                        cmd.Parameters.AddWithValue("@TrangThai", trangThai);
+                        cmd.Parameters.AddWithValue("@MaNV", maNV);
+                        cmd.ExecuteNonQuery();
                     }
-                    MessageBox.Show($"Đã {action} nhân viên thành công.", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    LoadData();
                 }
-                catch (Exception ex)
-                {
-                    MessageBox.Show($"Lỗi khi {action} nhân viên: {ex.Message}", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
+                LoadData();
+                MessageBox.Show("Cập nhật trạng thái nhân viên thành công.", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Lỗi khi cập nhật trạng thái: {ex.Message}", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -450,119 +469,10 @@ namespace VuToanThang_23110329.Forms
         {
             if (!ValidateForm()) return;
 
-            try
-            {
-                using (SqlConnection conn = new SqlConnection(connectionString))
-                {
-                    conn.Open();
-                    
-                    if (isEditing)
-                    {
-                        // Cập nhật nhân viên
-                        UpdateEmployee(conn);
-                    }
-                    else
-                    {
-                        // Thêm mới nhân viên
-                        AddNewEmployee(conn);
-                    }
-                }
-
-                MessageBox.Show(isEditing ? "Cập nhật nhân viên thành công." : "Thêm mới nhân viên thành công.", 
-                    "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                
-                LoadData();
-                pnlRight.Visible = false;
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Lỗi khi lưu thông tin nhân viên: {ex.Message}", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
-
-        private void AddNewEmployee(SqlConnection conn)
-        {
-            using (SqlCommand cmd = new SqlCommand("sp_ThemMoiNhanVien", conn))
-            {
-                cmd.CommandType = CommandType.StoredProcedure;
-                
-                cmd.Parameters.AddWithValue("@HoTen", txtHoTen.Text.Trim());
-                cmd.Parameters.AddWithValue("@NgaySinh", dtpNgaySinh.Value.Date);
-                cmd.Parameters.AddWithValue("@GioiTinh", cmbGioiTinh.Text == "" ? (object)DBNull.Value : cmbGioiTinh.Text);
-                cmd.Parameters.AddWithValue("@DienThoai", string.IsNullOrEmpty(txtDienThoai.Text.Trim()) ? (object)DBNull.Value : txtDienThoai.Text.Trim());
-                cmd.Parameters.AddWithValue("@Email", string.IsNullOrEmpty(txtEmail.Text.Trim()) ? (object)DBNull.Value : txtEmail.Text.Trim());
-                cmd.Parameters.AddWithValue("@DiaChi", string.IsNullOrEmpty(txtDiaChi.Text.Trim()) ? (object)DBNull.Value : txtDiaChi.Text.Trim());
-                cmd.Parameters.AddWithValue("@NgayVaoLam", dtpNgayVaoLam.Value.Date);
-                cmd.Parameters.AddWithValue("@MaPhongBan", cmbPhongBanForm.SelectedValue == DBNull.Value ? (object)DBNull.Value : cmbPhongBanForm.SelectedValue);
-                cmd.Parameters.AddWithValue("@MaChucVu", cmbChucVu.SelectedValue == DBNull.Value ? (object)DBNull.Value : cmbChucVu.SelectedValue);
-                cmd.Parameters.AddWithValue("@LuongCoBan", numLuongCoBan.Value);
-                cmd.Parameters.AddWithValue("@TaoTaiKhoan", 0); // Không tạo tài khoản mặc định
-                
-                SqlParameter outputParam = new SqlParameter("@MaNV_OUT", SqlDbType.Int);
-                outputParam.Direction = ParameterDirection.Output;
-                cmd.Parameters.Add(outputParam);
-                
-                cmd.ExecuteNonQuery();
-            }
-        }
-
-        private void UpdateEmployee(SqlConnection conn)
-        {
-            // Cập nhật thông tin cơ bản
-            using (SqlCommand cmd = new SqlCommand(@"
-                UPDATE NhanVien SET 
-                    HoTen = @HoTen,
-                    NgaySinh = @NgaySinh,
-                    GioiTinh = @GioiTinh,
-                    DienThoai = @DienThoai,
-                    Email = @Email,
-                    DiaChi = @DiaChi,
-                    NgayVaoLam = @NgayVaoLam,
-                    LuongCoBan = @LuongCoBan
-                WHERE MaNV = @MaNV", conn))
-            {
-                cmd.Parameters.AddWithValue("@MaNV", currentMaNV);
-                cmd.Parameters.AddWithValue("@HoTen", txtHoTen.Text.Trim());
-                cmd.Parameters.AddWithValue("@NgaySinh", dtpNgaySinh.Value.Date);
-                cmd.Parameters.AddWithValue("@GioiTinh", cmbGioiTinh.Text == "" ? (object)DBNull.Value : cmbGioiTinh.Text);
-                cmd.Parameters.AddWithValue("@DienThoai", string.IsNullOrEmpty(txtDienThoai.Text.Trim()) ? (object)DBNull.Value : txtDienThoai.Text.Trim());
-                cmd.Parameters.AddWithValue("@Email", string.IsNullOrEmpty(txtEmail.Text.Trim()) ? (object)DBNull.Value : txtEmail.Text.Trim());
-                cmd.Parameters.AddWithValue("@DiaChi", string.IsNullOrEmpty(txtDiaChi.Text.Trim()) ? (object)DBNull.Value : txtDiaChi.Text.Trim());
-                cmd.Parameters.AddWithValue("@NgayVaoLam", dtpNgayVaoLam.Value.Date);
-                cmd.Parameters.AddWithValue("@LuongCoBan", numLuongCoBan.Value);
-                
-                cmd.ExecuteNonQuery();
-            }
-
-            // Cập nhật phòng ban và chức vụ
-            using (SqlCommand cmd = new SqlCommand("sp_UpdateNhanVienWithPhongBanChucVu", conn))
-            {
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.Parameters.AddWithValue("@MaNV", currentMaNV);
-                cmd.Parameters.AddWithValue("@MaPhongBan", cmbPhongBanForm.SelectedValue == DBNull.Value ? (object)DBNull.Value : cmbPhongBanForm.SelectedValue);
-                cmd.Parameters.AddWithValue("@MaChucVu", cmbChucVu.SelectedValue == DBNull.Value ? (object)DBNull.Value : cmbChucVu.SelectedValue);
-                
-                cmd.ExecuteNonQuery();
-            }
-        }
-
-        private bool ValidateForm()
-        {
-            if (string.IsNullOrEmpty(txtHoTen.Text.Trim()))
-            {
-                MessageBox.Show("Vui lòng nhập họ tên nhân viên.", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                txtHoTen.Focus();
-                return false;
-            }
-
-            if (numLuongCoBan.Value <= 0)
-            {
-                MessageBox.Show("Lương cơ bản phải lớn hơn 0.", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                numLuongCoBan.Focus();
-                return false;
-            }
-
-            return true;
+            if (isEditing)
+                UpdateEmployee();
+            else
+                AddNewEmployee();
         }
 
         private void btnHuy_Click(object sender, EventArgs e)
@@ -571,17 +481,111 @@ namespace VuToanThang_23110329.Forms
             ClearForm();
         }
 
-        private void txtTimKiem_TextChanged(object sender, EventArgs e)
+        private bool ValidateForm()
         {
-            FilterData();
+            if (string.IsNullOrWhiteSpace(txtHoTen.Text))
+            {
+                MessageBox.Show("Vui lòng nhập họ tên.", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                txtHoTen.Focus();
+                return false;
+            }
+
+            if (dtpNgayVaoLam.Value > DateTime.Now)
+            {
+                MessageBox.Show("Ngày vào làm không được lớn hơn ngày hiện tại.", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                dtpNgayVaoLam.Focus();
+                return false;
+            }
+
+            if (numLuongCoBan.Value <= 0)
+            {
+                MessageBox.Show("Lương cơ bản phải lớn hơn 0.", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                numLuongCoBan.Focus();
+                return false;
+            }
+
+            return true;
+        }
+
+        private void AddNewEmployee()
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(connectionString))
+                {
+                    conn.Open();
+                    using (SqlCommand cmd = new SqlCommand("sp_ThemMoiNhanVien", conn))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Parameters.AddWithValue("@HoTen", txtHoTen.Text.Trim());
+                        cmd.Parameters.AddWithValue("@NgaySinh", dtpNgaySinh.Value);
+                        cmd.Parameters.AddWithValue("@GioiTinh", cmbGioiTinh.SelectedItem?.ToString() ?? "");
+                        cmd.Parameters.AddWithValue("@DienThoai", txtDienThoai.Text.Trim());
+                        cmd.Parameters.AddWithValue("@Email", txtEmail.Text.Trim());
+                        cmd.Parameters.AddWithValue("@DiaChi", txtDiaChi.Text.Trim());
+                        cmd.Parameters.AddWithValue("@NgayVaoLam", dtpNgayVaoLam.Value);
+                        cmd.Parameters.AddWithValue("@LuongCoBan", numLuongCoBan.Value);
+                        cmd.Parameters.AddWithValue("@MaPhongBan", cmbPhongBanForm.SelectedValue == DBNull.Value ? (object)DBNull.Value : cmbPhongBanForm.SelectedValue);
+                        cmd.Parameters.AddWithValue("@MaChucVu", cmbChucVu.SelectedValue == DBNull.Value ? (object)DBNull.Value : cmbChucVu.SelectedValue);
+
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+                LoadData();
+                pnlRight.Visible = false;
+                ClearForm();
+                MessageBox.Show("Thêm nhân viên mới thành công.", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Lỗi khi thêm nhân viên: {ex.Message}", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void UpdateEmployee()
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(connectionString))
+                {
+                    conn.Open();
+                    using (SqlCommand cmd = new SqlCommand("sp_UpdateNhanVienWithPhongBanChucVu", conn))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Parameters.AddWithValue("@MaNV", currentMaNV);
+                        cmd.Parameters.AddWithValue("@HoTen", txtHoTen.Text.Trim());
+                        cmd.Parameters.AddWithValue("@NgaySinh", dtpNgaySinh.Value);
+                        cmd.Parameters.AddWithValue("@GioiTinh", cmbGioiTinh.SelectedItem?.ToString() ?? "");
+                        cmd.Parameters.AddWithValue("@DienThoai", txtDienThoai.Text.Trim());
+                        cmd.Parameters.AddWithValue("@Email", txtEmail.Text.Trim());
+                        cmd.Parameters.AddWithValue("@DiaChi", txtDiaChi.Text.Trim());
+                        cmd.Parameters.AddWithValue("@NgayVaoLam", dtpNgayVaoLam.Value);
+                        cmd.Parameters.AddWithValue("@LuongCoBan", numLuongCoBan.Value);
+                        cmd.Parameters.AddWithValue("@MaPhongBan", cmbPhongBanForm.SelectedValue == DBNull.Value ? (object)DBNull.Value : cmbPhongBanForm.SelectedValue);
+                        cmd.Parameters.AddWithValue("@MaChucVu", cmbChucVu.SelectedValue == DBNull.Value ? (object)DBNull.Value : cmbChucVu.SelectedValue);
+
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+                LoadData();
+                pnlRight.Visible = false;
+                ClearForm();
+                MessageBox.Show("Cập nhật thông tin nhân viên thành công.", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Lỗi khi cập nhật nhân viên: {ex.Message}", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void dgvNhanVien_SelectionChanged(object sender, EventArgs e)
         {
-            // Cập nhật trạng thái buttons dựa trên selection
-            bool hasSelection = dgvNhanVien.SelectedRows.Count > 0;
-            btnSua.Enabled = hasSelection && currentUserRole == "HR";
-            btnVoHieuHoa.Enabled = hasSelection && currentUserRole == "HR";
+            // Có thể thêm logic xử lý khi chọn row
+        }
+
+        private void txtTimKiem_TextChanged(object sender, EventArgs e)
+        {
+            FilterData();
         }
 
         private void cmbPhongBan_SelectedIndexChanged(object sender, EventArgs e)
@@ -618,18 +622,15 @@ namespace VuToanThang_23110329.Forms
                 using (SqlConnection conn = new SqlConnection(connectionString))
                 {
                     conn.Open();
-                    using (SqlCommand cmd = new SqlCommand("sp_GetNhanVienFull", conn))
+                    using (SqlCommand cmd = new SqlCommand("SELECT * FROM dbo.NhanVien WHERE MaNV = @MaNV", conn))
                     {
-                        cmd.CommandType = CommandType.StoredProcedure;
                         cmd.Parameters.AddWithValue("@MaNV", maNV);
-                        
                         using (SqlDataReader reader = cmd.ExecuteReader())
                         {
                             if (reader.Read())
                             {
                                 txtHoTen.Text = reader["HoTen"].ToString();
-                                if (reader["NgaySinh"] != DBNull.Value)
-                                    dtpNgaySinh.Value = Convert.ToDateTime(reader["NgaySinh"]);
+                                dtpNgaySinh.Value = Convert.ToDateTime(reader["NgaySinh"]);
                                 cmbGioiTinh.Text = reader["GioiTinh"].ToString();
                                 txtDienThoai.Text = reader["DienThoai"].ToString();
                                 txtEmail.Text = reader["Email"].ToString();
