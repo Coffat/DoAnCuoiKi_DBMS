@@ -52,8 +52,15 @@ namespace VuToanThang_23110329.Forms
 
         private void frmNhanVien_Load(object sender, EventArgs e)
         {
+            // Debug: Kiểm tra currentUserRole trước khi GetCurrentUserRole
+            MessageBox.Show($"DEBUG Load - Trước GetCurrentUserRole: '{currentUserRole}'", "Debug", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            
             // Lấy vai trò người dùng hiện tại
             GetCurrentUserRole();
+            
+            // Debug: Kiểm tra currentUserRole sau khi GetCurrentUserRole
+            MessageBox.Show($"DEBUG Load - Sau GetCurrentUserRole: '{currentUserRole}'", "Debug", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            
             SetupDataGridView();
             LoadPhongBanChucVu();
             LoadData();
@@ -65,8 +72,8 @@ namespace VuToanThang_23110329.Forms
             // Nếu chưa có userRole được truyền vào, lấy từ session hoặc global variable
             if (string.IsNullOrEmpty(currentUserRole))
             {
-                // Tạm thời set default là HR để test
-                currentUserRole = "HR"; // Sẽ được lấy từ session thực tế
+                // Nếu không có role được truyền vào, set default là NhanVien (ít quyền nhất)
+                currentUserRole = "NhanVien"; // Sẽ được lấy từ session thực tế
             }
         }
 
@@ -367,6 +374,10 @@ namespace VuToanThang_23110329.Forms
 
         private void SetPermissions()
         {
+            // Debug: Hiển thị role hiện tại với chi tiết
+            string debugInfo = $"Role: '{currentUserRole}'\nLength: {currentUserRole?.Length}\nBytes: {System.Text.Encoding.UTF8.GetBytes(currentUserRole ?? "").Length}";
+            MessageBox.Show($"DEBUG SetPermissions:\n{debugInfo}", "Debug", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            
             // Reset tất cả button về false trước
             btnThem.Enabled = false;
             btnSua.Enabled = false;
@@ -374,13 +385,22 @@ namespace VuToanThang_23110329.Forms
             btnXoa.Enabled = false;
             btnLamMoi.Enabled = true;
 
-            // Chỉ HR và QuanLy mới có quyền CRUD
-            if (currentUserRole == "HR" || currentUserRole == "QuanLy")
+            // Làm sạch và chuẩn hóa role
+            string cleanRole = currentUserRole?.Trim() ?? "";
+            
+            // Chỉ HR và QuanLy mới có quyền CRUD (so sánh không phân biệt hoa thường)
+            if (string.Equals(cleanRole, "HR", StringComparison.OrdinalIgnoreCase) || 
+                string.Equals(cleanRole, "QuanLy", StringComparison.OrdinalIgnoreCase))
             {
                 btnThem.Enabled = true;
                 btnSua.Enabled = true;
                 btnVoHieuHoa.Enabled = true;
                 btnXoa.Enabled = true;
+                MessageBox.Show($"DEBUG - Buttons được ENABLE cho role: '{cleanRole}'", "Debug", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            else
+            {
+                MessageBox.Show($"DEBUG - Buttons được DISABLE cho role: '{cleanRole}'", "Debug", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
 
