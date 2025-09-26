@@ -68,7 +68,7 @@ namespace VuToanThang_23110329.Forms
                 DataPropertyName = "GioBatDau",
                 Width = 120,
                 ReadOnly = true,
-                DefaultCellStyle = new DataGridViewCellStyle() { Format = "HH:mm" }
+                DefaultCellStyle = new DataGridViewCellStyle() { Format = "hh\\:mm" }
             });
 
             dgvCaLam.Columns.Add(new DataGridViewTextBoxColumn()
@@ -78,7 +78,7 @@ namespace VuToanThang_23110329.Forms
                 DataPropertyName = "GioKetThuc",
                 Width = 120,
                 ReadOnly = true,
-                DefaultCellStyle = new DataGridViewCellStyle() { Format = "HH:mm" }
+                DefaultCellStyle = new DataGridViewCellStyle() { Format = "hh\\:mm" }
             });
 
             dgvCaLam.Columns.Add(new DataGridViewTextBoxColumn()
@@ -152,6 +152,21 @@ namespace VuToanThang_23110329.Forms
             {
                 LoadShiftToForm();
                 SetButtonStates(true);
+            }
+        }
+
+        private void dgvCaLam_DataError(object sender, DataGridViewDataErrorEventArgs e)
+        {
+            // Xử lý lỗi định dạng dữ liệu trong DataGridView
+            e.ThrowException = false;
+            
+            // Log lỗi (có thể thêm vào log file)
+            Console.WriteLine($"DataGridView Error: {e.Exception.Message}");
+            
+            // Hiển thị giá trị mặc định cho cell bị lỗi
+            if (e.RowIndex >= 0 && e.ColumnIndex >= 0)
+            {
+                dgvCaLam.Rows[e.RowIndex].Cells[e.ColumnIndex].Value = "N/A";
             }
         }
 

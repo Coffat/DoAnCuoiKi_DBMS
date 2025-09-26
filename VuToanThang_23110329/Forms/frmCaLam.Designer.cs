@@ -244,6 +244,7 @@ namespace VuToanThang_23110329.Forms
             this.dgvCaLam.TabIndex = 0;
             this.dgvCaLam.Theme = Guna.UI2.WinForms.Enums.DataGridViewPresetThemes.Light;
             this.dgvCaLam.SelectionChanged += new System.EventHandler(this.dgvCaLam_SelectionChanged);
+            this.dgvCaLam.DataError += new System.Windows.Forms.DataGridViewDataErrorEventHandler(this.dgvCaLam_DataError);
             // 
             // pnlForm
             // 
