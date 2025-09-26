@@ -466,6 +466,10 @@ namespace VuToanThang_23110329.Forms
             ((System.ComponentModel.ISupportInitialize)(this.dgvNhanVien)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numLuongCoBan)).EndInit();
             this.ResumeLayout(false);
+            
+            // Event handlers
+            this.Load += new System.EventHandler(this.frmNhanVien_Load);
+            this.Shown += new System.EventHandler(this.frmNhanVien_Shown);
         }
 
         #endregion
