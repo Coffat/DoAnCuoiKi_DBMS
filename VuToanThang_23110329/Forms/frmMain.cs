@@ -317,6 +317,10 @@ namespace VuToanThang_23110329.Forms
             {
                 switch (functionName)
                 {
+                    case "Hồ sơ Nhân viên":
+                        OpenFormInPanel(new frmNhanVien(userRole));
+                        lblStatus.Text = "Đang quản lý hồ sơ nhân viên";
+                        break;
                     case "Ca làm việc":
                         OpenFormInPanel(new frmCaLam(userRole));
                         lblStatus.Text = "Đang quản lý ca làm việc";
