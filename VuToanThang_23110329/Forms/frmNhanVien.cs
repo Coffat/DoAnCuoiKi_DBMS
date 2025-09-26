@@ -392,6 +392,9 @@ namespace VuToanThang_23110329.Forms
             }
 
             btnLamMoi.Enabled = true;
+            
+            // Debug: Hiển thị vai trò hiện tại
+            MessageBox.Show($"Vai trò hiện tại: '{currentUserRole}'\nQuyền CRUD: {(isHR ? "Có" : "Không")}", "Debug Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         private void btnThem_Click(object sender, EventArgs e)
@@ -590,6 +593,10 @@ namespace VuToanThang_23110329.Forms
 
         private void cmbPhongBan_SelectedIndexChanged(object sender, EventArgs e)
         {
+            // Debug: Hiển thị thông tin filter
+            string selectedValue = cmbPhongBan.SelectedValue?.ToString();
+            string selectedText = cmbPhongBan.Text;
+            MessageBox.Show($"Phòng ban được chọn:\nValue: '{selectedValue}'\nText: '{selectedText}'", "Debug Filter", MessageBoxButtons.OK, MessageBoxIcon.Information);
             FilterData();
         }
 

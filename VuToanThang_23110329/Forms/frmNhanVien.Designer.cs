@@ -184,7 +184,7 @@ namespace VuToanThang_23110329.Forms
             this.cmbTrangThai.ForeColor = System.Drawing.Color.Black;
             this.cmbTrangThai.BorderColor = System.Drawing.Color.FromArgb(200, 200, 200);
             this.cmbTrangThai.FocusedState.BorderColor = System.Drawing.Color.FromArgb(94, 148, 255);
-            this.cmbTrangThai.Items.AddRange(new object[] { "Tất cả", "Đang làm", "Nghỉ việc" });
+            this.cmbTrangThai.Items.AddRange(new object[] { "Tất cả", "DangLam", "Nghi" });
             this.cmbTrangThai.SelectedIndex = 0;
             this.cmbTrangThai.SelectedIndexChanged += new System.EventHandler(this.cmbTrangThai_SelectedIndexChanged);
             
