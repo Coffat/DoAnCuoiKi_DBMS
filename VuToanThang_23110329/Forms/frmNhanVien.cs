@@ -60,7 +60,13 @@ namespace VuToanThang_23110329.Forms
             SetupDataGridView();
             LoadPhongBanChucVu();
             LoadData();
+            
+            // Debug: Kiểm tra trước khi gọi SetPermissions
+            MessageBox.Show($"DEBUG frmNhanVien_Load - Trước khi gọi SetPermissions, currentUserRole: '{currentUserRole}'", "Debug Load", MessageBoxButtons.OK, MessageBoxIcon.Information);
             SetPermissions();
+            
+            // Debug: Kiểm tra sau khi gọi SetPermissions
+            MessageBox.Show($"DEBUG frmNhanVien_Load - Sau khi gọi SetPermissions:\nbtnThem.Enabled: {btnThem.Enabled}\nbtnSua.Enabled: {btnSua.Enabled}\nbtnVoHieuHoa.Enabled: {btnVoHieuHoa.Enabled}", "Debug After SetPermissions", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         private void GetCurrentUserRole()
@@ -376,6 +382,9 @@ namespace VuToanThang_23110329.Forms
             bool isHR = currentUserRole == "HR";
             bool isQuanLy = currentUserRole == "QuanLy";
             bool isKeToan = currentUserRole == "KeToan";
+            
+            // Debug: Kiểm tra so sánh string
+            MessageBox.Show($"DEBUG String Comparison:\ncurrentUserRole == 'HR': {currentUserRole == "HR"}\ncurrentUserRole == 'QuanLy': {currentUserRole == "QuanLy"}\ncurrentUserRole == 'KeToan': {currentUserRole == "KeToan"}\ncurrentUserRole.Length: {currentUserRole.Length}", "Debug String", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
             MessageBox.Show($"DEBUG - isHR: {isHR}, isQuanLy: {isQuanLy}, isKeToan: {isKeToan}", "Debug Boolean", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
