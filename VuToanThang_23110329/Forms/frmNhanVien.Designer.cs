@@ -98,35 +98,6 @@ namespace VuToanThang_23110329.Forms
             this.pnlContent.TabIndex = 1;
             
             // Continue with remaining controls...
-            this.InitializeRemainingControls();
-            
-            // Add controls to panels
-            this.pnlMain.Controls.Add(this.pnlContent);
-            this.pnlMain.Controls.Add(this.pnlHeader);
-            this.pnlHeader.Controls.Add(this.lblTitle);
-            this.pnlContent.Controls.Add(this.pnlLeft);
-            this.pnlContent.Controls.Add(this.pnlRight);
-            
-            this.Controls.Add(this.pnlMain);
-            this.Name = "frmNhanVien";
-            this.Text = "Quản lý Nhân viên";
-            this.Size = new System.Drawing.Size(1200, 700);
-            
-            this.pnlMain.ResumeLayout(false);
-            this.pnlHeader.ResumeLayout(false);
-            this.pnlHeader.PerformLayout();
-            this.pnlContent.ResumeLayout(false);
-            this.pnlLeft.ResumeLayout(false);
-            this.pnlRight.ResumeLayout(false);
-            this.pnlToolbar.ResumeLayout(false);
-            this.pnlFormDetails.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.dgvNhanVien)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numLuongCoBan)).EndInit();
-            this.ResumeLayout(false);
-        }
-
-        private void InitializeRemainingControls()
-        {
             // pnlLeft - DataGridView và toolbar
             this.pnlLeft.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pnlLeft.FillColor = System.Drawing.Color.White;
@@ -236,12 +207,14 @@ namespace VuToanThang_23110329.Forms
             this.pnlToolbar.Controls.Add(this.cmbPhongBan);
             this.pnlToolbar.Controls.Add(this.cmbTrangThai);
             
-            this.SetupFormDetails();
-        }
-
-        private void SetupFormDetails()
-        {
-            // pnlFormDetails
+            // Add controls to panels
+            this.pnlMain.Controls.Add(this.pnlContent);
+            this.pnlMain.Controls.Add(this.pnlHeader);
+            this.pnlHeader.Controls.Add(this.lblTitle);
+            this.pnlContent.Controls.Add(this.pnlLeft);
+            this.pnlContent.Controls.Add(this.pnlRight);
+            
+            // Form details setup
             this.pnlFormDetails.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pnlFormDetails.FillColor = System.Drawing.Color.FromArgb(248, 249, 250);
             this.pnlFormDetails.Name = "pnlFormDetails";
@@ -405,6 +378,23 @@ namespace VuToanThang_23110329.Forms
             this.pnlFormDetails.Controls.Add(this.btnHuy);
             
             this.pnlRight.Controls.Add(this.pnlFormDetails);
+            
+            this.Controls.Add(this.pnlMain);
+            this.Name = "frmNhanVien";
+            this.Text = "Quản lý Nhân viên";
+            this.Size = new System.Drawing.Size(1200, 700);
+            
+            this.pnlMain.ResumeLayout(false);
+            this.pnlHeader.ResumeLayout(false);
+            this.pnlHeader.PerformLayout();
+            this.pnlContent.ResumeLayout(false);
+            this.pnlLeft.ResumeLayout(false);
+            this.pnlRight.ResumeLayout(false);
+            this.pnlToolbar.ResumeLayout(false);
+            this.pnlFormDetails.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.dgvNhanVien)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numLuongCoBan)).EndInit();
+            this.ResumeLayout(false);
         }
 
         #endregion
