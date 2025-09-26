@@ -103,16 +103,6 @@ namespace VuToanThang_23110329.Forms
         {
             // Bind week label
             lblWeek.Text = $"Tuần: {_currentWeekStartDate:dd/MM} - {_currentWeekStartDate.AddDays(6):dd/MM}";
-            // Load employees to combo if empty
-            if (cboNhanVien.Items.Count == 0)
-            {
-                // Placeholder: should be loaded from DB
-                cboNhanVien.Items.Clear();
-                cboNhanVien.Items.Add("Tất cả nhân viên");
-                cboNhanVien.Items.Add("NV001 - Nguyễn Văn A");
-                cboNhanVien.Items.Add("NV002 - Trần Thị B");
-                cboNhanVien.StartIndex = 0;
-            }
             // Build or refresh grid columns and data
             BuildWeekColumns();
             PopulateWeekData();
@@ -203,6 +193,16 @@ namespace VuToanThang_23110329.Forms
             btnHuy.Enabled = !_isReadOnlyForRole;
             btnTaoLichTuan.Enabled = !_isReadOnlyForRole;
             dgvTuan.ReadOnly = _isReadOnlyForRole;
+        }
+
+        private void InitializeEmployeeCombo()
+        {
+            // Placeholder: load employees; replace with DB query later
+            cboNhanVien.Items.Clear();
+            cboNhanVien.Items.Add("Tất cả nhân viên");
+            cboNhanVien.Items.Add("NV001 - Nguyễn Văn A");
+            cboNhanVien.Items.Add("NV002 - Trần Thị B");
+            cboNhanVien.StartIndex = 0;
         }
 
         private void cboNhanVien_SelectedIndexChanged(object sender, EventArgs e)
