@@ -31,6 +31,7 @@ namespace VuToanThang_23110329.Forms
             this.btnThem = new Guna.UI2.WinForms.Guna2Button();
             this.btnSua = new Guna.UI2.WinForms.Guna2Button();
             this.btnVoHieuHoa = new Guna.UI2.WinForms.Guna2Button();
+            this.btnXoa = new Guna.UI2.WinForms.Guna2Button();
             this.btnLamMoi = new Guna.UI2.WinForms.Guna2Button();
             this.txtTimKiem = new Guna.UI2.WinForms.Guna2TextBox();
             this.cmbPhongBan = new Guna.UI2.WinForms.Guna2ComboBox();
@@ -224,6 +225,7 @@ namespace VuToanThang_23110329.Forms
             this.pnlToolbar.Controls.Add(this.btnThem);
             this.pnlToolbar.Controls.Add(this.btnSua);
             this.pnlToolbar.Controls.Add(this.btnVoHieuHoa);
+            this.pnlToolbar.Controls.Add(this.btnXoa);
             this.pnlToolbar.Controls.Add(this.btnLamMoi);
             this.pnlToolbar.Controls.Add(this.txtTimKiem);
             this.pnlToolbar.Controls.Add(this.cmbPhongBan);
