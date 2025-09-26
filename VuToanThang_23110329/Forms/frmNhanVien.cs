@@ -234,8 +234,20 @@ namespace VuToanThang_23110329.Forms
                             DataSet ds = new DataSet();
                             adapter.Fill(ds);
 
+                            // Kiểm tra có dữ liệu không
+                            if (ds.Tables.Count < 2)
+                            {
+                                MessageBox.Show("Stored procedure không trả về đủ dữ liệu. Vui lòng kiểm tra database.", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                return;
+                            }
+
                             // Load phòng ban
                             dtPhongBan = ds.Tables[0];
+                            if (dtPhongBan.Rows.Count == 0)
+                            {
+                                MessageBox.Show("Không có dữ liệu phòng ban. Vui lòng thêm dữ liệu mẫu.", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            }
+                            
                             var phongBanBinding = dtPhongBan.Copy();
                             var newRowPB = phongBanBinding.NewRow();
                             newRowPB["MaPhongBan"] = DBNull.Value;
@@ -245,15 +257,22 @@ namespace VuToanThang_23110329.Forms
                             cmbPhongBan.DataSource = phongBanBinding.Copy();
                             cmbPhongBan.DisplayMember = "TenPhongBan";
                             cmbPhongBan.ValueMember = "MaPhongBan";
-                            cmbPhongBan.SelectedIndex = 0;
+                            if (cmbPhongBan.Items.Count > 0)
+                                cmbPhongBan.SelectedIndex = 0;
 
                             cmbPhongBanForm.DataSource = phongBanBinding.Copy();
                             cmbPhongBanForm.DisplayMember = "TenPhongBan";
                             cmbPhongBanForm.ValueMember = "MaPhongBan";
-                            cmbPhongBanForm.SelectedIndex = 0;
+                            if (cmbPhongBanForm.Items.Count > 0)
+                                cmbPhongBanForm.SelectedIndex = 0;
 
                             // Load chức vụ
                             dtChucVu = ds.Tables[1];
+                            if (dtChucVu.Rows.Count == 0)
+                            {
+                                MessageBox.Show("Không có dữ liệu chức vụ. Vui lòng thêm dữ liệu mẫu.", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            }
+                            
                             var chucVuBinding = dtChucVu.Copy();
                             var newRowCV = chucVuBinding.NewRow();
                             newRowCV["MaChucVu"] = DBNull.Value;
@@ -263,7 +282,8 @@ namespace VuToanThang_23110329.Forms
                             cmbChucVu.DataSource = chucVuBinding;
                             cmbChucVu.DisplayMember = "TenChucVu";
                             cmbChucVu.ValueMember = "MaChucVu";
-                            cmbChucVu.SelectedIndex = 0;
+                            if (cmbChucVu.Items.Count > 0)
+                                cmbChucVu.SelectedIndex = 0;
                         }
                     }
                 }
@@ -420,8 +440,10 @@ namespace VuToanThang_23110329.Forms
         {
             LoadData();
             txtTimKiem.Text = "";
-            cmbPhongBan.SelectedIndex = 0;
-            cmbTrangThai.SelectedIndex = 0;
+            if (cmbPhongBan.Items.Count > 0)
+                cmbPhongBan.SelectedIndex = 0;
+            if (cmbTrangThai.Items.Count > 0)
+                cmbTrangThai.SelectedIndex = 0;
         }
 
         private void btnLuu_Click(object sender, EventArgs e)
@@ -576,14 +598,17 @@ namespace VuToanThang_23110329.Forms
         {
             txtHoTen.Text = "";
             dtpNgaySinh.Value = DateTime.Now.AddYears(-25);
-            cmbGioiTinh.SelectedIndex = -1;
+            if (cmbGioiTinh.Items.Count > 0)
+                cmbGioiTinh.SelectedIndex = -1;
             txtDienThoai.Text = "";
             txtEmail.Text = "";
             txtDiaChi.Text = "";
             dtpNgayVaoLam.Value = DateTime.Now;
             numLuongCoBan.Value = 5000000;
-            cmbPhongBanForm.SelectedIndex = 0;
-            cmbChucVu.SelectedIndex = 0;
+            if (cmbPhongBanForm.Items.Count > 0)
+                cmbPhongBanForm.SelectedIndex = 0;
+            if (cmbChucVu.Items.Count > 0)
+                cmbChucVu.SelectedIndex = 0;
         }
 
         private void LoadEmployeeToForm(int maNV)
@@ -612,14 +637,14 @@ namespace VuToanThang_23110329.Forms
                                 dtpNgayVaoLam.Value = Convert.ToDateTime(reader["NgayVaoLam"]);
                                 numLuongCoBan.Value = Convert.ToDecimal(reader["LuongCoBan"]);
                                 
-                                if (reader["MaPhongBan"] != DBNull.Value)
+                                if (reader["MaPhongBan"] != DBNull.Value && cmbPhongBanForm.Items.Count > 0)
                                     cmbPhongBanForm.SelectedValue = reader["MaPhongBan"];
-                                else
+                                else if (cmbPhongBanForm.Items.Count > 0)
                                     cmbPhongBanForm.SelectedIndex = 0;
                                     
-                                if (reader["MaChucVu"] != DBNull.Value)
+                                if (reader["MaChucVu"] != DBNull.Value && cmbChucVu.Items.Count > 0)
                                     cmbChucVu.SelectedValue = reader["MaChucVu"];
-                                else
+                                else if (cmbChucVu.Items.Count > 0)
                                     cmbChucVu.SelectedIndex = 0;
                             }
                         }
