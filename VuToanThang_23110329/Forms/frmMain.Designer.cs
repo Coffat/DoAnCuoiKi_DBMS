@@ -56,6 +56,7 @@ namespace VuToanThang_23110329.Forms
             this.btnDashboard = new Guna.UI2.WinForms.Guna2Button();
             this.btnQuanLy = new Guna.UI2.WinForms.Guna2Button();
             this.btnDanhMuc = new Guna.UI2.WinForms.Guna2Button();
+            this.btnCaLam = new Guna.UI2.WinForms.Guna2Button();
             this.btnNghiepVu = new Guna.UI2.WinForms.Guna2Button();
             this.btnTienLuong = new Guna.UI2.WinForms.Guna2Button();
             this.btnCaNhan = new Guna.UI2.WinForms.Guna2Button();
@@ -222,6 +223,26 @@ namespace VuToanThang_23110329.Forms
             this.btnDanhMuc.TabIndex = 3;
             this.btnDanhMuc.Text = "📋 Danh mục";
             this.btnDanhMuc.TextAlign = System.Windows.Forms.HorizontalAlignment.Left;
+            // 
+            // btnCaLam
+            // 
+            this.btnCaLam.BorderRadius = 12;
+            this.btnCaLam.DisabledState.BorderColor = System.Drawing.Color.DarkGray;
+            this.btnCaLam.DisabledState.CustomBorderColor = System.Drawing.Color.DarkGray;
+            this.btnCaLam.DisabledState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(169)))), ((int)(((byte)(169)))), ((int)(((byte)(169)))));
+            this.btnCaLam.DisabledState.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(141)))), ((int)(((byte)(141)))), ((int)(((byte)(141)))));
+            this.btnCaLam.FillColor = System.Drawing.Color.White;
+            this.btnCaLam.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnCaLam.ForeColor = System.Drawing.Color.Black;
+            this.btnCaLam.HoverState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(248)))), ((int)(((byte)(249)))), ((int)(((byte)(250)))));
+            this.btnCaLam.HoverState.ForeColor = System.Drawing.Color.Black;
+            this.btnCaLam.Location = new System.Drawing.Point(10, 265);
+            this.btnCaLam.Name = "btnCaLam";
+            this.btnCaLam.Size = new System.Drawing.Size(230, 45);
+            this.btnCaLam.TabIndex = 4;
+            this.btnCaLam.Text = "⏰ Quản lý ca làm";
+            this.btnCaLam.TextAlign = System.Windows.Forms.HorizontalAlignment.Left;
+            this.btnCaLam.Click += new System.EventHandler(this.btnCaLam_Click);
             this.btnDanhMuc.Click += new System.EventHandler(this.btnDanhMuc_Click);
             // 
             // btnNghiepVu
@@ -236,7 +257,7 @@ namespace VuToanThang_23110329.Forms
             this.btnNghiepVu.ForeColor = System.Drawing.Color.Black;
             this.btnNghiepVu.HoverState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(248)))), ((int)(((byte)(249)))), ((int)(((byte)(250)))));
             this.btnNghiepVu.HoverState.ForeColor = System.Drawing.Color.Black;
-            this.btnNghiepVu.Location = new System.Drawing.Point(10, 265);
+            this.btnNghiepVu.Location = new System.Drawing.Point(10, 320);
             this.btnNghiepVu.Name = "btnNghiepVu";
             this.btnNghiepVu.Size = new System.Drawing.Size(230, 45);
             this.btnNghiepVu.TabIndex = 4;
@@ -256,7 +277,7 @@ namespace VuToanThang_23110329.Forms
             this.btnTienLuong.ForeColor = System.Drawing.Color.Black;
             this.btnTienLuong.HoverState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(248)))), ((int)(((byte)(249)))), ((int)(((byte)(250)))));
             this.btnTienLuong.HoverState.ForeColor = System.Drawing.Color.Black;
-            this.btnTienLuong.Location = new System.Drawing.Point(10, 320);
+            this.btnTienLuong.Location = new System.Drawing.Point(10, 375);
             this.btnTienLuong.Name = "btnTienLuong";
             this.btnTienLuong.Size = new System.Drawing.Size(230, 45);
             this.btnTienLuong.TabIndex = 5;
@@ -276,7 +297,7 @@ namespace VuToanThang_23110329.Forms
             this.btnCaNhan.ForeColor = System.Drawing.Color.Black;
             this.btnCaNhan.HoverState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(248)))), ((int)(((byte)(249)))), ((int)(((byte)(250)))));
             this.btnCaNhan.HoverState.ForeColor = System.Drawing.Color.Black;
-            this.btnCaNhan.Location = new System.Drawing.Point(10, 375);
+            this.btnCaNhan.Location = new System.Drawing.Point(10, 430);
             this.btnCaNhan.Name = "btnCaNhan";
             this.btnCaNhan.Size = new System.Drawing.Size(230, 45);
             this.btnCaNhan.TabIndex = 6;
@@ -296,7 +317,7 @@ namespace VuToanThang_23110329.Forms
             this.btnChamCong.ForeColor = System.Drawing.Color.Black;
             this.btnChamCong.HoverState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(248)))), ((int)(((byte)(249)))), ((int)(((byte)(250)))));
             this.btnChamCong.HoverState.ForeColor = System.Drawing.Color.Black;
-            this.btnChamCong.Location = new System.Drawing.Point(10, 430);
+            this.btnChamCong.Location = new System.Drawing.Point(10, 485);
             this.btnChamCong.Name = "btnChamCong";
             this.btnChamCong.Size = new System.Drawing.Size(230, 45);
             this.btnChamCong.TabIndex = 7;
@@ -316,7 +337,7 @@ namespace VuToanThang_23110329.Forms
             this.btnBaoCao.ForeColor = System.Drawing.Color.Black;
             this.btnBaoCao.HoverState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(248)))), ((int)(((byte)(249)))), ((int)(((byte)(250)))));
             this.btnBaoCao.HoverState.ForeColor = System.Drawing.Color.Black;
-            this.btnBaoCao.Location = new System.Drawing.Point(10, 485);
+            this.btnBaoCao.Location = new System.Drawing.Point(10, 540);
             this.btnBaoCao.Name = "btnBaoCao";
             this.btnBaoCao.Size = new System.Drawing.Size(230, 45);
             this.btnBaoCao.TabIndex = 8;
@@ -334,7 +355,7 @@ namespace VuToanThang_23110329.Forms
             this.btnDangXuat.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(220)))), ((int)(((byte)(53)))), ((int)(((byte)(69)))));
             this.btnDangXuat.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnDangXuat.ForeColor = System.Drawing.Color.White;
-            this.btnDangXuat.Location = new System.Drawing.Point(10, 600);
+            this.btnDangXuat.Location = new System.Drawing.Point(10, 595);
             this.btnDangXuat.Name = "btnDangXuat";
             this.btnDangXuat.Size = new System.Drawing.Size(230, 45);
             this.btnDangXuat.TabIndex = 9;
@@ -354,6 +375,7 @@ namespace VuToanThang_23110329.Forms
             this.pnlSidebar.Controls.Add(this.btnDashboard);
             this.pnlSidebar.Controls.Add(this.btnQuanLy);
             this.pnlSidebar.Controls.Add(this.btnDanhMuc);
+            this.pnlSidebar.Controls.Add(this.btnCaLam);
             this.pnlSidebar.Controls.Add(this.btnNghiepVu);
             this.pnlSidebar.Controls.Add(this.btnTienLuong);
             this.pnlSidebar.Controls.Add(this.btnCaNhan);
@@ -396,6 +418,7 @@ namespace VuToanThang_23110329.Forms
         private Guna.UI2.WinForms.Guna2Button btnDashboard;
         private Guna.UI2.WinForms.Guna2Button btnQuanLy;
         private Guna.UI2.WinForms.Guna2Button btnDanhMuc;
+        private Guna.UI2.WinForms.Guna2Button btnCaLam;
         private Guna.UI2.WinForms.Guna2Button btnNghiepVu;
         private Guna.UI2.WinForms.Guna2Button btnTienLuong;
         private Guna.UI2.WinForms.Guna2Button btnCaNhan;

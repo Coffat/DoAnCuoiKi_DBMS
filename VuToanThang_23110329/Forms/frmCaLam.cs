@@ -9,15 +9,25 @@ namespace VuToanThang_23110329.Forms
 {
     public partial class frmCaLam : Form
     {
-        private string connectionString = System.Configuration.ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
+        private string connectionString = System.Configuration.ConfigurationManager.ConnectionStrings["HrDb"].ConnectionString;
         private bool isEditing = false;
         private int currentMaCa = 0;
+        private string userRole = "";
 
         public frmCaLam()
         {
             InitializeComponent();
             SetupDataGridView();
             SetButtonStates(false);
+        }
+
+        public frmCaLam(string role)
+        {
+            InitializeComponent();
+            userRole = role;
+            SetupDataGridView();
+            SetButtonStates(false);
+            SetupRolePermissions();
         }
 
         private void frmCaLam_Load(object sender, EventArgs e)
@@ -304,6 +314,10 @@ namespace VuToanThang_23110329.Forms
                     }
                 }
             }
+            catch (SqlException ex) when (ex.Number == 229) // Permission denied
+            {
+                MessageBox.Show("Bạn không có quyền thêm ca làm. Chỉ HR mới có quyền này.", "Không có quyền", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
             catch (Exception ex)
             {
                 MessageBox.Show($"Lỗi khi thêm ca làm: {ex.Message}", "Lỗi", 
@@ -340,6 +354,10 @@ namespace VuToanThang_23110329.Forms
                     }
                 }
             }
+            catch (SqlException ex) when (ex.Number == 229) // Permission denied
+            {
+                MessageBox.Show("Bạn không có quyền cập nhật ca làm. Chỉ HR mới có quyền này.", "Không có quyền", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
             catch (Exception ex)
             {
                 MessageBox.Show($"Lỗi khi cập nhật ca làm: {ex.Message}", "Lỗi", 
@@ -369,6 +387,10 @@ namespace VuToanThang_23110329.Forms
                         SetEditMode(false);
                     }
                 }
+            }
+            catch (SqlException ex) when (ex.Number == 229) // Permission denied
+            {
+                MessageBox.Show("Bạn không có quyền xóa ca làm. Chỉ HR mới có quyền này.", "Không có quyền", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
             catch (Exception ex)
             {
@@ -425,6 +447,12 @@ namespace VuToanThang_23110329.Forms
         {
             isEditing = editing;
             
+            // Chỉ cho phép edit nếu là HR
+            if (userRole != "HR")
+            {
+                editing = false;
+            }
+            
             // Enable/Disable form controls
             txtTenCa.Enabled = editing;
             dtpGioBatDau.Enabled = editing;
@@ -433,24 +461,78 @@ namespace VuToanThang_23110329.Forms
             txtMoTa.Enabled = editing;
             chkKichHoat.Enabled = editing;
             
-            // Enable/Disable buttons
-            btnThem.Enabled = !editing;
-            btnSua.Enabled = !editing && dgvCaLam.CurrentRow != null;
-            btnXoa.Enabled = !editing && dgvCaLam.CurrentRow != null;
-            btnLuu.Enabled = editing;
-            btnHuy.Enabled = editing;
-            btnLamMoi.Enabled = !editing;
+            // Enable/Disable buttons theo role
+            if (userRole == "HR")
+            {
+                btnThem.Enabled = !editing;
+                btnSua.Enabled = !editing && dgvCaLam.CurrentRow != null;
+                btnXoa.Enabled = !editing && dgvCaLam.CurrentRow != null;
+                btnLuu.Enabled = editing;
+                btnHuy.Enabled = editing;
+            }
+            else
+            {
+                // QuanLy và role khác - chỉ xem
+                btnThem.Enabled = false;
+                btnSua.Enabled = false;
+                btnXoa.Enabled = false;
+                btnLuu.Enabled = false;
+                btnHuy.Enabled = false;
+            }
             
+            btnLamMoi.Enabled = !editing;
             dgvCaLam.Enabled = !editing;
             txtTimKiem.Enabled = !editing;
         }
 
         private void SetButtonStates(bool hasSelection)
         {
-            if (!isEditing)
+            if (!isEditing && userRole == "HR")
             {
                 btnSua.Enabled = hasSelection;
                 btnXoa.Enabled = hasSelection;
+            }
+            else if (userRole != "HR")
+            {
+                // QuanLy và role khác - chỉ xem
+                btnSua.Enabled = false;
+                btnXoa.Enabled = false;
+            }
+        }
+
+        private void SetupRolePermissions()
+        {
+            // Dựa vào phân quyền SQL:
+            // r_hr: CRUD đầy đủ
+            // r_quanly, r_nhanvien: Chỉ xem
+            
+            if (userRole == "HR")
+            {
+                // HR có quyền CRUD đầy đủ theo SQL
+                btnThem.Enabled = true;
+                btnSua.Enabled = false;
+                btnXoa.Enabled = false;
+                btnLuu.Enabled = false;
+                btnHuy.Enabled = false;
+                btnLamMoi.Enabled = true;
+            }
+            else
+            {
+                // QuanLy và NhanVien chỉ có quyền xem theo SQL
+                btnThem.Enabled = false;
+                btnSua.Enabled = false;
+                btnXoa.Enabled = false;
+                btnLuu.Enabled = false;
+                btnHuy.Enabled = false;
+                btnLamMoi.Enabled = true;
+                
+                // Disable tất cả input controls
+                txtTenCa.Enabled = false;
+                dtpGioBatDau.Enabled = false;
+                dtpGioKetThuc.Enabled = false;
+                txtHeSoCa.Enabled = false;
+                txtMoTa.Enabled = false;
+                chkKichHoat.Enabled = false;
             }
         }
     }

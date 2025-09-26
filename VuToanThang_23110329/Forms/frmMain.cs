@@ -75,14 +75,22 @@ namespace VuToanThang_23110329.Forms
             lblStatus.Text = "Đang quản lý danh mục";
             
             // Hiển thị menu con cho HR
-            if (userRole.ToLower() == "r_hr")
+            if (userRole == "HR")
             {
                 ShowSubMenu("Danh mục", new string[] 
                 { 
-                    "Ca làm việc", 
                     "Phòng ban & Chức vụ" 
                 });
             }
+        }
+
+        private void btnCaLam_Click(object sender, EventArgs e)
+        {
+            SetActiveButton(btnCaLam);
+            lblWelcome.Text = "⏰ Quản lý ca làm việc";
+            lblStatus.Text = "Đang quản lý ca làm việc";
+            
+            OpenFormInPanel(new frmCaLam(userRole));
         }
 
         private void btnNghiepVu_Click(object sender, EventArgs e)
@@ -199,6 +207,7 @@ namespace VuToanThang_23110329.Forms
             // Mặc định ẩn tất cả buttons
             btnQuanLy.Visible = false;
             btnDanhMuc.Visible = false;
+            btnCaLam.Visible = false;
             btnNghiepVu.Visible = false;
             btnTienLuong.Visible = false;
             btnCaNhan.Visible = false;
@@ -210,6 +219,7 @@ namespace VuToanThang_23110329.Forms
                 case "QuanLy": // Giám đốc - có quyền cao nhất
                     btnQuanLy.Visible = true;      // Quản lý nhân sự
                     btnDanhMuc.Visible = true;     // Danh mục
+                    btnCaLam.Visible = true;       // Quản lý ca làm
                     btnNghiepVu.Visible = true;    // Nghiệp vụ
                     btnTienLuong.Visible = true;   // Tiền lương
                     btnBaoCao.Visible = true;      // Báo cáo
@@ -219,6 +229,7 @@ namespace VuToanThang_23110329.Forms
                 case "HR": // Trưởng phòng nhân sự
                     btnQuanLy.Visible = true;      // Quản lý nhân sự
                     btnDanhMuc.Visible = true;     // Danh mục
+                    btnCaLam.Visible = true;       // Quản lý ca làm
                     btnBaoCao.Visible = true;      // Báo cáo
                     btnCaNhan.Visible = true;      // Cá nhân
                     break;
@@ -243,7 +254,7 @@ namespace VuToanThang_23110329.Forms
         private void SetActiveButton(Guna.UI2.WinForms.Guna2Button activeButton)
         {
             // Reset all buttons to default state
-            Guna.UI2.WinForms.Guna2Button[] buttons = { btnDashboard, btnQuanLy, btnDanhMuc, btnNghiepVu, btnTienLuong, btnCaNhan, btnChamCong, btnBaoCao };
+            Guna.UI2.WinForms.Guna2Button[] buttons = { btnDashboard, btnQuanLy, btnDanhMuc, btnCaLam, btnNghiepVu, btnTienLuong, btnCaNhan, btnChamCong, btnBaoCao };
             
             foreach (var btn in buttons)
             {
@@ -307,7 +318,7 @@ namespace VuToanThang_23110329.Forms
                 switch (functionName)
                 {
                     case "Ca làm việc":
-                        OpenFormInPanel(new frmCaLam());
+                        OpenFormInPanel(new frmCaLam(userRole));
                         lblStatus.Text = "Đang quản lý ca làm việc";
                         break;
                     case "Phòng ban & Chức vụ":
