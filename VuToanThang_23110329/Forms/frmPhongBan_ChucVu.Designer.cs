@@ -36,6 +36,7 @@ namespace VuToanThang_23110329.Forms
             this.tabPhongBan = new System.Windows.Forms.TabPage();
             this.tabChucVu = new System.Windows.Forms.TabPage();
             this.pnlPhongBan = new System.Windows.Forms.Panel();
+            this.dgvPhongBan = new Guna.UI2.WinForms.Guna2DataGridView();
             this.lblMaPhongBan = new System.Windows.Forms.Label();
             this.txtMaPhongBan = new Guna.UI2.WinForms.Guna2TextBox();
             this.lblTenPhongBan = new System.Windows.Forms.Label();
@@ -49,6 +50,7 @@ namespace VuToanThang_23110329.Forms
             this.btnHuy = new Guna.UI2.WinForms.Guna2Button();
             this.btnLamMoi = new Guna.UI2.WinForms.Guna2Button();
             this.pnlChucVu = new System.Windows.Forms.Panel();
+            this.dgvChucVu = new Guna.UI2.WinForms.Guna2DataGridView();
             this.lblMaChucVu = new System.Windows.Forms.Label();
             this.txtMaChucVu = new Guna.UI2.WinForms.Guna2TextBox();
             this.lblTenChucVu = new System.Windows.Forms.Label();
@@ -150,6 +152,22 @@ namespace VuToanThang_23110329.Forms
             this.pnlPhongBan.Name = "pnlPhongBan";
             this.pnlPhongBan.Size = new System.Drawing.Size(1112, 554);
             this.pnlPhongBan.TabIndex = 0;
+            // 
+            // dgvPhongBan
+            // 
+            this.dgvPhongBan.AllowUserToAddRows = false;
+            this.dgvPhongBan.AllowUserToDeleteRows = false;
+            this.dgvPhongBan.BackgroundColor = System.Drawing.Color.White;
+            this.dgvPhongBan.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.dgvPhongBan.ColumnHeadersHeight = 40;
+            this.dgvPhongBan.EnableHeadersVisualStyles = false;
+            this.dgvPhongBan.Location = new System.Drawing.Point(20, 120);
+            this.dgvPhongBan.Name = "dgvPhongBan";
+            this.dgvPhongBan.ReadOnly = true;
+            this.dgvPhongBan.RowHeadersVisible = false;
+            this.dgvPhongBan.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            this.dgvPhongBan.Size = new System.Drawing.Size(1070, 410);
+            this.dgvPhongBan.TabIndex = 12;
             // 
             // lblMaPhongBan
             // 
@@ -372,6 +390,22 @@ namespace VuToanThang_23110329.Forms
             this.pnlChucVu.Name = "pnlChucVu";
             this.pnlChucVu.Size = new System.Drawing.Size(1112, 554);
             this.pnlChucVu.TabIndex = 0;
+            // 
+            // dgvChucVu
+            // 
+            this.dgvChucVu.AllowUserToAddRows = false;
+            this.dgvChucVu.AllowUserToDeleteRows = false;
+            this.dgvChucVu.BackgroundColor = System.Drawing.Color.White;
+            this.dgvChucVu.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.dgvChucVu.ColumnHeadersHeight = 40;
+            this.dgvChucVu.EnableHeadersVisualStyles = false;
+            this.dgvChucVu.Location = new System.Drawing.Point(20, 120);
+            this.dgvChucVu.Name = "dgvChucVu";
+            this.dgvChucVu.ReadOnly = true;
+            this.dgvChucVu.RowHeadersVisible = false;
+            this.dgvChucVu.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            this.dgvChucVu.Size = new System.Drawing.Size(1070, 410);
+            this.dgvChucVu.TabIndex = 12;
             // 
             // lblMaChucVu
             // 
