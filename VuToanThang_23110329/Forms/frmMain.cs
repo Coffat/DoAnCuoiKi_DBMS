@@ -35,6 +35,9 @@ namespace VuToanThang_23110329.Forms
 
         private void frmMain_Load(object sender, EventArgs e)
         {
+            // Debug: Hiển thị role để kiểm tra
+            MessageBox.Show($"Role nhận được: '{userRole}'", "Debug Role", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            
             SetupMenuForRole(userRole);
             lblUserInfo.Text = $"Người dùng: {userRole}";
             lblStatus.Text = "Sẵn sàng";
@@ -205,33 +208,36 @@ namespace VuToanThang_23110329.Forms
             btnChamCong.Visible = false;
             btnBaoCao.Visible = false;
 
-            switch (role.ToLower())
+            switch (role)
             {
-                case "r_quanly": // Quản lý - xem lịch phân ca và duyệt đơn từ
-                    btnNghiepVu.Visible = true; // Xem lịch phân ca, duyệt đơn từ
-                    btnCaNhan.Visible = true;   // Đổi mật khẩu, đăng xuất, thoát
+                case "QuanLy": // Giám đốc - có quyền cao nhất
+                    btnQuanLy.Visible = true;      // Quản lý nhân sự
+                    btnDanhMuc.Visible = true;     // Danh mục
+                    btnNghiepVu.Visible = true;    // Nghiệp vụ
+                    btnTienLuong.Visible = true;   // Tiền lương
+                    btnBaoCao.Visible = true;      // Báo cáo
+                    btnCaNhan.Visible = true;      // Cá nhân
                     break;
-
-                case "r_hr": // HR - quản lý nhân sự đầy đủ
-                    btnQuanLy.Visible = true;   // Hồ sơ nhân viên, lịch phân ca, duyệt đơn từ
-                    btnDanhMuc.Visible = true;  // Ca làm việc, phòng ban & chức vụ
-                    btnBaoCao.Visible = true;   // Báo cáo nhân sự, bảng công chi tiết
-                    btnCaNhan.Visible = true;   // Đổi mật khẩu, đăng xuất, thoát
+                    
+                case "HR": // Trưởng phòng nhân sự
+                    btnQuanLy.Visible = true;      // Quản lý nhân sự
+                    btnDanhMuc.Visible = true;     // Danh mục
+                    btnBaoCao.Visible = true;      // Báo cáo
+                    btnCaNhan.Visible = true;      // Cá nhân
                     break;
-
-                case "r_ketoan": // Kế toán - quản lý lương
-                    btnTienLuong.Visible = true; // Quản lý bảng lương
-                    btnBaoCao.Visible = true;    // Báo cáo lương, bảng công tháng
-                    btnCaNhan.Visible = true;    // Đổi mật khẩu, đăng xuất, thoát
+                    
+                case "KeToan": // Kế toán
+                    btnTienLuong.Visible = true;   // Tiền lương
+                    btnBaoCao.Visible = true;      // Báo cáo
+                    btnCaNhan.Visible = true;      // Cá nhân
                     break;
-
-                case "r_nhanvien": // Nhân viên - quyền cơ bản
-                    btnCaNhan.Visible = true;    // Thông tin cá nhân, gửi đơn từ, đổi mật khẩu
-                    btnChamCong.Visible = true;  // Chấm công check-in/out
+                    
+                case "NhanVien": // Nhân viên thường
+                    btnCaNhan.Visible = true;      // Cá nhân
+                    btnChamCong.Visible = true;    // Chấm công
                     break;
-
-                default:
-                    // Nếu vai trò không xác định, chỉ hiển thị cá nhân
+                    
+                default: // Mặc định cho nhân viên
                     btnCaNhan.Visible = true;
                     break;
             }
