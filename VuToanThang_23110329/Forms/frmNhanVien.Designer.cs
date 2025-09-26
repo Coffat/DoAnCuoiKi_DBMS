@@ -265,7 +265,6 @@ namespace VuToanThang_23110329.Forms
             this.dtpNgaySinh.FillColor = System.Drawing.Color.White;
             this.dtpNgaySinh.ForeColor = System.Drawing.Color.Black;
             this.dtpNgaySinh.BorderColor = System.Drawing.Color.FromArgb(200, 200, 200);
-            this.dtpNgaySinh.FocusedState.BorderColor = System.Drawing.Color.FromArgb(94, 148, 255);
             
             var lblGioiTinh = new System.Windows.Forms.Label();
             lblGioiTinh.Text = "Giới tính";
@@ -347,7 +346,6 @@ namespace VuToanThang_23110329.Forms
             this.dtpNgayVaoLam.FillColor = System.Drawing.Color.White;
             this.dtpNgayVaoLam.ForeColor = System.Drawing.Color.Black;
             this.dtpNgayVaoLam.BorderColor = System.Drawing.Color.FromArgb(200, 200, 200);
-            this.dtpNgayVaoLam.FocusedState.BorderColor = System.Drawing.Color.FromArgb(94, 148, 255);
             
             var lblLuongCoBan = new System.Windows.Forms.Label();
             lblLuongCoBan.Text = "Lương cơ bản *";
@@ -365,7 +363,6 @@ namespace VuToanThang_23110329.Forms
             this.numLuongCoBan.FillColor = System.Drawing.Color.White;
             this.numLuongCoBan.ForeColor = System.Drawing.Color.Black;
             this.numLuongCoBan.BorderColor = System.Drawing.Color.FromArgb(200, 200, 200);
-            this.numLuongCoBan.FocusedState.BorderColor = System.Drawing.Color.FromArgb(94, 148, 255);
             
             var lblPhongBan = new System.Windows.Forms.Label();
             lblPhongBan.Text = "Phòng ban";
