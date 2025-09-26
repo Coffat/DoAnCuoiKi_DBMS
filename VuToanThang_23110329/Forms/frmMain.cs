@@ -56,8 +56,11 @@ namespace VuToanThang_23110329.Forms
             lblWelcome.Text = "👥 Quản lý nhân sự";
             lblStatus.Text = "Đang quản lý nhân sự";
             
-            // Hiển thị menu con cho HR
-            if (userRole.ToLower() == "r_hr")
+            // Debug: Hiển thị vai trò hiện tại
+            MessageBox.Show($"Vai trò hiện tại: '{userRole}'", "Debug Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            
+            // Hiển thị menu con cho HR và QuanLy
+            if (userRole == "HR" || userRole == "QuanLy")
             {
                 ShowSubMenu("Quản lý nhân sự", new string[] 
                 { 
@@ -65,6 +68,10 @@ namespace VuToanThang_23110329.Forms
                     "Lịch phân ca", 
                     "Duyệt Đơn từ" 
                 });
+            }
+            else
+            {
+                MessageBox.Show($"Bạn không có quyền truy cập chức năng này. Vai trò: '{userRole}'", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
         }
 
@@ -100,7 +107,7 @@ namespace VuToanThang_23110329.Forms
             lblStatus.Text = "Đang xử lý nghiệp vụ";
             
             // Hiển thị menu con theo vai trò
-            if (userRole.ToLower() == "r_quanly")
+            if (userRole == "QuanLy")
             {
                 ShowSubMenu("Nghiệp vụ Quản lý", new string[] 
                 { 
@@ -117,7 +124,7 @@ namespace VuToanThang_23110329.Forms
             lblStatus.Text = "Đang quản lý lương";
             
             // Hiển thị menu con cho Kế toán
-            if (userRole.ToLower() == "r_ketoan")
+            if (userRole == "KeToan")
             {
                 ShowSubMenu("Tiền lương", new string[] 
                 { 
@@ -133,7 +140,7 @@ namespace VuToanThang_23110329.Forms
             lblStatus.Text = "Đang xem thông tin cá nhân";
             
             // Hiển thị menu con theo vai trò
-            if (userRole.ToLower() == "r_nhanvien")
+            if (userRole == "NhanVien")
             {
                 ShowSubMenu("Cá nhân", new string[] 
                 { 
@@ -159,7 +166,7 @@ namespace VuToanThang_23110329.Forms
             lblStatus.Text = "Đang chấm công";
             
             // Hiển thị menu con cho Nhân viên
-            if (userRole.ToLower() == "r_nhanvien")
+            if (userRole == "NhanVien")
             {
                 ShowSubMenu("Chấm công", new string[] 
                 { 
@@ -175,7 +182,7 @@ namespace VuToanThang_23110329.Forms
             lblStatus.Text = "Đang xem báo cáo";
             
             // Hiển thị menu con theo vai trò
-            if (userRole.ToLower() == "r_hr")
+            if (userRole == "HR")
             {
                 ShowSubMenu("Báo cáo HR", new string[] 
                 { 
@@ -183,7 +190,7 @@ namespace VuToanThang_23110329.Forms
                     "Bảng công chi tiết" 
                 });
             }
-            else if (userRole.ToLower() == "r_ketoan")
+            else if (userRole == "KeToan")
             {
                 ShowSubMenu("Báo cáo Kế toán", new string[] 
                 { 
