@@ -197,7 +197,7 @@ namespace VuToanThang_23110329.Forms
             this.txtMaPhongBan.ForeColor = System.Drawing.Color.Black;
             this.txtMaPhongBan.HoverState.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(124)))), ((int)(((byte)(77)))), ((int)(((byte)(255)))));
             this.txtMaPhongBan.HoverState.Parent = this.txtMaPhongBan;
-            this.txtMaPhongBan.Location = new System.Drawing.Point(100, 15);
+            this.txtMaPhongBan.Location = new System.Drawing.Point(160, 15);
             this.txtMaPhongBan.Name = "txtMaPhongBan";
             this.txtMaPhongBan.PasswordChar = '\0';
             this.txtMaPhongBan.PlaceholderText = "";
@@ -233,7 +233,7 @@ namespace VuToanThang_23110329.Forms
             this.txtTenPhongBan.ForeColor = System.Drawing.Color.Black;
             this.txtTenPhongBan.HoverState.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(124)))), ((int)(((byte)(77)))), ((int)(((byte)(255)))));
             this.txtTenPhongBan.HoverState.Parent = this.txtTenPhongBan;
-            this.txtTenPhongBan.Location = new System.Drawing.Point(310, 15);
+            this.txtTenPhongBan.Location = new System.Drawing.Point(360, 15);
             this.txtTenPhongBan.Name = "txtTenPhongBan";
             this.txtTenPhongBan.PasswordChar = '\0';
             this.txtTenPhongBan.PlaceholderText = "";
