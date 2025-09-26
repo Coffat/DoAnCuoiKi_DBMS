@@ -27,7 +27,11 @@ BEGIN
     
     IF @VaiTro IS NULL RETURN;
     
-    IF @ChucNang = 'MANAGE_EMPLOYEES' AND @VaiTro = N'HR'
+    -- Quản lý nhân viên: HR và QuanLy có quyền CRUD
+    IF @ChucNang = 'MANAGE_EMPLOYEES' AND @VaiTro IN (N'HR', N'QuanLy')
+        SET @CoQuyen = 1;
+    -- KeToan, NhanVien chỉ được xem
+    ELSE IF @ChucNang = 'VIEW_EMPLOYEES' AND @VaiTro IN (N'HR', N'QuanLy', N'KeToan', N'NhanVien')
         SET @CoQuyen = 1;
     ELSE IF @ChucNang = 'MANAGE_SHIFTS' AND @VaiTro = N'HR'
         SET @CoQuyen = 1;
@@ -72,12 +76,15 @@ GO
    Employee: INSERT DonTu; SELECT các bảng với quyền hạn chế
 */
 
--- HR
+-- HR và QuanLy có quyền CRUD nhân viên
 GRANT SELECT, INSERT, UPDATE, DELETE ON dbo.NhanVien    TO r_hr;
+GRANT SELECT, INSERT, UPDATE, DELETE ON dbo.NhanVien    TO r_quanly;
 GRANT SELECT, INSERT, UPDATE, DELETE ON dbo.LichPhanCa  TO r_hr;
 GRANT SELECT               ON dbo.vw_CongThang          TO r_hr;
 GRANT SELECT               ON dbo.vw_Lich_ChamCong_Ngay TO r_hr;
+-- Quyền thêm nhân viên mới (HR và QuanLy)
 GRANT EXECUTE ON dbo.sp_ThemMoiNhanVien  TO r_hr;
+GRANT EXECUTE ON dbo.sp_ThemMoiNhanVien  TO r_quanly;
 GRANT EXECUTE ON dbo.sp_DuyetDonTu       TO r_hr;
 GRANT EXECUTE ON dbo.sp_KhoaCongThang    TO r_hr;
 GRANT EXECUTE ON dbo.sp_MoKhoaCongThang  TO r_hr;
@@ -380,13 +387,17 @@ GRANT EXECUTE ON dbo.sp_GetPhongBanChucVu TO r_quanly;
 GRANT EXECUTE ON dbo.sp_GetPhongBanChucVu TO r_ketoan;
 GRANT EXECUTE ON dbo.sp_GetPhongBanChucVu TO r_nhanvien;
 
--- Quyền cho sp_GetNhanVienFull (tất cả role đều cần)
+-- Quyền xem danh sách nhân viên (tất cả role đều cần để hiển thị)
+-- HR: Toàn quyền CRUD nhân viên
+-- QuanLy: Toàn quyền CRUD nhân viên (như HR)
+-- KeToan: Chỉ xem nhân viên (để tính lương)
+-- NhanVien: Chỉ xem thông tin cá nhân
 GRANT EXECUTE ON dbo.sp_GetNhanVienFull TO r_hr;
 GRANT EXECUTE ON dbo.sp_GetNhanVienFull TO r_quanly;
 GRANT EXECUTE ON dbo.sp_GetNhanVienFull TO r_ketoan;
 GRANT EXECUTE ON dbo.sp_GetNhanVienFull TO r_nhanvien;
 
--- Quyền cho sp_UpdateNhanVienWithPhongBanChucVu
+-- Quyền cho sp_UpdateNhanVienWithPhongBanChucVu (HR và QuanLy đều được cập nhật)
 GRANT EXECUTE ON dbo.sp_UpdateNhanVienWithPhongBanChucVu TO r_hr;
 GRANT EXECUTE ON dbo.sp_UpdateNhanVienWithPhongBanChucVu TO r_quanly;
 

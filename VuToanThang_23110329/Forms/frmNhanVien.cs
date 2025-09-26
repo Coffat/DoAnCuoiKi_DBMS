@@ -190,6 +190,7 @@ namespace VuToanThang_23110329.Forms
                             newRowPB["TenPhongBan"] = "-- Chọn phòng ban --";
                             phongBanBinding.Rows.InsertAt(newRowPB, 0);
 
+
                             cmbPhongBan.DataSource = phongBanBinding.Copy();
                             cmbPhongBan.DisplayMember = "TenPhongBan";
                             cmbPhongBan.ValueMember = "MaPhongBan";
@@ -368,16 +369,17 @@ namespace VuToanThang_23110329.Forms
         {
             bool isHR = currentUserRole == "HR";
             bool isQuanLy = currentUserRole == "QuanLy";
+            bool isKeToan = currentUserRole == "KeToan";
 
-            // HR có toàn quyền
-            if (isHR)
+            // HR và QuanLy có toàn quyền CRUD nhân viên
+            if (isHR || isQuanLy)
             {
                 btnThem.Enabled = true;
                 btnSua.Enabled = true;
                 btnVoHieuHoa.Enabled = true;
             }
-            // Quản lý và Kế toán chỉ xem
-            else if (isQuanLy || currentUserRole == "KeToan")
+            // Kế toán chỉ xem (không được thêm/sửa/xóa)
+            else if (isKeToan)
             {
                 btnThem.Enabled = false;
                 btnSua.Enabled = false;
@@ -392,9 +394,6 @@ namespace VuToanThang_23110329.Forms
             }
 
             btnLamMoi.Enabled = true;
-            
-            // Debug: Hiển thị vai trò hiện tại
-            MessageBox.Show($"Vai trò hiện tại: '{currentUserRole}'\nQuyền CRUD: {(isHR ? "Có" : "Không")}", "Debug Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         private void btnThem_Click(object sender, EventArgs e)
@@ -593,10 +592,6 @@ namespace VuToanThang_23110329.Forms
 
         private void cmbPhongBan_SelectedIndexChanged(object sender, EventArgs e)
         {
-            // Debug: Hiển thị thông tin filter
-            string selectedValue = cmbPhongBan.SelectedValue?.ToString();
-            string selectedText = cmbPhongBan.Text;
-            MessageBox.Show($"Phòng ban được chọn:\nValue: '{selectedValue}'\nText: '{selectedText}'", "Debug Filter", MessageBoxButtons.OK, MessageBoxIcon.Information);
             FilterData();
         }
 
