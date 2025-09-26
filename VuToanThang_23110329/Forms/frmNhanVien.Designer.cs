@@ -165,7 +165,7 @@ namespace VuToanThang_23110329.Forms
             this.txtTimKiem.FillColor = System.Drawing.Color.White;
             this.txtTimKiem.ForeColor = System.Drawing.Color.Black;
             this.txtTimKiem.BorderColor = System.Drawing.Color.FromArgb(200, 200, 200);
-            this.txtTimKiem.FocusedBorderColor = System.Drawing.Color.FromArgb(94, 148, 255);
+            this.txtTimKiem.FocusedState.BorderColor = System.Drawing.Color.FromArgb(94, 148, 255);
             this.txtTimKiem.TextChanged += new System.EventHandler(this.txtTimKiem_TextChanged);
             
             this.cmbPhongBan.Size = new System.Drawing.Size(150, 35);
@@ -174,7 +174,7 @@ namespace VuToanThang_23110329.Forms
             this.cmbPhongBan.FillColor = System.Drawing.Color.White;
             this.cmbPhongBan.ForeColor = System.Drawing.Color.Black;
             this.cmbPhongBan.BorderColor = System.Drawing.Color.FromArgb(200, 200, 200);
-            this.cmbPhongBan.FocusedBorderColor = System.Drawing.Color.FromArgb(94, 148, 255);
+            this.cmbPhongBan.FocusedState.BorderColor = System.Drawing.Color.FromArgb(94, 148, 255);
             this.cmbPhongBan.SelectedIndexChanged += new System.EventHandler(this.cmbPhongBan_SelectedIndexChanged);
             
             this.cmbTrangThai.Size = new System.Drawing.Size(120, 35);
@@ -183,7 +183,7 @@ namespace VuToanThang_23110329.Forms
             this.cmbTrangThai.FillColor = System.Drawing.Color.White;
             this.cmbTrangThai.ForeColor = System.Drawing.Color.Black;
             this.cmbTrangThai.BorderColor = System.Drawing.Color.FromArgb(200, 200, 200);
-            this.cmbTrangThai.FocusedBorderColor = System.Drawing.Color.FromArgb(94, 148, 255);
+            this.cmbTrangThai.FocusedState.BorderColor = System.Drawing.Color.FromArgb(94, 148, 255);
             this.cmbTrangThai.Items.AddRange(new object[] { "Tất cả", "Đang làm", "Nghỉ việc" });
             this.cmbTrangThai.SelectedIndex = 0;
             this.cmbTrangThai.SelectedIndexChanged += new System.EventHandler(this.cmbTrangThai_SelectedIndexChanged);
@@ -248,7 +248,7 @@ namespace VuToanThang_23110329.Forms
             this.txtHoTen.FillColor = System.Drawing.Color.White;
             this.txtHoTen.ForeColor = System.Drawing.Color.Black;
             this.txtHoTen.BorderColor = System.Drawing.Color.FromArgb(200, 200, 200);
-            this.txtHoTen.FocusedBorderColor = System.Drawing.Color.FromArgb(94, 148, 255);
+            this.txtHoTen.FocusedState.BorderColor = System.Drawing.Color.FromArgb(94, 148, 255);
             
             var lblNgaySinh = new System.Windows.Forms.Label();
             lblNgaySinh.Text = "Ngày sinh";
@@ -262,6 +262,10 @@ namespace VuToanThang_23110329.Forms
             this.dtpNgaySinh.BorderRadius = 8;
             this.dtpNgaySinh.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
             this.dtpNgaySinh.CustomFormat = "dd/MM/yyyy";
+            this.dtpNgaySinh.FillColor = System.Drawing.Color.White;
+            this.dtpNgaySinh.ForeColor = System.Drawing.Color.Black;
+            this.dtpNgaySinh.BorderColor = System.Drawing.Color.FromArgb(200, 200, 200);
+            this.dtpNgaySinh.FocusedState.BorderColor = System.Drawing.Color.FromArgb(94, 148, 255);
             
             var lblGioiTinh = new System.Windows.Forms.Label();
             lblGioiTinh.Text = "Giới tính";
@@ -277,7 +281,7 @@ namespace VuToanThang_23110329.Forms
             this.cmbGioiTinh.FillColor = System.Drawing.Color.White;
             this.cmbGioiTinh.ForeColor = System.Drawing.Color.Black;
             this.cmbGioiTinh.BorderColor = System.Drawing.Color.FromArgb(200, 200, 200);
-            this.cmbGioiTinh.FocusedBorderColor = System.Drawing.Color.FromArgb(94, 148, 255);
+            this.cmbGioiTinh.FocusedState.BorderColor = System.Drawing.Color.FromArgb(94, 148, 255);
             
             var lblDienThoai = new System.Windows.Forms.Label();
             lblDienThoai.Text = "Điện thoại";
@@ -293,7 +297,7 @@ namespace VuToanThang_23110329.Forms
             this.txtDienThoai.FillColor = System.Drawing.Color.White;
             this.txtDienThoai.ForeColor = System.Drawing.Color.Black;
             this.txtDienThoai.BorderColor = System.Drawing.Color.FromArgb(200, 200, 200);
-            this.txtDienThoai.FocusedBorderColor = System.Drawing.Color.FromArgb(94, 148, 255);
+            this.txtDienThoai.FocusedState.BorderColor = System.Drawing.Color.FromArgb(94, 148, 255);
             
             var lblEmail = new System.Windows.Forms.Label();
             lblEmail.Text = "Email";
@@ -309,7 +313,7 @@ namespace VuToanThang_23110329.Forms
             this.txtEmail.FillColor = System.Drawing.Color.White;
             this.txtEmail.ForeColor = System.Drawing.Color.Black;
             this.txtEmail.BorderColor = System.Drawing.Color.FromArgb(200, 200, 200);
-            this.txtEmail.FocusedBorderColor = System.Drawing.Color.FromArgb(94, 148, 255);
+            this.txtEmail.FocusedState.BorderColor = System.Drawing.Color.FromArgb(94, 148, 255);
             
             var lblDiaChi = new System.Windows.Forms.Label();
             lblDiaChi.Text = "Địa chỉ";
@@ -325,7 +329,7 @@ namespace VuToanThang_23110329.Forms
             this.txtDiaChi.FillColor = System.Drawing.Color.White;
             this.txtDiaChi.ForeColor = System.Drawing.Color.Black;
             this.txtDiaChi.BorderColor = System.Drawing.Color.FromArgb(200, 200, 200);
-            this.txtDiaChi.FocusedBorderColor = System.Drawing.Color.FromArgb(94, 148, 255);
+            this.txtDiaChi.FocusedState.BorderColor = System.Drawing.Color.FromArgb(94, 148, 255);
            
             var lblNgayVaoLam = new System.Windows.Forms.Label();
             lblNgayVaoLam.Text = "Ngày vào làm *";
@@ -340,6 +344,10 @@ namespace VuToanThang_23110329.Forms
             this.dtpNgayVaoLam.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
             this.dtpNgayVaoLam.CustomFormat = "dd/MM/yyyy";
             this.dtpNgayVaoLam.Value = DateTime.Now;
+            this.dtpNgayVaoLam.FillColor = System.Drawing.Color.White;
+            this.dtpNgayVaoLam.ForeColor = System.Drawing.Color.Black;
+            this.dtpNgayVaoLam.BorderColor = System.Drawing.Color.FromArgb(200, 200, 200);
+            this.dtpNgayVaoLam.FocusedState.BorderColor = System.Drawing.Color.FromArgb(94, 148, 255);
             
             var lblLuongCoBan = new System.Windows.Forms.Label();
             lblLuongCoBan.Text = "Lương cơ bản *";
@@ -354,6 +362,10 @@ namespace VuToanThang_23110329.Forms
             this.numLuongCoBan.Maximum = 999999999;
             this.numLuongCoBan.ThousandsSeparator = true;
             this.numLuongCoBan.Value = 5000000;
+            this.numLuongCoBan.FillColor = System.Drawing.Color.White;
+            this.numLuongCoBan.ForeColor = System.Drawing.Color.Black;
+            this.numLuongCoBan.BorderColor = System.Drawing.Color.FromArgb(200, 200, 200);
+            this.numLuongCoBan.FocusedState.BorderColor = System.Drawing.Color.FromArgb(94, 148, 255);
             
             var lblPhongBan = new System.Windows.Forms.Label();
             lblPhongBan.Text = "Phòng ban";
@@ -368,7 +380,7 @@ namespace VuToanThang_23110329.Forms
             this.cmbPhongBanForm.FillColor = System.Drawing.Color.White;
             this.cmbPhongBanForm.ForeColor = System.Drawing.Color.Black;
             this.cmbPhongBanForm.BorderColor = System.Drawing.Color.FromArgb(200, 200, 200);
-            this.cmbPhongBanForm.FocusedBorderColor = System.Drawing.Color.FromArgb(94, 148, 255);
+            this.cmbPhongBanForm.FocusedState.BorderColor = System.Drawing.Color.FromArgb(94, 148, 255);
             
             var lblChucVu = new System.Windows.Forms.Label();
             lblChucVu.Text = "Chức vụ";
@@ -383,7 +395,7 @@ namespace VuToanThang_23110329.Forms
             this.cmbChucVu.FillColor = System.Drawing.Color.White;
             this.cmbChucVu.ForeColor = System.Drawing.Color.Black;
             this.cmbChucVu.BorderColor = System.Drawing.Color.FromArgb(200, 200, 200);
-            this.cmbChucVu.FocusedBorderColor = System.Drawing.Color.FromArgb(94, 148, 255);
+            this.cmbChucVu.FocusedState.BorderColor = System.Drawing.Color.FromArgb(94, 148, 255);
             
             // Action buttons
             this.btnLuu.Location = new System.Drawing.Point(15, 420);
