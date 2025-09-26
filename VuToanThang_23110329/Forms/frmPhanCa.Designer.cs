@@ -345,6 +345,11 @@ namespace VuToanThang_23110329.Forms
             this.pnlMain.Name = "pnlMain";
             this.pnlMain.Size = new System.Drawing.Size(1200, 700);
             this.pnlMain.TabIndex = 0;
+            this.pnlMain.Controls.Add(this.pnlTitle);
+            this.pnlMain.Controls.Add(this.lblTitle);
+            this.pnlMain.Controls.Add(this.pnlFilter);
+            this.pnlMain.Controls.Add(this.pnlButtons);
+            this.pnlMain.Controls.Add(this.pnlContent);
             // 
             // pnlTitle
             // 
@@ -488,12 +493,7 @@ namespace VuToanThang_23110329.Forms
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(20)))), ((int)(((byte)(20)))), ((int)(((byte)(20)))));
             this.ClientSize = new System.Drawing.Size(1200, 700);
-            this.Controls.Add(this.pnlTitle);
             this.Controls.Add(this.pnlMain);
-            this.Controls.Add(this.lblTitle);
-            this.Controls.Add(this.pnlFilter);
-            this.Controls.Add(this.pnlButtons);
-            this.Controls.Add(this.pnlContent);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Name = "frmPhanCa";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
