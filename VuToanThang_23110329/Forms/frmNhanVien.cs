@@ -26,9 +26,6 @@ namespace VuToanThang_23110329.Forms
             InitializeComponent();
             currentUserRole = userRole;
             InitializeConnectionString();
-            
-            // Debug: Kiểm tra userRole được truyền vào
-            MessageBox.Show($"DEBUG Constructor - userRole được truyền: '{userRole}'", "Debug Constructor", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         private void InitializeConnectionString()
@@ -60,13 +57,7 @@ namespace VuToanThang_23110329.Forms
             SetupDataGridView();
             LoadPhongBanChucVu();
             LoadData();
-            
-            // Debug: Kiểm tra trước khi gọi SetPermissions
-            MessageBox.Show($"DEBUG frmNhanVien_Load - Trước khi gọi SetPermissions, currentUserRole: '{currentUserRole}'", "Debug Load", MessageBoxButtons.OK, MessageBoxIcon.Information);
             SetPermissions();
-            
-            // Debug: Kiểm tra sau khi gọi SetPermissions
-            MessageBox.Show($"DEBUG frmNhanVien_Load - Sau khi gọi SetPermissions:\nbtnThem.Enabled: {btnThem.Enabled}\nbtnSua.Enabled: {btnSua.Enabled}\nbtnVoHieuHoa.Enabled: {btnVoHieuHoa.Enabled}", "Debug After SetPermissions", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         private void GetCurrentUserRole()
@@ -376,44 +367,21 @@ namespace VuToanThang_23110329.Forms
 
         private void SetPermissions()
         {
-            // Debug: Hiển thị vai trò hiện tại
-            MessageBox.Show($"DEBUG - Vai trò hiện tại: '{currentUserRole}'", "Debug Role", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            
-            bool isHR = currentUserRole == "HR";
-            bool isQuanLy = currentUserRole == "QuanLy";
-            bool isKeToan = currentUserRole == "KeToan";
-            
-            // Debug: Kiểm tra so sánh string
-            MessageBox.Show($"DEBUG String Comparison:\ncurrentUserRole == 'HR': {currentUserRole == "HR"}\ncurrentUserRole == 'QuanLy': {currentUserRole == "QuanLy"}\ncurrentUserRole == 'KeToan': {currentUserRole == "KeToan"}\ncurrentUserRole.Length: {currentUserRole.Length}", "Debug String", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            // Reset tất cả button về false trước
+            btnThem.Enabled = false;
+            btnSua.Enabled = false;
+            btnVoHieuHoa.Enabled = false;
+            btnXoa.Enabled = false;
+            btnLamMoi.Enabled = true;
 
-            MessageBox.Show($"DEBUG - isHR: {isHR}, isQuanLy: {isQuanLy}, isKeToan: {isKeToan}", "Debug Boolean", MessageBoxButtons.OK, MessageBoxIcon.Information);
-
-            // HR và QuanLy có toàn quyền CRUD nhân viên
-            if (isHR || isQuanLy)
+            // Chỉ HR và QuanLy mới có quyền CRUD
+            if (currentUserRole == "HR" || currentUserRole == "QuanLy")
             {
                 btnThem.Enabled = true;
                 btnSua.Enabled = true;
                 btnVoHieuHoa.Enabled = true;
-                MessageBox.Show("DEBUG - HR/QuanLy: Các button CRUD được ENABLE", "Debug Permission", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                btnXoa.Enabled = true;
             }
-            // Kế toán chỉ xem (không được thêm/sửa/xóa)
-            else if (isKeToan)
-            {
-                btnThem.Enabled = false;
-                btnSua.Enabled = false;
-                btnVoHieuHoa.Enabled = false;
-                MessageBox.Show("DEBUG - KeToan: Các button CRUD được DISABLE", "Debug Permission", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            }
-            // Nhân viên không có quyền
-            else
-            {
-                btnThem.Enabled = false;
-                btnSua.Enabled = false;
-                btnVoHieuHoa.Enabled = false;
-                MessageBox.Show($"DEBUG - Role khác ({currentUserRole}): Các button CRUD được DISABLE", "Debug Permission", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            }
-
-            btnLamMoi.Enabled = true;
         }
 
         private void btnThem_Click(object sender, EventArgs e)
@@ -451,6 +419,79 @@ namespace VuToanThang_23110329.Forms
             {
                 int maNV = Convert.ToInt32(dgvNhanVien.SelectedRows[0].Cells["MaNV"].Value);
                 UpdateEmployeeStatus(maNV, "Nghỉ việc");
+            }
+        }
+
+        private void btnXoa_Click(object sender, EventArgs e)
+        {
+            if (dgvNhanVien.SelectedRows.Count == 0)
+            {
+                MessageBox.Show("Vui lòng chọn nhân viên cần xóa.", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            DataGridViewRow selectedRow = dgvNhanVien.SelectedRows[0];
+            int maNV = Convert.ToInt32(selectedRow.Cells["MaNV"].Value);
+            string hoTen = selectedRow.Cells["HoTen"].Value.ToString();
+
+            DialogResult result = MessageBox.Show($"Bạn có chắc chắn muốn XÓA VĨNH VIỄN nhân viên '{hoTen}'?\n\nHành động này không thể hoàn tác!", "Cảnh báo", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+            if (result == DialogResult.Yes)
+            {
+                try
+                {
+                    using (SqlConnection conn = new SqlConnection(connectionString))
+                    {
+                        conn.Open();
+                        
+                        // Kiểm tra xem nhân viên có đang được sử dụng ở bảng khác không
+                        string checkSql = @"
+                            SELECT COUNT(*) FROM ChamCong WHERE MaNV = @MaNV
+                            UNION ALL
+                            SELECT COUNT(*) FROM DonTu WHERE MaNV = @MaNV
+                            UNION ALL
+                            SELECT COUNT(*) FROM BangLuong WHERE MaNV = @MaNV";
+                        
+                        using (SqlCommand checkCmd = new SqlCommand(checkSql, conn))
+                        {
+                            checkCmd.Parameters.AddWithValue("@MaNV", maNV);
+                            using (SqlDataReader reader = checkCmd.ExecuteReader())
+                            {
+                                int totalReferences = 0;
+                                while (reader.Read())
+                                {
+                                    totalReferences += reader.GetInt32(0);
+                                }
+                                
+                                if (totalReferences > 0)
+                                {
+                                    MessageBox.Show("Không thể xóa nhân viên này vì đã có dữ liệu liên quan (chấm công, đơn từ, bảng lương).\nVui lòng sử dụng chức năng 'Vô hiệu hóa' thay thế.", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                    return;
+                                }
+                            }
+                        }
+                        
+                        // Xóa nhân viên
+                        string deleteSql = "DELETE FROM NhanVien WHERE MaNV = @MaNV";
+                        using (SqlCommand deleteCmd = new SqlCommand(deleteSql, conn))
+                        {
+                            deleteCmd.Parameters.AddWithValue("@MaNV", maNV);
+                            int rowsAffected = deleteCmd.ExecuteNonQuery();
+                            if (rowsAffected > 0)
+                            {
+                                MessageBox.Show("Xóa nhân viên thành công!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                LoadData();
+                            }
+                            else
+                            {
+                                MessageBox.Show("Không thể xóa nhân viên.", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            }
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Lỗi khi xóa nhân viên: {ex.Message}", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
             }
         }
 

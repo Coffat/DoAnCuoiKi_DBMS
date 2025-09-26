@@ -148,8 +148,17 @@ namespace VuToanThang_23110329.Forms
             this.btnVoHieuHoa.BorderRadius = 8;
             this.btnVoHieuHoa.Click += new System.EventHandler(this.btnVoHieuHoa_Click);
             
+            this.btnXoa.Size = new System.Drawing.Size(100, 35);
+            this.btnXoa.Location = new System.Drawing.Point(340, 12);
+            this.btnXoa.Text = "Xóa";
+            this.btnXoa.FillColor = System.Drawing.Color.FromArgb(220, 53, 69);
+            this.btnXoa.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            this.btnXoa.ForeColor = System.Drawing.Color.White;
+            this.btnXoa.BorderRadius = 8;
+            this.btnXoa.Click += new System.EventHandler(this.btnXoa_Click);
+            
             this.btnLamMoi.Size = new System.Drawing.Size(100, 35);
-            this.btnLamMoi.Location = new System.Drawing.Point(340, 12);
+            this.btnLamMoi.Location = new System.Drawing.Point(450, 12);
             this.btnLamMoi.Text = "Làm mới";
             this.btnLamMoi.FillColor = System.Drawing.Color.FromArgb(108, 117, 125);
             this.btnLamMoi.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
@@ -159,7 +168,7 @@ namespace VuToanThang_23110329.Forms
             
             // Search and filter controls
             this.txtTimKiem.Size = new System.Drawing.Size(200, 35);
-            this.txtTimKiem.Location = new System.Drawing.Point(460, 12);
+            this.txtTimKiem.Location = new System.Drawing.Point(570, 12);
             this.txtTimKiem.PlaceholderText = "Tìm kiếm nhân viên...";
             this.txtTimKiem.BorderRadius = 8;
             this.txtTimKiem.FillColor = System.Drawing.Color.White;
@@ -169,7 +178,7 @@ namespace VuToanThang_23110329.Forms
             this.txtTimKiem.TextChanged += new System.EventHandler(this.txtTimKiem_TextChanged);
             
             this.cmbPhongBan.Size = new System.Drawing.Size(150, 35);
-            this.cmbPhongBan.Location = new System.Drawing.Point(670, 12);
+            this.cmbPhongBan.Location = new System.Drawing.Point(780, 12);
             this.cmbPhongBan.BorderRadius = 8;
             this.cmbPhongBan.FillColor = System.Drawing.Color.White;
             this.cmbPhongBan.ForeColor = System.Drawing.Color.Black;
@@ -178,7 +187,7 @@ namespace VuToanThang_23110329.Forms
             this.cmbPhongBan.SelectedIndexChanged += new System.EventHandler(this.cmbPhongBan_SelectedIndexChanged);
             
             this.cmbTrangThai.Size = new System.Drawing.Size(120, 35);
-            this.cmbTrangThai.Location = new System.Drawing.Point(830, 12);
+            this.cmbTrangThai.Location = new System.Drawing.Point(940, 12);
             this.cmbTrangThai.BorderRadius = 8;
             this.cmbTrangThai.FillColor = System.Drawing.Color.White;
             this.cmbTrangThai.ForeColor = System.Drawing.Color.Black;
