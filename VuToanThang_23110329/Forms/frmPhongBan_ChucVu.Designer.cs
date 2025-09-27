@@ -210,7 +210,7 @@ namespace VuToanThang_23110329.Forms
             this.lblTenPhongBan.AutoSize = true;
             this.lblTenPhongBan.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblTenPhongBan.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
-            this.lblTenPhongBan.Location = new System.Drawing.Point(220, 20);
+            this.lblTenPhongBan.Location = new System.Drawing.Point(300, 20);
             this.lblTenPhongBan.Name = "lblTenPhongBan";
             this.lblTenPhongBan.Size = new System.Drawing.Size(80, 19);
             this.lblTenPhongBan.TabIndex = 2;
@@ -233,7 +233,7 @@ namespace VuToanThang_23110329.Forms
             this.txtTenPhongBan.ForeColor = System.Drawing.Color.Black;
             this.txtTenPhongBan.HoverState.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(124)))), ((int)(((byte)(77)))), ((int)(((byte)(255)))));
             this.txtTenPhongBan.HoverState.Parent = this.txtTenPhongBan;
-            this.txtTenPhongBan.Location = new System.Drawing.Point(360, 15);
+            this.txtTenPhongBan.Location = new System.Drawing.Point(400, 15);
             this.txtTenPhongBan.Name = "txtTenPhongBan";
             this.txtTenPhongBan.PasswordChar = '\0';
             this.txtTenPhongBan.PlaceholderText = "";
@@ -246,7 +246,7 @@ namespace VuToanThang_23110329.Forms
             this.lblMoTaPhongBan.AutoSize = true;
             this.lblMoTaPhongBan.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblMoTaPhongBan.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
-            this.lblMoTaPhongBan.Location = new System.Drawing.Point(530, 20);
+            this.lblMoTaPhongBan.Location = new System.Drawing.Point(620, 20);
             this.lblMoTaPhongBan.Name = "lblMoTaPhongBan";
             this.lblMoTaPhongBan.Size = new System.Drawing.Size(50, 19);
             this.lblMoTaPhongBan.TabIndex = 4;
@@ -269,7 +269,7 @@ namespace VuToanThang_23110329.Forms
             this.txtMoTaPhongBan.ForeColor = System.Drawing.Color.Black;
             this.txtMoTaPhongBan.HoverState.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(124)))), ((int)(((byte)(77)))), ((int)(((byte)(255)))));
             this.txtMoTaPhongBan.HoverState.Parent = this.txtMoTaPhongBan;
-            this.txtMoTaPhongBan.Location = new System.Drawing.Point(590, 15);
+            this.txtMoTaPhongBan.Location = new System.Drawing.Point(680, 15);
             this.txtMoTaPhongBan.Name = "txtMoTaPhongBan";
             this.txtMoTaPhongBan.PasswordChar = '\0';
             this.txtMoTaPhongBan.PlaceholderText = "";
