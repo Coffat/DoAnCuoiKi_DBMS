@@ -62,6 +62,7 @@ namespace VuToanThang_23110329.Forms
                 ShowSubMenu("Quản lý nhân sự", new string[] 
                 { 
                     "Hồ sơ Nhân viên", 
+                    "Phòng ban & Chức vụ",  // ✅ Thêm lại
                     "Lịch phân ca", 
                     "Duyệt Đơn từ" 
                 });
