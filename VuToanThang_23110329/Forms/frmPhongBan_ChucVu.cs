@@ -61,16 +61,26 @@ namespace VuToanThang_23110329.Forms
             }
             int ma = Convert.ToInt32(dgvPhongBan.CurrentRow.Cells["MaPhongBan"].Value);
             if (MessageBox.Show("Xóa phòng ban này?", "Xác nhận", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.No) return;
-            using (SqlConnection conn = new SqlConnection(connectionString))
+            
+            try
             {
-                conn.Open();
-                using (SqlCommand cmd = new SqlCommand("DELETE FROM dbo.PhongBan WHERE MaPhongBan = @Ma", conn))
+                using (SqlConnection conn = new SqlConnection(connectionString))
                 {
-                    cmd.Parameters.AddWithValue("@Ma", ma);
-                    cmd.ExecuteNonQuery();
+                    conn.Open();
+                    using (SqlCommand cmd = new SqlCommand("dbo.sp_PhongBan_Delete", conn))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Parameters.AddWithValue("@MaPhongBan", ma);
+                        cmd.ExecuteNonQuery();
+                        MessageBox.Show("Xóa phòng ban thành công!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
                 }
+                LoadData();
             }
-            LoadData();
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Lỗi: {ex.Message}", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void btnThemChucVu_Click(object sender, EventArgs e)
@@ -107,79 +117,112 @@ namespace VuToanThang_23110329.Forms
             }
             int ma = Convert.ToInt32(dgvChucVu.CurrentRow.Cells["MaChucVu"].Value);
             if (MessageBox.Show("Xóa chức vụ này?", "Xác nhận", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.No) return;
-            using (SqlConnection conn = new SqlConnection(connectionString))
+            
+            try
             {
-                conn.Open();
-                using (SqlCommand cmd = new SqlCommand("DELETE FROM dbo.ChucVu WHERE MaChucVu = @Ma", conn))
+                using (SqlConnection conn = new SqlConnection(connectionString))
                 {
-                    cmd.Parameters.AddWithValue("@Ma", ma);
-                    cmd.ExecuteNonQuery();
+                    conn.Open();
+                    using (SqlCommand cmd = new SqlCommand("dbo.sp_ChucVu_Delete", conn))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Parameters.AddWithValue("@MaChucVu", ma);
+                        cmd.ExecuteNonQuery();
+                        MessageBox.Show("Xóa chức vụ thành công!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
                 }
+                LoadData();
             }
-            LoadData();
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Lỗi: {ex.Message}", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void btnLuu_Click(object sender, EventArgs e)
         {
-            if (editingPhongBan)
+            try
             {
-                if (string.IsNullOrWhiteSpace(txtTenPhongBan.Text)) { MessageBox.Show("Nhập tên phòng ban."); return; }
-                using (SqlConnection conn = new SqlConnection(connectionString))
+                if (editingPhongBan)
                 {
-                    conn.Open();
-                    if (string.IsNullOrWhiteSpace(txtMaPhongBan.Text))
+                    if (string.IsNullOrWhiteSpace(txtTenPhongBan.Text)) { MessageBox.Show("Nhập tên phòng ban."); return; }
+                    
+                    using (SqlConnection conn = new SqlConnection(connectionString))
                     {
-                        using (SqlCommand cmd = new SqlCommand("INSERT INTO dbo.PhongBan(TenPhongBan, MoTa, KichHoat) VALUES(@Ten,@MoTa,1)", conn))
+                        conn.Open();
+                        if (string.IsNullOrWhiteSpace(txtMaPhongBan.Text))
                         {
-                            cmd.Parameters.AddWithValue("@Ten", txtTenPhongBan.Text.Trim());
-                            cmd.Parameters.AddWithValue("@MoTa", (object)txtMoTaPhongBan.Text ?? DBNull.Value);
-                            cmd.ExecuteNonQuery();
+                            // Insert
+                            using (SqlCommand cmd = new SqlCommand("dbo.sp_PhongBan_Insert", conn))
+                            {
+                                cmd.CommandType = CommandType.StoredProcedure;
+                                cmd.Parameters.AddWithValue("@TenPhongBan", txtTenPhongBan.Text.Trim());
+                                cmd.Parameters.AddWithValue("@MoTa", string.IsNullOrWhiteSpace(txtMoTaPhongBan.Text) ? (object)DBNull.Value : txtMoTaPhongBan.Text.Trim());
+                                cmd.ExecuteNonQuery();
+                                MessageBox.Show("Thêm phòng ban thành công!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            }
+                        }
+                        else
+                        {
+                            // Update
+                            using (SqlCommand cmd = new SqlCommand("dbo.sp_PhongBan_Update", conn))
+                            {
+                                cmd.CommandType = CommandType.StoredProcedure;
+                                cmd.Parameters.AddWithValue("@MaPhongBan", Convert.ToInt32(txtMaPhongBan.Text));
+                                cmd.Parameters.AddWithValue("@TenPhongBan", txtTenPhongBan.Text.Trim());
+                                cmd.Parameters.AddWithValue("@MoTa", string.IsNullOrWhiteSpace(txtMoTaPhongBan.Text) ? (object)DBNull.Value : txtMoTaPhongBan.Text.Trim());
+                                cmd.ExecuteNonQuery();
+                                MessageBox.Show("Cập nhật phòng ban thành công!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            }
                         }
                     }
-                    else
-                    {
-                        using (SqlCommand cmd = new SqlCommand("UPDATE dbo.PhongBan SET TenPhongBan=@Ten, MoTa=@MoTa WHERE MaPhongBan=@Ma", conn))
-                        {
-                            cmd.Parameters.AddWithValue("@Ten", txtTenPhongBan.Text.Trim());
-                            cmd.Parameters.AddWithValue("@MoTa", (object)txtMoTaPhongBan.Text ?? DBNull.Value);
-                            cmd.Parameters.AddWithValue("@Ma", Convert.ToInt32(txtMaPhongBan.Text));
-                            cmd.ExecuteNonQuery();
-                        }
-                    }
+                    editingPhongBan = false;
+                    LoadData();
+                    ClearForm();
+                    return;
                 }
-                editingPhongBan = false;
-                LoadData();
-                return;
-            }
 
-            if (editingChucVu)
-            {
-                if (string.IsNullOrWhiteSpace(txtTenChucVu.Text)) { MessageBox.Show("Nhập tên chức vụ."); return; }
-                using (SqlConnection conn = new SqlConnection(connectionString))
+                if (editingChucVu)
                 {
-                    conn.Open();
-                    if (string.IsNullOrWhiteSpace(txtMaChucVu.Text))
+                    if (string.IsNullOrWhiteSpace(txtTenChucVu.Text)) { MessageBox.Show("Nhập tên chức vụ."); return; }
+                    
+                    using (SqlConnection conn = new SqlConnection(connectionString))
                     {
-                        using (SqlCommand cmd = new SqlCommand("INSERT INTO dbo.ChucVu(TenChucVu, MoTa, KichHoat) VALUES(@Ten,@MoTa,1)", conn))
+                        conn.Open();
+                        if (string.IsNullOrWhiteSpace(txtMaChucVu.Text))
                         {
-                            cmd.Parameters.AddWithValue("@Ten", txtTenChucVu.Text.Trim());
-                            cmd.Parameters.AddWithValue("@MoTa", (object)txtMoTaChucVu.Text ?? DBNull.Value);
-                            cmd.ExecuteNonQuery();
+                            // Insert
+                            using (SqlCommand cmd = new SqlCommand("dbo.sp_ChucVu_Insert", conn))
+                            {
+                                cmd.CommandType = CommandType.StoredProcedure;
+                                cmd.Parameters.AddWithValue("@TenChucVu", txtTenChucVu.Text.Trim());
+                                cmd.Parameters.AddWithValue("@MoTa", string.IsNullOrWhiteSpace(txtMoTaChucVu.Text) ? (object)DBNull.Value : txtMoTaChucVu.Text.Trim());
+                                cmd.ExecuteNonQuery();
+                                MessageBox.Show("Thêm chức vụ thành công!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            }
+                        }
+                        else
+                        {
+                            // Update
+                            using (SqlCommand cmd = new SqlCommand("dbo.sp_ChucVu_Update", conn))
+                            {
+                                cmd.CommandType = CommandType.StoredProcedure;
+                                cmd.Parameters.AddWithValue("@MaChucVu", Convert.ToInt32(txtMaChucVu.Text));
+                                cmd.Parameters.AddWithValue("@TenChucVu", txtTenChucVu.Text.Trim());
+                                cmd.Parameters.AddWithValue("@MoTa", string.IsNullOrWhiteSpace(txtMoTaChucVu.Text) ? (object)DBNull.Value : txtMoTaChucVu.Text.Trim());
+                                cmd.ExecuteNonQuery();
+                                MessageBox.Show("Cập nhật chức vụ thành công!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            }
                         }
                     }
-                    else
-                    {
-                        using (SqlCommand cmd = new SqlCommand("UPDATE dbo.ChucVu SET TenChucVu=@Ten, MoTa=@MoTa WHERE MaChucVu=@Ma", conn))
-                        {
-                            cmd.Parameters.AddWithValue("@Ten", txtTenChucVu.Text.Trim());
-                            cmd.Parameters.AddWithValue("@MoTa", (object)txtMoTaChucVu.Text ?? DBNull.Value);
-                            cmd.Parameters.AddWithValue("@Ma", Convert.ToInt32(txtMaChucVu.Text));
-                            cmd.ExecuteNonQuery();
-                        }
-                    }
+                    editingChucVu = false;
+                    LoadData();
+                    ClearForm();
                 }
-                editingChucVu = false;
-                LoadData();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Lỗi: {ex.Message}", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -208,21 +251,41 @@ namespace VuToanThang_23110329.Forms
         private void LoadData()
         {
             if (string.IsNullOrEmpty(connectionString)) return;
-            using (SqlConnection conn = new SqlConnection(connectionString))
+            
+            try
             {
-                conn.Open();
-                using (SqlDataAdapter da = new SqlDataAdapter("SELECT MaPhongBan, TenPhongBan, MoTa, KichHoat FROM dbo.PhongBan ORDER BY TenPhongBan", conn))
+                using (SqlConnection conn = new SqlConnection(connectionString))
                 {
-                    dtPhongBan = new DataTable();
-                    da.Fill(dtPhongBan);
-                    dgvPhongBan.DataSource = dtPhongBan;
+                    conn.Open();
+                    
+                    // Load PhongBan using stored procedure
+                    using (SqlCommand cmd = new SqlCommand("dbo.sp_PhongBan_GetAll", conn))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        using (SqlDataAdapter da = new SqlDataAdapter(cmd))
+                        {
+                            dtPhongBan = new DataTable();
+                            da.Fill(dtPhongBan);
+                            dgvPhongBan.DataSource = dtPhongBan;
+                        }
+                    }
+                    
+                    // Load ChucVu using stored procedure
+                    using (SqlCommand cmd = new SqlCommand("dbo.sp_ChucVu_GetAll", conn))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        using (SqlDataAdapter da = new SqlDataAdapter(cmd))
+                        {
+                            dtChucVu = new DataTable();
+                            da.Fill(dtChucVu);
+                            dgvChucVu.DataSource = dtChucVu;
+                        }
+                    }
                 }
-                using (SqlDataAdapter da = new SqlDataAdapter("SELECT MaChucVu, TenChucVu, MoTa, KichHoat FROM dbo.ChucVu ORDER BY TenChucVu", conn))
-                {
-                    dtChucVu = new DataTable();
-                    da.Fill(dtChucVu);
-                    dgvChucVu.DataSource = dtChucVu;
-                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Lỗi khi tải dữ liệu: {ex.Message}", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 

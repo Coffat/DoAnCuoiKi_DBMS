@@ -1,7 +1,12 @@
 using System;
+using System.Data;
+using System.Data.SqlClient;
+using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using System.Windows.Forms;
 using Guna.UI2.WinForms;
+using VuToanThang_23110329;
 
 namespace VuToanThang_23110329.Forms
 {
@@ -9,6 +14,17 @@ namespace VuToanThang_23110329.Forms
     {
         private DateTime _currentWeekStartDate;
         private bool _isReadOnlyForRole;
+        private string _connectionString;
+
+        private class Shift
+        {
+            public int MaCa { get; set; }
+            public string TenCa { get; set; }
+            public TimeSpan GioBatDau { get; set; }
+            public TimeSpan GioKetThuc { get; set; }
+        }
+
+        private List<Shift> _shifts = new List<Shift>();
 
         public frmPhanCa()
         {
@@ -21,6 +37,8 @@ namespace VuToanThang_23110329.Forms
             ConfigureRoleCapabilities();
             InitializeEmployeeCombo();
             SetupDataGridView();
+            InitializeConnection();
+            LoadShifts();
             LoadData();
         }
 
@@ -127,12 +145,17 @@ namespace VuToanThang_23110329.Forms
             };
             dgvTuan.Columns.Add(colShift);
             BuildWeekColumns();
-            dgvTuan.DefaultCellStyle.ForeColor = Color.White;
-            dgvTuan.DefaultCellStyle.BackColor = Color.FromArgb(35, 35, 35);
-            dgvTuan.DefaultCellStyle.SelectionBackColor = Color.FromArgb(55, 55, 55);
-            dgvTuan.DefaultCellStyle.SelectionForeColor = Color.White;
+            // Light theme for readability
+            dgvTuan.DefaultCellStyle.ForeColor = Color.Black;
+            dgvTuan.DefaultCellStyle.BackColor = Color.White;
+            dgvTuan.DefaultCellStyle.SelectionBackColor = Color.FromArgb(210, 227, 252); // Light blue
+            dgvTuan.DefaultCellStyle.SelectionForeColor = Color.Black;
             dgvTuan.AllowUserToResizeColumns = false;
             dgvTuan.AllowUserToResizeRows = false;
+            dgvTuan.DefaultCellStyle.WrapMode = DataGridViewTriState.True;
+            dgvTuan.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells;
+            dgvTuan.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.None;
+            dgvTuan.RowTemplate.Height = 48;
         }
 
         private void BuildWeekColumns()
@@ -149,7 +172,7 @@ namespace VuToanThang_23110329.Forms
                 {
                     Name = $"col_{day:yyyyMMdd}",
                     HeaderText = day.ToString("ddd\n dd/MM"),
-                    Width = 90,
+                    Width = 130,
                     ReadOnly = _isReadOnlyForRole
                 };
                 dgvTuan.Columns.Add(col);
@@ -159,15 +182,50 @@ namespace VuToanThang_23110329.Forms
         private void PopulateWeekData()
         {
             dgvTuan.Rows.Clear();
-            // Placeholder shifts; in real app load from DB `CaLam`
-            var shifts = new[] { "Sáng (08:00-12:00)", "Chiều (13:00-17:00)", "Tối (18:00-22:00)" };
-            foreach (var shift in shifts)
+            // Nếu chưa tải danh sách ca từ DB, hãy tải
+            if (_shifts.Count == 0)
+            {
+                LoadShifts();
+            }
+
+            // Lấy phân công trong tuần: key = (MaCa, Ngay)
+            var weekAssignments = GetWeekAssignments(_currentWeekStartDate, _currentWeekStartDate.AddDays(6));
+
+            foreach (var shift in _shifts)
             {
                 int rowIndex = dgvTuan.Rows.Add();
-                dgvTuan.Rows[rowIndex].Cells[0].Value = shift;
-                for (int i = 1; i < dgvTuan.Columns.Count; i++)
+                dgvTuan.Rows[rowIndex].Cells[0].Value = $"{shift.TenCa} ({shift.GioBatDau:hh\\:mm}-{shift.GioKetThuc:hh\\:mm})";
+
+                for (int colIndex = 1; colIndex < dgvTuan.Columns.Count; colIndex++)
                 {
-                    dgvTuan.Rows[rowIndex].Cells[i].Value = "-"; // no assignment yet
+                    var col = dgvTuan.Columns[colIndex];
+                    // Parse ngày từ tên cột: col_yyyyMMdd
+                    if (DateTime.TryParseExact(col.Name.Replace("col_", ""), "yyyyMMdd", null, System.Globalization.DateTimeStyles.None, out var day))
+                    {
+                        var key = (shift.MaCa, day.Date);
+                        if (weekAssignments.TryGetValue(key, out var info) && info.Count > 0)
+                        {
+                            // Hiển thị tên nhân viên và trạng thái
+                            string cellText = string.Join("\n", info.Select(x => 
+                            {
+                                string status = "";
+                                if (x.TrangThai == "Khoa") status = " 🔒";
+                                else if (x.TrangThai == "Huy") status = " ❌";
+                                return x.HoTen + status;
+                            }));
+                            dgvTuan.Rows[rowIndex].Cells[colIndex].Value = cellText;
+
+                            // Màu sắc theo trạng thái
+                            if (info.Any(x => x.TrangThai == "Khoa"))
+                                dgvTuan.Rows[rowIndex].Cells[colIndex].Style.BackColor = Color.FromArgb(255, 230, 230);
+                            else if (info.Any(x => x.TrangThai == "Huy"))
+                                dgvTuan.Rows[rowIndex].Cells[colIndex].Style.BackColor = Color.FromArgb(220, 220, 220);
+                        }
+                        else
+                        {
+                            dgvTuan.Rows[rowIndex].Cells[colIndex].Value = "";
+                        }
+                    }
                 }
             }
         }
@@ -183,9 +241,9 @@ namespace VuToanThang_23110329.Forms
 
         private void ConfigureRoleCapabilities()
         {
-            // TODO: determine role from session/auth; default read-only for non-HR
-            string role = Environment.GetEnvironmentVariable("APP_USER_ROLE") ?? "HR";
-            _isReadOnlyForRole = !(role == "HR");
+            // Kiểm tra quyền từ UserSession
+            string role = UserSession.VaiTro ?? "NhanVien";
+            _isReadOnlyForRole = !(role == "HR" || role == "QuanLy");
             btnThem.Enabled = !_isReadOnlyForRole;
             btnSua.Enabled = !_isReadOnlyForRole;
             btnXoa.Enabled = !_isReadOnlyForRole;
@@ -197,12 +255,34 @@ namespace VuToanThang_23110329.Forms
 
         private void InitializeEmployeeCombo()
         {
-            // Placeholder: load employees; replace with DB query later
             cboNhanVien.Items.Clear();
             cboNhanVien.Items.Add("Tất cả nhân viên");
-            cboNhanVien.Items.Add("NV001 - Nguyễn Văn A");
-            cboNhanVien.Items.Add("NV002 - Trần Thị B");
-            cboNhanVien.StartIndex = 0;
+            
+            if (string.IsNullOrEmpty(_connectionString)) return;
+            
+            try
+            {
+                using (var conn = new SqlConnection(_connectionString))
+                using (var cmd = new SqlCommand("SELECT MaNV, HoTen FROM dbo.NhanVien WHERE TrangThai = N'DangLam' ORDER BY HoTen", conn))
+                {
+                    conn.Open();
+                    using (var reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            int maNV = reader.GetInt32(0);
+                            string hoTen = reader.GetString(1);
+                            cboNhanVien.Items.Add($"{maNV} - {hoTen}");
+                        }
+                    }
+                }
+                if (cboNhanVien.Items.Count > 0)
+                    cboNhanVien.SelectedIndex = 0;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Lỗi tải danh sách nhân viên: {ex.Message}", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void cboNhanVien_SelectedIndexChanged(object sender, EventArgs e)
@@ -246,6 +326,93 @@ namespace VuToanThang_23110329.Forms
             {
                 e.CellStyle.BackColor = Color.FromArgb(40, 40, 60);
             }
+        }
+
+        private void InitializeConnection()
+        {
+            try
+            {
+                var cs = System.Configuration.ConfigurationManager.ConnectionStrings["HrDb"];
+                _connectionString = cs?.ConnectionString ?? string.Empty;
+            }
+            catch
+            {
+                _connectionString = string.Empty;
+            }
+        }
+
+        private void LoadShifts()
+        {
+            _shifts.Clear();
+            if (string.IsNullOrEmpty(_connectionString)) return;
+            using (var conn = new SqlConnection(_connectionString))
+            using (var cmd = new SqlCommand("SELECT MaCa, TenCa, GioBatDau, GioKetThuc FROM dbo.CaLam ORDER BY MaCa", conn))
+            {
+                conn.Open();
+                using (var rd = cmd.ExecuteReader())
+                {
+                    while (rd.Read())
+                    {
+                        _shifts.Add(new Shift
+                        {
+                            MaCa = rd.GetInt32(0),
+                            TenCa = rd.GetString(1),
+                            GioBatDau = (TimeSpan)rd[2],
+                            GioKetThuc = (TimeSpan)rd[3]
+                        });
+                    }
+                }
+            }
+        }
+
+        private class AssignmentInfo
+        {
+            public string HoTen { get; set; }
+            public string TrangThai { get; set; }
+        }
+
+        private Dictionary<(int, DateTime), List<AssignmentInfo>> GetWeekAssignments(DateTime fromDate, DateTime toDate)
+        {
+            var map = new Dictionary<(int, DateTime), List<AssignmentInfo>>();
+            if (string.IsNullOrEmpty(_connectionString)) return map;
+
+            using (var conn = new SqlConnection(_connectionString))
+            using (var cmd = new SqlCommand(@"
+                SELECT lpc.MaCa, lpc.NgayLam, nv.HoTen, lpc.TrangThai
+                FROM dbo.LichPhanCa lpc
+                INNER JOIN dbo.NhanVien nv ON nv.MaNV = lpc.MaNV
+                WHERE lpc.NgayLam BETWEEN @D0 AND @D1
+                ORDER BY lpc.NgayLam, lpc.MaCa, nv.HoTen
+            ", conn))
+            {
+                cmd.Parameters.AddWithValue("@D0", fromDate.Date);
+                cmd.Parameters.AddWithValue("@D1", toDate.Date);
+                conn.Open();
+                using (var rd = cmd.ExecuteReader())
+                {
+                    while (rd.Read())
+                    {
+                        int maCa = rd.GetInt32(0);
+                        DateTime ngay = rd.GetDateTime(1).Date;
+                        string hoTen = rd.GetString(2);
+                        string trangThai = rd.GetString(3);
+                        var key = (maCa, ngay);
+                        if (!map.TryGetValue(key, out var list))
+                        {
+                            list = new List<AssignmentInfo>();
+                            map[key] = list;
+                        }
+                        list.Add(new AssignmentInfo { HoTen = hoTen, TrangThai = trangThai });
+                    }
+                }
+            }
+
+            return map;
+        }
+
+        private void pnlButtons_Paint(object sender, PaintEventArgs e)
+        {
+
         }
     }
 }

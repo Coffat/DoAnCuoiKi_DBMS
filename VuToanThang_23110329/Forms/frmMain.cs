@@ -108,8 +108,15 @@ namespace VuToanThang_23110329.Forms
             {
                 ShowSubMenu("Nghiệp vụ Quản lý", new string[] 
                 { 
-                    "Xem Lịch phân ca", 
                     "Duyệt Đơn từ" 
+                });
+            }
+            else if (userRole == "NhanVien")
+            {
+                ShowSubMenu("Đơn từ", new string[] 
+                { 
+                    "Tạo đơn từ",
+                    "Xem đơn của tôi"
                 });
             }
         }
@@ -136,24 +143,8 @@ namespace VuToanThang_23110329.Forms
             lblWelcome.Text = "👤 Thông tin cá nhân";
             lblStatus.Text = "Đang xem thông tin cá nhân";
             
-            // Hiển thị menu con theo vai trò
-            if (userRole == "NhanVien")
-            {
-                ShowSubMenu("Cá nhân", new string[] 
-                { 
-                    "Thông tin của tôi", 
-                    "Gửi Đơn từ" 
-                });
-            }
-            else
-            {
-                ShowSubMenu("Cá nhân", new string[] 
-                { 
-                    "Đổi mật khẩu", 
-                    "Đăng xuất", 
-                    "Thoát" 
-                });
-            }
+            // Mở trực tiếp form thông tin cá nhân
+            OpenFormInPanel(new frmThongTinCaNhan());
         }
 
         private void btnChamCong_Click(object sender, EventArgs e)
@@ -162,14 +153,8 @@ namespace VuToanThang_23110329.Forms
             lblWelcome.Text = "⏰ Chấm công";
             lblStatus.Text = "Đang chấm công";
             
-            // Hiển thị menu con cho Nhân viên
-            if (userRole == "NhanVien")
-            {
-                ShowSubMenu("Chấm công", new string[] 
-                { 
-                    "Check-in / Check-out" 
-                });
-            }
+            // Mở form chấm công trực tiếp
+            OpenFormInPanel(new frmChamCong());
         }
 
         private void btnBaoCao_Click(object sender, EventArgs e)
@@ -223,38 +208,40 @@ namespace VuToanThang_23110329.Forms
                 case "QuanLy": // Giám đốc - có quyền cao nhất
                     btnQuanLy.Visible = true;      // Quản lý nhân sự
                     btnDanhMuc.Visible = true;     // Danh mục
-                    btnCaLam.Visible = true;       // Quản lý ca làm
-                    btnNghiepVu.Visible = true;    // Nghiệp vụ
-                    btnTienLuong.Visible = true;   // Tiền lương
+                    btnCaLam.Visible = true;       // Ca làm việc
                     btnBaoCao.Visible = true;      // Báo cáo
+                    btnChamCong.Visible = true;    // Chấm công
                     btnCaNhan.Visible = true;      // Cá nhân
                     break;
-                    
-                case "HR": // Trưởng phòng nhân sự
+
+                case "HR": // Nhân viên HR
                     btnQuanLy.Visible = true;      // Quản lý nhân sự
-                    btnDanhMuc.Visible = true;     // Danh mục
-                    btnCaLam.Visible = true;       // Quản lý ca làm
+                    btnNghiepVu.Visible = true;    // Nghiệp vụ (Duyệt đơn từ)
+                    btnCaLam.Visible = true;       // Ca làm việc
                     btnBaoCao.Visible = true;      // Báo cáo
+                    btnChamCong.Visible = true;    // Chấm công
                     btnCaNhan.Visible = true;      // Cá nhân
                     break;
-                    
+
                 case "KeToan": // Kế toán
                     btnQuanLy.Visible = true;      // Quản lý nhân sự (để xem nhân viên)
                     btnTienLuong.Visible = true;   // Tiền lương
                     btnBaoCao.Visible = true;      // Báo cáo
-                    btnCaNhan.Visible = true;      // Cá nhân
-                    break;
-                    
-                case "NhanVien": // Nhân viên thường
-                    btnCaNhan.Visible = true;      // Cá nhân
                     btnChamCong.Visible = true;    // Chấm công
+                    btnCaNhan.Visible = true;      // Cá nhân
                     break;
-                    
+
+                case "NhanVien": // Nhân viên thường
+                    btnChamCong.Visible = true;    // Chấm công
+                    btnNghiepVu.Visible = true;    // Đơn từ
+                    btnCaNhan.Visible = true;      // Cá nhân
+                    break;
+
                 default: // Mặc định cho nhân viên
                     btnCaNhan.Visible = true;
                     break;
             }
-        }
+    }            
 
         private void SetActiveButton(Guna.UI2.WinForms.Guna2Button activeButton)
         {
@@ -343,27 +330,69 @@ namespace VuToanThang_23110329.Forms
                        lblStatus.Text = "Đang quản lý ca làm việc";
                        break;
                    case "Duyệt đơn từ":
+                   case "Duyệt Đơn từ":
                        OpenFormInPanel(new frmDuyetDonTu());
                        lblStatus.Text = "Đang duyệt đơn từ";
                        break;
                    case "Tạo đơn từ":
+                   case "Gửi Đơn từ":
                        OpenFormInPanel(new frmTaoDonTu());
                        lblStatus.Text = "Đang tạo đơn từ";
                        break;
+                   case "Xem đơn của tôi":
+                       OpenFormInPanel(new frmXemDonCuaToi());
+                       lblStatus.Text = "Đang xem đơn từ của tôi";
+                       break;
                    case "Thông tin cá nhân":
+                   case "Thông tin của tôi":
                        OpenFormInPanel(new frmThongTinCaNhan());
                        lblStatus.Text = "Đang xem thông tin cá nhân";
                        break;
                    case "Chấm công":
+                   case "Check-in / Check-out":
                        OpenFormInPanel(new frmChamCong());
                        lblStatus.Text = "Đang chấm công";
                        break;
                    case "Bảng lương":
+                   case "Quản lý Bảng lương":
                        OpenFormInPanel(new frmBangLuong());
                        lblStatus.Text = "Đang quản lý bảng lương";
                        break;
+                   case "Báo cáo Nhân sự":
+                   case "Bảng công chi tiết":
+                   case "Xem Bảng công tháng":
+                   case "Báo cáo Lương":
+                       // Tạm thời hiển thị form báo cáo đơn giản
+                       var frmBaoCao = new Form
+                       {
+                           Text = functionName,
+                           FormBorderStyle = FormBorderStyle.None,
+                           Dock = DockStyle.Fill,
+                           BackColor = Color.White
+                       };
+                       var lblBaoCao = new Label
+                       {
+                           Text = $"📊 {functionName}\\n\\nChức năng đang được phát triển.\\nVui lòng quay lại sau.",
+                           Font = new Font("Segoe UI", 16, FontStyle.Bold),
+                           ForeColor = Color.FromArgb(94, 148, 255),
+                           TextAlign = ContentAlignment.MiddleCenter,
+                           Dock = DockStyle.Fill
+                       };
+                       frmBaoCao.Controls.Add(lblBaoCao);
+                       OpenFormInPanel(frmBaoCao);
+                       lblStatus.Text = $"Đang xem {functionName}";
+                       break;
+                   case "Đổi mật khẩu":
+                       MessageBox.Show("Chức năng đổi mật khẩu đang được phát triển.", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                       break;
+                   case "Đăng xuất":
+                       btnDangXuat_Click(sender, e);
+                       break;
+                   case "Thoát":
+                       this.Close();
+                       break;
                    default:
-                       MessageBox.Show($"Mở chức năng: {functionName}", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                       MessageBox.Show($"Chức năng '{functionName}' chưa được triển khai.", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
                        break;
                 }
             }

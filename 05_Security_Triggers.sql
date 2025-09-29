@@ -401,11 +401,103 @@ GRANT EXECUTE ON dbo.sp_GetNhanVienFull TO r_nhanvien;
 GRANT EXECUTE ON dbo.sp_UpdateNhanVienWithPhongBanChucVu TO r_hr;
 GRANT EXECUTE ON dbo.sp_UpdateNhanVienWithPhongBanChucVu TO r_quanly;
 
+-- Quyền cho CRUD LichPhanCa
+GRANT EXECUTE ON dbo.sp_LichPhanCa_Insert TO r_hr, r_quanly;
+GRANT EXECUTE ON dbo.sp_LichPhanCa_Update TO r_hr, r_quanly;
+GRANT EXECUTE ON dbo.sp_LichPhanCa_Delete TO r_hr, r_quanly;
+GRANT EXECUTE ON dbo.sp_LichPhanCa_GetByNhanVien TO r_hr, r_quanly, r_nhanvien;
+
+-- Quyền cho quản lý lịch tuần
+GRANT EXECUTE ON dbo.sp_LichPhanCa_CloneWeek TO r_hr, r_quanly;
+GRANT EXECUTE ON dbo.sp_LichPhanCa_KhoaTuan TO r_hr, r_quanly;
+GRANT EXECUTE ON dbo.sp_LichPhanCa_MoKhoaTuan TO r_hr, r_quanly;
+
+-- Quyền xem TVF
+GRANT SELECT ON dbo.tvf_LichTheoTuan TO r_hr, r_quanly, r_ketoan, r_nhanvien;
+
+-- Quyền cho CRUD PhongBan và ChucVu
+GRANT EXECUTE ON dbo.sp_PhongBan_GetAll TO r_hr, r_quanly;
+GRANT EXECUTE ON dbo.sp_PhongBan_Insert TO r_hr;
+GRANT EXECUTE ON dbo.sp_PhongBan_Update TO r_hr;
+GRANT EXECUTE ON dbo.sp_PhongBan_Delete TO r_hr;
+
+GRANT EXECUTE ON dbo.sp_ChucVu_GetAll TO r_hr, r_quanly;
+GRANT EXECUTE ON dbo.sp_ChucVu_Insert TO r_hr;
+GRANT EXECUTE ON dbo.sp_ChucVu_Update TO r_hr;
+GRANT EXECUTE ON dbo.sp_ChucVu_Delete TO r_hr;
+
+-- Quyền cho DonTu
+GRANT EXECUTE ON dbo.sp_DonTu_Insert TO r_nhanvien, r_hr, r_quanly;
+
+-- Quyền cho NhanVien bổ sung
+GRANT EXECUTE ON dbo.sp_NhanVien_Delete TO r_hr;
+GRANT EXECUTE ON dbo.sp_NhanVien_UpdateTrangThai TO r_hr, r_quanly;
+
 ------------------------------------------------------------
--- VI) HOÀN TẤT KHỞI TẠO
+-- VI) TRIGGER CHẶN SỬA LỊCH ĐÃ KHÓA
 ------------------------------------------------------------
 
+-- Trigger chặn UPDATE/DELETE lịch khi TrangThai = 'Khoa'
+IF OBJECT_ID('dbo.tr_LichPhanCa_BlockChangeWhenLocked','TR') IS NOT NULL 
+    DROP TRIGGER dbo.tr_LichPhanCa_BlockChangeWhenLocked;
+GO
+CREATE TRIGGER dbo.tr_LichPhanCa_BlockChangeWhenLocked
+ON dbo.LichPhanCa
+AFTER UPDATE, DELETE
+AS
+BEGIN
+    SET NOCOUNT ON;
+    
+    -- Cho phép bypass qua SESSION_CONTEXT
+    IF TRY_CONVERT(INT, SESSION_CONTEXT(N'SkipTrigger')) = 1 RETURN;
+
+    -- Kiểm tra UPDATE
+    IF EXISTS (SELECT 1 FROM inserted)
+    BEGIN
+        IF EXISTS (
+            SELECT 1
+            FROM deleted d
+            WHERE d.TrangThai = N'Khoa'
+              AND EXISTS (
+                  SELECT 1 FROM inserted i 
+                  WHERE i.MaLich = d.MaLich
+                    AND (i.MaNV <> d.MaNV OR i.NgayLam <> d.NgayLam OR i.MaCa <> d.MaCa)
+              )
+        )
+        BEGIN
+            RAISERROR(N'Không thể sửa lịch đã khóa. Chỉ có thể cập nhật ghi chú hoặc mở khóa trước.', 16, 1);
+            ROLLBACK TRANSACTION;
+            RETURN;
+        END
+    END
+
+    -- Kiểm tra DELETE
+    IF EXISTS (SELECT 1 FROM deleted WHERE TrangThai = N'Khoa')
+    BEGIN
+        RAISERROR(N'Không thể xóa lịch đã khóa. Phải mở khóa trước.', 16, 1);
+        ROLLBACK TRANSACTION;
+        RETURN;
+    END
+END
+GO
+
+PRINT N'Đã tạo trigger tr_LichPhanCa_BlockChangeWhenLocked';
+
+------------------------------------------------------------
+-- VII) HOÀN TẤT KHỞI TẠO
+------------------------------------------------------------
+
+PRINT N'';
 PRINT N'=== HOÀN TẤT KHỞI TẠO SCHEMA ===';
 PRINT N'Database QLNhanSuSieuThiMini đã sẵn sàng!';
-PRINT N'Chạy file duLieuMau.sql để thêm dữ liệu mẫu.';
+PRINT N'';
+PRINT N'Đã thêm:';
+PRINT N'✓ TVF tvf_LichTheoTuan';
+PRINT N'✓ CRUD LichPhanCa (Insert/Update/Delete/GetByNhanVien)';
+PRINT N'✓ sp_LichPhanCa_CloneWeek';
+PRINT N'✓ sp_LichPhanCa_KhoaTuan / MoKhoaTuan';
+PRINT N'✓ Trigger tr_LichPhanCa_BlockChangeWhenLocked';
+PRINT N'✓ sp_DuyetDonTu (đã mở rộng đồng bộ LichPhanCa)';
+PRINT N'';
+PRINT N'Chạy file data_mau.sql để thêm dữ liệu mẫu.';
 GO

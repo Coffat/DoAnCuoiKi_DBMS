@@ -150,14 +150,15 @@ CREATE TABLE dbo.LichPhanCa (
     MaCa      INT NOT NULL,
     TrangThai NVARCHAR(12) NOT NULL 
         CONSTRAINT DF_LichPhanCa_TrangThai DEFAULT(N'DuKien'),
+    GhiChu    NVARCHAR(255) NULL,  -- Thêm cột ghi chú
 
     CONSTRAINT FK_LichPhanCa_NhanVien FOREIGN KEY(MaNV) REFERENCES dbo.NhanVien(MaNV) ON DELETE CASCADE,
     CONSTRAINT FK_LichPhanCa_CaLam FOREIGN KEY(MaCa) REFERENCES dbo.CaLam(MaCa)
 );
 GO
 -- RÀNG BUỘC / GIẢI THÍCH
-ALTER TABLE dbo.LichPhanCa ADD CONSTRAINT UQ_LichPhanCa_MaNV_Ngay UNIQUE(MaNV,NgayLam);
--- Mỗi nhân viên chỉ có 1 ca/ngày.
+-- KHÔNG tạo UNIQUE(MaNV, NgayLam) để cho phép nhiều ca/ngày
+-- ALTER TABLE dbo.LichPhanCa ADD CONSTRAINT UQ_LichPhanCa_MaNV_Ngay UNIQUE(MaNV,NgayLam);
 
 ALTER TABLE dbo.LichPhanCa 
   ADD CONSTRAINT CK_LichPhanCa_TrangThai CHECK(TrangThai IN (N'DuKien',N'Khoa',N'Huy'));
@@ -165,6 +166,9 @@ ALTER TABLE dbo.LichPhanCa
 
 CREATE INDEX IX_LichPhanCa_NgayLam ON dbo.LichPhanCa(NgayLam);
 -- Tăng tốc truy vấn lịch theo ngày.
+
+CREATE INDEX IX_LichPhanCa_MaNV_NgayLam ON dbo.LichPhanCa(MaNV, NgayLam);
+-- Tăng tốc truy vấn lịch theo nhân viên và ngày (cho TVF tvf_LichTheoTuan).
 
 
 --5) CHAMCONG: Ghi nhận giờ làm thực tế

@@ -1,173 +1,181 @@
-/* =========================================================
-   SCRIPT CUỐI CÙNG (SỬA LỖI TRIGGER KHI XÓA)
-   Chạy file này để có một database hoàn chỉnh.
-   ========================================================= */
+/* ===============================================================================
+   DỮ LIỆU MẪU TỔNG HỢP - HỆ THỐNG QUẢN LÝ NHÂN SỰ SIÊU THỊ MINI
+   
+   File này bao gồm TẤT CẢ dữ liệu mẫu:
+   - Phòng ban, Chức vụ, Ca làm
+   - Người dùng và Nhân viên (9 người)
+   - Lịch phân ca tự động (từ 1/7/2025 đến hôm nay)
+   - Chấm công tự động cho các tháng đã khóa
+   - Đơn từ mẫu (6 đơn)
+   - Bảng lương tự động (các tháng đã qua)
+   
+   CÁCH SỬ DỤNG:
+   1. Đã chạy các file: 01, 02, 03, 04, 05
+   2. Chạy file này để có dữ liệu mẫu đầy đủ
+   3. Đăng nhập với username/password: giamdoc/123 hoặc hr_manager/123
+   
+   =============================================================================== */
 
 USE QLNhanSuSieuThiMini;
 GO
 
+SET NOCOUNT ON;
+GO
+
+PRINT N'====================================================================';
+PRINT N'BẮT ĐẦU TẠO DỮ LIỆU MẪU - ' + CONVERT(NVARCHAR, GETDATE(), 120);
+PRINT N'====================================================================';
+
 BEGIN TRAN;
 
-------------------------------------------------------------
--- BƯỚC 0: TẮT TRIGGER, XÓA SẠCH DỮ LIỆU CŨ, BẬT LẠI TRIGGER
-------------------------------------------------------------
-PRINT N'Tạm thời tắt các trigger để xóa dữ liệu...';
+-- TẮT TRIGGER
 ALTER TABLE dbo.ChamCong DISABLE TRIGGER tr_ChamCong_BlockWhenLocked_D;
 ALTER TABLE dbo.NhanVien DISABLE TRIGGER tr_NhanVien_ToggleAccount;
 
-PRINT N'Xóa dữ liệu cũ từ các bảng...';
--- Xóa từ các bảng con có khóa ngoại trước
-DELETE FROM dbo.DonTu;
-DELETE FROM dbo.BangLuong;
-DELETE FROM dbo.ChamCong;
-DELETE FROM dbo.LichPhanCa;
--- Xóa bảng cha sau khi bảng con đã được xóa
-DELETE FROM dbo.NhanVien;
--- Bây giờ mới có thể xóa các bảng gốc
-DELETE FROM dbo.NguoiDung;
-DELETE FROM dbo.PhongBan;
-DELETE FROM dbo.ChucVu;
-DELETE FROM dbo.CaLam;
--- Đặt đoạn code này sau các lệnh DELETE
-PRINT N'Reset lại các cột IDENTITY về 1...';
-DBCC CHECKIDENT ('dbo.PhongBan', RESEED, 0);
-DBCC CHECKIDENT ('dbo.ChucVu', RESEED, 0);
-DBCC CHECKIDENT ('dbo.CaLam', RESEED, 0);
-DBCC CHECKIDENT ('dbo.NguoiDung', RESEED, 0);
-DBCC CHECKIDENT ('dbo.NhanVien', RESEED, 0);
-DBCC CHECKIDENT ('dbo.LichPhanCa', RESEED, 0);
-DBCC CHECKIDENT ('dbo.ChamCong', RESEED, 0);
-DBCC CHECKIDENT ('dbo.DonTu', RESEED, 0);
+-- XÓA DỮ LIỆU CŨ
+PRINT N'[1/7] Xóa dữ liệu cũ...';
+DELETE FROM dbo.DonTu; DELETE FROM dbo.BangLuong; DELETE FROM dbo.ChamCong;
+DELETE FROM dbo.LichPhanCa; DELETE FROM dbo.NhanVien; DELETE FROM dbo.NguoiDung;
+DELETE FROM dbo.PhongBan; DELETE FROM dbo.ChucVu; DELETE FROM dbo.CaLam;
+
+-- RESET IDENTITY
+DBCC CHECKIDENT ('dbo.PhongBan', RESEED, 0); DBCC CHECKIDENT ('dbo.ChucVu', RESEED, 0);
+DBCC CHECKIDENT ('dbo.CaLam', RESEED, 0); DBCC CHECKIDENT ('dbo.NguoiDung', RESEED, 0);
+DBCC CHECKIDENT ('dbo.NhanVien', RESEED, 0); DBCC CHECKIDENT ('dbo.LichPhanCa', RESEED, 0);
+DBCC CHECKIDENT ('dbo.ChamCong', RESEED, 0); DBCC CHECKIDENT ('dbo.DonTu', RESEED, 0);
 DBCC CHECKIDENT ('dbo.BangLuong', RESEED, 0);
-PRINT N'Đã reset xong.';
-PRINT N'Bật lại các trigger...';
+
+-- BẬT LẠI TRIGGER
 ALTER TABLE dbo.ChamCong ENABLE TRIGGER tr_ChamCong_BlockWhenLocked_D;
 ALTER TABLE dbo.NhanVien ENABLE TRIGGER tr_NhanVien_ToggleAccount;
-PRINT N'Đã xóa xong dữ liệu cũ và bật lại trigger.';
 
+-- TẠO DANH MỤC
+PRINT N'[2/7] Tạo danh mục...';
+INSERT INTO dbo.PhongBan (TenPhongBan, MoTa, KichHoat) VALUES 
+(N'Ban Giám đốc', N'Điều hành chung', 1), (N'Phòng Nhân sự', N'Quản lý nhân sự', 1),
+(N'Phòng Kế toán', N'Kế toán tài chính', 1), (N'Bộ phận Bán hàng', N'Bán hàng', 1),
+(N'Bộ phận Kho', N'Quản lý kho', 1), (N'Bộ phận Thu ngân', N'Thu ngân', 1);
 
-------------------------------------------------------------
--- BƯỚC 0.1: CẬP NHẬT LẠI STORED PROCEDURE
-------------------------------------------------------------
-PRINT N'Cập nhật lại Stored Procedure sp_KhoaCongThang...';
-IF OBJECT_ID('dbo.sp_KhoaCongThang','P') IS NOT NULL DROP PROCEDURE dbo.sp_KhoaCongThang;
-GO
-CREATE PROCEDURE dbo.sp_KhoaCongThang @Nam INT, @Thang INT AS
+INSERT INTO dbo.ChucVu (TenChucVu, MoTa, KichHoat) VALUES 
+(N'Giám đốc', N'Giám đốc điều hành', 1), (N'Trưởng phòng', N'Trưởng phòng', 1),
+(N'Nhân viên Nhân sự', N'NV nhân sự', 1), (N'Kế toán viên', N'NV kế toán', 1),
+(N'Nhân viên Bán hàng', N'NV bán hàng', 1), (N'Nhân viên Kho', N'NV kho', 1),
+(N'Nhân viên Thu ngân', N'NV thu ngân', 1);
+
+INSERT INTO dbo.CaLam (TenCa, GioBatDau, GioKetThuc, HeSoCa, MoTa, KichHoat) VALUES 
+(N'Ca Sáng', '06:00', '14:00', 1.0, N'Ca sáng', 1),
+(N'Ca Chiều', '14:00', '22:00', 1.0, N'Ca chiều', 1),
+(N'Ca Đêm (Qua ngày)', '22:00', '06:00', 1.5, N'Ca qua đêm', 1),
+(N'Ca Hành chính', '08:00', '17:00', 1.0, N'Ca hành chính', 1);
+
+-- NGƯỜI DÙNG VÀ NHÂN VIÊN
+PRINT N'[3/7] Tạo người dùng và nhân viên...';
+INSERT INTO dbo.NguoiDung (TenDangNhap, MatKhau, VaiTro, KichHoat) VALUES
+('giamdoc', '123', N'QuanLy', 1), ('hr_manager', '123', N'HR', 1), ('ketoan01', '123', N'KeToan', 1),
+('nv_hr_01', '123', N'NhanVien', 1), ('nv_banhang_01', '123', N'NhanVien', 1), ('nv_banhang_02', '123', N'NhanVien', 1),
+('nv_kho_01', '123', N'NhanVien', 1), ('nv_thungan_01', '123', N'NhanVien', 1), ('nv_nghiviec', '123', N'NhanVien', 0);
+
+INSERT INTO dbo.NhanVien (MaNguoiDung, HoTen, NgaySinh, GioiTinh, DienThoai, Email, DiaChi, NgayVaoLam, TrangThai, MaPhongBan, MaChucVu, LuongCoBan) VALUES
+(1, N'Nguyễn Văn An', '1980-05-20', N'Nam', '0901112221', 'giamdoc@minimart.com', N'123 Lê Lợi, Q1', '2020-01-15', N'DangLam', 1, 1, 50000000),
+(2, N'Trần Thị Bích', '1988-10-02', N'Nu', '0901112222', 'hr.manager@minimart.com', N'456 Nguyễn Trãi, Q5', '2021-03-10', N'DangLam', 2, 2, 25000000),
+(3, N'Lê Văn Cường', '1992-07-11', N'Nam', '0901112223', 'ketoan01@minimart.com', N'789 CMT8, Q3', '2022-09-01', N'DangLam', 3, 4, 15000000),
+(4, N'Ngô Thị Lan', '1995-04-12', N'Nu', '0901112228', 'lannt@minimart.com', N'555 Phan Xích Long', '2023-06-15', N'DangLam', 2, 3, 12000000),
+(5, N'Phạm Thị Dung', '1998-11-30', N'Nu', '0901112224', 'dungpt@minimart.com', N'111 HBT, Q1', '2023-05-20', N'DangLam', 4, 5, 8500000),
+(6, N'Lý Thị Mai', '2001-08-08', N'Nu', '0901112229', 'mailt@minimart.com', N'666 Hoàng Diệu, Q4', '2024-01-15', N'DangLam', 4, 5, 8500000),
+(7, N'Hoàng Văn Em', '2000-02-15', N'Nam', '0901112225', 'emhv@minimart.com', N'222 Võ Văn Tần, Q3', '2024-02-01', N'DangLam', 5, 6, 8000000),
+(8, N'Vũ Thị Giang', '1999-06-25', N'Nu', '0901112226', 'giangvt@minimart.com', N'333 ĐBP, Bình Thạnh', '2024-03-01', N'DangLam', 6, 7, 8200000),
+(9, N'Đỗ Văn Hùng', '1995-01-01', N'Nam', '0901112227', 'hungdv@minimart.com', N'444 XVNT, Bình Thạnh', '2023-01-01', N'Nghi', 4, 5, 8000000);
+
+-- LỊCH PHÂN CA VÀ CHẤM CÔNG
+PRINT N'[4/7] Tạo lịch và chấm công tự động...';
+DECLARE @Start DATE = '2025-07-01', @Current DATE = @Start, @End DATE = GETDATE();
+DECLARE @CurMonth INT = MONTH(@End), @CurYear INT = YEAR(@End);
+DECLARE @CS INT = 1, @CC INT = 2, @CT INT = 3, @CH INT = 4;
+DECLARE @LC INT = 0, @CgC INT = 0;
+
+WHILE @Current <= @End
 BEGIN
-    SET NOCOUNT ON; SET XACT_ABORT ON;
-    DECLARE @D0 DATE = DATEFROMPARTS(@Nam,@Thang,1);
-    DECLARE @D1 DATE = EOMONTH(@D0);
-    EXEC sp_set_session_context 'SkipTrigger', '1';
-    BEGIN TRAN;
-    UPDATE dbo.LichPhanCa SET TrangThai = N'Khoa' WHERE NgayLam BETWEEN @D0 AND @D1 AND TrangThai <> N'Khoa';
-    UPDATE dbo.ChamCong SET Khoa = 1 WHERE NgayLam BETWEEN @D0 AND @D1 AND Khoa = 0;
-    COMMIT;
-    EXEC sp_set_session_context 'SkipTrigger', '0';
-END
-GO
-PRINT N'Đã cập nhật xong Stored Procedure.';
-
-------------------------------------------------------------
--- 1. DỮ LIỆU CHO CÁC BẢNG DANH MỤC
-------------------------------------------------------------
-PRINT N'Chèn dữ liệu Phòng Ban...';
-INSERT INTO dbo.PhongBan (TenPhongBan) VALUES (N'Ban Giám đốc'),(N'Phòng Nhân sự'),(N'Phòng Kế toán'),(N'Bộ phận Bán hàng'),(N'Bộ phận Kho'),(N'Bộ phận Thu ngân');
-PRINT N'Chèn dữ liệu Chức Vụ...';
-INSERT INTO dbo.ChucVu (TenChucVu) VALUES (N'Giám đốc'),(N'Trưởng phòng'),(N'Nhân viên Nhân sự'),(N'Kế toán viên'),(N'Nhân viên Bán hàng'),(N'Nhân viên Kho'),(N'Nhân viên Thu ngân');
-PRINT N'Chèn dữ liệu Ca Làm...';
-INSERT INTO dbo.CaLam (TenCa, GioBatDau, GioKetThuc, HeSoCa) VALUES (N'Ca Sáng', '06:00:00', '14:00:00', 1.0),(N'Ca Chiều', '14:00:00', '22:00:00', 1.0),(N'Ca Đêm (Qua ngày)', '22:00:00', '06:00:00', 1.5),(N'Ca Hành chính', '08:00:00', '17:00:00', 1.0);
-
-------------------------------------------------------------
--- 2. DỮ LIỆU NGƯỜI DÙNG VÀ NHÂN VIÊN
-------------------------------------------------------------
-PRINT N'Chèn dữ liệu Người Dùng...';
-INSERT INTO dbo.NguoiDung (TenDangNhap, MatKhauHash, VaiTro, KichHoat) VALUES
-('giamdoc', '123', N'QuanLy', 1),('hr_manager', '123', N'HR', 1),('ketoan01', '123', N'KeToan', 1),('nv_banhang_01', '123', N'NhanVien', 1),('nv_kho_01', '123', N'NhanVien', 1),('nv_thungan_01', '123', N'NhanVien', 1),('nv_hr_01', '123', N'NhanVien', 1),('nv_banhang_02', '123', N'NhanVien', 1),('nv_nghiviec', '123', N'NhanVien', 0);
-
-PRINT N'Chèn dữ liệu Nhân Viên...';
-INSERT INTO dbo.NhanVien (MaNguoiDung, HoTen, NgaySinh, GioiTinh, DienThoai, Email, DiaChi, NgayVaoLam, TrangThai, MaPhongBan, MaChucVu, LuongCoBan)
-SELECT
-    (SELECT MaNguoiDung FROM dbo.NguoiDung WHERE TenDangNhap = 'giamdoc'), N'Nguyễn Văn An', '1980-05-20', N'Nam', '0901112221', 'giamdoc@minimart.com', N'123 Lê Lợi, Q1, TPHCM', '2020-01-15', N'DangLam',
-    (SELECT MaPhongBan FROM dbo.PhongBan WHERE TenPhongBan = N'Ban Giám đốc'), (SELECT MaChucVu FROM dbo.ChucVu WHERE TenChucVu = N'Giám đốc'), 50000000
-UNION ALL SELECT (SELECT MaNguoiDung FROM dbo.NguoiDung WHERE TenDangNhap = 'hr_manager'), N'Trần Thị Bích', '1988-10-02', N'Nu', '0901112222', 'hr.manager@minimart.com', N'456 Nguyễn Trãi, Q5, TPHCM', '2021-03-10', N'DangLam',
-    (SELECT MaPhongBan FROM dbo.PhongBan WHERE TenPhongBan = N'Phòng Nhân sự'), (SELECT MaChucVu FROM dbo.ChucVu WHERE TenChucVu = N'Trưởng phòng'), 25000000
-UNION ALL SELECT (SELECT MaNguoiDung FROM dbo.NguoiDung WHERE TenDangNhap = 'ketoan01'), N'Lê Văn Cường', '1992-07-11', N'Nam', '0901112223', 'ketoan01@minimart.com', N'789 CMT8, Q3, TPHCM', '2022-09-01', N'DangLam',
-    (SELECT MaPhongBan FROM dbo.PhongBan WHERE TenPhongBan = N'Phòng Kế toán'), (SELECT MaChucVu FROM dbo.ChucVu WHERE TenChucVu = N'Kế toán viên'), 15000000
-UNION ALL SELECT (SELECT MaNguoiDung FROM dbo.NguoiDung WHERE TenDangNhap = 'nv_banhang_01'), N'Phạm Thị Dung', '1998-11-30', N'Nu', '0901112224', 'dungpt@minimart.com', N'111 HBT, Q1, TPHCM', '2023-05-20', N'DangLam',
-    (SELECT MaPhongBan FROM dbo.PhongBan WHERE TenPhongBan = N'Bộ phận Bán hàng'), (SELECT MaChucVu FROM dbo.ChucVu WHERE TenChucVu = N'Nhân viên Bán hàng'), 8500000
-UNION ALL SELECT (SELECT MaNguoiDung FROM dbo.NguoiDung WHERE TenDangNhap = 'nv_kho_01'), N'Hoàng Văn Em', '2000-02-15', N'Nam', '0901112225', 'emhv@minimart.com', N'222 Võ Văn Tần, Q3, TPHCM', '2024-08-18', N'DangLam',
-    (SELECT MaPhongBan FROM dbo.PhongBan WHERE TenPhongBan = N'Bộ phận Kho'), (SELECT MaChucVu FROM dbo.ChucVu WHERE TenChucVu = N'Nhân viên Kho'), 8000000
-UNION ALL SELECT (SELECT MaNguoiDung FROM dbo.NguoiDung WHERE TenDangNhap = 'nv_thungan_01'), N'Vũ Thị Giang', '1999-06-25', N'Nu', '0901112226', 'giangvt@minimart.com', N'333 ĐBP, Bình Thạnh, TPHCM', '2025-07-01', N'DangLam',
-    (SELECT MaPhongBan FROM dbo.PhongBan WHERE TenPhongBan = N'Bộ phận Thu ngân'), (SELECT MaChucVu FROM dbo.ChucVu WHERE TenChucVu = N'Nhân viên Thu ngân'), 8200000
-UNION ALL SELECT (SELECT MaNguoiDung FROM dbo.NguoiDung WHERE TenDangNhap = 'nv_hr_01'), N'Ngô Thị Lan', '1995-04-12', N'Nu', '0901112228', 'lannt@minimart.com', N'555 Phan Xích Long, PN, TPHCM', '2025-07-15', N'DangLam',
-    (SELECT MaPhongBan FROM dbo.PhongBan WHERE TenPhongBan = N'Phòng Nhân sự'), (SELECT MaChucVu FROM dbo.ChucVu WHERE TenChucVu = N'Nhân viên Nhân sự'), 12000000
-UNION ALL SELECT (SELECT MaNguoiDung FROM dbo.NguoiDung WHERE TenDangNhap = 'nv_banhang_02'), N'Lý Thị Mai', '2001-08-08', N'Nu', '0901112229', 'mailt@minimart.com', N'666 Hoàng Diệu, Q4, TPHCM', '2025-08-01', N'DangLam',
-    (SELECT MaPhongBan FROM dbo.PhongBan WHERE TenPhongBan = N'Bộ phận Bán hàng'), (SELECT MaChucVu FROM dbo.ChucVu WHERE TenChucVu = N'Nhân viên Bán hàng'), 8500000
-UNION ALL SELECT (SELECT MaNguoiDung FROM dbo.NguoiDung WHERE TenDangNhap = 'nv_nghiviec'), N'Đỗ Văn Hùng', '1995-01-01', N'Nam', '0901112227', 'hungdv@minimart.com', N'444 XVNT, Bình Thạnh, TPHCM', '2023-01-01', N'Nghi',
-    (SELECT MaPhongBan FROM dbo.PhongBan WHERE TenPhongBan = N'Bộ phận Bán hàng'), (SELECT MaChucVu FROM dbo.ChucVu WHERE TenChucVu = N'Nhân viên Bán hàng'), 8000000;
-
-------------------------------------------------------------
--- 3. DỮ LIỆU LỊCH PHÂN CA VÀ CHẤM CÔNG
-------------------------------------------------------------
-PRINT N'Bắt đầu tạo dữ liệu Lịch Phân Ca và Chấm Công...';
-DECLARE @CurrentDate DATE = '2025-07-01'; DECLARE @EndDate DATE = GETDATE();
-WHILE @CurrentDate <= @EndDate
-BEGIN
-    INSERT INTO dbo.LichPhanCa (MaNV, NgayLam, MaCa, TrangThai) 
-    SELECT MaNV, @CurrentDate, (SELECT MaCa FROM CaLam WHERE TenCa = N'Ca Hành chính'), IIF(MONTH(@CurrentDate) < MONTH(@EndDate), N'Khoa', N'DuKien') 
-    FROM dbo.NhanVien WHERE DATEPART(weekday, @CurrentDate) NOT IN (1, 7) AND MaChucVu IN (SELECT MaChucVu FROM dbo.ChucVu WHERE TenChucVu IN (N'Giám đốc', N'Trưởng phòng', N'Kế toán viên', N'Nhân viên Nhân sự')) AND NgayVaoLam <= @CurrentDate AND TrangThai = 'DangLam';
+    DECLARE @Past BIT = CASE WHEN YEAR(@Current) < @CurYear OR (YEAR(@Current) = @CurYear AND MONTH(@Current) < @CurMonth) THEN 1 ELSE 0 END;
+    DECLARE @TS NVARCHAR(12) = CASE WHEN @Past = 1 THEN N'Khoa' ELSE N'DuKien' END;
     
-    INSERT INTO dbo.LichPhanCa (MaNV, NgayLam, MaCa, TrangThai) SELECT MaNV, @CurrentDate, (SELECT MaCa FROM CaLam WHERE TenCa = N'Ca Sáng'), IIF(MONTH(@CurrentDate) < MONTH(@EndDate), N'Khoa', N'DuKien') FROM dbo.NhanVien WHERE HoTen = N'Phạm Thị Dung' AND NgayVaoLam <= @CurrentDate AND TrangThai = 'DangLam';
-    INSERT INTO dbo.LichPhanCa (MaNV, NgayLam, MaCa, TrangThai) SELECT MaNV, @CurrentDate, (SELECT MaCa FROM CaLam WHERE TenCa = N'Ca Chiều'), IIF(MONTH(@CurrentDate) < MONTH(@EndDate), N'Khoa', N'DuKien') FROM dbo.NhanVien WHERE HoTen IN (N'Lý Thị Mai', N'Hoàng Văn Em') AND NgayVaoLam <= @CurrentDate AND TrangThai = 'DangLam';
-    IF (DAY(@CurrentDate) % 2 = 0) INSERT INTO dbo.LichPhanCa (MaNV, NgayLam, MaCa, TrangThai) SELECT MaNV, @CurrentDate, (SELECT MaCa FROM CaLam WHERE TenCa = N'Ca Đêm (Qua ngày)'), IIF(MONTH(@CurrentDate) < MONTH(@EndDate), N'Khoa', N'DuKien') FROM dbo.NhanVien WHERE HoTen = N'Vũ Thị Giang' AND NgayVaoLam <= @CurrentDate AND TrangThai = 'DangLam';
-    
-    IF MONTH(@CurrentDate) < MONTH(@EndDate)
+    IF DATEPART(WEEKDAY, @Current) NOT IN (1,7) 
     BEGIN
-        INSERT INTO dbo.ChamCong(MaNV, NgayLam, GioVao, GioRa)
-        SELECT lpc.MaNV, lpc.NgayLam,
-            DATEADD(minute, (lpc.MaNV % 7) - 3,  CAST(lpc.NgayLam AS DATETIME) + CAST(cl.GioBatDau AS DATETIME)),
-            DATEADD(minute, (lpc.MaNV % 9) - 4,  CAST(DATEADD(day, IIF(cl.GioKetThuc < cl.GioBatDau, 1, 0), lpc.NgayLam) AS DATETIME) + CAST(cl.GioKetThuc AS DATETIME))
-        FROM dbo.LichPhanCa lpc JOIN dbo.CaLam cl ON lpc.MaCa = cl.MaCa
-        WHERE lpc.NgayLam = @CurrentDate;
+        INSERT INTO dbo.LichPhanCa (MaNV, NgayLam, MaCa, TrangThai)
+        SELECT MaNV, @Current, @CH, @TS FROM dbo.NhanVien 
+        WHERE MaChucVu IN (1,2,3,4) AND NgayVaoLam <= @Current AND TrangThai = N'DangLam';
+        SET @LC = @LC + @@ROWCOUNT;
     END
-    SET @CurrentDate = DATEADD(day, 1, @CurrentDate);
+    
+    INSERT INTO dbo.LichPhanCa (MaNV, NgayLam, MaCa, TrangThai)
+    SELECT MaNV, @Current, @CS, @TS FROM dbo.NhanVien WHERE HoTen = N'Phạm Thị Dung' AND NgayVaoLam <= @Current AND TrangThai = N'DangLam';
+    SET @LC = @LC + @@ROWCOUNT;
+    
+    INSERT INTO dbo.LichPhanCa (MaNV, NgayLam, MaCa, TrangThai)
+    SELECT MaNV, @Current, @CC, @TS FROM dbo.NhanVien WHERE HoTen IN (N'Lý Thị Mai', N'Hoàng Văn Em') AND NgayVaoLam <= @Current AND TrangThai = N'DangLam';
+    SET @LC = @LC + @@ROWCOUNT;
+    
+    IF DAY(@Current) % 2 = 0
+    BEGIN
+        INSERT INTO dbo.LichPhanCa (MaNV, NgayLam, MaCa, TrangThai)
+        SELECT MaNV, @Current, @CT, @TS FROM dbo.NhanVien WHERE HoTen = N'Vũ Thị Giang' AND NgayVaoLam <= @Current AND TrangThai = N'DangLam';
+        SET @LC = @LC + @@ROWCOUNT;
+    END
+    
+    IF @Past = 1
+    BEGIN
+        INSERT INTO dbo.ChamCong (MaNV, NgayLam, GioVao, GioRa, Khoa)
+        SELECT lpc.MaNV, lpc.NgayLam,
+            DATEADD(MINUTE, (lpc.MaNV % 15) - 5, CAST(lpc.NgayLam AS DATETIME) + CAST(cl.GioBatDau AS DATETIME)),
+            DATEADD(MINUTE, (lpc.MaNV % 15) - 10, CAST(DATEADD(DAY, IIF(cl.GioKetThuc < cl.GioBatDau, 1, 0), lpc.NgayLam) AS DATETIME) + CAST(cl.GioKetThuc AS DATETIME)),
+            1
+        FROM dbo.LichPhanCa lpc INNER JOIN dbo.CaLam cl ON lpc.MaCa = cl.MaCa
+        WHERE lpc.NgayLam = @Current AND lpc.TrangThai = N'Khoa';
+        SET @CgC = @CgC + @@ROWCOUNT;
+    END
+    
+    SET @Current = DATEADD(DAY, 1, @Current);
 END
-PRINT N'Đã tạo xong dữ liệu Lịch Phân Ca và Chấm Công.';
 
-------------------------------------------------------------
--- 4. DỮ LIỆU ĐƠN TỪ
-------------------------------------------------------------
-PRINT N'Chèn dữ liệu Đơn Từ...';
-INSERT INTO dbo.DonTu (MaNV, Loai, TuLuc, DenLuc, LyDo, TrangThai, DuyetBoi)
-SELECT (SELECT MaNV FROM NhanVien WHERE HoTen = N'Phạm Thị Dung'), N'NGHI', '2025-07-15 06:00:00', '2025-07-15 14:00:00', N'Việc gia đình', N'DaDuyet', (SELECT MaNguoiDung FROM NguoiDung WHERE TenDangNhap = 'hr_manager')
-UNION ALL SELECT (SELECT MaNV FROM NhanVien WHERE HoTen = N'Hoàng Văn Em'), N'OT', '2025-08-10 22:00:00', '2025-08-11 01:00:00', N'Kiểm kê kho gấp', N'DaDuyet', (SELECT MaNguoiDung FROM NguoiDung WHERE TenDangNhap = 'giamdoc')
-UNION ALL SELECT (SELECT MaNV FROM NhanVien WHERE HoTen = N'Vũ Thị Giang'), N'NGHI', '2025-08-20 22:00:00', '2025-08-22 06:00:00', N'Du lịch', N'TuChoi', (SELECT MaNguoiDung FROM NguoiDung WHERE TenDangNhap = 'hr_manager')
-UNION ALL SELECT (SELECT MaNV FROM NhanVien WHERE HoTen = N'Lê Văn Cường'), N'NGHI', '2025-09-29 08:00:00', '2025-09-29 17:00:00', N'Đi khám bệnh', N'ChoDuyet', NULL
-UNION ALL SELECT (SELECT MaNV FROM NhanVien WHERE HoTen = N'Ngô Thị Lan'), N'NGHI', '2025-09-30 08:00:00', '2025-09-30 12:00:00', N'Làm giấy tờ', N'ChoDuyet', NULL
-UNION ALL SELECT (SELECT MaNV FROM NhanVien WHERE HoTen = N'Lý Thị Mai'), N'OT', '2025-09-24 22:00:00', '2025-09-25 00:00:00', N'Hỗ trợ khuyến mãi', N'DaDuyet', (SELECT MaNguoiDung FROM NguoiDung WHERE TenDangNhap = 'giamdoc');
+PRINT N'✓ Lịch: ' + CAST(@LC AS NVARCHAR) + N', Chấm công: ' + CAST(@CgC AS NVARCHAR);
 
-------------------------------------------------------------
--- 5. TỰ ĐỘNG CHẠY STORED PROCEDURE TÍNH LƯƠNG
-------------------------------------------------------------
-PRINT N'Bắt đầu thực thi Stored Procedures để tự động khóa công và tính lương...';
-EXEC dbo.sp_KhoaCongThang @Nam = 2025, @Thang = 7;
-EXEC dbo.sp_KhoaCongThang @Nam = 2025, @Thang = 8;
-PRINT N'Hoàn tất khóa công cho tháng 7, 8.';
-EXEC dbo.sp_ChayBangLuong @Nam = 2025, @Thang = 7;
-EXEC dbo.sp_ChayBangLuong @Nam = 2025, @Thang = 8;
-PRINT N'Hoàn tất chạy bảng lương cho tháng 7, 8.';
+-- ĐƠN TỪ
+PRINT N'[5/7] Tạo đơn từ...';
+INSERT INTO dbo.DonTu (MaNV, Loai, TuLuc, DenLuc, SoGio, LyDo, TrangThai, DuyetBoi, NgayDuyet) VALUES
+(5, N'NGHI', '2025-07-15 06:00', '2025-07-15 14:00', 8, N'Việc gia đình', N'DaDuyet', 2, '2025-07-14 15:30'),
+(7, N'OT', '2025-08-10 22:00', '2025-08-11 01:00', 3, N'Kiểm kê kho gấp', N'DaDuyet', 1, '2025-08-10 10:00'),
+(8, N'NGHI', '2025-08-20 22:00', '2025-08-22 06:00', 16, N'Du lịch', N'TuChoi', 2, '2025-08-19 14:00'),
+(3, N'NGHI', CAST(CONVERT(VARCHAR(10), GETDATE(), 120) + ' 08:00' AS DATETIME), CAST(CONVERT(VARCHAR(10), GETDATE(), 120) + ' 12:00' AS DATETIME), 4, N'Đi khám bệnh', N'ChoDuyet', NULL, NULL),
+(4, N'NGHI', CAST(CONVERT(VARCHAR(10), GETDATE(), 120) + ' 13:00' AS DATETIME), CAST(CONVERT(VARCHAR(10), GETDATE(), 120) + ' 17:00' AS DATETIME), 4, N'Làm giấy tờ', N'ChoDuyet', NULL, NULL),
+(6, N'OT', '2025-09-24 22:00', '2025-09-25 00:00', 2, N'Hỗ trợ khuyến mãi đêm', N'DaDuyet', 1, '2025-09-24 16:00');
 
-------------------------------------------------------------
--- 6. KIỂM TRA KẾT QUẢ
-------------------------------------------------------------
-PRINT N'Dữ liệu bảng lương đã được tạo. Dưới đây là kết quả:';
-SELECT Nam, Thang, HoTen, PhongBan, ChucDanh, LuongCoBan, TongGioCong, GioOT, ThucLanh, TrangThai
-FROM dbo.vw_BangLuong_ChiTiet 
-WHERE (Nam = 2025 AND Thang IN (7, 8)) 
-ORDER BY Nam, Thang, HoTen;
-GO
+-- KHÓA CÔNG VÀ TÍNH LƯƠNG
+PRINT N'[6/7] Khóa công và tính lương...';
+DECLARE @M INT = 7, @Y INT = 2025;
+WHILE (@Y < @CurYear) OR (@Y = @CurYear AND @M < @CurMonth)
+BEGIN
+    BEGIN TRY
+        EXEC dbo.sp_KhoaCongThang @Nam = @Y, @Thang = @M;
+        EXEC dbo.sp_ChayBangLuong @Nam = @Y, @Thang = @M, @StdHours = 160;
+        PRINT N'✓ Tháng ' + CAST(@M AS NVARCHAR) + '/' + CAST(@Y AS NVARCHAR);
+    END TRY BEGIN CATCH PRINT N'⚠ ' + ERROR_MESSAGE(); END CATCH
+    SET @M = @M + 1; IF @M > 12 BEGIN SET @M = 1; SET @Y = @Y + 1; END
+END
+
+-- THỐNG KÊ
+PRINT N'';
+PRINT N'[7/7] Thống kê:';
+PRINT N'─────────────────────────────────';
+PRINT N'Người dùng: ' + CAST((SELECT COUNT(*) FROM dbo.NguoiDung) AS NVARCHAR);
+PRINT N'Nhân viên: ' + CAST((SELECT COUNT(*) FROM dbo.NhanVien WHERE TrangThai = N'DangLam') AS NVARCHAR) + N'/9';
+PRINT N'Lịch phân ca: ' + CAST((SELECT COUNT(*) FROM dbo.LichPhanCa) AS NVARCHAR);
+PRINT N'Chấm công: ' + CAST((SELECT COUNT(*) FROM dbo.ChamCong) AS NVARCHAR);
+PRINT N'Đơn từ: ' + CAST((SELECT COUNT(*) FROM dbo.DonTu) AS NVARCHAR);
+PRINT N'Bảng lương: ' + CAST((SELECT COUNT(DISTINCT CAST(Nam AS NVARCHAR) + '-' + CAST(Thang AS NVARCHAR)) FROM dbo.BangLuong) AS NVARCHAR) + N' tháng';
 
 COMMIT TRAN;
 
-PRINT N'====== HOÀN TẤT TOÀN BỘ SCRIPT! ======';
+PRINT N'';
+PRINT N'====================================================================';
+PRINT N'✅ HOÀN TẤT! Mật khẩu tất cả tài khoản: 123';
+PRINT N'====================================================================';
 GO

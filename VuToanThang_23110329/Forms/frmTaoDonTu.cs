@@ -10,8 +10,8 @@ namespace VuToanThang_23110329.Forms
     public partial class frmTaoDonTu : Form
     {
         private string connectionString;
-        private int currentUserId;
-        
+        private int currentMaNV;
+
         public frmTaoDonTu()
         {
             InitializeComponent();
@@ -20,158 +20,192 @@ namespace VuToanThang_23110329.Forms
 
         private void InitializeConnectionString()
         {
-            connectionString = System.Configuration.ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
-            // Get current user info (assuming stored in static class)
-            currentUserId = 1; // TODO: Get from session
+            var cs = System.Configuration.ConfigurationManager.ConnectionStrings["HrDb"];
+            if (cs == null)
+            {
+                MessageBox.Show("Không tìm thấy chuỗi kết nối 'HrDb' trong App.config.", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                connectionString = string.Empty;
+            }
+            else
+            {
+                connectionString = cs.ConnectionString;
+            }
+            // Lấy MaNV từ session
+            currentMaNV = UserSession.MaNV > 0 ? UserSession.MaNV : 1;
         }
 
         private void frmTaoDonTu_Load(object sender, EventArgs e)
         {
-            LoadComboBoxData();
-            SetDefaultValues();
-            ConfigureForm();
+            SetupComboBox();
+            SetupDateTimePickers();
+            ClearForm();
         }
 
-        private void LoadComboBoxData()
+        private void SetupComboBox()
         {
             cmbLoaiDon.Items.Clear();
-            cmbLoaiDon.Items.Add("Nghỉ phép");
-            cmbLoaiDon.Items.Add("Tăng ca");
+            cmbLoaiDon.Items.Add("NGHI - Nghỉ phép");
+            cmbLoaiDon.Items.Add("OT - Làm thêm giờ");
             cmbLoaiDon.SelectedIndex = 0;
         }
 
-        private void SetDefaultValues()
+        private void SetupDateTimePickers()
         {
+            dtpTuLuc.Format = DateTimePickerFormat.Custom;
+            dtpTuLuc.CustomFormat = "dd/MM/yyyy HH:mm";
+            dtpTuLuc.ShowUpDown = false;
             dtpTuLuc.Value = DateTime.Now;
-            dtpDenLuc.Value = DateTime.Now.AddDays(1);
-            txtSoGio.Text = "";
-            txtLyDo.Text = "";
+
+            dtpDenLuc.Format = DateTimePickerFormat.Custom;
+            dtpDenLuc.CustomFormat = "dd/MM/yyyy HH:mm";
+            dtpDenLuc.ShowUpDown = false;
+            dtpDenLuc.Value = DateTime.Now.AddHours(8);
         }
 
-        private void ConfigureForm()
+        private void cmbLoaiDon_SelectedIndexChanged(object sender, EventArgs e)
         {
-            // Initially hide hours field for leave requests
-            UpdateFormBasedOnRequestType();
-        }
-
-        private void UpdateFormBasedOnRequestType()
-        {
-            bool isOvertime = cmbLoaiDon.SelectedIndex == 1; // Tăng ca
-            lblSoGio.Visible = isOvertime;
-            txtSoGio.Visible = isOvertime;
+            // Nếu chọn NGHI thì disable txtSoGio, nếu OT thì enable
+            bool isOT = cmbLoaiDon.SelectedIndex == 1;
+            txtSoGio.Enabled = isOT;
+            txtSoGio.ReadOnly = !isOT;
             
-            if (isOvertime)
+            if (!isOT)
             {
-                txtSoGio.PlaceholderText = "Nhập số giờ tăng ca";
+                txtSoGio.Text = "";
+                txtSoGio.PlaceholderText = "Tự động tính";
             }
             else
             {
-                txtLyDo.PlaceholderText = "Nhập lý do nghỉ phép";
+                txtSoGio.PlaceholderText = "Nhập số giờ OT";
+                CalculateHours();
+            }
+        }
+
+        private void dtpTuLuc_ValueChanged(object sender, EventArgs e)
+        {
+            // Đảm bảo DenLuc >= TuLuc
+            if (dtpDenLuc.Value < dtpTuLuc.Value)
+            {
+                dtpDenLuc.Value = dtpTuLuc.Value.AddHours(1);
+            }
+            CalculateHours();
+        }
+
+        private void dtpDenLuc_ValueChanged(object sender, EventArgs e)
+        {
+            // Đảm bảo DenLuc >= TuLuc
+            if (dtpDenLuc.Value < dtpTuLuc.Value)
+            {
+                MessageBox.Show("Thời gian kết thúc phải sau thòi gian bắt đầu!", "Cảnh báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                dtpDenLuc.Value = dtpTuLuc.Value.AddHours(1);
+            }
+            CalculateHours();
+        }
+
+        private void CalculateHours()
+        {
+            TimeSpan duration = dtpDenLuc.Value - dtpTuLuc.Value;
+            double hours = duration.TotalHours;
+            
+            if (cmbLoaiDon.SelectedIndex == 1) // OT
+            {
+                txtSoGio.Text = hours.ToString("F2");
             }
         }
 
         private void btnTaoDon_Click(object sender, EventArgs e)
         {
-            if (ValidateForm())
-            {
-                CreateRequest();
-            }
-        }
-
-        private bool ValidateForm()
-        {
-            // Validate request type
-            if (cmbLoaiDon.SelectedIndex < 0)
-            {
-                MessageBox.Show("Vui lòng chọn loại đơn!", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return false;
-            }
-
-            // Validate dates
-            if (dtpTuLuc.Value >= dtpDenLuc.Value)
-            {
-                MessageBox.Show("Thời gian bắt đầu phải trước thời gian kết thúc!", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return false;
-            }
-
-            // Validate hours for overtime
-            if (cmbLoaiDon.SelectedIndex == 1) // Tăng ca
-            {
-                if (string.IsNullOrEmpty(txtSoGio.Text))
-                {
-                    MessageBox.Show("Vui lòng nhập số giờ tăng ca!", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    return false;
-                }
-
-                if (!decimal.TryParse(txtSoGio.Text, out decimal hours) || hours <= 0)
-                {
-                    MessageBox.Show("Số giờ phải là số dương!", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    return false;
-                }
-            }
-
-            // Validate reason
-            if (string.IsNullOrEmpty(txtLyDo.Text.Trim()))
-            {
-                MessageBox.Show("Vui lòng nhập lý do!", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return false;
-            }
-
-            return true;
-        }
-
-        private void CreateRequest()
-        {
+            if (!ValidateInput())
+                return;
             try
             {
                 using (SqlConnection conn = new SqlConnection(connectionString))
                 {
                     conn.Open();
-                    string query = @"
-                        INSERT INTO dbo.DonTu (MaNV, Loai, TuLuc, DenLuc, SoGio, LyDo, TrangThai)
-                        VALUES (@MaNV, @Loai, @TuLuc, @DenLuc, @SoGio, @LyDo, N'ChoDuyet')";
-
-                    using (SqlCommand cmd = new SqlCommand(query, conn))
+                    
+                    // Sử dụng stored procedure sp_DonTu_Insert
+                    string loai = cmbLoaiDon.SelectedIndex == 0 ? "NGHI" : "OT";
+                    decimal soGio = 0;
+                    if (!string.IsNullOrWhiteSpace(txtSoGio.Text))
                     {
-                        cmd.Parameters.AddWithValue("@MaNV", currentUserId);
-                        cmd.Parameters.AddWithValue("@Loai", cmbLoaiDon.SelectedIndex == 0 ? "NGHI" : "OT");
+                        decimal.TryParse(txtSoGio.Text, out soGio);
+                    }
+                    
+                    using (SqlCommand cmd = new SqlCommand("dbo.sp_DonTu_Insert", conn))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Parameters.AddWithValue("@MaNV", currentMaNV);
+                        cmd.Parameters.AddWithValue("@Loai", loai);
                         cmd.Parameters.AddWithValue("@TuLuc", dtpTuLuc.Value);
                         cmd.Parameters.AddWithValue("@DenLuc", dtpDenLuc.Value);
-                        
-                        if (cmbLoaiDon.SelectedIndex == 1 && !string.IsNullOrEmpty(txtSoGio.Text))
-                        {
-                            cmd.Parameters.AddWithValue("@SoGio", decimal.Parse(txtSoGio.Text));
-                        }
-                        else
-                        {
-                            cmd.Parameters.AddWithValue("@SoGio", DBNull.Value);
-                        }
-                        
+                        cmd.Parameters.AddWithValue("@SoGio", soGio > 0 ? (object)soGio : DBNull.Value);
                         cmd.Parameters.AddWithValue("@LyDo", txtLyDo.Text.Trim());
 
                         cmd.ExecuteNonQuery();
-                        
-                        MessageBox.Show("Tạo đơn từ thành công! Đơn từ đã được gửi để chờ duyệt.", 
-                            "Thành công", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                        
+                        MessageBox.Show("Tạo đơn thành công! Đơn đang chờ duyệt.", "Thành công", MessageBoxButtons.OK, MessageBoxIcon.Information);
                         ClearForm();
                     }
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Lỗi khi tạo đơn từ: {ex.Message}", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($"Lỗi khi tạo đơn: {ex.Message}", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+        }
+
+        private bool ValidateInput()
+        {
+            // Kiểm tra loại đơn
+            if (cmbLoaiDon.SelectedIndex < 0)
+            {
+                MessageBox.Show("Vui lòng chọn loại đơn!", "Cảnh báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                cmbLoaiDon.Focus();
+                return false;
+            }
+
+            // Kiểm tra thòi gian
+            if (dtpDenLuc.Value <= dtpTuLuc.Value)
+            {
+                MessageBox.Show("Thòi gian kết thúc phải sau thòi gian bắt đầu!", "Cảnh báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                dtpDenLuc.Focus();
+                return false;
+            }
+
+            // Kiểm tra số giờ cho OT
+            if (cmbLoaiDon.SelectedIndex == 1) // OT
+            {
+                if (string.IsNullOrEmpty(txtSoGio.Text))
+                {
+                    MessageBox.Show("Vui lòng nhập số giờ OT!", "Cảnh báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    txtSoGio.Focus();
+                    return false;
+                }
+
+                if (!decimal.TryParse(txtSoGio.Text, out decimal soGio) || soGio <= 0)
+                {
+                    MessageBox.Show("Số giờ OT không hợp lệ!", "Cảnh báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    txtSoGio.Focus();
+                    return false;
+                }
+            }
+
+            // Kiểm tra lý do
+            if (string.IsNullOrWhiteSpace(txtLyDo.Text))
+            {
+                MessageBox.Show("Vui lòng nhập lý do!", "Cảnh báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                txtLyDo.Focus();
+                return false;
+            }
+
+            return true;
         }
 
         private void btnHuy_Click(object sender, EventArgs e)
         {
-            DialogResult result = MessageBox.Show("Bạn có chắc chắn muốn hủy tạo đơn từ?", 
-                "Xác nhận", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-            
+            DialogResult result = MessageBox.Show("Bạn có chắc muốn hủy tạo đơn?", "Xác nhận", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
             if (result == DialogResult.Yes)
             {
-                this.Close();
+                ClearForm();
             }
         }
 
@@ -184,59 +218,10 @@ namespace VuToanThang_23110329.Forms
         {
             cmbLoaiDon.SelectedIndex = 0;
             dtpTuLuc.Value = DateTime.Now;
-            dtpDenLuc.Value = DateTime.Now.AddDays(1);
+            dtpDenLuc.Value = DateTime.Now.AddHours(8);
             txtSoGio.Text = "";
             txtLyDo.Text = "";
-            UpdateFormBasedOnRequestType();
-        }
-
-        private void cmbLoaiDon_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            UpdateFormBasedOnRequestType();
-        }
-
-        private void dtpTuLuc_ValueChanged(object sender, EventArgs e)
-        {
-            // Auto-adjust end date if it's before start date
-            if (dtpDenLuc.Value <= dtpTuLuc.Value)
-            {
-                dtpDenLuc.Value = dtpTuLuc.Value.AddDays(1);
-            }
-        }
-
-        private void dtpDenLuc_ValueChanged(object sender, EventArgs e)
-        {
-            // Validate that end date is after start date
-            if (dtpDenLuc.Value <= dtpTuLuc.Value)
-            {
-                MessageBox.Show("Thời gian kết thúc phải sau thời gian bắt đầu!", 
-                    "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                dtpDenLuc.Value = dtpTuLuc.Value.AddDays(1);
-            }
-        }
-
-        private void txtSoGio_TextChanged(object sender, EventArgs e)
-        {
-            // Validate numeric input
-            if (!string.IsNullOrEmpty(txtSoGio.Text))
-            {
-                if (!decimal.TryParse(txtSoGio.Text, out decimal hours) || hours < 0)
-                {
-                    // Remove invalid characters
-                    txtSoGio.Text = txtSoGio.Text.Substring(0, txtSoGio.Text.Length - 1);
-                    txtSoGio.SelectionStart = txtSoGio.Text.Length;
-                }
-            }
-        }
-
-        private void txtLyDo_TextChanged(object sender, EventArgs e)
-        {
-            // Limit text length
-            if (txtLyDo.Text.Length > 255)
-            {
-                txtLyDo.Text = txtLyDo.Text.Substring(0, 255);
-                txtLyDo.SelectionStart = txtLyDo.Text.Length;
-            }
+            txtLyDo.Focus();
         }
     }
 }

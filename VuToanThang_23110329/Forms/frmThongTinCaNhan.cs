@@ -22,9 +22,18 @@ namespace VuToanThang_23110329.Forms
 
         private void InitializeConnectionString()
         {
-            connectionString = System.Configuration.ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
-            // Get current user info (assuming stored in static class)
-            currentUserId = 1; // TODO: Get from session
+            var cs = System.Configuration.ConfigurationManager.ConnectionStrings["HrDb"];
+            if (cs == null)
+            {
+                MessageBox.Show("Không tìm thấy chuỗi kết nối 'HrDb' trong App.config.", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                connectionString = string.Empty;
+            }
+            else
+            {
+                connectionString = cs.ConnectionString;
+            }
+            // Get current user info from session
+            currentUserId = UserSession.MaNV > 0 ? UserSession.MaNV : 1;
         }
 
         private void frmThongTinCaNhan_Load(object sender, EventArgs e)
@@ -40,17 +49,11 @@ namespace VuToanThang_23110329.Forms
                 using (SqlConnection conn = new SqlConnection(connectionString))
                 {
                     conn.Open();
-                    string query = @"
-                        SELECT nv.HoTen, nv.DienThoai, nv.Email, nv.DiaChi, 
-                               pb.TenPhongBan, cv.TenChucVu, nv.LuongCoBan, nv.NgayVaoLam
-                        FROM dbo.NhanVien nv
-                        LEFT JOIN dbo.PhongBan pb ON nv.MaPhongBan = pb.MaPhongBan
-                        LEFT JOIN dbo.ChucVu cv ON nv.MaChucVu = cv.MaChucVu
-                        WHERE nv.MaNV = @MaNV";
-
-                    using (SqlCommand cmd = new SqlCommand(query, conn))
+                    using (SqlCommand cmd = new SqlCommand("dbo.sp_NhanVien_GetThongTinCaNhan", conn))
                     {
+                        cmd.CommandType = CommandType.StoredProcedure;
                         cmd.Parameters.AddWithValue("@MaNV", currentUserId);
+                        
                         using (SqlDataReader reader = cmd.ExecuteReader())
                         {
                             if (reader.Read())
@@ -81,13 +84,22 @@ namespace VuToanThang_23110329.Forms
         private void SetEditingMode(bool editing)
         {
             isEditing = editing;
+            
+            // Editable fields
             txtHoTen.ReadOnly = !editing;
             txtDienThoai.ReadOnly = !editing;
             txtEmail.ReadOnly = !editing;
             txtDiaChi.ReadOnly = !editing;
             
+            // Always read-only fields
+            txtPhongBan.ReadOnly = true;
+            txtChucDanh.ReadOnly = true;
+            txtLuongCoBan.ReadOnly = true;
+            dtpNgayVaoLam.Enabled = false;
+            
             if (editing)
             {
+                // Editable fields - white background
                 txtHoTen.FillColor = System.Drawing.Color.White;
                 txtDienThoai.FillColor = System.Drawing.Color.White;
                 txtEmail.FillColor = System.Drawing.Color.White;
@@ -96,10 +108,14 @@ namespace VuToanThang_23110329.Forms
             }
             else
             {
+                // All fields - gray background when not editing
                 txtHoTen.FillColor = System.Drawing.Color.FromArgb(248, 249, 250);
                 txtDienThoai.FillColor = System.Drawing.Color.FromArgb(248, 249, 250);
                 txtEmail.FillColor = System.Drawing.Color.FromArgb(248, 249, 250);
                 txtDiaChi.FillColor = System.Drawing.Color.FromArgb(248, 249, 250);
+                txtPhongBan.FillColor = System.Drawing.Color.FromArgb(248, 249, 250);
+                txtChucDanh.FillColor = System.Drawing.Color.FromArgb(248, 249, 250);
+                txtLuongCoBan.FillColor = System.Drawing.Color.FromArgb(248, 249, 250);
                 btnCapNhat.Text = "Cập nhật thông tin";
             }
         }
@@ -174,31 +190,31 @@ namespace VuToanThang_23110329.Forms
                 using (SqlConnection conn = new SqlConnection(connectionString))
                 {
                     conn.Open();
-                    string query = @"
-                        UPDATE dbo.NhanVien 
-                        SET HoTen = @HoTen, DienThoai = @DienThoai, Email = @Email, DiaChi = @DiaChi
-                        WHERE MaNV = @MaNV";
-
-                    using (SqlCommand cmd = new SqlCommand(query, conn))
+                    using (SqlCommand cmd = new SqlCommand("dbo.sp_NhanVien_UpdateThongTinCaNhan", conn))
                     {
+                        cmd.CommandType = CommandType.StoredProcedure;
                         cmd.Parameters.AddWithValue("@MaNV", currentUserId);
                         cmd.Parameters.AddWithValue("@HoTen", txtHoTen.Text.Trim());
                         cmd.Parameters.AddWithValue("@DienThoai", string.IsNullOrEmpty(txtDienThoai.Text) ? DBNull.Value : (object)txtDienThoai.Text.Trim());
                         cmd.Parameters.AddWithValue("@Email", string.IsNullOrEmpty(txtEmail.Text) ? DBNull.Value : (object)txtEmail.Text.Trim());
                         cmd.Parameters.AddWithValue("@DiaChi", string.IsNullOrEmpty(txtDiaChi.Text) ? DBNull.Value : (object)txtDiaChi.Text.Trim());
 
-                        int rowsAffected = cmd.ExecuteNonQuery();
+                        cmd.ExecuteNonQuery();
                         
-                        if (rowsAffected > 0)
-                        {
-                            MessageBox.Show("Cập nhật thông tin thành công!", "Thành công", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                            SetEditingMode(false);
-                        }
-                        else
-                        {
-                            MessageBox.Show("Không thể cập nhật thông tin!", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        }
+                        MessageBox.Show("Cập nhật thông tin thành công!", "Thành công", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        SetEditingMode(false);
                     }
+                }
+            }
+            catch (SqlException ex)
+            {
+                if (ex.Message.Contains("không hợp lệ"))
+                {
+                    MessageBox.Show(ex.Message, "Lỗi Validation", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
+                else
+                {
+                    MessageBox.Show($"Lỗi khi cập nhật thông tin: {ex.Message}", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
             catch (Exception ex)
@@ -218,28 +234,32 @@ namespace VuToanThang_23110329.Forms
                         using (SqlConnection conn = new SqlConnection(connectionString))
                         {
                             conn.Open();
-                            string query = @"
-                                UPDATE dbo.NguoiDung 
-                                SET MatKhau = @MatKhauMoi
-                                WHERE MaNguoiDung = @MaNguoiDung AND MatKhau = @MatKhauCu";
-
-                            using (SqlCommand cmd = new SqlCommand(query, conn))
+                            using (SqlCommand cmd = new SqlCommand("dbo.sp_NguoiDung_DoiMatKhau", conn))
                             {
+                                cmd.CommandType = CommandType.StoredProcedure;
                                 cmd.Parameters.AddWithValue("@MaNguoiDung", currentUserId);
                                 cmd.Parameters.AddWithValue("@MatKhauCu", dialog.OldPassword);
                                 cmd.Parameters.AddWithValue("@MatKhauMoi", dialog.NewPassword);
 
-                                int rowsAffected = cmd.ExecuteNonQuery();
+                                cmd.ExecuteNonQuery();
                                 
-                                if (rowsAffected > 0)
-                                {
-                                    MessageBox.Show("Đổi mật khẩu thành công!", "Thành công", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                                }
-                                else
-                                {
-                                    MessageBox.Show("Mật khẩu cũ không đúng!", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                                }
+                                MessageBox.Show("Đổi mật khẩu thành công!", "Thành công", MessageBoxButtons.OK, MessageBoxIcon.Information);
                             }
+                        }
+                    }
+                    catch (SqlException ex)
+                    {
+                        if (ex.Message.Contains("cũ không đúng"))
+                        {
+                            MessageBox.Show("Mật khẩu cũ không đúng!", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        }
+                        else if (ex.Message.Contains("ít nhất 6 ký tự"))
+                        {
+                            MessageBox.Show("Mật khẩu mới phải có ít nhất 6 ký tự!", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        }
+                        else
+                        {
+                            MessageBox.Show($"Lỗi khi đổi mật khẩu: {ex.Message}", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         }
                     }
                     catch (Exception ex)
@@ -379,5 +399,5 @@ namespace VuToanThang_23110329.Forms
             this.Controls.AddRange(new Control[] { lblOld, txtOldPassword, lblNew, txtNewPassword, lblConfirm, txtConfirmPassword, btnOK, btnCancel });
         }
     }
-    }
+    
 }

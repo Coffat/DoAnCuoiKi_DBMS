@@ -178,5 +178,40 @@ BEGIN
 END
 GO
 
+-- 3) TVF xem lịch theo tuần (7 dòng Mon-Sun)
+IF OBJECT_ID('dbo.tvf_LichTheoTuan','IF') IS NOT NULL DROP FUNCTION dbo.tvf_LichTheoTuan;
+GO
+CREATE FUNCTION dbo.tvf_LichTheoTuan
+(
+    @MaNV INT,
+    @NgayBatDau DATE  -- Phải là thứ Hai
+)
+RETURNS TABLE
+AS
+RETURN
+(
+    WITH Days AS (
+        SELECT 0 AS DayOffset UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3
+        UNION ALL SELECT 4 UNION ALL SELECT 5 UNION ALL SELECT 6
+    )
+    SELECT 
+        DATEADD(DAY, d.DayOffset, @NgayBatDau) AS Ngay,
+        @MaNV AS MaNV,
+        lpc.MaLich AS IdLich,
+        lpc.MaCa,
+        lpc.TrangThai,
+        lpc.GhiChu,
+        cl.TenCa,
+        cl.GioBatDau,
+        cl.GioKetThuc,
+        cl.HeSoCa
+    FROM Days d
+    LEFT JOIN dbo.LichPhanCa lpc ON lpc.MaNV = @MaNV 
+        AND lpc.NgayLam = DATEADD(DAY, d.DayOffset, @NgayBatDau)
+    LEFT JOIN dbo.CaLam cl ON cl.MaCa = lpc.MaCa
+);
+GO
+
 PRINT N'=== HOÀN TẤT TẠO VIEWS VÀ FUNCTIONS ===';
+PRINT N'Đã thêm TVF tvf_LichTheoTuan để xem lịch tuần (7 dòng)';
 PRINT N'Tiếp theo sẽ tạo stored procedures...';

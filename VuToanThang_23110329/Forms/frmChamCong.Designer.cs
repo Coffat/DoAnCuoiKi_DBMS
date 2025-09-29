@@ -65,16 +65,17 @@ namespace VuToanThang_23110329.Forms
             this.pnlMain.Name = "pnlMain";
             this.pnlMain.Size = new System.Drawing.Size(1200, 700);
             this.pnlMain.TabIndex = 0;
+            this.pnlMain.Padding = new System.Windows.Forms.Padding(20, 20, 20, 20);
             
-            // lblTitle
             this.lblTitle.AutoSize = true;
             this.lblTitle.Font = new System.Drawing.Font("Segoe UI", 16F, System.Drawing.FontStyle.Bold);
             this.lblTitle.ForeColor = System.Drawing.Color.FromArgb(94, 148, 255);
             this.lblTitle.Location = new System.Drawing.Point(20, 20);
             this.lblTitle.Name = "lblTitle";
-            this.lblTitle.Size = new System.Drawing.Size(120, 30);
+            this.lblTitle.Size = new System.Drawing.Size(130, 30);
             this.lblTitle.TabIndex = 0;
             this.lblTitle.Text = "Chấm công";
+            this.lblTitle.Dock = System.Windows.Forms.DockStyle.Top;
             
             // pnlHeader
             this.pnlHeader.BackColor = System.Drawing.Color.FromArgb(94, 148, 255);
@@ -92,6 +93,7 @@ namespace VuToanThang_23110329.Forms
             this.tabControl.SelectedIndex = 0;
             this.tabControl.Size = new System.Drawing.Size(1160, 620);
             this.tabControl.TabIndex = 2;
+            this.tabControl.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tabControl.SelectedIndexChanged += new System.EventHandler(this.tabControl_SelectedIndexChanged);
             
             // tabCheckInOut
@@ -118,6 +120,8 @@ namespace VuToanThang_23110329.Forms
             this.pnlCheckInOut.Name = "pnlCheckInOut";
             this.pnlCheckInOut.Size = new System.Drawing.Size(1112, 554);
             this.pnlCheckInOut.TabIndex = 0;
+            this.pnlCheckInOut.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pnlCheckInOut.Padding = new System.Windows.Forms.Padding(20, 20, 20, 20);
             
             // lblTrangThai
             this.lblTrangThai.AutoSize = true;
@@ -217,6 +221,7 @@ namespace VuToanThang_23110329.Forms
             this.pnlFilter.Name = "pnlFilter";
             this.pnlFilter.Size = new System.Drawing.Size(1112, 60);
             this.pnlFilter.TabIndex = 0;
+            this.pnlFilter.Dock = System.Windows.Forms.DockStyle.Top;
             
             // lblThang
             this.lblThang.AutoSize = true;
@@ -430,6 +435,7 @@ namespace VuToanThang_23110329.Forms
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Name = "frmChamCong";
             this.Text = "Chấm công";
+            this.Load += new System.EventHandler(this.frmChamCong_Load);
             
             this.pnlMain.ResumeLayout(false);
             this.pnlMain.PerformLayout();

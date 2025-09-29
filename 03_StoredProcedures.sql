@@ -656,5 +656,619 @@ BEGIN
 END
 GO
 
+------------------------------------------------------------
+-- 8) CRUD LỊCH PHÂN CA
+------------------------------------------------------------
+
+-- 8.1) INSERT: Thêm lịch phân ca mới
+IF OBJECT_ID('dbo.sp_LichPhanCa_Insert','P') IS NOT NULL DROP PROCEDURE dbo.sp_LichPhanCa_Insert;
+GO
+CREATE PROCEDURE dbo.sp_LichPhanCa_Insert
+    @MaNV INT,
+    @Ngay DATE,
+    @MaCa INT,
+    @TrangThai NVARCHAR(12) = N'DuKien',
+    @GhiChu NVARCHAR(255) = NULL,
+    @MaLich_OUT INT OUTPUT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET XACT_ABORT ON;
+
+    IF NOT EXISTS (SELECT 1 FROM dbo.NhanVien WHERE MaNV = @MaNV)
+    BEGIN
+        RAISERROR(N'Nhân viên không tồn tại.', 16, 1);
+        RETURN;
+    END
+
+    IF NOT EXISTS (SELECT 1 FROM dbo.CaLam WHERE MaCa = @MaCa AND KichHoat = 1)
+    BEGIN
+        RAISERROR(N'Ca làm không tồn tại hoặc đã bị vô hiệu hóa.', 16, 1);
+        RETURN;
+    END
+
+    IF @TrangThai NOT IN (N'DuKien', N'Khoa', N'Huy')
+    BEGIN
+        RAISERROR(N'Trạng thái không hợp lệ.', 16, 1);
+        RETURN;
+    END
+
+    -- Kiểm tra overlap
+    DECLARE @GioBatDau TIME(0), @GioKetThuc TIME(0);
+    SELECT @GioBatDau = GioBatDau, @GioKetThuc = GioKetThuc FROM dbo.CaLam WHERE MaCa = @MaCa;
+
+    DECLARE @MinutesPerDay INT = 1440;
+    DECLARE @StartMinute INT = DATEDIFF(MINUTE, '00:00:00', @GioBatDau);
+    DECLARE @EndMinute INT = DATEDIFF(MINUTE, '00:00:00', @GioKetThuc);
+    IF @EndMinute < @StartMinute SET @EndMinute = @EndMinute + @MinutesPerDay;
+
+    IF EXISTS (
+        SELECT 1 FROM dbo.LichPhanCa lpc
+        INNER JOIN dbo.CaLam cl ON lpc.MaCa = cl.MaCa
+        WHERE lpc.MaNV = @MaNV AND lpc.NgayLam = @Ngay
+          AND lpc.TrangThai IN (N'DuKien', N'Khoa')
+          AND (@StartMinute < (DATEDIFF(MINUTE, '00:00:00', cl.GioKetThuc) + 
+              CASE WHEN cl.GioKetThuc < cl.GioBatDau THEN @MinutesPerDay ELSE 0 END)
+          AND @EndMinute > DATEDIFF(MINUTE, '00:00:00', cl.GioBatDau))
+    )
+    BEGIN
+        RAISERROR(N'Lịch bị trùng lặp thời gian với ca khác.', 16, 1);
+        RETURN;
+    END
+
+    BEGIN TRAN;
+    INSERT INTO dbo.LichPhanCa (MaNV, NgayLam, MaCa, TrangThai, GhiChu)
+    VALUES (@MaNV, @Ngay, @MaCa, @TrangThai, @GhiChu);
+    SET @MaLich_OUT = SCOPE_IDENTITY();
+    COMMIT;
+END
+GO
+
+-- 8.2) UPDATE: Cập nhật lịch phân ca
+IF OBJECT_ID('dbo.sp_LichPhanCa_Update','P') IS NOT NULL DROP PROCEDURE dbo.sp_LichPhanCa_Update;
+GO
+CREATE PROCEDURE dbo.sp_LichPhanCa_Update
+    @Id INT,
+    @MaCa INT = NULL,
+    @TrangThai NVARCHAR(12) = NULL,
+    @GhiChu NVARCHAR(255) = NULL
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET XACT_ABORT ON;
+
+    DECLARE @MaNV INT, @NgayLam DATE, @TrangThaiCu NVARCHAR(12);
+    SELECT @MaNV = MaNV, @NgayLam = NgayLam, @TrangThaiCu = TrangThai
+    FROM dbo.LichPhanCa WHERE MaLich = @Id;
+
+    IF @MaNV IS NULL
+    BEGIN
+        RAISERROR(N'Lịch phân ca không tồn tại.', 16, 1);
+        RETURN;
+    END
+
+    IF @TrangThaiCu = N'Khoa' AND (@MaCa IS NOT NULL OR (@TrangThai IS NOT NULL AND @TrangThai <> @TrangThaiCu))
+    BEGIN
+        RAISERROR(N'Không thể sửa lịch đã khóa.', 16, 1);
+        RETURN;
+    END
+
+    BEGIN TRAN;
+    UPDATE dbo.LichPhanCa
+    SET MaCa = ISNULL(@MaCa, MaCa),
+        TrangThai = ISNULL(@TrangThai, TrangThai),
+        GhiChu = ISNULL(@GhiChu, GhiChu)
+    WHERE MaLich = @Id;
+    COMMIT;
+END
+GO
+
+-- 8.3) DELETE: Xóa lịch phân ca
+IF OBJECT_ID('dbo.sp_LichPhanCa_Delete','P') IS NOT NULL DROP PROCEDURE dbo.sp_LichPhanCa_Delete;
+GO
+CREATE PROCEDURE dbo.sp_LichPhanCa_Delete
+    @Id INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET XACT_ABORT ON;
+
+    DECLARE @TrangThai NVARCHAR(12);
+    SELECT @TrangThai = TrangThai FROM dbo.LichPhanCa WHERE MaLich = @Id;
+
+    IF @TrangThai IS NULL
+    BEGIN
+        RAISERROR(N'Lịch phân ca không tồn tại.', 16, 1);
+        RETURN;
+    END
+
+    IF @TrangThai = N'Khoa'
+    BEGIN
+        RAISERROR(N'Không thể xóa lịch đã khóa.', 16, 1);
+        RETURN;
+    END
+
+    BEGIN TRAN;
+    DELETE FROM dbo.LichPhanCa WHERE MaLich = @Id;
+    COMMIT;
+END
+GO
+
+-- 8.4) GET BY NHANVIEN: Lấy lịch theo nhân viên
+IF OBJECT_ID('dbo.sp_LichPhanCa_GetByNhanVien','P') IS NOT NULL DROP PROCEDURE dbo.sp_LichPhanCa_GetByNhanVien;
+GO
+CREATE PROCEDURE dbo.sp_LichPhanCa_GetByNhanVien
+    @MaNV INT,
+    @FromDate DATE = NULL,
+    @ToDate DATE = NULL
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    IF @FromDate IS NULL SET @FromDate = CAST(GETDATE() AS DATE);
+    IF @ToDate IS NULL SET @ToDate = DATEADD(DAY, 30, @FromDate);
+
+    SELECT 
+        lpc.MaLich, lpc.MaNV, nv.HoTen, lpc.NgayLam,
+        lpc.MaCa, cl.TenCa, cl.GioBatDau, cl.GioKetThuc, cl.HeSoCa,
+        lpc.TrangThai, lpc.GhiChu
+    FROM dbo.LichPhanCa lpc
+    INNER JOIN dbo.NhanVien nv ON lpc.MaNV = nv.MaNV
+    INNER JOIN dbo.CaLam cl ON lpc.MaCa = cl.MaCa
+    WHERE lpc.MaNV = @MaNV AND lpc.NgayLam BETWEEN @FromDate AND @ToDate
+    ORDER BY lpc.NgayLam, cl.GioBatDau;
+END
+GO
+
+------------------------------------------------------------
+-- 9) CRUD PHÒNG BAN
+------------------------------------------------------------
+
+-- 9.1) GetAll PhongBan
+IF OBJECT_ID('dbo.sp_PhongBan_GetAll','P') IS NOT NULL DROP PROCEDURE dbo.sp_PhongBan_GetAll;
+GO
+CREATE PROCEDURE dbo.sp_PhongBan_GetAll
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SELECT MaPhongBan, TenPhongBan, MoTa, KichHoat 
+    FROM dbo.PhongBan 
+    ORDER BY TenPhongBan;
+END
+GO
+
+-- 9.2) Insert PhongBan
+IF OBJECT_ID('dbo.sp_PhongBan_Insert','P') IS NOT NULL DROP PROCEDURE dbo.sp_PhongBan_Insert;
+GO
+CREATE PROCEDURE dbo.sp_PhongBan_Insert
+    @TenPhongBan NVARCHAR(100),
+    @MoTa NVARCHAR(255) = NULL
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET XACT_ABORT ON;
+    
+    IF EXISTS (SELECT 1 FROM dbo.PhongBan WHERE TenPhongBan = @TenPhongBan)
+    BEGIN
+        RAISERROR(N'Tên phòng ban đã tồn tại.', 16, 1);
+        RETURN;
+    END
+    
+    BEGIN TRAN;
+    INSERT INTO dbo.PhongBan (TenPhongBan, MoTa, KichHoat)
+    VALUES (@TenPhongBan, @MoTa, 1);
+    COMMIT;
+END
+GO
+
+-- 9.3) Update PhongBan
+IF OBJECT_ID('dbo.sp_PhongBan_Update','P') IS NOT NULL DROP PROCEDURE dbo.sp_PhongBan_Update;
+GO
+CREATE PROCEDURE dbo.sp_PhongBan_Update
+    @MaPhongBan INT,
+    @TenPhongBan NVARCHAR(100),
+    @MoTa NVARCHAR(255) = NULL
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET XACT_ABORT ON;
+    
+    IF NOT EXISTS (SELECT 1 FROM dbo.PhongBan WHERE MaPhongBan = @MaPhongBan)
+    BEGIN
+        RAISERROR(N'Phòng ban không tồn tại.', 16, 1);
+        RETURN;
+    END
+    
+    IF EXISTS (SELECT 1 FROM dbo.PhongBan WHERE TenPhongBan = @TenPhongBan AND MaPhongBan <> @MaPhongBan)
+    BEGIN
+        RAISERROR(N'Tên phòng ban đã tồn tại.', 16, 1);
+        RETURN;
+    END
+    
+    BEGIN TRAN;
+    UPDATE dbo.PhongBan
+    SET TenPhongBan = @TenPhongBan, MoTa = @MoTa
+    WHERE MaPhongBan = @MaPhongBan;
+    COMMIT;
+END
+GO
+
+-- 9.4) Delete PhongBan
+IF OBJECT_ID('dbo.sp_PhongBan_Delete','P') IS NOT NULL DROP PROCEDURE dbo.sp_PhongBan_Delete;
+GO
+CREATE PROCEDURE dbo.sp_PhongBan_Delete
+    @MaPhongBan INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET XACT_ABORT ON;
+    
+    IF EXISTS (SELECT 1 FROM dbo.NhanVien WHERE MaPhongBan = @MaPhongBan)
+    BEGIN
+        RAISERROR(N'Không thể xóa phòng ban đang có nhân viên.', 16, 1);
+        RETURN;
+    END
+    
+    BEGIN TRAN;
+    DELETE FROM dbo.PhongBan WHERE MaPhongBan = @MaPhongBan;
+    COMMIT;
+END
+GO
+
+------------------------------------------------------------
+-- 10) CRUD CHỨC VỤ
+------------------------------------------------------------
+
+-- 10.1) GetAll ChucVu
+IF OBJECT_ID('dbo.sp_ChucVu_GetAll','P') IS NOT NULL DROP PROCEDURE dbo.sp_ChucVu_GetAll;
+GO
+CREATE PROCEDURE dbo.sp_ChucVu_GetAll
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SELECT MaChucVu, TenChucVu, MoTa, KichHoat 
+    FROM dbo.ChucVu 
+    ORDER BY TenChucVu;
+END
+GO
+
+-- 10.2) Insert ChucVu
+IF OBJECT_ID('dbo.sp_ChucVu_Insert','P') IS NOT NULL DROP PROCEDURE dbo.sp_ChucVu_Insert;
+GO
+CREATE PROCEDURE dbo.sp_ChucVu_Insert
+    @TenChucVu NVARCHAR(100),
+    @MoTa NVARCHAR(255) = NULL
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET XACT_ABORT ON;
+    
+    IF EXISTS (SELECT 1 FROM dbo.ChucVu WHERE TenChucVu = @TenChucVu)
+    BEGIN
+        RAISERROR(N'Tên chức vụ đã tồn tại.', 16, 1);
+        RETURN;
+    END
+    
+    BEGIN TRAN;
+    INSERT INTO dbo.ChucVu (TenChucVu, MoTa, KichHoat)
+    VALUES (@TenChucVu, @MoTa, 1);
+    COMMIT;
+END
+GO
+
+-- 10.3) Update ChucVu
+IF OBJECT_ID('dbo.sp_ChucVu_Update','P') IS NOT NULL DROP PROCEDURE dbo.sp_ChucVu_Update;
+GO
+CREATE PROCEDURE dbo.sp_ChucVu_Update
+    @MaChucVu INT,
+    @TenChucVu NVARCHAR(100),
+    @MoTa NVARCHAR(255) = NULL
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET XACT_ABORT ON;
+    
+    IF NOT EXISTS (SELECT 1 FROM dbo.ChucVu WHERE MaChucVu = @MaChucVu)
+    BEGIN
+        RAISERROR(N'Chức vụ không tồn tại.', 16, 1);
+        RETURN;
+    END
+    
+    IF EXISTS (SELECT 1 FROM dbo.ChucVu WHERE TenChucVu = @TenChucVu AND MaChucVu <> @MaChucVu)
+    BEGIN
+        RAISERROR(N'Tên chức vụ đã tồn tại.', 16, 1);
+        RETURN;
+    END
+    
+    BEGIN TRAN;
+    UPDATE dbo.ChucVu
+    SET TenChucVu = @TenChucVu, MoTa = @MoTa
+    WHERE MaChucVu = @MaChucVu;
+    COMMIT;
+END
+GO
+
+-- 10.4) Delete ChucVu
+IF OBJECT_ID('dbo.sp_ChucVu_Delete','P') IS NOT NULL DROP PROCEDURE dbo.sp_ChucVu_Delete;
+GO
+CREATE PROCEDURE dbo.sp_ChucVu_Delete
+    @MaChucVu INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET XACT_ABORT ON;
+    
+    IF EXISTS (SELECT 1 FROM dbo.NhanVien WHERE MaChucVu = @MaChucVu)
+    BEGIN
+        RAISERROR(N'Không thể xóa chức vụ đang có nhân viên.', 16, 1);
+        RETURN;
+    END
+    
+    BEGIN TRAN;
+    DELETE FROM dbo.ChucVu WHERE MaChucVu = @MaChucVu;
+    COMMIT;
+END
+GO
+
+------------------------------------------------------------
+-- 11) CRUD ĐƠN TỪ
+------------------------------------------------------------
+
+-- 11.1) Insert DonTu
+IF OBJECT_ID('dbo.sp_DonTu_Insert','P') IS NOT NULL DROP PROCEDURE dbo.sp_DonTu_Insert;
+GO
+CREATE PROCEDURE dbo.sp_DonTu_Insert
+    @MaNV INT,
+    @Loai NVARCHAR(10),
+    @TuLuc DATETIME2(0),
+    @DenLuc DATETIME2(0),
+    @SoGio DECIMAL(5,2) = NULL,
+    @LyDo NVARCHAR(255)
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET XACT_ABORT ON;
+    
+    -- Validation
+    IF @Loai NOT IN (N'NGHI', N'OT')
+    BEGIN
+        RAISERROR(N'Loại đơn không hợp lệ. Chỉ chấp nhận NGHI hoặc OT.', 16, 1);
+        RETURN;
+    END
+    
+    IF @TuLuc >= @DenLuc
+    BEGIN
+        RAISERROR(N'Thời gian kết thúc phải sau thời gian bắt đầu.', 16, 1);
+        RETURN;
+    END
+    
+    IF NOT EXISTS (SELECT 1 FROM dbo.NhanVien WHERE MaNV = @MaNV)
+    BEGIN
+        RAISERROR(N'Nhân viên không tồn tại.', 16, 1);
+        RETURN;
+    END
+    
+    -- Tính số giờ nếu không có
+    IF @SoGio IS NULL
+    BEGIN
+        SET @SoGio = CAST(DATEDIFF(MINUTE, @TuLuc, @DenLuc) / 60.0 AS DECIMAL(5,2));
+    END
+    
+    BEGIN TRAN;
+    
+    INSERT INTO dbo.DonTu (MaNV, Loai, TuLuc, DenLuc, SoGio, LyDo, TrangThai)
+    VALUES (@MaNV, @Loai, @TuLuc, @DenLuc, @SoGio, @LyDo, N'ChoDuyet');
+    
+    COMMIT;
+END
+GO
+
+------------------------------------------------------------
+-- 12) NHÂN VIÊN BỔ SUNG
+------------------------------------------------------------
+
+-- 12.1) Delete NhanVien
+IF OBJECT_ID('dbo.sp_NhanVien_Delete','P') IS NOT NULL DROP PROCEDURE dbo.sp_NhanVien_Delete;
+GO
+CREATE PROCEDURE dbo.sp_NhanVien_Delete
+    @MaNV INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET XACT_ABORT ON;
+    
+    -- Kiểm tra có dữ liệu liên quan không
+    IF EXISTS (SELECT 1 FROM dbo.ChamCong WHERE MaNV = @MaNV)
+       OR EXISTS (SELECT 1 FROM dbo.DonTu WHERE MaNV = @MaNV)
+       OR EXISTS (SELECT 1 FROM dbo.BangLuong WHERE MaNV = @MaNV)
+    BEGIN
+        RAISERROR(N'Không thể xóa nhân viên đã có dữ liệu chấm công, đơn từ hoặc bảng lương.', 16, 1);
+        RETURN;
+    END
+    
+    BEGIN TRAN;
+    DELETE FROM dbo.NhanVien WHERE MaNV = @MaNV;
+    COMMIT;
+END
+GO
+
+-- 12.2) Update TrangThai NhanVien
+IF OBJECT_ID('dbo.sp_NhanVien_UpdateTrangThai','P') IS NOT NULL DROP PROCEDURE dbo.sp_NhanVien_UpdateTrangThai;
+GO
+CREATE PROCEDURE dbo.sp_NhanVien_UpdateTrangThai
+    @MaNV INT,
+    @TrangThai NVARCHAR(20)
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET XACT_ABORT ON;
+    
+    IF @TrangThai NOT IN (N'DangLam', N'Nghi', N'TamNghi')
+    BEGIN
+        RAISERROR(N'Trạng thái không hợp lệ.', 16, 1);
+        RETURN;
+    END
+    
+    BEGIN TRAN;
+    UPDATE dbo.NhanVien 
+    SET TrangThai = @TrangThai 
+    WHERE MaNV = @MaNV;
+    COMMIT;
+END
+GO
+
+-- ============================================================================
+-- 13) STORED PROCEDURES CHO THÔNG TIN CÁ NHÂN
+-- ============================================================================
+
+-- 13.1) Lấy thông tin cá nhân của nhân viên
+IF OBJECT_ID('dbo.sp_NhanVien_GetThongTinCaNhan','P') IS NOT NULL DROP PROCEDURE dbo.sp_NhanVien_GetThongTinCaNhan;
+GO
+CREATE PROCEDURE dbo.sp_NhanVien_GetThongTinCaNhan
+    @MaNV INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    
+    SELECT 
+        nv.HoTen, 
+        nv.DienThoai, 
+        nv.Email, 
+        nv.DiaChi, 
+        pb.TenPhongBan, 
+        cv.TenChucVu, 
+        nv.LuongCoBan, 
+        nv.NgayVaoLam
+    FROM dbo.NhanVien nv
+    LEFT JOIN dbo.PhongBan pb ON nv.MaPhongBan = pb.MaPhongBan
+    LEFT JOIN dbo.ChucVu cv ON nv.MaChucVu = cv.MaChucVu
+    WHERE nv.MaNV = @MaNV;
+END
+GO
+
+-- 13.2) Cập nhật thông tin cá nhân (chỉ các thông tin được phép thay đổi)
+IF OBJECT_ID('dbo.sp_NhanVien_UpdateThongTinCaNhan','P') IS NOT NULL DROP PROCEDURE dbo.sp_NhanVien_UpdateThongTinCaNhan;
+GO
+CREATE PROCEDURE dbo.sp_NhanVien_UpdateThongTinCaNhan
+    @MaNV INT,
+    @HoTen NVARCHAR(120),
+    @DienThoai NVARCHAR(15) = NULL,
+    @Email NVARCHAR(120) = NULL,
+    @DiaChi NVARCHAR(255) = NULL
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET XACT_ABORT ON;
+    
+    -- Validation
+    IF LTRIM(RTRIM(@HoTen)) = ''
+    BEGIN
+        RAISERROR(N'Họ tên không được để trống.', 16, 1);
+        RETURN;
+    END
+    
+    -- Validate phone number (Vietnamese format)
+    IF @DienThoai IS NOT NULL AND @DienThoai != ''
+    BEGIN
+        IF LEN(@DienThoai) < 10 OR LEN(@DienThoai) > 15
+        BEGIN
+            RAISERROR(N'Số điện thoại không hợp lệ.', 16, 1);
+            RETURN;
+        END
+    END
+    
+    -- Validate email format
+    IF @Email IS NOT NULL AND @Email != ''
+    BEGIN
+        IF @Email NOT LIKE '%@%.%'
+        BEGIN
+            RAISERROR(N'Địa chỉ email không hợp lệ.', 16, 1);
+            RETURN;
+        END
+    END
+    
+    BEGIN TRAN;
+    
+    UPDATE dbo.NhanVien 
+    SET 
+        HoTen = @HoTen,
+        DienThoai = @DienThoai,
+        Email = @Email,
+        DiaChi = @DiaChi
+    WHERE MaNV = @MaNV;
+    
+    IF @@ROWCOUNT = 0
+    BEGIN
+        ROLLBACK;
+        RAISERROR(N'Không tìm thấy nhân viên.', 16, 1);
+        RETURN;
+    END
+    
+    COMMIT;
+END
+GO
+
+-- 13.3) Đổi mật khẩu
+IF OBJECT_ID('dbo.sp_NguoiDung_DoiMatKhau','P') IS NOT NULL DROP PROCEDURE dbo.sp_NguoiDung_DoiMatKhau;
+GO
+CREATE PROCEDURE dbo.sp_NguoiDung_DoiMatKhau
+    @MaNguoiDung INT,
+    @MatKhauCu NVARCHAR(128),
+    @MatKhauMoi NVARCHAR(128)
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET XACT_ABORT ON;
+    
+    -- Validation
+    IF LEN(@MatKhauMoi) < 6
+    BEGIN
+        RAISERROR(N'Mật khẩu mới phải có ít nhất 6 ký tự.', 16, 1);
+        RETURN;
+    END
+    
+    IF @MatKhauCu = @MatKhauMoi
+    BEGIN
+        RAISERROR(N'Mật khẩu mới phải khác mật khẩu cũ.', 16, 1);
+        RETURN;
+    END
+    
+    BEGIN TRAN;
+    
+    -- Kiểm tra mật khẩu cũ
+    DECLARE @CurrentPassword NVARCHAR(128);
+    SELECT @CurrentPassword = MatKhau 
+    FROM dbo.NguoiDung 
+    WHERE MaNguoiDung = @MaNguoiDung;
+    
+    IF @CurrentPassword IS NULL
+    BEGIN
+        ROLLBACK;
+        RAISERROR(N'Không tìm thấy người dùng.', 16, 1);
+        RETURN;
+    END
+    
+    IF @CurrentPassword != @MatKhauCu
+    BEGIN
+        ROLLBACK;
+        RAISERROR(N'Mật khẩu cũ không đúng.', 16, 1);
+        RETURN;
+    END
+    
+    -- Cập nhật mật khẩu mới
+    UPDATE dbo.NguoiDung 
+    SET MatKhau = @MatKhauMoi
+    WHERE MaNguoiDung = @MaNguoiDung;
+    
+    COMMIT;
+END
+GO
+
 PRINT N'=== HOÀN TẤT TẠO STORED PROCEDURES CƠ BẢN ===';
+PRINT N'Đã thêm CRUD LichPhanCa (Insert/Update/Delete/GetByNhanVien)';
+PRINT N'Đã thêm CRUD PhongBan (Insert/Update/Delete/GetAll)';
+PRINT N'Đã thêm CRUD ChucVu (Insert/Update/Delete/GetAll)';
+PRINT N'Đã thêm sp_DonTu_Insert';
+PRINT N'Đã thêm sp_NhanVien_Delete và sp_NhanVien_UpdateTrangThai';
+PRINT N'Đã thêm sp_NhanVien_GetThongTinCaNhan, sp_NhanVien_UpdateThongTinCaNhan, sp_NguoiDung_DoiMatKhau';
 PRINT N'Tiếp theo chạy file: 04_StoredProcedures_Advanced.sql';

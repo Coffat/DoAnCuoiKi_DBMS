@@ -95,10 +95,14 @@ Hệ thống quản lý nhân sự toàn diện cho siêu thị mini, được p
 - BangLuong: Bảng lương nhân viên
 ```
 
-### **Views**
+### **Views (6 views)**
 ```sql
 - vw_CongThang: Tổng hợp công theo tháng
-- vw_Lich_ChamCong_Ngay: Lịch và chấm công theo ngày
+- vw_BangLuong_ChiTiet: Bảng lương chi tiết
+- vw_NhanVien_Full: Thông tin nhân viên đầy đủ
+- vw_DonTu_ChiTiet: Đơn từ chi tiết
+- vw_BaoCaoNhanSu: Báo cáo nhân sự
+- vw_Lich_ChamCong_Ngay: Lịch và chấm công
 ```
 
 ### **Functions**
@@ -108,13 +112,21 @@ Hệ thống quản lý nhân sự toàn diện cho siêu thị mini, được p
 - fn_rls_NhanVien: Row-Level Security
 ```
 
-### **Stored Procedures**
+### **Stored Procedures (35+ SPs)**
 ```sql
-- sp_ThemMoiNhanVien: Thêm nhân viên mới
-- sp_DuyetDonTu: Duyệt đơn từ
-- sp_KhoaCongThang: Khóa công tháng
-- sp_ChayBangLuong: Chạy bảng lương
-- sp_DongBangLuong: Đóng bảng lương
+# Quản lý nhân viên
+- sp_ThemMoiNhanVien, sp_NhanVien_Delete, sp_NhanVien_UpdateTrangThai
+- sp_NhanVien_GetThongTinCaNhan, sp_NhanVien_UpdateThongTinCaNhan
+
+# Phân ca và chấm công
+- sp_LichPhanCa_Insert/Update/Delete, sp_LichPhanCa_CloneWeek
+- sp_CheckIn, sp_CheckOut, sp_KhoaCongThang
+
+# Đơn từ và lương
+- sp_DuyetDonTu, sp_ChayBangLuong, sp_DongBangLuong
+
+# Bảo mật
+- sp_NguoiDung_DoiMatKhau
 ```
 
 ## 📁 Cấu trúc project
@@ -168,12 +180,14 @@ VuToanThang_23110329/
 - Visual Studio 2019+ (để phát triển)
 
 ### **Bước 1: Chuẩn bị Database**
-```sql
--- Tạo database
-CREATE DATABASE QLNhanSuSieuThiMini;
-
--- Chạy script tạo bảng và dữ liệu mẫu
--- (File script SQL được cung cấp riêng)
+```bash
+# Chạy các file SQL theo thứ tự:
+1. 01_TaoDatabase.sql        # Tạo database và các bảng
+2. 02_ChucNang.sql           # Tạo views, functions
+3. 03_StoredProcedures.sql   # Tạo stored procedures cơ bản
+4. 04_StoredProcedures_Advanced.sql  # Stored procedures nâng cao
+5. 05_Security_Triggers.sql  # Triggers và bảo mật
+6. data_mau.sql             # Dữ liệu mẫu (tùy chọn)
 ```
 
 ### **Bước 2: Cấu hình kết nối**
@@ -194,11 +208,13 @@ Cập nhật connection string trong `App.config`:
 ```
 
 ### **Bước 4: Đăng nhập**
-Tài khoản mặc định:
-- **HR**: `admin` / `admin123`
-- **Quản lý**: `manager` / `manager123`
-- **Kế toán**: `ketoan` / `ketoan123`
-- **Nhân viên**: `nhanvien` / `nhanvien123`
+Tài khoản mặc định (sau khi chạy data_mau.sql):
+- **Giám đốc**: `giamdoc` / `123`
+- **HR Manager**: `hr_manager` / `123`
+- **Kế toán**: `ketoan01` / `123`
+- **Nhân viên**: `nv_banhang_01` / `123`
+
+(Tất cả tài khoản đều có mật khẩu: `123`)
 
 ## 👥 Phân quyền hệ thống
 
@@ -332,4 +348,27 @@ Dự án này được phát triển cho mục đích học tập và nghiên c�
 
 ---
 
-*Cập nhật lần cuối: 19/09/2025*
+## 📦 Files quan trọng
+
+### **SQL Scripts (Chạy theo thứ tự)**
+1. `01_TaoDatabase.sql` - Tạo database, bảng, ràng buộc
+2. `02_ChucNang.sql` - Views và functions
+3. `03_StoredProcedures.sql` - 35+ stored procedures (bao gồm SPs cho thông tin cá nhân)
+4. `04_StoredProcedures_Advanced.sql` - SPs nâng cao (lịch phân ca, chấm công)
+5. `05_Security_Triggers.sql` - Triggers bảo mật
+6. `data_mau.sql` - **Dữ liệu mẫu tổng hợp đầy đủ** (9 nhân viên, lịch từ 7/2025-nay)
+
+### **Documentation**
+- `README.md` - Hướng dẫn tổng quan
+- `SETUP_PACKAGES.md` - Hướng dẫn cài đặt packages
+- `BAO_CAO_KIEM_TRA_FORMS.md` - Báo cáo kiểm tra và cải thiện forms
+- `HUONG_DAN_LICH_PHANCA.md` - Hướng dẫn sử dụng module lịch phân ca
+
+### **Application**
+- `VuToanThang_23110329.sln` - Solution Visual Studio
+- `VuToanThang_23110329/` - Mã nguồn ứng dụng WinForms
+
+---
+
+*Cập nhật lần cuối: 30/09/2025*  
+*Phiên bản: 1.1 - Production Ready*

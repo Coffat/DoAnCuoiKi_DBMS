@@ -451,50 +451,25 @@ namespace VuToanThang_23110329.Forms
                     using (SqlConnection conn = new SqlConnection(connectionString))
                     {
                         conn.Open();
-                        
-                        // Kiểm tra xem nhân viên có đang được sử dụng ở bảng khác không
-                        string checkSql = @"
-                            SELECT COUNT(*) FROM ChamCong WHERE MaNV = @MaNV
-                            UNION ALL
-                            SELECT COUNT(*) FROM DonTu WHERE MaNV = @MaNV
-                            UNION ALL
-                            SELECT COUNT(*) FROM BangLuong WHERE MaNV = @MaNV";
-                        
-                        using (SqlCommand checkCmd = new SqlCommand(checkSql, conn))
+                        using (SqlCommand cmd = new SqlCommand("dbo.sp_NhanVien_Delete", conn))
                         {
-                            checkCmd.Parameters.AddWithValue("@MaNV", maNV);
-                            using (SqlDataReader reader = checkCmd.ExecuteReader())
-                            {
-                                int totalReferences = 0;
-                                while (reader.Read())
-                                {
-                                    totalReferences += reader.GetInt32(0);
-                                }
-                                
-                                if (totalReferences > 0)
-                                {
-                                    MessageBox.Show("Không thể xóa nhân viên này vì đã có dữ liệu liên quan (chấm công, đơn từ, bảng lương).\nVui lòng sử dụng chức năng 'Vô hiệu hóa' thay thế.", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                                    return;
-                                }
-                            }
+                            cmd.CommandType = CommandType.StoredProcedure;
+                            cmd.Parameters.AddWithValue("@MaNV", maNV);
+                            cmd.ExecuteNonQuery();
                         }
-                        
-                        // Xóa nhân viên
-                        string deleteSql = "DELETE FROM NhanVien WHERE MaNV = @MaNV";
-                        using (SqlCommand deleteCmd = new SqlCommand(deleteSql, conn))
-                        {
-                            deleteCmd.Parameters.AddWithValue("@MaNV", maNV);
-                            int rowsAffected = deleteCmd.ExecuteNonQuery();
-                            if (rowsAffected > 0)
-                            {
-                                MessageBox.Show("Xóa nhân viên thành công!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                                LoadData();
-                            }
-                            else
-                            {
-                                MessageBox.Show("Không thể xóa nhân viên.", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                            }
-                        }
+                    }
+                    LoadData();
+                    MessageBox.Show("Xóa nhân viên thành công!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                catch (SqlException ex)
+                {
+                    if (ex.Message.Contains("có dữ liệu liên quan"))
+                    {
+                        MessageBox.Show("Không thể xóa nhân viên này vì đã có dữ liệu liên quan (chấm công, đơn từ, bảng lương).\nVui lòng sử dụng chức năng 'Vô hiệu hóa' thay thế.", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                    else
+                    {
+                        MessageBox.Show($"Lỗi khi xóa nhân viên: {ex.Message}", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
                 }
                 catch (Exception ex)
@@ -511,10 +486,11 @@ namespace VuToanThang_23110329.Forms
                 using (SqlConnection conn = new SqlConnection(connectionString))
                 {
                     conn.Open();
-                    using (SqlCommand cmd = new SqlCommand("UPDATE dbo.NhanVien SET TrangThai = @TrangThai WHERE MaNV = @MaNV", conn))
+                    using (SqlCommand cmd = new SqlCommand("dbo.sp_NhanVien_UpdateTrangThai", conn))
                     {
-                        cmd.Parameters.AddWithValue("@TrangThai", trangThai);
+                        cmd.CommandType = CommandType.StoredProcedure;
                         cmd.Parameters.AddWithValue("@MaNV", maNV);
+                        cmd.Parameters.AddWithValue("@TrangThai", trangThai);
                         cmd.ExecuteNonQuery();
                     }
                 }

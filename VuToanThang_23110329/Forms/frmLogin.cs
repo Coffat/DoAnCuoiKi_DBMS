@@ -20,6 +20,10 @@ namespace VuToanThang_23110329.Forms
             // Thêm event handlers cho các controls mới
             lblForgotPassword.Click += LblForgotPassword_Click;
             chkRememberMe.CheckedChanged += ChkRememberMe_CheckedChanged;
+            // Phím tắt và hiển thị (Enter/Esc xử lý qua KeyDown & btnExit Click)
+            // Đảm bảo panel chứa form nhập liệu hiển thị phía trước
+            pnlForm.Visible = true;
+            pnlForm.BringToFront();
         }
 
         private void btnLogin_Click(object sender, EventArgs e)
@@ -33,11 +37,20 @@ namespace VuToanThang_23110329.Forms
                 return;
             }
 
-            string connectionString = ConfigurationManager.ConnectionStrings["HrDb"].ConnectionString;
+            var cs = ConfigurationManager.ConnectionStrings["HrDb"];
+            if (cs == null)
+            {
+                MessageBox.Show("Không tìm thấy chuỗi kết nối 'HrDb' trong App.config.", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+            string connectionString = cs.ConnectionString;
 
             using (SqlConnection conn = new SqlConnection(connectionString))
             {
-                string query = "SELECT VaiTro, KichHoat FROM dbo.NguoiDung WHERE TenDangNhap = @username AND MatKhauHash = @password";
+                string query = @"SELECT nd.MaNguoiDung, nd.VaiTro, nd.KichHoat, nv.MaNV, nv.HoTen 
+                                FROM dbo.NguoiDung nd
+                                LEFT JOIN dbo.NhanVien nv ON nd.MaNguoiDung = nv.MaNguoiDung
+                                WHERE nd.TenDangNhap = @username AND nd.MatKhauHash = @password";
                 SqlCommand cmd = new SqlCommand(query, conn);
                 cmd.Parameters.AddWithValue("@username", username);
                 cmd.Parameters.AddWithValue("@password", password);
@@ -49,10 +62,17 @@ namespace VuToanThang_23110329.Forms
 
                     if (reader.Read())
                     {
-                        bool kichHoat = reader.GetBoolean(1);
+                        bool kichHoat = reader.GetBoolean(2);
                         if (kichHoat)
                         {
-                            string vaiTro = reader.GetString(0);
+                            int maNguoiDung = reader.GetInt32(0);
+                            string vaiTro = reader.GetString(1);
+                            int maNV = reader.IsDBNull(3) ? 0 : reader.GetInt32(3);
+                            string hoTen = reader.IsDBNull(4) ? username : reader.GetString(4);
+                            
+                            // Lưu thông tin vào session
+                            UserSession.SetUser(maNguoiDung, maNV, username, hoTen, vaiTro);
+                            
                             // Mở frmMain với vai trò
                             frmMain mainForm = new frmMain(vaiTro);
                             this.Hide();

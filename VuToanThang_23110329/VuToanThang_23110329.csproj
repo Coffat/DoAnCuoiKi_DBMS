@@ -57,6 +57,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Forms\frmLichTuan.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\frmLichTuan.Designer.cs" />
+    <Compile Include="Forms\frmXemDonCuaToi.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\frmXemDonCuaToi.Designer.cs" />
+    <Compile Include="PermissionManager.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Forms\frmBangLuong.cs">
       <SubType>Form</SubType>
@@ -124,9 +133,30 @@
     <Compile Include="Forms\frmThongTinCaNhan.Designer.cs">
       <DependentUpon>frmThongTinCaNhan.cs</DependentUpon>
     </Compile>
+    <Compile Include="UserSession.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Forms\frmBangLuong.resx">
+      <DependentUpon>frmBangLuong.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\frmDuyetDonTu.resx">
+      <DependentUpon>frmDuyetDonTu.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\frmPhanCa.resx">
+      <DependentUpon>frmPhanCa.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\frmPhongBan_ChucVu.resx">
+      <DependentUpon>frmPhongBan_ChucVu.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\frmTaoDonTu.resx">
+      <DependentUpon>frmTaoDonTu.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\frmThongTinCaNhan.resx">
+      <DependentUpon>frmThongTinCaNhan.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

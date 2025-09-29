@@ -20,9 +20,18 @@ namespace VuToanThang_23110329.Forms
 
         private void InitializeConnectionString()
         {
-            connectionString = System.Configuration.ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
-            // Get current user role (assuming stored in static class)
-            currentUserRole = "KeToan"; // TODO: Get from session
+            var cs = System.Configuration.ConfigurationManager.ConnectionStrings["HrDb"];
+            if (cs == null)
+            {
+                MessageBox.Show("Không tìm thấy chuỗi kết nối 'HrDb' trong App.config.", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                connectionString = string.Empty;
+            }
+            else
+            {
+                connectionString = cs.ConnectionString;
+            }
+            // Get current user role from session
+            currentUserRole = UserSession.VaiTro ?? "KeToan";
         }
 
         private void frmBangLuong_Load(object sender, EventArgs e)
@@ -70,6 +79,9 @@ namespace VuToanThang_23110329.Forms
 
         private void LoadAttendanceSummary()
         {
+            if (cmbThang.SelectedItem == null || cmbNam.SelectedItem == null)
+                return;
+                
             try
             {
                 int month = int.Parse(cmbThang.SelectedItem.ToString());
@@ -80,25 +92,18 @@ namespace VuToanThang_23110329.Forms
                     conn.Open();
                     string query = @"
                         SELECT 
-                            nv.MaNV,
-                            nv.HoTen,
-                            pb.TenPhongBan,
-                            cv.TenChucVu,
-                            nv.LuongCoBan,
-                            ISNULL(SUM(cc.GioCong), 0) as TongGioCong,
-                            ISNULL(COUNT(cc.NgayLam), 0) as SoNgayLam,
-                            ISNULL(SUM(cc.DiTrePhut), 0) as TongDiTre,
-                            ISNULL(SUM(cc.VeSomPhut), 0) as TongVeSom
-                        FROM dbo.NhanVien nv
-                        LEFT JOIN dbo.PhongBan pb ON nv.MaPhongBan = pb.MaPhongBan
-                        LEFT JOIN dbo.ChucVu cv ON nv.MaChucVu = cv.MaChucVu
-                        LEFT JOIN dbo.ChamCong cc ON nv.MaNV = cc.MaNV 
-                            AND YEAR(cc.NgayLam) = @Nam 
-                            AND MONTH(cc.NgayLam) = @Thang
-                            AND cc.Khoa = 1
-                        WHERE nv.TrangThai = N'DangLam'
-                        GROUP BY nv.MaNV, nv.HoTen, pb.TenPhongBan, cv.TenChucVu, nv.LuongCoBan
-                        ORDER BY nv.HoTen";
+                            MaNV,
+                            HoTen,
+                            TenPhongBan,
+                            TenChucVu,
+                            ISNULL(LuongCoBan, 0) as LuongCoBan,
+                            ISNULL(TongGioCong, 0) as TongGioCong,
+                            ISNULL(SoNgayCong, 0) as SoNgayLam,
+                            ISNULL(TongDiTrePhut, 0) as TongDiTre,
+                            ISNULL(TongVeSomPhut, 0) as TongVeSom
+                        FROM dbo.vw_CongThang
+                        WHERE Nam = @Nam AND Thang = @Thang
+                        ORDER BY HoTen";
                     
                     using (SqlCommand cmd = new SqlCommand(query, conn))
                     {
@@ -135,6 +140,9 @@ namespace VuToanThang_23110329.Forms
 
         private void LoadPayrollData()
         {
+            if (cmbThang.SelectedItem == null || cmbNam.SelectedItem == null)
+                return;
+                
             try
             {
                 int month = int.Parse(cmbThang.SelectedItem.ToString());
@@ -145,28 +153,21 @@ namespace VuToanThang_23110329.Forms
                     conn.Open();
                     string query = @"
                         SELECT 
-                            nv.MaNV,
-                            nv.HoTen,
-                            pb.TenPhongBan,
-                            cv.TenChucVu,
-                            nv.LuongCoBan,
-                            ISNULL(SUM(cc.GioCong), 0) as TongGioCong,
-                            ISNULL(SUM(cc.GioCong) * nv.LuongCoBan / 160, 0) as LuongThucTe,
-                            ISNULL(SUM(cc.GioCong) * nv.LuongCoBan / 160 * 0.105, 0) as BHXH,
-                            ISNULL(SUM(cc.GioCong) * nv.LuongCoBan / 160 * 0.015, 0) as BHYT,
-                            ISNULL(SUM(cc.GioCong) * nv.LuongCoBan / 160 * 0.01, 0) as BHTN,
-                            ISNULL(SUM(cc.GioCong) * nv.LuongCoBan / 160 * 0.1, 0) as ThueTNCN,
-                            ISNULL(SUM(cc.GioCong) * nv.LuongCoBan / 160 * 0.8, 0) as LuongNhan
-                        FROM dbo.NhanVien nv
-                        LEFT JOIN dbo.PhongBan pb ON nv.MaPhongBan = pb.MaPhongBan
-                        LEFT JOIN dbo.ChucVu cv ON nv.MaChucVu = cv.MaChucVu
-                        LEFT JOIN dbo.ChamCong cc ON nv.MaNV = cc.MaNV 
-                            AND YEAR(cc.NgayLam) = @Nam 
-                            AND MONTH(cc.NgayLam) = @Thang
-                            AND cc.Khoa = 1
-                        WHERE nv.TrangThai = N'DangLam'
-                        GROUP BY nv.MaNV, nv.HoTen, pb.TenPhongBan, cv.TenChucVu, nv.LuongCoBan
-                        ORDER BY nv.HoTen";
+                            MaNV,
+                            HoTen,
+                            TenPhongBan,
+                            TenChucVu,
+                            ISNULL(LuongCoBan, 0) as LuongCoBan,
+                            ISNULL(TongGioCong, 0) as TongGioCong,
+                            ISNULL(LuongThucTe, 0) as LuongThucTe,
+                            ISNULL(BHXH, 0) as BHXH,
+                            ISNULL(BHYT, 0) as BHYT,
+                            ISNULL(BHTN, 0) as BHTN,
+                            ISNULL(ThueTNCN, 0) as ThueTNCN,
+                            ISNULL(LuongNhan, 0) as LuongNhan
+                        FROM dbo.vw_BangLuong_ChiTiet
+                        WHERE Nam = @Nam AND Thang = @Thang
+                        ORDER BY HoTen";
                     
                     using (SqlCommand cmd = new SqlCommand(query, conn))
                     {
@@ -228,6 +229,20 @@ namespace VuToanThang_23110329.Forms
 
         private void btnChayLuong_Click(object sender, EventArgs e)
         {
+            if (cmbThang.SelectedItem == null || cmbNam.SelectedItem == null)
+            {
+                MessageBox.Show("Vui lòng chọn tháng và năm!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+            
+            // ✅ Kiểm tra quyền
+            if (UserSession.VaiTro != "KeToan")
+            {
+                MessageBox.Show("Chỉ kế toán mới có quyền chạy bảng lương.", 
+                    "Không có quyền", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+            
             int month = int.Parse(cmbThang.SelectedItem.ToString());
             int year = int.Parse(cmbNam.SelectedItem.ToString());
             
@@ -241,66 +256,15 @@ namespace VuToanThang_23110329.Forms
                     using (SqlConnection conn = new SqlConnection(connectionString))
                     {
                         conn.Open();
-                        
-                        // Check if attendance is locked for this month
-                        string checkQuery = @"
-                            SELECT COUNT(*) 
-                            FROM dbo.ChamCong 
-                            WHERE YEAR(NgayLam) = @Nam 
-                            AND MONTH(NgayLam) = @Thang 
-                            AND Khoa = 0";
-                        
-                        using (SqlCommand checkCmd = new SqlCommand(checkQuery, conn))
+                        using (SqlCommand cmd = new SqlCommand("dbo.sp_ChayBangLuong", conn))
                         {
-                            checkCmd.Parameters.AddWithValue("@Nam", year);
-                            checkCmd.Parameters.AddWithValue("@Thang", month);
-                            
-                            int unlockedCount = Convert.ToInt32(checkCmd.ExecuteScalar());
-                            
-                            if (unlockedCount > 0)
-                            {
-                                MessageBox.Show($"Không thể chạy lương! Còn {unlockedCount} bản ghi chấm công chưa được khóa.", 
-                                    "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                                return;
-                            }
-                        }
-                        
-                        // Calculate and insert payroll data
-                        string payrollQuery = @"
-                            INSERT INTO dbo.BangLuong (MaNV, Thang, Nam, LuongCoBan, TongGioCong, LuongThucTe, BHXH, BHYT, BHTN, ThueTNCN, LuongNhan, TrangThai)
-                            SELECT 
-                                nv.MaNV,
-                                @Thang,
-                                @Nam,
-                                nv.LuongCoBan,
-                                ISNULL(SUM(cc.GioCong), 0),
-                                ISNULL(SUM(cc.GioCong) * nv.LuongCoBan / 160, 0),
-                                ISNULL(SUM(cc.GioCong) * nv.LuongCoBan / 160 * 0.105, 0),
-                                ISNULL(SUM(cc.GioCong) * nv.LuongCoBan / 160 * 0.015, 0),
-                                ISNULL(SUM(cc.GioCong) * nv.LuongCoBan / 160 * 0.01, 0),
-                                ISNULL(SUM(cc.GioCong) * nv.LuongCoBan / 160 * 0.1, 0),
-                                ISNULL(SUM(cc.GioCong) * nv.LuongCoBan / 160 * 0.8, 0),
-                                N'ChuaDong'
-                            FROM dbo.NhanVien nv
-                            LEFT JOIN dbo.ChamCong cc ON nv.MaNV = cc.MaNV 
-                                AND YEAR(cc.NgayLam) = @Nam 
-                                AND MONTH(cc.NgayLam) = @Thang
-                                AND cc.Khoa = 1
-                            WHERE nv.TrangThai = N'DangLam'
-                            GROUP BY nv.MaNV, nv.LuongCoBan
-                            HAVING NOT EXISTS (
-                                SELECT 1 FROM dbo.BangLuong bl 
-                                WHERE bl.MaNV = nv.MaNV AND bl.Thang = @Thang AND bl.Nam = @Nam
-                            )";
-                        
-                        using (SqlCommand cmd = new SqlCommand(payrollQuery, conn))
-                        {
-                            cmd.Parameters.AddWithValue("@Thang", month);
+                            cmd.CommandType = CommandType.StoredProcedure;
                             cmd.Parameters.AddWithValue("@Nam", year);
+                            cmd.Parameters.AddWithValue("@Thang", month);
                             
-                            int rowsAffected = cmd.ExecuteNonQuery();
+                            cmd.ExecuteNonQuery();
                             
-                            MessageBox.Show($"Chạy bảng lương thành công! Đã tạo {rowsAffected} bản ghi lương.", 
+                            MessageBox.Show($"Chạy bảng lương thành công cho tháng {month}/{year}!", 
                                 "Thành công", MessageBoxButtons.OK, MessageBoxIcon.Information);
                             
                             LoadData();
@@ -316,10 +280,24 @@ namespace VuToanThang_23110329.Forms
 
         private void btnDongLuong_Click(object sender, EventArgs e)
         {
+            if (cmbThang.SelectedItem == null || cmbNam.SelectedItem == null)
+            {
+                MessageBox.Show("Vui lòng chọn tháng và năm!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+            
+            // ✅ Kiểm tra quyền
+            if (UserSession.VaiTro != "KeToan")
+            {
+                MessageBox.Show("Chỉ kế toán mới có quyền đóng bảng lương.", 
+                    "Không có quyền", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+            
             int month = int.Parse(cmbThang.SelectedItem.ToString());
             int year = int.Parse(cmbNam.SelectedItem.ToString());
             
-            DialogResult result = MessageBox.Show($"Bạn có chắc chắn muốn đóng bảng lương tháng {month}/{year}?", 
+            DialogResult result = MessageBox.Show($"Bạn có chắc chắn muốn đóng bảng lương tháng {month}/{year}?\nSau khi đóng sẽ không thể chỉnh sửa!", 
                 "Xác nhận", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
             
             if (result == DialogResult.Yes)
@@ -329,19 +307,15 @@ namespace VuToanThang_23110329.Forms
                     using (SqlConnection conn = new SqlConnection(connectionString))
                     {
                         conn.Open();
-                        string query = @"
-                            UPDATE dbo.BangLuong 
-                            SET TrangThai = N'DaDong'
-                            WHERE Thang = @Thang AND Nam = @Nam AND TrangThai = N'ChuaDong'";
-                        
-                        using (SqlCommand cmd = new SqlCommand(query, conn))
+                        using (SqlCommand cmd = new SqlCommand("dbo.sp_DongBangLuong", conn))
                         {
-                            cmd.Parameters.AddWithValue("@Thang", month);
+                            cmd.CommandType = CommandType.StoredProcedure;
                             cmd.Parameters.AddWithValue("@Nam", year);
+                            cmd.Parameters.AddWithValue("@Thang", month);
                             
-                            int rowsAffected = cmd.ExecuteNonQuery();
+                            cmd.ExecuteNonQuery();
                             
-                            MessageBox.Show($"Đóng bảng lương thành công! Đã đóng {rowsAffected} bản ghi lương.", 
+                            MessageBox.Show($"Đóng bảng lương thành công cho tháng {month}/{year}!", 
                                 "Thành công", MessageBoxButtons.OK, MessageBoxIcon.Information);
                             
                             LoadData();
@@ -374,8 +348,8 @@ namespace VuToanThang_23110329.Forms
                             using (SqlCommand cmd = new SqlCommand(query, conn))
                             {
                                 cmd.Parameters.AddWithValue("@MaNV", dialog.EmployeeId);
-                                cmd.Parameters.AddWithValue("@Thang", int.Parse(cmbThang.SelectedItem.ToString()));
-                                cmd.Parameters.AddWithValue("@Nam", int.Parse(cmbNam.SelectedItem.ToString()));
+                                cmd.Parameters.AddWithValue("@Thang", cmbThang.SelectedItem != null ? int.Parse(cmbThang.SelectedItem.ToString()) : DateTime.Now.Month);
+                                cmd.Parameters.AddWithValue("@Nam", cmbNam.SelectedItem != null ? int.Parse(cmbNam.SelectedItem.ToString()) : DateTime.Now.Year);
                                 cmd.Parameters.AddWithValue("@PhuCap", dialog.AllowanceAmount);
                                 
                                 int rowsAffected = cmd.ExecuteNonQuery();
@@ -472,6 +446,6 @@ namespace VuToanThang_23110329.Forms
 
             this.Controls.AddRange(new Control[] { lblEmployeeId, txtEmployeeId, lblAllowance, txtAllowanceAmount, btnOK, btnCancel });
         }
-        }
+        
     }
 }

@@ -21,10 +21,19 @@ namespace VuToanThang_23110329.Forms
 
         private void InitializeConnectionString()
         {
-            connectionString = System.Configuration.ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
-            // Get current user info (assuming stored in static class)
-            currentUserId = 1; // TODO: Get from session
-            currentUserRole = "NhanVien"; // TODO: Get from session
+            var cs = System.Configuration.ConfigurationManager.ConnectionStrings["HrDb"];
+            if (cs == null)
+            {
+                MessageBox.Show("Không tìm thấy chuỗi kết nối 'HrDb' trong App.config.", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                connectionString = string.Empty;
+            }
+            else
+            {
+                connectionString = cs.ConnectionString;
+            }
+            // Get current user info from session
+            currentUserId = UserSession.MaNV > 0 ? UserSession.MaNV : 1;
+            currentUserRole = UserSession.VaiTro ?? "NhanVien";
         }
 
         private void frmChamCong_Load(object sender, EventArgs e)
@@ -82,12 +91,11 @@ namespace VuToanThang_23110329.Forms
                     conn.Open();
                     DateTime today = DateTime.Now.Date;
                     
-                    // Check if there's a schedule for today
+                    // Check if there's a schedule for today using view
                     string scheduleQuery = @"
-                        SELECT lpc.MaCa, cl.TenCa, cl.GioBatDau, cl.GioKetThuc
-                        FROM dbo.LichPhanCa lpc
-                        INNER JOIN dbo.CaLam cl ON lpc.MaCa = cl.MaCa
-                        WHERE lpc.MaNV = @MaNV AND lpc.NgayLam = @NgayLam AND lpc.TrangThai = N'DuKien'";
+                        SELECT TenCa, GioBatDau, GioKetThuc, TrangThaiLich
+                        FROM dbo.vw_Lich_ChamCong_Ngay
+                        WHERE MaNV = @MaNV AND NgayLam = @NgayLam";
                     
                     using (SqlCommand cmd = new SqlCommand(scheduleQuery, conn))
                     {
@@ -198,19 +206,12 @@ namespace VuToanThang_23110329.Forms
                 {
                     conn.Open();
                     DateTime now = DateTime.Now;
-                    DateTime today = now.Date;
                     
-                    string query = @"
-                        IF EXISTS (SELECT 1 FROM dbo.ChamCong WHERE MaNV = @MaNV AND NgayLam = @NgayLam)
-                            UPDATE dbo.ChamCong SET GioVao = @GioVao WHERE MaNV = @MaNV AND NgayLam = @NgayLam
-                        ELSE
-                            INSERT INTO dbo.ChamCong (MaNV, NgayLam, GioVao) VALUES (@MaNV, @NgayLam, @GioVao)";
-                    
-                    using (SqlCommand cmd = new SqlCommand(query, conn))
+                    // Sử dụng stored procedure sp_CheckIn
+                    using (SqlCommand cmd = new SqlCommand("dbo.sp_CheckIn", conn))
                     {
+                        cmd.CommandType = CommandType.StoredProcedure;
                         cmd.Parameters.AddWithValue("@MaNV", currentUserId);
-                        cmd.Parameters.AddWithValue("@NgayLam", today);
-                        cmd.Parameters.AddWithValue("@GioVao", now);
                         
                         cmd.ExecuteNonQuery();
                         
@@ -233,30 +234,17 @@ namespace VuToanThang_23110329.Forms
                 {
                     conn.Open();
                     DateTime now = DateTime.Now;
-                    DateTime today = now.Date;
                     
-                    string query = @"
-                        UPDATE dbo.ChamCong 
-                        SET GioRa = @GioRa, GioCong = DATEDIFF(MINUTE, GioVao, @GioRa) / 60.0
-                        WHERE MaNV = @MaNV AND NgayLam = @NgayLam AND GioVao IS NOT NULL";
-                    
-                    using (SqlCommand cmd = new SqlCommand(query, conn))
+                    // Sử dụng stored procedure sp_CheckOut
+                    using (SqlCommand cmd = new SqlCommand("dbo.sp_CheckOut", conn))
                     {
+                        cmd.CommandType = CommandType.StoredProcedure;
                         cmd.Parameters.AddWithValue("@MaNV", currentUserId);
-                        cmd.Parameters.AddWithValue("@NgayLam", today);
-                        cmd.Parameters.AddWithValue("@GioRa", now);
                         
-                        int rowsAffected = cmd.ExecuteNonQuery();
+                        cmd.ExecuteNonQuery();
                         
-                        if (rowsAffected > 0)
-                        {
-                            MessageBox.Show($"Check out thành công lúc {now:HH:mm}", "Thành công", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                            LoadCurrentStatus();
-                        }
-                        else
-                        {
-                            MessageBox.Show("Không thể check out. Vui lòng check in trước!", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                        }
+                        MessageBox.Show($"Check out thành công lúc {now:HH:mm}", "Thành công", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        LoadCurrentStatus();
                     }
                 }
             }
@@ -285,6 +273,9 @@ namespace VuToanThang_23110329.Forms
 
         private void LoadAttendanceHistory()
         {
+            if (cmbThang.SelectedItem == null || cmbNam.SelectedItem == null)
+                return;
+                
             try
             {
                 int month = int.Parse(cmbThang.SelectedItem.ToString());
@@ -392,20 +383,17 @@ namespace VuToanThang_23110329.Forms
                     using (SqlConnection conn = new SqlConnection(connectionString))
                     {
                         conn.Open();
-                        string query = @"
-                            UPDATE dbo.ChamCong 
-                            SET Khoa = 1
-                            WHERE YEAR(NgayLam) = @Nam 
-                            AND MONTH(NgayLam) = @Thang";
                         
-                        using (SqlCommand cmd = new SqlCommand(query, conn))
+                        // Sử dụng stored procedure sp_KhoaCongThang
+                        using (SqlCommand cmd = new SqlCommand("dbo.sp_KhoaCongThang", conn))
                         {
+                            cmd.CommandType = CommandType.StoredProcedure;
                             cmd.Parameters.AddWithValue("@Nam", year);
                             cmd.Parameters.AddWithValue("@Thang", month);
                             
-                            int rowsAffected = cmd.ExecuteNonQuery();
+                            cmd.ExecuteNonQuery();
                             
-                            MessageBox.Show($"Khóa công thành công! Đã khóa {rowsAffected} bản ghi.", 
+                            MessageBox.Show($"Khóa công thành công cho tháng {month}/{year}!", 
                                 "Thành công", MessageBoxButtons.OK, MessageBoxIcon.Information);
                             
                             LoadLockStatus();

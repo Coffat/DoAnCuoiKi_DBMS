@@ -4,6 +4,7 @@ using System.Data.SqlClient;
 using System.Drawing;
 using System.Windows.Forms;
 using Guna.UI2.WinForms;
+using VuToanThang_23110329;
 
 namespace VuToanThang_23110329.Forms
 {
@@ -21,10 +22,27 @@ namespace VuToanThang_23110329.Forms
 
         private void InitializeConnectionString()
         {
-            connectionString = System.Configuration.ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
-            // Get current user info (assuming stored in static class)
-            currentUserRole = "HR"; // TODO: Get from session
-            currentUserId = 1; // TODO: Get from session
+            var cs = System.Configuration.ConfigurationManager.ConnectionStrings["HrDb"];
+            if (cs == null)
+            {
+                MessageBox.Show("Không tìm thấy chuỗi kết nối 'HrDb' trong App.config. Vui lòng kiểm tra cấu hình.", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                connectionString = string.Empty;
+            }
+            else
+            {
+                connectionString = cs.ConnectionString;
+            }
+            
+            // ✅ FIXED: Lấy thông tin từ UserSession
+            if (!UserSession.IsLoggedIn)
+            {
+                MessageBox.Show("Vui lòng đăng nhập để sử dụng chức năng này.", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                this.Close();
+                return;
+            }
+            
+            currentUserRole = UserSession.VaiTro;
+            currentUserId = UserSession.MaNguoiDung;
         }
 
         private void frmDuyetDonTu_Load(object sender, EventArgs e)
@@ -226,8 +244,8 @@ namespace VuToanThang_23110329.Forms
                         {
                             cmd.CommandType = CommandType.StoredProcedure;
                             cmd.Parameters.AddWithValue("@MaDon", maDon);
-                            cmd.Parameters.AddWithValue("@TrangThaiMoi", newStatus);
-                            cmd.Parameters.AddWithValue("@DuyetBoi", currentUserId);
+                            cmd.Parameters.AddWithValue("@MaNguoiDuyet", currentUserId);
+                            cmd.Parameters.AddWithValue("@ChapNhan", newStatus == "DaDuyet" ? 1 : 0);
 
                             cmd.ExecuteNonQuery();
                             MessageBox.Show($"{actionName} thành công!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -276,6 +294,11 @@ namespace VuToanThang_23110329.Forms
 
             btnDuyet.Enabled = canProcess;
             btnTuChoi.Enabled = canProcess;
+        }
+
+        private void dgvDonTu_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+
         }
     }
 }

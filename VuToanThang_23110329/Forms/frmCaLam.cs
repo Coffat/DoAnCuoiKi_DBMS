@@ -9,14 +9,16 @@ namespace VuToanThang_23110329.Forms
 {
     public partial class frmCaLam : Form
     {
-        private string connectionString = System.Configuration.ConfigurationManager.ConnectionStrings["HrDb"].ConnectionString;
+        private string connectionString;
         private bool isEditing = false;
         private int currentMaCa = 0;
         private string userRole = "";
 
+
         public frmCaLam()
         {
             InitializeComponent();
+            InitializeConnectionString();
             SetupDataGridView();
             SetButtonStates(false);
         }
@@ -24,17 +26,33 @@ namespace VuToanThang_23110329.Forms
         public frmCaLam(string role)
         {
             InitializeComponent();
+            InitializeConnectionString();
             userRole = role;
             SetupDataGridView();
             SetButtonStates(false);
             SetupRolePermissions();
+            LoadData();
+            ClearForm();
+            chkKichHoat.Checked = true;
+        }
+
+        private void InitializeConnectionString()
+        {
+            var cs = System.Configuration.ConfigurationManager.ConnectionStrings["HrDb"];
+            if (cs == null)
+            {
+                MessageBox.Show("Không tìm thấy chuỗi kết nối 'HrDb' trong App.config.", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                connectionString = string.Empty;
+            }
+            else
+            {
+                connectionString = cs.ConnectionString;
+            }
         }
 
         private void frmCaLam_Load(object sender, EventArgs e)
         {
             LoadData();
-            ClearForm();
-            chkKichHoat.Checked = true;
         }
 
         private void SetupDataGridView()

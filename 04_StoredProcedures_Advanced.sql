@@ -6,7 +6,7 @@
 USE QLNhanSuSieuThiMini;
 GO
 
--- 3) Duyệt/Từ chối đơn từ (atomic)
+-- 3) Duyệt/Từ chối đơn từ (atomic) - ĐÃ MỞ RỘNG ĐỂ ĐỒNG BỘ LICHPHANCA
 IF OBJECT_ID('dbo.sp_DuyetDonTu','P') IS NOT NULL DROP PROCEDURE dbo.sp_DuyetDonTu;
 GO
 CREATE PROCEDURE dbo.sp_DuyetDonTu
@@ -42,6 +42,10 @@ BEGIN
 
         IF @Loai = N'NGHI'
         BEGIN
+            -- Set SESSION_CONTEXT để bypass trigger khi cần
+            EXEC sp_set_session_context @key = N'SkipTrigger', @value = 1;
+
+            -- Cập nhật ChamCong
             ;WITH Dates AS (
                 SELECT CAST(@Tu AS DATE) d
                 UNION ALL
@@ -59,6 +63,24 @@ BEGIN
                 INSERT(MaNV,NgayLam,GioVao,GioRa,GioCong,DiTrePhut,VeSomPhut,Khoa)
                 VALUES(@MaNV, S.NgayLam, NULL, NULL, 0, 0, 0, 0)
             OPTION (MAXRECURSION 366);
+
+            -- Cập nhật LichPhanCa: chuyển sang trạng thái Huy
+            ;WITH Dates AS (
+                SELECT CAST(@Tu AS DATE) d
+                UNION ALL
+                SELECT DATEADD(DAY,1,d) FROM Dates WHERE d < CAST(@Den AS DATE)
+            )
+            UPDATE lpc
+            SET lpc.TrangThai = N'Huy',
+                lpc.GhiChu = ISNULL(lpc.GhiChu, '') + N' [Nghỉ phép - Đơn #' + CAST(@MaDon AS NVARCHAR) + N']'
+            FROM dbo.LichPhanCa lpc
+            INNER JOIN Dates ON lpc.NgayLam = Dates.d
+            WHERE lpc.MaNV = @MaNV
+              AND lpc.TrangThai IN (N'DuKien', N'Khoa')
+            OPTION (MAXRECURSION 366);
+
+            -- Reset SESSION_CONTEXT
+            EXEC sp_set_session_context @key = N'SkipTrigger', @value = 0;
         END
     END
     ELSE
@@ -487,6 +509,158 @@ BEGIN
 END
 GO
 
+------------------------------------------------------------
+-- 10) SAO CHÉP LỊCH TUẦN
+------------------------------------------------------------
+
+IF OBJECT_ID('dbo.sp_LichPhanCa_CloneWeek','P') IS NOT NULL DROP PROCEDURE dbo.sp_LichPhanCa_CloneWeek;
+GO
+CREATE PROCEDURE dbo.sp_LichPhanCa_CloneWeek
+    @NgayBatDauFrom DATE,  -- Thứ Hai tuần nguồn
+    @NgayBatDauTo DATE,    -- Thứ Hai tuần đích
+    @Overwrite BIT = 0     -- 1 = xóa lịch cũ trước khi copy
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET XACT_ABORT ON;
+
+    -- Kiểm tra cả 2 ngày đều là thứ Hai
+    IF DATEPART(WEEKDAY, @NgayBatDauFrom) <> 2 OR DATEPART(WEEKDAY, @NgayBatDauTo) <> 2
+    BEGIN
+        RAISERROR(N'Cả hai ngày phải là thứ Hai (Monday).', 16, 1);
+        RETURN;
+    END
+
+    DECLARE @NgayKetThucFrom DATE = DATEADD(DAY, 6, @NgayBatDauFrom);
+    DECLARE @NgayKetThucTo DATE = DATEADD(DAY, 6, @NgayBatDauTo);
+
+    BEGIN TRAN;
+
+    -- Nếu Overwrite = 1, xóa lịch tuần đích trước
+    IF @Overwrite = 1
+    BEGIN
+        DELETE FROM dbo.LichPhanCa
+        WHERE NgayLam BETWEEN @NgayBatDauTo AND @NgayKetThucTo
+          AND TrangThai = N'DuKien';
+    END
+
+    -- Copy lịch từ tuần nguồn sang tuần đích
+    INSERT INTO dbo.LichPhanCa (MaNV, NgayLam, MaCa, TrangThai, GhiChu)
+    SELECT 
+        lpc.MaNV,
+        DATEADD(DAY, DATEDIFF(DAY, @NgayBatDauFrom, lpc.NgayLam), @NgayBatDauTo) AS NgayLamMoi,
+        lpc.MaCa,
+        N'DuKien' AS TrangThai,
+        lpc.GhiChu
+    FROM dbo.LichPhanCa lpc
+    WHERE lpc.NgayLam BETWEEN @NgayBatDauFrom AND @NgayKetThucFrom
+      AND lpc.TrangThai IN (N'DuKien', N'Khoa')
+      AND (@Overwrite = 1 OR NOT EXISTS (
+          SELECT 1 FROM dbo.LichPhanCa lpc2
+          WHERE lpc2.MaNV = lpc.MaNV
+            AND lpc2.NgayLam = DATEADD(DAY, DATEDIFF(DAY, @NgayBatDauFrom, lpc.NgayLam), @NgayBatDauTo)
+            AND lpc2.MaCa = lpc.MaCa
+      ));
+
+    DECLARE @RowsInserted INT = @@ROWCOUNT;
+    COMMIT;
+
+    SELECT @RowsInserted AS SoLichDaCopy;
+END
+GO
+
+------------------------------------------------------------
+-- 11) KHÓA/MỞ KHÓA LỊCH THEO TUẦN
+------------------------------------------------------------
+
+-- 11.1) Khóa lịch tuần
+IF OBJECT_ID('dbo.sp_LichPhanCa_KhoaTuan','P') IS NOT NULL DROP PROCEDURE dbo.sp_LichPhanCa_KhoaTuan;
+GO
+CREATE PROCEDURE dbo.sp_LichPhanCa_KhoaTuan
+    @MaNV INT,
+    @NgayBatDau DATE  -- Thứ Hai
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET XACT_ABORT ON;
+
+    IF DATEPART(WEEKDAY, @NgayBatDau) <> 2
+    BEGIN
+        RAISERROR(N'Ngày bắt đầu phải là thứ Hai (Monday).', 16, 1);
+        RETURN;
+    END
+
+    DECLARE @NgayKetThuc DATE = DATEADD(DAY, 6, @NgayBatDau);
+
+    BEGIN TRAN;
+
+    EXEC sp_set_session_context @key = N'SkipTrigger', @value = 0;
+
+    UPDATE dbo.LichPhanCa
+    SET TrangThai = N'Khoa'
+    WHERE MaNV = @MaNV
+      AND NgayLam BETWEEN @NgayBatDau AND @NgayKetThuc
+      AND TrangThai = N'DuKien';
+
+    DECLARE @RowsUpdated INT = @@ROWCOUNT;
+    COMMIT;
+
+    SELECT @RowsUpdated AS SoLichDaKhoa;
+END
+GO
+
+-- 11.2) Mở khóa lịch tuần
+IF OBJECT_ID('dbo.sp_LichPhanCa_MoKhoaTuan','P') IS NOT NULL DROP PROCEDURE dbo.sp_LichPhanCa_MoKhoaTuan;
+GO
+CREATE PROCEDURE dbo.sp_LichPhanCa_MoKhoaTuan
+    @MaNV INT,
+    @NgayBatDau DATE,
+    @MaNguoiDung INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET XACT_ABORT ON;
+
+    -- Kiểm tra quyền
+    DECLARE @VaiTro NVARCHAR(20);
+    SELECT @VaiTro = VaiTro FROM dbo.NguoiDung WHERE MaNguoiDung = @MaNguoiDung;
+
+    IF @VaiTro NOT IN (N'HR', N'QuanLy')
+    BEGIN
+        RAISERROR(N'Chỉ HR hoặc Quản lý mới có quyền mở khóa lịch.', 16, 1);
+        RETURN;
+    END
+
+    IF DATEPART(WEEKDAY, @NgayBatDau) <> 2
+    BEGIN
+        RAISERROR(N'Ngày bắt đầu phải là thứ Hai (Monday).', 16, 1);
+        RETURN;
+    END
+
+    DECLARE @NgayKetThuc DATE = DATEADD(DAY, 6, @NgayBatDau);
+
+    BEGIN TRAN;
+
+    EXEC sp_set_session_context @key = N'SkipTrigger', @value = 1;
+
+    UPDATE dbo.LichPhanCa
+    SET TrangThai = N'DuKien',
+        GhiChu = ISNULL(GhiChu, '') + N' [Mở khóa bởi ' + CAST(@MaNguoiDung AS NVARCHAR) + N' lúc ' + CONVERT(NVARCHAR, GETDATE(), 120) + N']'
+    WHERE MaNV = @MaNV
+      AND NgayLam BETWEEN @NgayBatDau AND @NgayKetThuc
+      AND TrangThai = N'Khoa';
+
+    DECLARE @RowsUpdated INT = @@ROWCOUNT;
+
+    EXEC sp_set_session_context @key = N'SkipTrigger', @value = 0;
+
+    COMMIT;
+
+    SELECT @RowsUpdated AS SoLichDaMoKhoa;
+END
+GO
+
 PRINT N'=== HOÀN TẤT TẠO STORED PROCEDURES NÂNG CAO ===';
 PRINT N'=== ĐÃ THÊM STORED PROCEDURES CHECK IN/CHECK OUT ===';
+PRINT N'=== ĐÃ THÊM STORED PROCEDURES QUẢN LÝ LỊCH TUẦN ===';
 PRINT N'Tiếp theo chạy file: 05_Security_Triggers.sql';
