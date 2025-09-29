@@ -42,48 +42,12 @@ namespace VuToanThang_23110329.Forms
             LoadData();
         }
 
-        private void btnThem_Click(object sender, EventArgs e)
-        {
-            if (_isReadOnlyForRole)
-            {
-                MessageBox.Show("Bạn không có quyền tạo lịch.", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                return;
-            }
-            // Open dialog or inline add behavior
-        }
-
-        private void btnSua_Click(object sender, EventArgs e)
-        {
-            if (_isReadOnlyForRole)
-            {
-                MessageBox.Show("Bạn không có quyền sửa lịch.", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                return;
-            }
-        }
-
-        private void btnXoa_Click(object sender, EventArgs e)
-        {
-            if (_isReadOnlyForRole)
-            {
-                MessageBox.Show("Bạn không có quyền xóa lịch.", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                return;
-            }
-        }
-
-        private void btnLuu_Click(object sender, EventArgs e)
-        {
-            if (_isReadOnlyForRole)
-            {
-                MessageBox.Show("Bạn không có quyền lưu thay đổi.", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                return;
-            }
-            // Persist changes
-        }
-
-        private void btnHuy_Click(object sender, EventArgs e)
-        {
-            // TODO: Cancel logic here
-        }
+        // Đã Ẩn các button này - không dùng nữa
+        private void btnThem_Click(object sender, EventArgs e) { }
+        private void btnSua_Click(object sender, EventArgs e) { }
+        private void btnXoa_Click(object sender, EventArgs e) { }
+        private void btnLuu_Click(object sender, EventArgs e) { }
+        private void btnHuy_Click(object sender, EventArgs e) { }
 
         private void btnLamMoi_Click(object sender, EventArgs e)
         {
@@ -97,12 +61,25 @@ namespace VuToanThang_23110329.Forms
                 MessageBox.Show("Bạn không có quyền tạo lịch tuần.", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
-            // Auto-generate weekly schedule based on templates/rules
+
+            try
+            {
+                // Mở form frmLichTuan để tạo lịch chi tiết
+                var frm = new frmLichTuan();
+                frm.ShowDialog();
+                LoadData(); // Refresh sau khi đóng
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Lỗi khi mở form Lịch tuần:\n\n{ex.Message}", 
+                    "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void txtTimKiem_TextChanged(object sender, EventArgs e)
         {
-            // TODO: Search logic here
+            // Tìm kiếm theo tên nhân viên (filter trong PopulateWeekData)
+            LoadData();
         }
 
         private void dtpTuNgay_ValueChanged(object sender, EventArgs e)
@@ -128,7 +105,8 @@ namespace VuToanThang_23110329.Forms
 
         private void ClearForm()
         {
-            // TODO: Clear form logic here
+            txtTimKiem.Clear();
+            LoadData();
         }
 
         private void SetupDataGridView()
@@ -244,13 +222,19 @@ namespace VuToanThang_23110329.Forms
             // Kiểm tra quyền từ UserSession
             string role = UserSession.VaiTro ?? "NhanVien";
             _isReadOnlyForRole = !(role == "HR" || role == "QuanLy");
-            btnThem.Enabled = !_isReadOnlyForRole;
-            btnSua.Enabled = !_isReadOnlyForRole;
-            btnXoa.Enabled = !_isReadOnlyForRole;
-            btnLuu.Enabled = !_isReadOnlyForRole;
-            btnHuy.Enabled = !_isReadOnlyForRole;
+            
+            // Ẩn các button không dùng - chỉ giữ btnTaoLichTuan và btnLamMoi
+            btnThem.Visible = false;
+            btnSua.Visible = false;
+            btnXoa.Visible = false;
+            btnLuu.Visible = false;
+            btnHuy.Visible = false;
+            
+            // Chỉ cho phép HR/QuanLy mở form lịch tuần
             btnTaoLichTuan.Enabled = !_isReadOnlyForRole;
-            dgvTuan.ReadOnly = _isReadOnlyForRole;
+            btnLamMoi.Enabled = true; // Tất cả đều xem được
+            
+            dgvTuan.ReadOnly = true; // View-only grid
         }
 
         private void InitializeEmployeeCombo()
@@ -304,16 +288,25 @@ namespace VuToanThang_23110329.Forms
 
         private void dgvTuan_CellClick(object sender, DataGridViewCellEventArgs e)
         {
-            if (e.RowIndex < 0 || e.ColumnIndex <= 0) return;
-            if (_isReadOnlyForRole) return;
-            // Show quick select of shift assignment or employee
+            // View-only - không làm gì
         }
 
         private void dgvTuan_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
             if (e.RowIndex < 0 || e.ColumnIndex <= 0) return;
-            if (_isReadOnlyForRole) return;
-            // Open detail editor dialog
+            
+            try
+            {
+                // Double-click để mở form lịch tuần chi tiết
+                var frm = new frmLichTuan();
+                frm.ShowDialog();
+                LoadData();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Lỗi khi mở form Lịch tuần:\n\n{ex.Message}", 
+                    "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void dgvTuan_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
@@ -376,35 +369,42 @@ namespace VuToanThang_23110329.Forms
             var map = new Dictionary<(int, DateTime), List<AssignmentInfo>>();
             if (string.IsNullOrEmpty(_connectionString)) return map;
 
-            using (var conn = new SqlConnection(_connectionString))
-            using (var cmd = new SqlCommand(@"
-                SELECT lpc.MaCa, lpc.NgayLam, nv.HoTen, lpc.TrangThai
-                FROM dbo.LichPhanCa lpc
-                INNER JOIN dbo.NhanVien nv ON nv.MaNV = lpc.MaNV
-                WHERE lpc.NgayLam BETWEEN @D0 AND @D1
-                ORDER BY lpc.NgayLam, lpc.MaCa, nv.HoTen
-            ", conn))
+            try
             {
-                cmd.Parameters.AddWithValue("@D0", fromDate.Date);
-                cmd.Parameters.AddWithValue("@D1", toDate.Date);
-                conn.Open();
-                using (var rd = cmd.ExecuteReader())
+                using (var conn = new SqlConnection(_connectionString))
+                using (var cmd = new SqlCommand(@"
+                    SELECT lpc.MaCa, lpc.NgayLam, nv.HoTen, lpc.TrangThai
+                    FROM dbo.LichPhanCa lpc
+                    INNER JOIN dbo.NhanVien nv ON nv.MaNV = lpc.MaNV
+                    WHERE lpc.NgayLam BETWEEN @D0 AND @D1
+                    ORDER BY lpc.NgayLam, lpc.MaCa, nv.HoTen
+                ", conn))
                 {
-                    while (rd.Read())
+                    cmd.Parameters.AddWithValue("@D0", fromDate.Date);
+                    cmd.Parameters.AddWithValue("@D1", toDate.Date);
+                    conn.Open();
+                    using (var rd = cmd.ExecuteReader())
                     {
-                        int maCa = rd.GetInt32(0);
-                        DateTime ngay = rd.GetDateTime(1).Date;
-                        string hoTen = rd.GetString(2);
-                        string trangThai = rd.GetString(3);
-                        var key = (maCa, ngay);
-                        if (!map.TryGetValue(key, out var list))
+                        while (rd.Read())
                         {
-                            list = new List<AssignmentInfo>();
-                            map[key] = list;
+                            int maCa = rd.GetInt32(0);
+                            DateTime ngay = rd.GetDateTime(1).Date;
+                            string hoTen = rd.GetString(2);
+                            string trangThai = rd.GetString(3);
+                            var key = (maCa, ngay);
+                            if (!map.TryGetValue(key, out var list))
+                            {
+                                list = new List<AssignmentInfo>();
+                                map[key] = list;
+                            }
+                            list.Add(new AssignmentInfo { HoTen = hoTen, TrangThai = trangThai });
                         }
-                        list.Add(new AssignmentInfo { HoTen = hoTen, TrangThai = trangThai });
                     }
                 }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Lỗi tải lịch: {ex.Message}", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
 
             return map;

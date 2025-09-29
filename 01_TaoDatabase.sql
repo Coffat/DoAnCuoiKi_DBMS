@@ -40,7 +40,7 @@ IF OBJECT_ID('dbo.PhongBan','U') IS NOT NULL DROP TABLE dbo.PhongBan;
 GO
 CREATE TABLE dbo.PhongBan (
     MaPhongBan INT IDENTITY(1,1) PRIMARY KEY,
-    TenPhongBan NVARCHAR(80) NOT NULL UNIQUE,
+    TenPhongBan NVARCHAR(80) NOT NULL,
     MoTa NVARCHAR(255),
     KichHoat BIT DEFAULT 1,
     CONSTRAINT UQ_PhongBan_TenPhongBan UNIQUE(TenPhongBan)
@@ -52,7 +52,7 @@ IF OBJECT_ID('dbo.ChucVu','U') IS NOT NULL DROP TABLE dbo.ChucVu;
 GO
 CREATE TABLE dbo.ChucVu (
     MaChucVu INT IDENTITY(1,1) PRIMARY KEY,
-    TenChucVu NVARCHAR(80) NOT NULL UNIQUE,
+    TenChucVu NVARCHAR(80) NOT NULL,
     MoTa NVARCHAR(255),
     KichHoat BIT DEFAULT 1,
     CONSTRAINT UQ_ChucVu_TenChucVu UNIQUE(TenChucVu)

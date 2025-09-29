@@ -72,20 +72,11 @@ namespace VuToanThang_23110329.Forms
             }
         }
 
+        // ✅ Đã XOÁ: Tab Danh mục (trùng lặp với tab Quản lý)
         private void btnDanhMuc_Click(object sender, EventArgs e)
         {
-            SetActiveButton(btnDanhMuc);
-            lblWelcome.Text = "📋 Danh mục hệ thống";
-            lblStatus.Text = "Đang quản lý danh mục";
-            
-            // Hiển thị menu con cho HR
-            if (userRole == "HR")
-            {
-                ShowSubMenu("Danh mục", new string[] 
-                { 
-                    "Phòng ban & Chức vụ" 
-                });
-            }
+            // Chuyển hướng sang tab Quản lý
+            btnQuanLy_Click(sender, e);
         }
 
         private void btnCaLam_Click(object sender, EventArgs e)
@@ -195,19 +186,16 @@ namespace VuToanThang_23110329.Forms
         {
             // Mặc định ẩn tất cả buttons
             btnQuanLy.Visible = false;
-            btnDanhMuc.Visible = false;
+            btnDanhMuc.Visible = false;  // ✅ Ẩn luôn, không dùng nữa
             btnCaLam.Visible = false;
             btnNghiepVu.Visible = false;
             btnTienLuong.Visible = false;
             btnCaNhan.Visible = false;
             btnChamCong.Visible = false;
-            btnBaoCao.Visible = false;
-
             switch (role)
             {
                 case "QuanLy": // Giám đốc - có quyền cao nhất
                     btnQuanLy.Visible = true;      // Quản lý nhân sự
-                    btnDanhMuc.Visible = true;     // Danh mục
                     btnCaLam.Visible = true;       // Ca làm việc
                     btnBaoCao.Visible = true;      // Báo cáo
                     btnChamCong.Visible = true;    // Chấm công
@@ -246,7 +234,7 @@ namespace VuToanThang_23110329.Forms
         private void SetActiveButton(Guna.UI2.WinForms.Guna2Button activeButton)
         {
             // Reset all buttons to default state
-            Guna.UI2.WinForms.Guna2Button[] buttons = { btnDashboard, btnQuanLy, btnDanhMuc, btnCaLam, btnNghiepVu, btnTienLuong, btnCaNhan, btnChamCong, btnBaoCao };
+            Guna.UI2.WinForms.Guna2Button[] buttons = { btnDashboard, btnQuanLy, btnCaLam, btnNghiepVu, btnTienLuong, btnCaNhan, btnChamCong, btnBaoCao }; // ✅ Đã xoá btnDanhMuc
             
             foreach (var btn in buttons)
             {

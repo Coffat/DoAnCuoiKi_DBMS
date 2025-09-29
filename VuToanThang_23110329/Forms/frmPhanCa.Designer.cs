@@ -245,6 +245,7 @@ namespace VuToanThang_23110329.Forms
             this.btnThem.Size = new System.Drawing.Size(80, 30);
             this.btnThem.TabIndex = 0;
             this.btnThem.Text = "Thêm";
+            this.btnThem.Click += new System.EventHandler(this.btnThem_Click);
             // 
             // btnSua
             // 
@@ -261,6 +262,7 @@ namespace VuToanThang_23110329.Forms
             this.btnSua.Size = new System.Drawing.Size(80, 30);
             this.btnSua.TabIndex = 1;
             this.btnSua.Text = "Sửa";
+            this.btnSua.Click += new System.EventHandler(this.btnSua_Click);
             // 
             // btnXoa
             // 
@@ -277,6 +279,7 @@ namespace VuToanThang_23110329.Forms
             this.btnXoa.Size = new System.Drawing.Size(80, 30);
             this.btnXoa.TabIndex = 2;
             this.btnXoa.Text = "Xóa";
+            this.btnXoa.Click += new System.EventHandler(this.btnXoa_Click);
             // 
             // btnLuu
             // 
@@ -292,6 +295,7 @@ namespace VuToanThang_23110329.Forms
             this.btnLuu.Size = new System.Drawing.Size(80, 30);
             this.btnLuu.TabIndex = 3;
             this.btnLuu.Text = "Lưu";
+            this.btnLuu.Click += new System.EventHandler(this.btnLuu_Click);
             // 
             // btnHuy
             // 
@@ -308,6 +312,7 @@ namespace VuToanThang_23110329.Forms
             this.btnHuy.Size = new System.Drawing.Size(80, 30);
             this.btnHuy.TabIndex = 4;
             this.btnHuy.Text = "Hủy";
+            this.btnHuy.Click += new System.EventHandler(this.btnHuy_Click);
             // 
             // btnLamMoi
             // 
@@ -324,6 +329,7 @@ namespace VuToanThang_23110329.Forms
             this.btnLamMoi.Size = new System.Drawing.Size(80, 30);
             this.btnLamMoi.TabIndex = 5;
             this.btnLamMoi.Text = "Làm mới";
+            this.btnLamMoi.Click += new System.EventHandler(this.btnLamMoi_Click);
             // 
             // btnTaoLichTuan
             // 
@@ -339,6 +345,7 @@ namespace VuToanThang_23110329.Forms
             this.btnTaoLichTuan.Size = new System.Drawing.Size(100, 30);
             this.btnTaoLichTuan.TabIndex = 6;
             this.btnTaoLichTuan.Text = "Tạo lịch tuần";
+            this.btnTaoLichTuan.Click += new System.EventHandler(this.btnTaoLichTuan_Click);
             // 
             // pnlMain
             // 

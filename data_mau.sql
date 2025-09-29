@@ -20,15 +20,18 @@ USE QLNhanSuSieuThiMini;
 GO
 
 SET NOCOUNT ON;
-GO
 
 PRINT N'====================================================================';
 PRINT N'BẮT ĐẦU TẠO DỮ LIỆU MẪU - ' + CONVERT(NVARCHAR, GETDATE(), 120);
 PRINT N'====================================================================';
 
+SET XACT_ABORT ON;
 BEGIN TRAN;
 
--- TẮT TRIGGER
+-- TẮT TRIGGER (chỉ tắt trigger chặn khóa, giữ trigger tính công để tự động tính GioCong/DiTre/VeSom)
+ALTER TABLE dbo.LichPhanCa DISABLE TRIGGER tr_LichPhanCa_NoEditWhenKhoa;
+ALTER TABLE dbo.LichPhanCa DISABLE TRIGGER tr_LichPhanCa_BlockChangeWhenLocked;
+ALTER TABLE dbo.ChamCong DISABLE TRIGGER tr_ChamCong_BlockWhenLocked_U;
 ALTER TABLE dbo.ChamCong DISABLE TRIGGER tr_ChamCong_BlockWhenLocked_D;
 ALTER TABLE dbo.NhanVien DISABLE TRIGGER tr_NhanVien_ToggleAccount;
 
@@ -45,35 +48,35 @@ DBCC CHECKIDENT ('dbo.NhanVien', RESEED, 0); DBCC CHECKIDENT ('dbo.LichPhanCa', 
 DBCC CHECKIDENT ('dbo.ChamCong', RESEED, 0); DBCC CHECKIDENT ('dbo.DonTu', RESEED, 0);
 DBCC CHECKIDENT ('dbo.BangLuong', RESEED, 0);
 
--- BẬT LẠI TRIGGER
-ALTER TABLE dbo.ChamCong ENABLE TRIGGER tr_ChamCong_BlockWhenLocked_D;
-ALTER TABLE dbo.NhanVien ENABLE TRIGGER tr_NhanVien_ToggleAccount;
-
 -- TẠO DANH MỤC
 PRINT N'[2/7] Tạo danh mục...';
 INSERT INTO dbo.PhongBan (TenPhongBan, MoTa, KichHoat) VALUES 
 (N'Ban Giám đốc', N'Điều hành chung', 1), (N'Phòng Nhân sự', N'Quản lý nhân sự', 1),
 (N'Phòng Kế toán', N'Kế toán tài chính', 1), (N'Bộ phận Bán hàng', N'Bán hàng', 1),
 (N'Bộ phận Kho', N'Quản lý kho', 1), (N'Bộ phận Thu ngân', N'Thu ngân', 1);
+PRINT N'✓ Phòng ban: ' + CAST(@@ROWCOUNT AS NVARCHAR);
 
 INSERT INTO dbo.ChucVu (TenChucVu, MoTa, KichHoat) VALUES 
 (N'Giám đốc', N'Giám đốc điều hành', 1), (N'Trưởng phòng', N'Trưởng phòng', 1),
 (N'Nhân viên Nhân sự', N'NV nhân sự', 1), (N'Kế toán viên', N'NV kế toán', 1),
 (N'Nhân viên Bán hàng', N'NV bán hàng', 1), (N'Nhân viên Kho', N'NV kho', 1),
 (N'Nhân viên Thu ngân', N'NV thu ngân', 1);
+PRINT N'✓ Chức vụ: ' + CAST(@@ROWCOUNT AS NVARCHAR);
 
 INSERT INTO dbo.CaLam (TenCa, GioBatDau, GioKetThuc, HeSoCa, MoTa, KichHoat) VALUES 
 (N'Ca Sáng', '06:00', '14:00', 1.0, N'Ca sáng', 1),
 (N'Ca Chiều', '14:00', '22:00', 1.0, N'Ca chiều', 1),
 (N'Ca Đêm (Qua ngày)', '22:00', '06:00', 1.5, N'Ca qua đêm', 1),
 (N'Ca Hành chính', '08:00', '17:00', 1.0, N'Ca hành chính', 1);
+PRINT N'✓ Ca làm: ' + CAST(@@ROWCOUNT AS NVARCHAR);
 
 -- NGƯỜI DÙNG VÀ NHÂN VIÊN
 PRINT N'[3/7] Tạo người dùng và nhân viên...';
-INSERT INTO dbo.NguoiDung (TenDangNhap, MatKhau, VaiTro, KichHoat) VALUES
+INSERT INTO dbo.NguoiDung (TenDangNhap, MatKhauHash, VaiTro, KichHoat) VALUES
 ('giamdoc', '123', N'QuanLy', 1), ('hr_manager', '123', N'HR', 1), ('ketoan01', '123', N'KeToan', 1),
 ('nv_hr_01', '123', N'NhanVien', 1), ('nv_banhang_01', '123', N'NhanVien', 1), ('nv_banhang_02', '123', N'NhanVien', 1),
 ('nv_kho_01', '123', N'NhanVien', 1), ('nv_thungan_01', '123', N'NhanVien', 1), ('nv_nghiviec', '123', N'NhanVien', 0);
+PRINT N'✓ Người dùng: ' + CAST(@@ROWCOUNT AS NVARCHAR);
 
 INSERT INTO dbo.NhanVien (MaNguoiDung, HoTen, NgaySinh, GioiTinh, DienThoai, Email, DiaChi, NgayVaoLam, TrangThai, MaPhongBan, MaChucVu, LuongCoBan) VALUES
 (1, N'Nguyễn Văn An', '1980-05-20', N'Nam', '0901112221', 'giamdoc@minimart.com', N'123 Lê Lợi, Q1', '2020-01-15', N'DangLam', 1, 1, 50000000),
@@ -88,7 +91,8 @@ INSERT INTO dbo.NhanVien (MaNguoiDung, HoTen, NgaySinh, GioiTinh, DienThoai, Ema
 
 -- LỊCH PHÂN CA VÀ CHẤM CÔNG
 PRINT N'[4/7] Tạo lịch và chấm công tự động...';
-DECLARE @Start DATE = '2025-07-01', @Current DATE = @Start, @End DATE = GETDATE();
+DECLARE @Start DATE = '2025-07-01', @End DATE = GETDATE();
+DECLARE @Current DATE = @Start;
 DECLARE @CurMonth INT = MONTH(@End), @CurYear INT = YEAR(@End);
 DECLARE @CS INT = 1, @CC INT = 2, @CT INT = 3, @CH INT = 4;
 DECLARE @LC INT = 0, @CgC INT = 0;
@@ -140,13 +144,13 @@ PRINT N'✓ Lịch: ' + CAST(@LC AS NVARCHAR) + N', Chấm công: ' + CAST(@CgC 
 
 -- ĐƠN TỪ
 PRINT N'[5/7] Tạo đơn từ...';
-INSERT INTO dbo.DonTu (MaNV, Loai, TuLuc, DenLuc, SoGio, LyDo, TrangThai, DuyetBoi, NgayDuyet) VALUES
-(5, N'NGHI', '2025-07-15 06:00', '2025-07-15 14:00', 8, N'Việc gia đình', N'DaDuyet', 2, '2025-07-14 15:30'),
-(7, N'OT', '2025-08-10 22:00', '2025-08-11 01:00', 3, N'Kiểm kê kho gấp', N'DaDuyet', 1, '2025-08-10 10:00'),
-(8, N'NGHI', '2025-08-20 22:00', '2025-08-22 06:00', 16, N'Du lịch', N'TuChoi', 2, '2025-08-19 14:00'),
-(3, N'NGHI', CAST(CONVERT(VARCHAR(10), GETDATE(), 120) + ' 08:00' AS DATETIME), CAST(CONVERT(VARCHAR(10), GETDATE(), 120) + ' 12:00' AS DATETIME), 4, N'Đi khám bệnh', N'ChoDuyet', NULL, NULL),
-(4, N'NGHI', CAST(CONVERT(VARCHAR(10), GETDATE(), 120) + ' 13:00' AS DATETIME), CAST(CONVERT(VARCHAR(10), GETDATE(), 120) + ' 17:00' AS DATETIME), 4, N'Làm giấy tờ', N'ChoDuyet', NULL, NULL),
-(6, N'OT', '2025-09-24 22:00', '2025-09-25 00:00', 2, N'Hỗ trợ khuyến mãi đêm', N'DaDuyet', 1, '2025-09-24 16:00');
+INSERT INTO dbo.DonTu (MaNV, Loai, TuLuc, DenLuc, SoGio, LyDo, TrangThai, DuyetBoi) VALUES
+(5, N'NGHI', '2025-07-15 06:00', '2025-07-15 14:00', 8, N'Việc gia đình', N'DaDuyet', 2),
+(7, N'OT', '2025-08-10 22:00', '2025-08-11 01:00', 3, N'Kiểm kê kho gấp', N'DaDuyet', 1),
+(8, N'NGHI', '2025-08-20 22:00', '2025-08-22 06:00', 16, N'Du lịch', N'TuChoi', 2),
+(3, N'NGHI', CAST(CONVERT(VARCHAR(10), GETDATE(), 120) + ' 08:00' AS DATETIME), CAST(CONVERT(VARCHAR(10), GETDATE(), 120) + ' 12:00' AS DATETIME), 4, N'Đi khám bệnh', N'ChoDuyet', NULL),
+(4, N'NGHI', CAST(CONVERT(VARCHAR(10), GETDATE(), 120) + ' 13:00' AS DATETIME), CAST(CONVERT(VARCHAR(10), GETDATE(), 120) + ' 17:00' AS DATETIME), 4, N'Làm giấy tờ', N'ChoDuyet', NULL),
+(6, N'OT', '2025-09-24 22:00', '2025-09-25 00:00', 2, N'Hỗ trợ khuyến mãi đêm', N'DaDuyet', 1);
 
 -- KHÓA CÔNG VÀ TÍNH LƯƠNG
 PRINT N'[6/7] Khóa công và tính lương...';
@@ -165,12 +169,26 @@ END
 PRINT N'';
 PRINT N'[7/7] Thống kê:';
 PRINT N'─────────────────────────────────';
-PRINT N'Người dùng: ' + CAST((SELECT COUNT(*) FROM dbo.NguoiDung) AS NVARCHAR);
-PRINT N'Nhân viên: ' + CAST((SELECT COUNT(*) FROM dbo.NhanVien WHERE TrangThai = N'DangLam') AS NVARCHAR) + N'/9';
-PRINT N'Lịch phân ca: ' + CAST((SELECT COUNT(*) FROM dbo.LichPhanCa) AS NVARCHAR);
-PRINT N'Chấm công: ' + CAST((SELECT COUNT(*) FROM dbo.ChamCong) AS NVARCHAR);
-PRINT N'Đơn từ: ' + CAST((SELECT COUNT(*) FROM dbo.DonTu) AS NVARCHAR);
-PRINT N'Bảng lương: ' + CAST((SELECT COUNT(DISTINCT CAST(Nam AS NVARCHAR) + '-' + CAST(Thang AS NVARCHAR)) FROM dbo.BangLuong) AS NVARCHAR) + N' tháng';
+DECLARE @CNguoiDung INT, @CNhanVien INT, @CLich INT, @CChamCong INT, @CDonTu INT, @CBangLuong INT;
+SELECT @CNguoiDung = COUNT(*) FROM dbo.NguoiDung;
+SELECT @CNhanVien = COUNT(*) FROM dbo.NhanVien WHERE TrangThai = N'DangLam';
+SELECT @CLich = COUNT(*) FROM dbo.LichPhanCa;
+SELECT @CChamCong = COUNT(*) FROM dbo.ChamCong;
+SELECT @CDonTu = COUNT(*) FROM dbo.DonTu;
+SELECT @CBangLuong = COUNT(DISTINCT CAST(Nam AS NVARCHAR) + '-' + CAST(Thang AS NVARCHAR)) FROM dbo.BangLuong;
+PRINT N'Người dùng: ' + CAST(@CNguoiDung AS NVARCHAR);
+PRINT N'Nhân viên: ' + CAST(@CNhanVien AS NVARCHAR) + N'/9';
+PRINT N'Lịch phân ca: ' + CAST(@CLich AS NVARCHAR);
+PRINT N'Chấm công: ' + CAST(@CChamCong AS NVARCHAR);
+PRINT N'Đơn từ: ' + CAST(@CDonTu AS NVARCHAR);
+PRINT N'Bảng lương: ' + CAST(@CBangLuong AS NVARCHAR) + N' tháng';
+
+-- BẬT LẠI TRIGGER
+ALTER TABLE dbo.LichPhanCa ENABLE TRIGGER tr_LichPhanCa_NoEditWhenKhoa;
+ALTER TABLE dbo.LichPhanCa ENABLE TRIGGER tr_LichPhanCa_BlockChangeWhenLocked;
+ALTER TABLE dbo.ChamCong ENABLE TRIGGER tr_ChamCong_BlockWhenLocked_U;
+ALTER TABLE dbo.ChamCong ENABLE TRIGGER tr_ChamCong_BlockWhenLocked_D;
+ALTER TABLE dbo.NhanVien ENABLE TRIGGER tr_NhanVien_ToggleAccount;
 
 COMMIT TRAN;
 

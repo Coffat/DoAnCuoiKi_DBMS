@@ -1237,7 +1237,7 @@ BEGIN
     
     -- Kiểm tra mật khẩu cũ
     DECLARE @CurrentPassword NVARCHAR(128);
-    SELECT @CurrentPassword = MatKhau 
+    SELECT @CurrentPassword = MatKhauHash 
     FROM dbo.NguoiDung 
     WHERE MaNguoiDung = @MaNguoiDung;
     
@@ -1257,7 +1257,7 @@ BEGIN
     
     -- Cập nhật mật khẩu mới
     UPDATE dbo.NguoiDung 
-    SET MatKhau = @MatKhauMoi
+    SET MatKhauHash = @MatKhauMoi
     WHERE MaNguoiDung = @MaNguoiDung;
     
     COMMIT;

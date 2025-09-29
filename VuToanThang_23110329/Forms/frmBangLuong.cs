@@ -92,18 +92,28 @@ namespace VuToanThang_23110329.Forms
                     conn.Open();
                     string query = @"
                         SELECT 
-                            MaNV,
-                            HoTen,
-                            TenPhongBan,
-                            TenChucVu,
-                            ISNULL(LuongCoBan, 0) as LuongCoBan,
-                            ISNULL(TongGioCong, 0) as TongGioCong,
-                            ISNULL(SoNgayCong, 0) as SoNgayLam,
-                            ISNULL(TongDiTrePhut, 0) as TongDiTre,
-                            ISNULL(TongVeSomPhut, 0) as TongVeSom
-                        FROM dbo.vw_CongThang
-                        WHERE Nam = @Nam AND Thang = @Thang
-                        ORDER BY HoTen";
+                            nv.MaNV,
+                            nv.HoTen,
+                            ISNULL(pb.TenPhongBan, N'Chưa phân công') as TenPhongBan,
+                            ISNULL(cv.TenChucVu, N'Chưa phân công') as TenChucVu,
+                            ISNULL(nv.LuongCoBan, 0) as LuongCoBan,
+                            ISNULL(ct.TongGioCong, 0) as TongGioCong,
+                            (
+                                SELECT COUNT(DISTINCT cc.NgayLam)
+                                FROM dbo.ChamCong cc
+                                WHERE cc.MaNV = nv.MaNV 
+                                  AND YEAR(cc.NgayLam) = @Nam 
+                                  AND MONTH(cc.NgayLam) = @Thang
+                            ) as SoNgayLam,
+                            ISNULL(ct.TongPhutDiTre, 0) as TongDiTre,
+                            ISNULL(ct.TongPhutVeSom, 0) as TongVeSom
+                        FROM dbo.NhanVien nv
+                        LEFT JOIN dbo.PhongBan pb ON pb.MaPhongBan = nv.MaPhongBan
+                        LEFT JOIN dbo.ChucVu cv ON cv.MaChucVu = nv.MaChucVu
+                        LEFT JOIN dbo.vw_CongThang ct ON ct.MaNV = nv.MaNV 
+                            AND ct.Nam = @Nam AND ct.Thang = @Thang
+                        WHERE nv.TrangThai = N'DangLam'
+                        ORDER BY nv.HoTen";
                     
                     using (SqlCommand cmd = new SqlCommand(query, conn))
                     {
@@ -153,21 +163,24 @@ namespace VuToanThang_23110329.Forms
                     conn.Open();
                     string query = @"
                         SELECT 
-                            MaNV,
-                            HoTen,
-                            TenPhongBan,
-                            TenChucVu,
-                            ISNULL(LuongCoBan, 0) as LuongCoBan,
-                            ISNULL(TongGioCong, 0) as TongGioCong,
-                            ISNULL(LuongThucTe, 0) as LuongThucTe,
-                            ISNULL(BHXH, 0) as BHXH,
-                            ISNULL(BHYT, 0) as BHYT,
-                            ISNULL(BHTN, 0) as BHTN,
-                            ISNULL(ThueTNCN, 0) as ThueTNCN,
-                            ISNULL(LuongNhan, 0) as LuongNhan
-                        FROM dbo.vw_BangLuong_ChiTiet
-                        WHERE Nam = @Nam AND Thang = @Thang
-                        ORDER BY HoTen";
+                            bl.MaNV,
+                            nv.HoTen,
+                            ISNULL(pb.TenPhongBan, N'Chưa phân công') as TenPhongBan,
+                            ISNULL(cv.TenChucVu, N'Chưa phân công') as TenChucVu,
+                            ISNULL(bl.LuongCoBan, 0) as LuongCoBan,
+                            ISNULL(bl.TongGioCong, 0) as TongGioCong,
+                            ISNULL(bl.LuongThucTe, 0) as LuongThucTe,
+                            ISNULL(bl.BHXH, 0) as BHXH,
+                            ISNULL(bl.BHYT, 0) as BHYT,
+                            ISNULL(bl.BHTN, 0) as BHTN,
+                            ISNULL(bl.ThueTNCN, 0) as ThueTNCN,
+                            ISNULL(bl.LuongNhan, 0) as LuongNhan
+                        FROM dbo.BangLuong bl
+                        INNER JOIN dbo.NhanVien nv ON nv.MaNV = bl.MaNV
+                        LEFT JOIN dbo.PhongBan pb ON pb.MaPhongBan = nv.MaPhongBan
+                        LEFT JOIN dbo.ChucVu cv ON cv.MaChucVu = nv.MaChucVu
+                        WHERE bl.Nam = @Nam AND bl.Thang = @Thang
+                        ORDER BY nv.HoTen";
                     
                     using (SqlCommand cmd = new SqlCommand(query, conn))
                     {

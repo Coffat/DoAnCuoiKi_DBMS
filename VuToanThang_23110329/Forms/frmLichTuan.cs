@@ -21,10 +21,10 @@ namespace VuToanThang_23110329.Forms
 
         private void frmLichTuan_Load(object sender, EventArgs e)
         {
+            SetupDataGridView();      // ✅ Setup columns TRƯỚC
             InitializeWeek(DateTime.Today);
             LoadNhanVien();
-            SetupDataGridView();
-            LoadWeekSchedule();
+            LoadWeekSchedule();       // ✅ Load data SAU khi có columns
         }
 
         private void InitializeWeek(DateTime anyDate)
