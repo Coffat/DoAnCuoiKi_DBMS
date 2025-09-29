@@ -348,27 +348,4 @@ Dự án này được phát triển cho mục đích học tập và nghiên c�
 
 ---
 
-## 📦 Files quan trọng
-
-### **SQL Scripts (Chạy theo thứ tự)**
-1. `01_TaoDatabase.sql` - Tạo database, bảng, ràng buộc
-2. `02_ChucNang.sql` - Views và functions
-3. `03_StoredProcedures.sql` - 35+ stored procedures (bao gồm SPs cho thông tin cá nhân)
-4. `04_StoredProcedures_Advanced.sql` - SPs nâng cao (lịch phân ca, chấm công)
-5. `05_Security_Triggers.sql` - Triggers bảo mật
-6. `data_mau.sql` - **Dữ liệu mẫu tổng hợp đầy đủ** (9 nhân viên, lịch từ 7/2025-nay)
-
-### **Documentation**
-- `README.md` - Hướng dẫn tổng quan
-- `SETUP_PACKAGES.md` - Hướng dẫn cài đặt packages
-- `BAO_CAO_KIEM_TRA_FORMS.md` - Báo cáo kiểm tra và cải thiện forms
-- `HUONG_DAN_LICH_PHANCA.md` - Hướng dẫn sử dụng module lịch phân ca
-
-### **Application**
-- `VuToanThang_23110329.sln` - Solution Visual Studio
-- `VuToanThang_23110329/` - Mã nguồn ứng dụng WinForms
-
----
-
-*Cập nhật lần cuối: 30/09/2025*  
-*Phiên bản: 1.1 - Production Ready*
+*Cập nhật lần cuối: 19/09/2025*
