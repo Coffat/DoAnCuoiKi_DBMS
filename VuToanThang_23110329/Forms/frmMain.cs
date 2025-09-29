@@ -338,13 +338,33 @@ namespace VuToanThang_23110329.Forms
                         OpenFormInPanel(new frmPhanCa());
                         lblStatus.Text = "Đang xem lịch phân ca";
                         break;
-                    case "Ca làm việc":
-                        OpenFormInPanel(new frmCaLam(userRole));
-                        lblStatus.Text = "Đang quản lý ca làm việc";
-                        break;
-                    default:
-                        MessageBox.Show($"Mở chức năng: {functionName}", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                        break;
+                   case "Ca làm việc":
+                       OpenFormInPanel(new frmCaLam(userRole));
+                       lblStatus.Text = "Đang quản lý ca làm việc";
+                       break;
+                   case "Duyệt đơn từ":
+                       OpenFormInPanel(new frmDuyetDonTu());
+                       lblStatus.Text = "Đang duyệt đơn từ";
+                       break;
+                   case "Tạo đơn từ":
+                       OpenFormInPanel(new frmTaoDonTu());
+                       lblStatus.Text = "Đang tạo đơn từ";
+                       break;
+                   case "Thông tin cá nhân":
+                       OpenFormInPanel(new frmThongTinCaNhan());
+                       lblStatus.Text = "Đang xem thông tin cá nhân";
+                       break;
+                   case "Chấm công":
+                       OpenFormInPanel(new frmChamCong());
+                       lblStatus.Text = "Đang chấm công";
+                       break;
+                   case "Bảng lương":
+                       OpenFormInPanel(new frmBangLuong());
+                       lblStatus.Text = "Đang quản lý bảng lương";
+                       break;
+                   default:
+                       MessageBox.Show($"Mở chức năng: {functionName}", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                       break;
                 }
             }
         }
