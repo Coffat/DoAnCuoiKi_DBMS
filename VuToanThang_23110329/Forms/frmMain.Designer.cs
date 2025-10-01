@@ -187,7 +187,6 @@ namespace VuToanThang_23110329.Forms
             this.btnDashboard.TabIndex = 1;
             this.btnDashboard.Text = "📊 Tổng quan";
             this.btnDashboard.TextAlign = System.Windows.Forms.HorizontalAlignment.Left;
-            this.btnDashboard.Click += new System.EventHandler(this.btnDashboard_Click);
             // 
             // btnQuanLy
             // 
@@ -347,7 +346,6 @@ namespace VuToanThang_23110329.Forms
             this.btnBaoCao.TabIndex = 8;
             this.btnBaoCao.Text = "📊 Báo cáo";
             this.btnBaoCao.TextAlign = System.Windows.Forms.HorizontalAlignment.Left;
-            this.btnBaoCao.Click += new System.EventHandler(this.btnBaoCao_Click);
             // 
             // btnDangXuat
             // 
@@ -376,7 +374,6 @@ namespace VuToanThang_23110329.Forms
             this.pnlMain.Controls.Add(this.pnlHeader);
             this.pnlMain.Controls.Add(this.pnlSidebar);
             this.pnlSidebar.Controls.Add(this.pnlLogo);
-            this.pnlSidebar.Controls.Add(this.btnDashboard);
             this.pnlSidebar.Controls.Add(this.btnQuanLy);
             this.pnlSidebar.Controls.Add(this.btnDanhMuc);
             this.pnlSidebar.Controls.Add(this.btnCaLam);
@@ -384,7 +381,6 @@ namespace VuToanThang_23110329.Forms
             this.pnlSidebar.Controls.Add(this.btnTienLuong);
             this.pnlSidebar.Controls.Add(this.btnCaNhan);
             this.pnlSidebar.Controls.Add(this.btnChamCong);
-            this.pnlSidebar.Controls.Add(this.btnBaoCao);
             this.pnlSidebar.Controls.Add(this.btnDangXuat);
             this.pnlLogo.Controls.Add(this.lblLogo);
             this.pnlHeader.Controls.Add(this.lblUserInfo);

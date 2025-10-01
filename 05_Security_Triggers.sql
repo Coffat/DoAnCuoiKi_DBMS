@@ -69,22 +69,32 @@ CREATE ROLE r_nhanvien;
 PRINT N'Đã tạo lại các database roles: r_hr, r_quanly, r_ketoan, r_nhanvien';
 GO
 
-/* 2) DAC: Cấp quyền theo yêu cầu
-   HR: INSERT/UPDATE/DELETE NhanVien, LichPhanCa; EXEC các proc liên quan
-   Store Manager: SELECT LichPhanCa; UPDATE hạn chế ChamCong; (Duyệt đơn qua PROC)
-   Accountant: SELECT ChamCong/vw_CongThang; INSERT/UPDATE BangLuong; EXEC tính/chốt lương
-   Employee: INSERT DonTu; SELECT các bảng với quyền hạn chế
+/* 2) DAC: Cấp quyền theo yêu cầu - MÔ HÌNH BẢO MẬT NÂNG CAO
+   
+   NGUYÊN TẮC: Tất cả thao tác INSERT/UPDATE/DELETE phải đi qua Stored Procedures
+   Không cấp quyền trực tiếp trên bảng để đảm bảo:
+   - Business logic được thực thi nhất quán
+   - Validation được kiểm soát chặt chẽ
+   - Audit trail chính xác
+   - Bảo mật cao hơn
+   
+   CHỈ CẤP QUYỀN:
+   - SELECT trên views/tables cho mục đích xem và báo cáo
+   - EXECUTE trên Stored Procedures cho mọi thao tác thay đổi dữ liệu
 */
 
--- HR và QuanLy có quyền CRUD nhân viên
-GRANT SELECT, INSERT, UPDATE, DELETE ON dbo.NhanVien    TO r_hr;
-GRANT SELECT, INSERT, UPDATE, DELETE ON dbo.NhanVien    TO r_quanly;
-GRANT SELECT, INSERT, UPDATE, DELETE ON dbo.LichPhanCa  TO r_hr;
-GRANT SELECT               ON dbo.vw_CongThang          TO r_hr;
-GRANT SELECT               ON dbo.vw_Lich_ChamCong_Ngay TO r_hr;
--- Quyền thêm nhân viên mới (HR và QuanLy)
+-- HR: Quyền xem và thực thi procedures
+GRANT SELECT ON dbo.NhanVien    TO r_hr;
+GRANT SELECT ON dbo.LichPhanCa  TO r_hr;
+GRANT SELECT ON dbo.vw_CongThang          TO r_hr;
+GRANT SELECT ON dbo.vw_Lich_ChamCong_Ngay TO r_hr;
+-- Quyền thực thi procedures quản lý nhân viên (HR và QuanLy)
 GRANT EXECUTE ON dbo.sp_ThemMoiNhanVien  TO r_hr;
 GRANT EXECUTE ON dbo.sp_ThemMoiNhanVien  TO r_quanly;
+GRANT EXECUTE ON dbo.sp_TaoTaiKhoanDayDu TO r_hr;  -- Thêm quyền cho bảo mật 2 lớp
+GRANT EXECUTE ON dbo.sp_CapNhatTaiKhoanDayDu TO r_hr;
+GRANT EXECUTE ON dbo.sp_XoaTaiKhoanDayDu TO r_hr;
+GRANT EXECUTE ON dbo.sp_VoHieuHoaTaiKhoan TO r_hr;
 GRANT EXECUTE ON dbo.sp_DuyetDonTu       TO r_hr;
 GRANT EXECUTE ON dbo.sp_KhoaCongThang    TO r_hr;
 GRANT EXECUTE ON dbo.sp_MoKhoaCongThang  TO r_hr;
@@ -95,25 +105,34 @@ GRANT EXECUTE ON dbo.sp_CaLam_Insert TO r_hr;
 GRANT EXECUTE ON dbo.sp_CaLam_Update TO r_hr;
 GRANT EXECUTE ON dbo.sp_CaLam_Delete TO r_hr;
 
--- Store Manager (không UPDATE trực tiếp trạng thái DonTu)
+-- QuanLy: Quyền xem và thực thi procedures (KHÔNG cấp quyền UPDATE trực tiếp)
+GRANT SELECT ON dbo.NhanVien TO r_quanly;
 GRANT SELECT ON dbo.LichPhanCa TO r_quanly;
-GRANT UPDATE (GioVao, GioRa, GioCong, DiTrePhut, VeSomPhut) ON dbo.ChamCong TO r_quanly;
+GRANT SELECT ON dbo.ChamCong TO r_quanly;
 GRANT SELECT ON dbo.vw_Lich_ChamCong_Ngay TO r_quanly;
 GRANT EXECUTE ON dbo.sp_DuyetDonTu TO r_quanly; -- duyệt qua proc để đảm bảo side-effects
 
--- Accountant
+-- KeToan: Chỉ SELECT và EXECUTE procedures (KHÔNG cấp quyền INSERT/UPDATE trực tiếp)
 GRANT SELECT ON dbo.ChamCong TO r_ketoan;
 GRANT SELECT ON dbo.vw_CongThang TO r_ketoan;
-GRANT SELECT, INSERT, UPDATE ON dbo.BangLuong TO r_ketoan;
+GRANT SELECT ON dbo.BangLuong TO r_ketoan;
 GRANT EXECUTE ON dbo.sp_ChayBangLuong TO r_ketoan;
 GRANT EXECUTE ON dbo.sp_DongBangLuong TO r_ketoan;
 
--- Employee
-GRANT INSERT ON dbo.DonTu TO r_nhanvien;
+-- NhanVien: Chỉ SELECT và EXECUTE procedures (KHÔNG cấp quyền INSERT trực tiếp)
 GRANT SELECT ON dbo.LichPhanCa TO r_nhanvien;
 GRANT SELECT ON dbo.ChamCong   TO r_nhanvien;
 GRANT SELECT ON dbo.DonTu      TO r_nhanvien;
 GRANT SELECT ON dbo.BangLuong  TO r_nhanvien;
+GRANT EXECUTE ON dbo.sp_DonTu_Insert TO r_nhanvien;  -- Tạo đơn từ qua SP
+GRANT EXECUTE ON dbo.sp_CheckIn TO r_nhanvien;       -- Check in qua SP
+GRANT EXECUTE ON dbo.sp_CheckOut TO r_nhanvien;      -- Check out qua SP
+GO
+
+PRINT N'✅ ĐÃ CẤP QUYỀN THEO MÔ HÌNH BẢO MẬT NÂNG CAO';
+PRINT N'   - Tất cả thao tác thay đổi dữ liệu phải qua Stored Procedures';
+PRINT N'   - Chỉ cấp quyền SELECT trực tiếp cho mục đích xem/báo cáo';
+PRINT N'';
 GO
 
 ------------------------------------------------------------
@@ -306,35 +325,6 @@ BEGIN
         ROLLBACK TRANSACTION;
         RETURN;
     END
-END
-GO
-
--- 6) NHANVIEN: Đồng bộ kích hoạt tài khoản theo trạng thái NV
-IF OBJECT_ID('dbo.tr_NhanVien_ToggleAccount','TR') IS NOT NULL DROP TRIGGER dbo.tr_NhanVien_ToggleAccount;
-GO
-CREATE TRIGGER dbo.tr_NhanVien_ToggleAccount
-ON dbo.NhanVien
-AFTER UPDATE
-AS
-BEGIN
-    SET NOCOUNT ON;
-    IF TRY_CONVERT(INT, SESSION_CONTEXT(N'SkipTrigger')) = 1 RETURN;
-
-    -- Khóa tài khoản khi NV nghỉ
-    UPDATE nd
-    SET nd.KichHoat = 0
-    FROM dbo.NguoiDung nd
-    JOIN inserted i   ON i.MaNguoiDung = nd.MaNguoiDung
-    JOIN deleted  d   ON d.MaNV = i.MaNV
-    WHERE i.TrangThai = N'Nghi' AND d.TrangThai <> N'Nghi' AND i.MaNguoiDung IS NOT NULL;
-
-    -- Mở tài khoản lại khi NV quay về Đang làm
-    UPDATE nd
-    SET nd.KichHoat = 1
-    FROM dbo.NguoiDung nd
-    JOIN inserted i   ON i.MaNguoiDung = nd.MaNguoiDung
-    JOIN deleted  d   ON d.MaNV = i.MaNV
-    WHERE i.TrangThai = N'DangLam' AND d.TrangThai <> N'DangLam' AND i.MaNguoiDung IS NOT NULL;
 END
 GO
 

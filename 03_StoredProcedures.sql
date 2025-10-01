@@ -821,200 +821,10 @@ END
 GO
 
 ------------------------------------------------------------
--- 9) CRUD PHÒNG BAN
+-- 9) CRUD ĐƠN TỪ
 ------------------------------------------------------------
 
--- 9.1) GetAll PhongBan
-IF OBJECT_ID('dbo.sp_PhongBan_GetAll','P') IS NOT NULL DROP PROCEDURE dbo.sp_PhongBan_GetAll;
-GO
-CREATE PROCEDURE dbo.sp_PhongBan_GetAll
-AS
-BEGIN
-    SET NOCOUNT ON;
-    SELECT MaPhongBan, TenPhongBan, MoTa, KichHoat 
-    FROM dbo.PhongBan 
-    ORDER BY TenPhongBan;
-END
-GO
-
--- 9.2) Insert PhongBan
-IF OBJECT_ID('dbo.sp_PhongBan_Insert','P') IS NOT NULL DROP PROCEDURE dbo.sp_PhongBan_Insert;
-GO
-CREATE PROCEDURE dbo.sp_PhongBan_Insert
-    @TenPhongBan NVARCHAR(100),
-    @MoTa NVARCHAR(255) = NULL
-AS
-BEGIN
-    SET NOCOUNT ON;
-    SET XACT_ABORT ON;
-    
-    IF EXISTS (SELECT 1 FROM dbo.PhongBan WHERE TenPhongBan = @TenPhongBan)
-    BEGIN
-        RAISERROR(N'Tên phòng ban đã tồn tại.', 16, 1);
-        RETURN;
-    END
-    
-    BEGIN TRAN;
-    INSERT INTO dbo.PhongBan (TenPhongBan, MoTa, KichHoat)
-    VALUES (@TenPhongBan, @MoTa, 1);
-    COMMIT;
-END
-GO
-
--- 9.3) Update PhongBan
-IF OBJECT_ID('dbo.sp_PhongBan_Update','P') IS NOT NULL DROP PROCEDURE dbo.sp_PhongBan_Update;
-GO
-CREATE PROCEDURE dbo.sp_PhongBan_Update
-    @MaPhongBan INT,
-    @TenPhongBan NVARCHAR(100),
-    @MoTa NVARCHAR(255) = NULL
-AS
-BEGIN
-    SET NOCOUNT ON;
-    SET XACT_ABORT ON;
-    
-    IF NOT EXISTS (SELECT 1 FROM dbo.PhongBan WHERE MaPhongBan = @MaPhongBan)
-    BEGIN
-        RAISERROR(N'Phòng ban không tồn tại.', 16, 1);
-        RETURN;
-    END
-    
-    IF EXISTS (SELECT 1 FROM dbo.PhongBan WHERE TenPhongBan = @TenPhongBan AND MaPhongBan <> @MaPhongBan)
-    BEGIN
-        RAISERROR(N'Tên phòng ban đã tồn tại.', 16, 1);
-        RETURN;
-    END
-    
-    BEGIN TRAN;
-    UPDATE dbo.PhongBan
-    SET TenPhongBan = @TenPhongBan, MoTa = @MoTa
-    WHERE MaPhongBan = @MaPhongBan;
-    COMMIT;
-END
-GO
-
--- 9.4) Delete PhongBan
-IF OBJECT_ID('dbo.sp_PhongBan_Delete','P') IS NOT NULL DROP PROCEDURE dbo.sp_PhongBan_Delete;
-GO
-CREATE PROCEDURE dbo.sp_PhongBan_Delete
-    @MaPhongBan INT
-AS
-BEGIN
-    SET NOCOUNT ON;
-    SET XACT_ABORT ON;
-    
-    IF EXISTS (SELECT 1 FROM dbo.NhanVien WHERE MaPhongBan = @MaPhongBan)
-    BEGIN
-        RAISERROR(N'Không thể xóa phòng ban đang có nhân viên.', 16, 1);
-        RETURN;
-    END
-    
-    BEGIN TRAN;
-    DELETE FROM dbo.PhongBan WHERE MaPhongBan = @MaPhongBan;
-    COMMIT;
-END
-GO
-
-------------------------------------------------------------
--- 10) CRUD CHỨC VỤ
-------------------------------------------------------------
-
--- 10.1) GetAll ChucVu
-IF OBJECT_ID('dbo.sp_ChucVu_GetAll','P') IS NOT NULL DROP PROCEDURE dbo.sp_ChucVu_GetAll;
-GO
-CREATE PROCEDURE dbo.sp_ChucVu_GetAll
-AS
-BEGIN
-    SET NOCOUNT ON;
-    SELECT MaChucVu, TenChucVu, MoTa, KichHoat 
-    FROM dbo.ChucVu 
-    ORDER BY TenChucVu;
-END
-GO
-
--- 10.2) Insert ChucVu
-IF OBJECT_ID('dbo.sp_ChucVu_Insert','P') IS NOT NULL DROP PROCEDURE dbo.sp_ChucVu_Insert;
-GO
-CREATE PROCEDURE dbo.sp_ChucVu_Insert
-    @TenChucVu NVARCHAR(100),
-    @MoTa NVARCHAR(255) = NULL
-AS
-BEGIN
-    SET NOCOUNT ON;
-    SET XACT_ABORT ON;
-    
-    IF EXISTS (SELECT 1 FROM dbo.ChucVu WHERE TenChucVu = @TenChucVu)
-    BEGIN
-        RAISERROR(N'Tên chức vụ đã tồn tại.', 16, 1);
-        RETURN;
-    END
-    
-    BEGIN TRAN;
-    INSERT INTO dbo.ChucVu (TenChucVu, MoTa, KichHoat)
-    VALUES (@TenChucVu, @MoTa, 1);
-    COMMIT;
-END
-GO
-
--- 10.3) Update ChucVu
-IF OBJECT_ID('dbo.sp_ChucVu_Update','P') IS NOT NULL DROP PROCEDURE dbo.sp_ChucVu_Update;
-GO
-CREATE PROCEDURE dbo.sp_ChucVu_Update
-    @MaChucVu INT,
-    @TenChucVu NVARCHAR(100),
-    @MoTa NVARCHAR(255) = NULL
-AS
-BEGIN
-    SET NOCOUNT ON;
-    SET XACT_ABORT ON;
-    
-    IF NOT EXISTS (SELECT 1 FROM dbo.ChucVu WHERE MaChucVu = @MaChucVu)
-    BEGIN
-        RAISERROR(N'Chức vụ không tồn tại.', 16, 1);
-        RETURN;
-    END
-    
-    IF EXISTS (SELECT 1 FROM dbo.ChucVu WHERE TenChucVu = @TenChucVu AND MaChucVu <> @MaChucVu)
-    BEGIN
-        RAISERROR(N'Tên chức vụ đã tồn tại.', 16, 1);
-        RETURN;
-    END
-    
-    BEGIN TRAN;
-    UPDATE dbo.ChucVu
-    SET TenChucVu = @TenChucVu, MoTa = @MoTa
-    WHERE MaChucVu = @MaChucVu;
-    COMMIT;
-END
-GO
-
--- 10.4) Delete ChucVu
-IF OBJECT_ID('dbo.sp_ChucVu_Delete','P') IS NOT NULL DROP PROCEDURE dbo.sp_ChucVu_Delete;
-GO
-CREATE PROCEDURE dbo.sp_ChucVu_Delete
-    @MaChucVu INT
-AS
-BEGIN
-    SET NOCOUNT ON;
-    SET XACT_ABORT ON;
-    
-    IF EXISTS (SELECT 1 FROM dbo.NhanVien WHERE MaChucVu = @MaChucVu)
-    BEGIN
-        RAISERROR(N'Không thể xóa chức vụ đang có nhân viên.', 16, 1);
-        RETURN;
-    END
-    
-    BEGIN TRAN;
-    DELETE FROM dbo.ChucVu WHERE MaChucVu = @MaChucVu;
-    COMMIT;
-END
-GO
-
-------------------------------------------------------------
--- 11) CRUD ĐƠN TỪ
-------------------------------------------------------------
-
--- 11.1) Insert DonTu
+-- 9.1) Insert DonTu
 IF OBJECT_ID('dbo.sp_DonTu_Insert','P') IS NOT NULL DROP PROCEDURE dbo.sp_DonTu_Insert;
 GO
 CREATE PROCEDURE dbo.sp_DonTu_Insert
@@ -1064,10 +874,10 @@ END
 GO
 
 ------------------------------------------------------------
--- 12) NHÂN VIÊN BỔ SUNG
+-- 10) NHÂN VIÊN BỔ SUNG
 ------------------------------------------------------------
 
--- 12.1) Delete NhanVien
+-- 10.1) Delete NhanVien
 IF OBJECT_ID('dbo.sp_NhanVien_Delete','P') IS NOT NULL DROP PROCEDURE dbo.sp_NhanVien_Delete;
 GO
 CREATE PROCEDURE dbo.sp_NhanVien_Delete
@@ -1092,7 +902,7 @@ BEGIN
 END
 GO
 
--- 12.2) Update TrangThai NhanVien
+-- 10.2) Update TrangThai NhanVien
 IF OBJECT_ID('dbo.sp_NhanVien_UpdateTrangThai','P') IS NOT NULL DROP PROCEDURE dbo.sp_NhanVien_UpdateTrangThai;
 GO
 CREATE PROCEDURE dbo.sp_NhanVien_UpdateTrangThai
@@ -1209,6 +1019,14 @@ END
 GO
 
 -- 13.3) Đổi mật khẩu
+-- ⚠️ CẢNH BÁO: SP này CHỈ cập nhật mật khẩu trong bảng NguoiDung
+-- Không đồng bộ với SQL Server Login trong mô hình bảo mật 2 lớp
+-- 
+-- ✅ KHUYẾN NGHỊ: Sử dụng sp_CapNhatTaiKhoanDayDu (trong 04_StoredProcedures_Advanced.sql)
+-- để đảm bảo đồng bộ mật khẩu cho cả SQL Login và bảng NguoiDung
+-- 
+-- SP này CHỈ nên dùng cho các mục đích quản trị nội bộ đặc biệt
+-- hoặc các tài khoản không có SQL Login tương ứng
 IF OBJECT_ID('dbo.sp_NguoiDung_DoiMatKhau','P') IS NOT NULL DROP PROCEDURE dbo.sp_NguoiDung_DoiMatKhau;
 GO
 CREATE PROCEDURE dbo.sp_NguoiDung_DoiMatKhau
@@ -1255,10 +1073,13 @@ BEGIN
         RETURN;
     END
     
-    -- Cập nhật mật khẩu mới
+    -- ⚠️ CẢNH BÁO: Chỉ cập nhật mật khẩu trong bảng NguoiDung
+    -- KHÔNG cập nhật SQL Server Login password
     UPDATE dbo.NguoiDung 
     SET MatKhauHash = @MatKhauMoi
     WHERE MaNguoiDung = @MaNguoiDung;
+    
+    PRINT N'⚠️ LƯU Ý: Chỉ cập nhật mật khẩu trong bảng NguoiDung. SQL Login không thay đổi!';
     
     COMMIT;
 END

@@ -29,6 +29,7 @@ namespace VuToanThang_23110329
 
         /// <summary>
         /// Xóa thông tin người dùng khi đăng xuất
+        /// Đồng thời xóa chuỗi kết nối động trong GlobalState
         /// </summary>
         public static void Clear()
         {
@@ -38,6 +39,9 @@ namespace VuToanThang_23110329
             HoTen = string.Empty;
             VaiTro = string.Empty;
             IsLoggedIn = false;
+            
+            // Xóa chuỗi kết nối động để bảo mật
+            GlobalState.Clear();
         }
     }
 }

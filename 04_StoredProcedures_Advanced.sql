@@ -660,7 +660,373 @@ BEGIN
 END
 GO
 
+------------------------------------------------------------
+-- 12) QUẢN LÝ TÀI KHOẢN 2 LỚP (SQL SERVER LOGIN + DATABASE USER)
+------------------------------------------------------------
+
+/*
+   MÔ HÌNH BẢO MẬT 2 LỚP:
+   - Lớp 1: Tài khoản trong bảng NguoiDung (application level)
+   - Lớp 2: SQL Server Login + Database User (database level)
+   
+   Mỗi tài khoản sẽ có:
+   1. Bản ghi trong bảng NguoiDung
+   2. SQL Server Login để xác thực
+   3. Database User ánh xạ với Login
+   4. Role membership tương ứng với vai trò
+*/
+
+-- 12.1) TẠO TÀI KHOẢN ĐẦY ĐỦ (Application + SQL Server Level)
+IF OBJECT_ID('dbo.sp_TaoTaiKhoanDayDu','P') IS NOT NULL DROP PROCEDURE dbo.sp_TaoTaiKhoanDayDu;
+GO
+CREATE PROCEDURE dbo.sp_TaoTaiKhoanDayDu
+    -- Các tham số cho bảng NhanVien
+    @HoTen NVARCHAR(120),
+    @NgaySinh DATE = NULL,
+    @GioiTinh NVARCHAR(10) = NULL,
+    @DienThoai NVARCHAR(20) = NULL,
+    @Email NVARCHAR(120) = NULL,
+    @DiaChi NVARCHAR(255) = NULL,
+    @NgayVaoLam DATE = NULL,
+    @MaPhongBan INT = NULL,
+    @MaChucVu INT = NULL,
+    @LuongCoBan DECIMAL(12,2),
+    -- Các tham số cho tài khoản
+    @TenDangNhap NVARCHAR(50),
+    @MatKhau NVARCHAR(200),  -- Nhận mật khẩu gốc, chưa mã hóa
+    @VaiTro NVARCHAR(20),
+    @MaNV_OUT INT OUTPUT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET XACT_ABORT ON;
+
+    BEGIN TRY
+        BEGIN TRAN;
+
+        DECLARE @SqlCmd NVARCHAR(MAX);
+        DECLARE @HashedPassword VARBINARY(32) = HASHBYTES('SHA2_256', @MatKhau);
+        DECLARE @MaNV_Temp INT;
+
+        -- BƯỚC 1: Kiểm tra tên đăng nhập đã tồn tại chưa
+        IF EXISTS (SELECT 1 FROM dbo.NguoiDung WHERE TenDangNhap = @TenDangNhap)
+        BEGIN
+            RAISERROR(N'Tên đăng nhập đã tồn tại trong bảng NguoiDung.', 16, 1);
+            RETURN;
+        END
+
+        -- Kiểm tra SQL Login đã tồn tại chưa
+        IF EXISTS (SELECT 1 FROM sys.server_principals WHERE name = @TenDangNhap AND type = 'S')
+        BEGIN
+            RAISERROR(N'Tên đăng nhập đã tồn tại trong SQL Server.', 16, 1);
+            RETURN;
+        END
+
+        -- BƯỚC 2: Thêm nhân viên và người dùng vào các bảng
+        EXEC dbo.sp_ThemMoiNhanVien
+            @HoTen = @HoTen,
+            @NgaySinh = @NgaySinh,
+            @GioiTinh = @GioiTinh,
+            @DienThoai = @DienThoai,
+            @Email = @Email,
+            @DiaChi = @DiaChi,
+            @NgayVaoLam = @NgayVaoLam,
+            @MaPhongBan = @MaPhongBan,
+            @MaChucVu = @MaChucVu,
+            @LuongCoBan = @LuongCoBan,
+            @TaoTaiKhoan = 1,
+            @TenDangNhap = @TenDangNhap,
+            @MatKhauHash = @HashedPassword,
+            @VaiTro = @VaiTro,
+            @MaNV_OUT = @MaNV_Temp OUTPUT;
+
+        SET @MaNV_OUT = @MaNV_Temp;
+
+        -- BƯỚC 3: Tạo SQL Login cho người dùng mới
+        SET @SqlCmd = N'CREATE LOGIN ' + QUOTENAME(@TenDangNhap) + 
+                      N' WITH PASSWORD = ' + QUOTENAME(@MatKhau, '''') + 
+                      N', DEFAULT_DATABASE = QLNhanSuSieuThiMini, CHECK_POLICY = OFF';
+        EXEC sp_executesql @SqlCmd;
+
+        -- BƯỚC 4: Tạo Database User và ánh xạ với Login vừa tạo
+        SET @SqlCmd = N'USE QLNhanSuSieuThiMini; CREATE USER ' + QUOTENAME(@TenDangNhap) + 
+                      N' FOR LOGIN ' + QUOTENAME(@TenDangNhap);
+        EXEC sp_executesql @SqlCmd;
+
+        -- BƯỚC 5: Thêm User vào Role tương ứng
+        DECLARE @RoleName SYSNAME = 
+            CASE @VaiTro
+                WHEN N'HR' THEN N'r_hr'
+                WHEN N'QuanLy' THEN N'r_quanly'
+                WHEN N'KeToan' THEN N'r_ketoan'
+                ELSE N'r_nhanvien'
+            END;
+        
+        SET @SqlCmd = N'ALTER ROLE ' + QUOTENAME(@RoleName) + N' ADD MEMBER ' + QUOTENAME(@TenDangNhap);
+        EXEC sp_executesql @SqlCmd;
+
+        COMMIT;
+        
+        PRINT N'Đã tạo tài khoản đầy đủ cho: ' + @TenDangNhap + N' (Vai trò: ' + @VaiTro + N')';
+    END TRY
+    BEGIN CATCH
+        IF @@TRANCOUNT > 0 ROLLBACK;
+        
+        DECLARE @ErrorMsg NVARCHAR(4000) = ERROR_MESSAGE();
+        DECLARE @ErrorSeverity INT = ERROR_SEVERITY();
+        DECLARE @ErrorState INT = ERROR_STATE();
+        
+        RAISERROR(@ErrorMsg, @ErrorSeverity, @ErrorState);
+    END CATCH
+END
+GO
+
+-- 12.2) CẬP NHẬT TÀI KHOẢN ĐẦY ĐỦ
+IF OBJECT_ID('dbo.sp_CapNhatTaiKhoanDayDu','P') IS NOT NULL DROP PROCEDURE dbo.sp_CapNhatTaiKhoanDayDu;
+GO
+CREATE PROCEDURE dbo.sp_CapNhatTaiKhoanDayDu
+    @MaNV INT,
+    @HoTen NVARCHAR(120),
+    @NgaySinh DATE = NULL,
+    @GioiTinh NVARCHAR(10) = NULL,
+    @DienThoai NVARCHAR(20) = NULL,
+    @Email NVARCHAR(120) = NULL,
+    @DiaChi NVARCHAR(255) = NULL,
+    @MaPhongBan INT = NULL,
+    @MaChucVu INT = NULL,
+    @LuongCoBan DECIMAL(12,2),
+    @VaiTro NVARCHAR(20),
+    @MatKhauMoi NVARCHAR(200) = NULL  -- Để NULL nếu không muốn đổi mật khẩu
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET XACT_ABORT ON;
+
+    BEGIN TRY
+        DECLARE @TenDangNhap NVARCHAR(50), @VaiTroCu NVARCHAR(20), @MaNguoiDung INT;
+        
+        SELECT @TenDangNhap = nd.TenDangNhap, @VaiTroCu = nd.VaiTro, @MaNguoiDung = nd.MaNguoiDung
+        FROM dbo.NhanVien nv 
+        JOIN dbo.NguoiDung nd ON nv.MaNguoiDung = nd.MaNguoiDung
+        WHERE nv.MaNV = @MaNV;
+
+        IF @TenDangNhap IS NULL
+        BEGIN
+            RAISERROR(N'Không tìm thấy tài khoản cho nhân viên này.', 16, 1);
+            RETURN;
+        END
+
+        BEGIN TRAN;
+
+        -- BƯỚC 1: Cập nhật thông tin trong bảng NhanVien
+        UPDATE dbo.NhanVien
+        SET HoTen = @HoTen,
+            NgaySinh = @NgaySinh,
+            GioiTinh = @GioiTinh,
+            DienThoai = @DienThoai,
+            Email = @Email,
+            DiaChi = @DiaChi,
+            MaPhongBan = @MaPhongBan,
+            MaChucVu = @MaChucVu,
+            LuongCoBan = @LuongCoBan
+        WHERE MaNV = @MaNV;
+
+        -- Cập nhật vai trò trong bảng NguoiDung
+        UPDATE dbo.NguoiDung
+        SET VaiTro = @VaiTro
+        WHERE MaNguoiDung = @MaNguoiDung;
+
+        -- BƯỚC 2: Nếu có mật khẩu mới, cập nhật mật khẩu
+        IF @MatKhauMoi IS NOT NULL AND LTRIM(RTRIM(@MatKhauMoi)) <> ''
+        BEGIN
+            DECLARE @SqlCmd NVARCHAR(MAX);
+            
+            -- Cập nhật SQL Login password
+            SET @SqlCmd = N'ALTER LOGIN ' + QUOTENAME(@TenDangNhap) + 
+                          N' WITH PASSWORD = ' + QUOTENAME(@MatKhauMoi, '''');
+            EXEC sp_executesql @SqlCmd;
+            
+            -- Cập nhật hash trong bảng NguoiDung
+            UPDATE dbo.NguoiDung 
+            SET MatKhauHash = HASHBYTES('SHA2_256', @MatKhauMoi) 
+            WHERE MaNguoiDung = @MaNguoiDung;
+        END
+
+        -- BƯỚC 3: Nếu vai trò thay đổi, cập nhật Role membership
+        IF @VaiTroCu <> @VaiTro
+        BEGIN
+            DECLARE @RoleCu SYSNAME = 
+                CASE @VaiTroCu
+                    WHEN N'HR' THEN N'r_hr'
+                    WHEN N'QuanLy' THEN N'r_quanly'
+                    WHEN N'KeToan' THEN N'r_ketoan'
+                    ELSE N'r_nhanvien'
+                END;
+                
+            DECLARE @RoleMoi SYSNAME = 
+                CASE @VaiTro
+                    WHEN N'HR' THEN N'r_hr'
+                    WHEN N'QuanLy' THEN N'r_quanly'
+                    WHEN N'KeToan' THEN N'r_ketoan'
+                    ELSE N'r_nhanvien'
+                END;
+
+            -- Xóa khỏi role cũ
+            SET @SqlCmd = N'ALTER ROLE ' + QUOTENAME(@RoleCu) + N' DROP MEMBER ' + QUOTENAME(@TenDangNhap);
+            EXEC sp_executesql @SqlCmd;
+            
+            -- Thêm vào role mới
+            SET @SqlCmd = N'ALTER ROLE ' + QUOTENAME(@RoleMoi) + N' ADD MEMBER ' + QUOTENAME(@TenDangNhap);
+            EXEC sp_executesql @SqlCmd;
+            
+            PRINT N'Đã chuyển vai trò từ ' + @VaiTroCu + N' sang ' + @VaiTro + N' cho: ' + @TenDangNhap;
+        END
+
+        COMMIT;
+    END TRY
+    BEGIN CATCH
+        IF @@TRANCOUNT > 0 ROLLBACK;
+        
+        DECLARE @ErrorMsg NVARCHAR(4000) = ERROR_MESSAGE();
+        DECLARE @ErrorSeverity INT = ERROR_SEVERITY();
+        DECLARE @ErrorState INT = ERROR_STATE();
+        
+        RAISERROR(@ErrorMsg, @ErrorSeverity, @ErrorState);
+    END CATCH
+END
+GO
+
+-- 12.3) XÓA TÀI KHOẢN ĐẦY ĐỦ
+IF OBJECT_ID('dbo.sp_XoaTaiKhoanDayDu','P') IS NOT NULL DROP PROCEDURE dbo.sp_XoaTaiKhoanDayDu;
+GO
+CREATE PROCEDURE dbo.sp_XoaTaiKhoanDayDu
+    @MaNV INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET XACT_ABORT ON;
+
+    BEGIN TRY
+        DECLARE @TenDangNhap NVARCHAR(50), @MaNguoiDung INT;
+        
+        SELECT @TenDangNhap = nd.TenDangNhap, @MaNguoiDung = nv.MaNguoiDung
+        FROM dbo.NhanVien nv 
+        JOIN dbo.NguoiDung nd ON nv.MaNguoiDung = nd.MaNguoiDung
+        WHERE nv.MaNV = @MaNV;
+
+        IF @TenDangNhap IS NULL
+        BEGIN
+            RAISERROR(N'Không tìm thấy tài khoản để xóa.', 16, 1);
+            RETURN;
+        END
+
+        BEGIN TRAN;
+
+        DECLARE @SqlCmd NVARCHAR(MAX);
+
+        -- BƯỚC 1: Xóa Database User (phải xóa trước Login)
+        SET @SqlCmd = N'IF EXISTS (SELECT 1 FROM sys.database_principals WHERE name = ''' + 
+                      @TenDangNhap + ''' AND type = ''S'') ' +
+                      N'DROP USER ' + QUOTENAME(@TenDangNhap);
+        EXEC sp_executesql @SqlCmd;
+
+        -- BƯỚC 2: Xóa SQL Login
+        SET @SqlCmd = N'IF EXISTS (SELECT 1 FROM sys.server_principals WHERE name = ''' + 
+                      @TenDangNhap + ''' AND type = ''S'') ' +
+                      N'DROP LOGIN ' + QUOTENAME(@TenDangNhap);
+        EXEC sp_executesql @SqlCmd;
+        
+        -- BƯỚC 3: Xóa dữ liệu trong các bảng (CASCADE sẽ tự động xử lý)
+        DELETE FROM dbo.NhanVien WHERE MaNV = @MaNV;
+        DELETE FROM dbo.NguoiDung WHERE MaNguoiDung = @MaNguoiDung;
+
+        COMMIT;
+        
+        PRINT N'Đã xóa hoàn toàn tài khoản: ' + @TenDangNhap;
+    END TRY
+    BEGIN CATCH
+        IF @@TRANCOUNT > 0 ROLLBACK;
+        
+        DECLARE @ErrorMsg NVARCHAR(4000) = ERROR_MESSAGE();
+        DECLARE @ErrorSeverity INT = ERROR_SEVERITY();
+        DECLARE @ErrorState INT = ERROR_STATE();
+        
+        RAISERROR(@ErrorMsg, @ErrorSeverity, @ErrorState);
+    END CATCH
+END
+GO
+
+-- 12.4) VÔ HIỆU HÓA/KÍCH HOẠT TÀI KHOẢN (DISABLE/ENABLE LOGIN)
+IF OBJECT_ID('dbo.sp_VoHieuHoaTaiKhoan','P') IS NOT NULL DROP PROCEDURE dbo.sp_VoHieuHoaTaiKhoan;
+GO
+CREATE PROCEDURE dbo.sp_VoHieuHoaTaiKhoan
+    @MaNV INT,
+    @KichHoat BIT  -- 1 = Enable, 0 = Disable
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET XACT_ABORT ON;
+
+    BEGIN TRY
+        DECLARE @TenDangNhap NVARCHAR(50), @MaNguoiDung INT;
+        
+        SELECT @TenDangNhap = nd.TenDangNhap, @MaNguoiDung = nd.MaNguoiDung
+        FROM dbo.NhanVien nv 
+        JOIN dbo.NguoiDung nd ON nv.MaNguoiDung = nd.MaNguoiDung
+        WHERE nv.MaNV = @MaNV;
+
+        IF @TenDangNhap IS NULL
+        BEGIN
+            RAISERROR(N'Không tìm thấy tài khoản.', 16, 1);
+            RETURN;
+        END
+
+        BEGIN TRAN;
+
+        -- Cập nhật trạng thái trong bảng NguoiDung
+        UPDATE dbo.NguoiDung
+        SET KichHoat = @KichHoat
+        WHERE MaNguoiDung = @MaNguoiDung;
+
+        -- Enable/Disable SQL Login
+        DECLARE @SqlCmd NVARCHAR(MAX);
+        IF @KichHoat = 1
+        BEGIN
+            SET @SqlCmd = N'ALTER LOGIN ' + QUOTENAME(@TenDangNhap) + N' ENABLE';
+            PRINT N'Đã kích hoạt tài khoản: ' + @TenDangNhap;
+        END
+        ELSE
+        BEGIN
+            SET @SqlCmd = N'ALTER LOGIN ' + QUOTENAME(@TenDangNhap) + N' DISABLE';
+            PRINT N'Đã vô hiệu hóa tài khoản: ' + @TenDangNhap;
+        END
+        
+        EXEC sp_executesql @SqlCmd;
+
+        COMMIT;
+    END TRY
+    BEGIN CATCH
+        IF @@TRANCOUNT > 0 ROLLBACK;
+        
+        DECLARE @ErrorMsg NVARCHAR(4000) = ERROR_MESSAGE();
+        DECLARE @ErrorSeverity INT = ERROR_SEVERITY();
+        DECLARE @ErrorState INT = ERROR_STATE();
+        
+        RAISERROR(@ErrorMsg, @ErrorSeverity, @ErrorState);
+    END CATCH
+END
+GO
+
+PRINT N'';
 PRINT N'=== HOÀN TẤT TẠO STORED PROCEDURES NÂNG CAO ===';
 PRINT N'=== ĐÃ THÊM STORED PROCEDURES CHECK IN/CHECK OUT ===';
 PRINT N'=== ĐÃ THÊM STORED PROCEDURES QUẢN LÝ LỊCH TUẦN ===';
+PRINT N'=== ĐÃ THÊM STORED PROCEDURES QUẢN LÝ TÀI KHOẢN 2 LỚP ===';
+PRINT N'';
+PRINT N'Stored Procedures Quản Lý Tài Khoản 2 Lớp:';
+PRINT N'  - sp_TaoTaiKhoanDayDu: Tạo tài khoản (App + SQL Login + User + Role)';
+PRINT N'  - sp_CapNhatTaiKhoanDayDu: Cập nhật thông tin, đổi mật khẩu, đổi vai trò';
+PRINT N'  - sp_XoaTaiKhoanDayDu: Xóa hoàn toàn tài khoản ở cả 2 lớp';
+PRINT N'  - sp_VoHieuHoaTaiKhoan: Enable/Disable tài khoản';
+PRINT N'';
 PRINT N'Tiếp theo chạy file: 05_Security_Triggers.sql';

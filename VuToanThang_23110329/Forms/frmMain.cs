@@ -42,13 +42,7 @@ namespace VuToanThang_23110329.Forms
         }
 
         // Sidebar Navigation Event Handlers
-        private void btnDashboard_Click(object sender, EventArgs e)
-        {
-            SetActiveButton(btnDashboard);
-            lblWelcome.Text = "📊 Tổng quan hệ thống";
-            lblStatus.Text = "Đang xem tổng quan";
-            // TODO: Load dashboard content
-        }
+        
 
         private void btnQuanLy_Click(object sender, EventArgs e)
         {
@@ -149,30 +143,7 @@ namespace VuToanThang_23110329.Forms
             OpenFormInPanel(new frmChamCong());
         }
 
-        private void btnBaoCao_Click(object sender, EventArgs e)
-        {
-            SetActiveButton(btnBaoCao);
-            lblWelcome.Text = "📊 Báo cáo thống kê";
-            lblStatus.Text = "Đang xem báo cáo";
-            
-            // Hiển thị menu con theo vai trò
-            if (userRole == "HR")
-            {
-                ShowSubMenu("Báo cáo HR", new string[] 
-                { 
-                    "Báo cáo Nhân sự", 
-                    "Bảng công chi tiết" 
-                });
-            }
-            else if (userRole == "KeToan")
-            {
-                ShowSubMenu("Báo cáo Kế toán", new string[] 
-                { 
-                    "Xem Bảng công tháng", 
-                    "Báo cáo Lương" 
-                });
-            }
-        }
+        
 
         private void btnDangXuat_Click(object sender, EventArgs e)
         {
@@ -198,7 +169,6 @@ namespace VuToanThang_23110329.Forms
                 case "QuanLy": // Giám đốc - có quyền cao nhất
                     btnQuanLy.Visible = true;      // Quản lý nhân sự
                     btnCaLam.Visible = true;       // Ca làm việc
-                    btnBaoCao.Visible = true;      // Báo cáo
                     btnChamCong.Visible = true;    // Chấm công
                     btnCaNhan.Visible = true;      // Cá nhân
                     break;
@@ -207,7 +177,6 @@ namespace VuToanThang_23110329.Forms
                     btnQuanLy.Visible = true;      // Quản lý nhân sự
                     btnNghiepVu.Visible = true;    // Nghiệp vụ (Duyệt đơn từ)
                     btnCaLam.Visible = true;       // Ca làm việc
-                    btnBaoCao.Visible = true;      // Báo cáo
                     btnChamCong.Visible = true;    // Chấm công
                     btnCaNhan.Visible = true;      // Cá nhân
                     break;
@@ -215,7 +184,6 @@ namespace VuToanThang_23110329.Forms
                 case "KeToan": // Kế toán
                     btnQuanLy.Visible = true;      // Quản lý nhân sự (để xem nhân viên)
                     btnTienLuong.Visible = true;   // Tiền lương
-                    btnBaoCao.Visible = true;      // Báo cáo
                     btnChamCong.Visible = true;    // Chấm công
                     btnCaNhan.Visible = true;      // Cá nhân
                     break;
@@ -235,7 +203,7 @@ namespace VuToanThang_23110329.Forms
         private void SetActiveButton(Guna.UI2.WinForms.Guna2Button activeButton)
         {
             // Reset all buttons to default state
-            Guna.UI2.WinForms.Guna2Button[] buttons = { btnDashboard, btnQuanLy, btnCaLam, btnNghiepVu, btnTienLuong, btnCaNhan, btnChamCong, btnBaoCao }; // ✅ Đã xoá btnDanhMuc
+            Guna.UI2.WinForms.Guna2Button[] buttons = { btnQuanLy, btnCaLam, btnNghiepVu, btnTienLuong, btnCaNhan, btnChamCong }; // ✅ Đã xoá btnDanhMuc, btnDashboard, btnBaoCao
             
             foreach (var btn in buttons)
             {
@@ -342,41 +310,12 @@ namespace VuToanThang_23110329.Forms
                        OpenFormInPanel(new frmChamCong());
                        lblStatus.Text = "Đang chấm công";
                        break;
-                   case "Bảng lương":
-                   case "Quản lý Bảng lương":
-                       OpenFormInPanel(new frmBangLuong());
-                       lblStatus.Text = "Đang quản lý bảng lương";
-                       break;
-                   case "Báo cáo Nhân sự":
-                   case "Bảng công chi tiết":
-                   case "Xem Bảng công tháng":
-                   case "Báo cáo Lương":
-                       // Tạm thời hiển thị form báo cáo đơn giản
-                       var frmBaoCao = new Form
-                       {
-                           Text = functionName,
-                           FormBorderStyle = FormBorderStyle.None,
-                           Dock = DockStyle.Fill,
-                           BackColor = Color.White
-                       };
-                       var lblBaoCao = new Label
-                       {
-                           Text = $"📊 {functionName}\\n\\nChức năng đang được phát triển.\\nVui lòng quay lại sau.",
-                           Font = new Font("Segoe UI", 16, FontStyle.Bold),
-                           ForeColor = Color.FromArgb(94, 148, 255),
-                           TextAlign = ContentAlignment.MiddleCenter,
-                           Dock = DockStyle.Fill
-                       };
-                       frmBaoCao.Controls.Add(lblBaoCao);
-                       OpenFormInPanel(frmBaoCao);
-                       lblStatus.Text = $"Đang xem {functionName}";
-                       break;
                    case "Đổi mật khẩu":
                        MessageBox.Show("Chức năng đổi mật khẩu đang được phát triển.", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
                        break;
                    case "Đăng xuất":
                        btnDangXuat_Click(sender, e);
-                       break;
+{{ ... }}
                    case "Thoát":
                        this.Close();
                        break;
