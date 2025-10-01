@@ -775,121 +775,15 @@ BEGIN
 END
 GO
 
--- 12.2) CẬP NHẬT TÀI KHOẢN ĐẦY ĐỦ
-IF OBJECT_ID('dbo.sp_CapNhatTaiKhoanDayDu','P') IS NOT NULL DROP PROCEDURE dbo.sp_CapNhatTaiKhoanDayDu;
-GO
-CREATE PROCEDURE dbo.sp_CapNhatTaiKhoanDayDu
-    @MaNV INT,
-    @HoTen NVARCHAR(120),
-    @NgaySinh DATE = NULL,
-    @GioiTinh NVARCHAR(10) = NULL,
-    @DienThoai NVARCHAR(20) = NULL,
-    @Email NVARCHAR(120) = NULL,
-    @DiaChi NVARCHAR(255) = NULL,
-    @MaPhongBan INT = NULL,
-    @MaChucVu INT = NULL,
-    @LuongCoBan DECIMAL(12,2),
-    @VaiTro NVARCHAR(20),
-    @MatKhauMoi NVARCHAR(200) = NULL  -- Để NULL nếu không muốn đổi mật khẩu
-WITH EXECUTE AS OWNER  -- ✅ CHẠY VỚI QUYỀN DBO
-AS
-BEGIN
-    SET NOCOUNT ON;
-    SET XACT_ABORT ON;
-
-    BEGIN TRY
-        DECLARE @TenDangNhap NVARCHAR(50), @VaiTroCu NVARCHAR(20), @MaNguoiDung INT;
-        
-        SELECT @TenDangNhap = nd.TenDangNhap, @VaiTroCu = nd.VaiTro, @MaNguoiDung = nd.MaNguoiDung
-        FROM dbo.NhanVien nv 
-        JOIN dbo.NguoiDung nd ON nv.MaNguoiDung = nd.MaNguoiDung
-        WHERE nv.MaNV = @MaNV;
-
-        IF @TenDangNhap IS NULL
-        BEGIN
-            RAISERROR(N'Không tìm thấy tài khoản cho nhân viên này.', 16, 1);
-            RETURN;
-        END
-
-        BEGIN TRAN;
-
-        -- BƯỚC 1: Cập nhật thông tin trong bảng NhanVien
-        UPDATE dbo.NhanVien
-        SET HoTen = @HoTen,
-            NgaySinh = @NgaySinh,
-            GioiTinh = @GioiTinh,
-            DienThoai = @DienThoai,
-            Email = @Email,
-            DiaChi = @DiaChi,
-            MaPhongBan = @MaPhongBan,
-            MaChucVu = @MaChucVu,
-            LuongCoBan = @LuongCoBan
-        WHERE MaNV = @MaNV;
-
-        -- Cập nhật vai trò trong bảng NguoiDung
-        UPDATE dbo.NguoiDung
-        SET VaiTro = @VaiTro
-        WHERE MaNguoiDung = @MaNguoiDung;
-
-        -- BƯỚC 2: Nếu có mật khẩu mới, cập nhật mật khẩu
-        IF @MatKhauMoi IS NOT NULL AND LTRIM(RTRIM(@MatKhauMoi)) <> ''
-        BEGIN
-            DECLARE @SqlCmd NVARCHAR(MAX);
-            
-            -- Cập nhật SQL Login password
-            SET @SqlCmd = N'ALTER LOGIN ' + QUOTENAME(@TenDangNhap) + 
-                          N' WITH PASSWORD = ' + QUOTENAME(@MatKhauMoi, '''');
-            EXEC sp_executesql @SqlCmd;
-            
-            -- Cập nhật hash trong bảng NguoiDung
-            UPDATE dbo.NguoiDung 
-            SET MatKhauHash = HASHBYTES('SHA2_256', @MatKhauMoi) 
-            WHERE MaNguoiDung = @MaNguoiDung;
-        END
-
-        -- BƯỚC 3: Nếu vai trò thay đổi, cập nhật Role membership
-        IF @VaiTroCu <> @VaiTro
-        BEGIN
-            DECLARE @RoleCu SYSNAME = 
-                CASE @VaiTroCu
-                    WHEN N'HR' THEN N'r_hr'
-                    WHEN N'QuanLy' THEN N'r_quanly'
-                    WHEN N'KeToan' THEN N'r_ketoan'
-                    ELSE N'r_nhanvien'
-                END;
-                
-            DECLARE @RoleMoi SYSNAME = 
-                CASE @VaiTro
-                    WHEN N'HR' THEN N'r_hr'
-                    WHEN N'QuanLy' THEN N'r_quanly'
-                    WHEN N'KeToan' THEN N'r_ketoan'
-                    ELSE N'r_nhanvien'
-                END;
-
-            -- Xóa khỏi role cũ
-            SET @SqlCmd = N'ALTER ROLE ' + QUOTENAME(@RoleCu) + N' DROP MEMBER ' + QUOTENAME(@TenDangNhap);
-            EXEC sp_executesql @SqlCmd;
-            
-            -- Thêm vào role mới
-            SET @SqlCmd = N'ALTER ROLE ' + QUOTENAME(@RoleMoi) + N' ADD MEMBER ' + QUOTENAME(@TenDangNhap);
-            EXEC sp_executesql @SqlCmd;
-            
-            PRINT N'Đã chuyển vai trò từ ' + @VaiTroCu + N' sang ' + @VaiTro + N' cho: ' + @TenDangNhap;
-        END
-
-        COMMIT;
-    END TRY
-    BEGIN CATCH
-        IF @@TRANCOUNT > 0 ROLLBACK;
-        
-        DECLARE @ErrorMsg NVARCHAR(4000) = ERROR_MESSAGE();
-        DECLARE @ErrorSeverity INT = ERROR_SEVERITY();
-        DECLARE @ErrorState INT = ERROR_STATE();
-        
-        RAISERROR(@ErrorMsg, @ErrorSeverity, @ErrorState);
-    END CATCH
-END
-GO
+-- ============================================================================
+-- 12.2) sp_CapNhatTaiKhoanDayDu - ĐÃ XÓA
+-- ============================================================================
+-- LÝ DO XÓA:
+-- 1. Code C# không sử dụng stored procedure này
+-- 2. Form frmQuanLyNguoiDung sử dụng raw SQL UPDATE đơn giản hơn
+-- 3. Stored procedure này quá phức tạp cho nhu cầu thực tế
+-- 4. Logic cập nhật role và password được xử lý riêng biệt
+-- ============================================================================
 
 -- 12.3) VÔ HIỆU HÓA TÀI KHOẢN NHÂN VIÊN NGHỈ VIỆC (Không xóa dữ liệu lịch sử)
 -- ⚠️ LƯU Ý: Stored Procedure này ĐÃ ĐƯỢC ĐIỀU CHỈNH để GIỮ LẠI dữ liệu lịch sử
@@ -1048,9 +942,9 @@ PRINT N'=== ĐÃ THÊM STORED PROCEDURES QUẢN LÝ LỊCH TUẦN ===';
 PRINT N'=== ĐÃ THÊM STORED PROCEDURES QUẢN LÝ TÀI KHOẢN 2 LỚP ===';
 PRINT N'';
 PRINT N'Stored Procedures Quản Lý Tài Khoản 2 Lớp:';
-PRINT N'  - sp_TaoTaiKhoanDayDu: Tạo tài khoản (App + SQL Login + User + Role)';
-PRINT N'  - sp_CapNhatTaiKhoanDayDu: Cập nhật thông tin, đổi mật khẩu, đổi vai trò';
-PRINT N'  - sp_XoaTaiKhoanDayDu: Xóa hoàn toàn tài khoản ở cả 2 lớp';
+PRINT N'  - sp_TaoTaiKhoanDayDu: Tạo tài khoản (App + Database User + Role)';
+PRINT N'  - sp_XoaTaiKhoanDayDu: Xóa hoàn toàn tài khoản';
 PRINT N'  - sp_VoHieuHoaTaiKhoan: Enable/Disable tài khoản';
+PRINT N'  - sp_CapNhatTaiKhoanDayDu: ĐÃ XÓA (không sử dụng trong C#)';
 PRINT N'';
 PRINT N'Tiếp theo chạy file: 05_Security_Triggers.sql';

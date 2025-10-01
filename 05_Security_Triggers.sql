@@ -6,51 +6,15 @@
 USE QLNhanSuSieuThiMini;
 GO
 
--- Thêm các stored procedures còn thiếu
-
-IF OBJECT_ID('dbo.sp_KiemTraQuyenTruyCap','P') IS NOT NULL DROP PROCEDURE dbo.sp_KiemTraQuyenTruyCap;
-GO
-CREATE PROCEDURE dbo.sp_KiemTraQuyenTruyCap
-    @MaNguoiDung INT,
-    @ChucNang    NVARCHAR(50),
-    @CoQuyen     BIT OUTPUT
-AS
-BEGIN
-    SET NOCOUNT ON;
-    
-    DECLARE @VaiTro NVARCHAR(20);
-    SET @CoQuyen = 0;
-    
-    SELECT @VaiTro = VaiTro 
-    FROM dbo.NguoiDung 
-    WHERE MaNguoiDung = @MaNguoiDung AND KichHoat = 1;
-    
-    IF @VaiTro IS NULL RETURN;
-    
-    -- Quản lý nhân viên: HR và QuanLy có quyền CRUD
-    IF @ChucNang = 'MANAGE_EMPLOYEES' AND @VaiTro IN (N'HR', N'QuanLy')
-        SET @CoQuyen = 1;
-    -- KeToan, NhanVien chỉ được xem
-    ELSE IF @ChucNang = 'VIEW_EMPLOYEES' AND @VaiTro IN (N'HR', N'QuanLy', N'KeToan', N'NhanVien')
-        SET @CoQuyen = 1;
-    ELSE IF @ChucNang = 'MANAGE_SHIFTS' AND @VaiTro = N'HR'
-        SET @CoQuyen = 1;
-    ELSE IF @ChucNang = 'MANAGE_SCHEDULE' AND @VaiTro IN (N'HR', N'QuanLy')
-        SET @CoQuyen = 1;
-    ELSE IF @ChucNang = 'MANAGE_ATTENDANCE' AND @VaiTro IN (N'HR', N'QuanLy')
-        SET @CoQuyen = 1;
-    ELSE IF @ChucNang = 'APPROVE_REQUESTS' AND @VaiTro IN (N'HR', N'QuanLy')
-        SET @CoQuyen = 1;
-    ELSE IF @ChucNang = 'MANAGE_PAYROLL' AND @VaiTro = N'KeToan'
-        SET @CoQuyen = 1;
-    ELSE IF @ChucNang = 'VIEW_REPORTS' AND @VaiTro IN (N'HR', N'QuanLy', N'KeToan')
-        SET @CoQuyen = 1;
-    ELSE IF @ChucNang = 'SUBMIT_REQUESTS'
-        SET @CoQuyen = 1;
-    ELSE IF @ChucNang = 'VIEW_OWN_DATA'
-        SET @CoQuyen = 1;
-END
-GO
+-- ============================================================================
+-- sp_KiemTraQuyenTruyCap - ĐÃ XÓA
+-- ============================================================================
+-- LÝ DO XÓA:
+-- 1. Code C# không sử dụng stored procedure này
+-- 2. C# đã có PermissionManager.cs để kiểm tra quyền
+-- 3. Database đã có roles (r_hr, r_quanly, r_ketoan, r_nhanvien)
+-- 4. Tạo duplicate logic không cần thiết
+-- ============================================================================
 
 ------------------------------------------------------------
 -- IV) SECURITY: RBAC + DAC
@@ -179,10 +143,11 @@ GO
 GRANT EXECUTE ON dbo.sp_TaoTaiKhoanDayDu TO r_hr;
 GRANT EXECUTE ON dbo.sp_ThemMoiNhanVien TO r_hr;
 GRANT EXECUTE ON dbo.sp_XoaTaiKhoanDayDu TO r_hr;
-GRANT EXECUTE ON dbo.sp_CapNhatTaiKhoanDayDu TO r_hr;
 GRANT EXECUTE ON dbo.sp_VoHieuHoaTaiKhoan TO r_hr;
+-- sp_CapNhatTaiKhoanDayDu đã bị xóa vì không sử dụng trong C#
 GRANT EXECUTE ON dbo.sp_PhongBan_GetAll TO r_hr;
 GRANT EXECUTE ON dbo.sp_ChucVu_GetAll TO r_hr;
+-- sp_NhanVien_GetAll đã bị xóa vì không sử dụng trong C#
 GRANT EXECUTE ON dbo.sp_NhanVien_UpdateThongTinCaNhan TO r_hr;
 GRANT EXECUTE ON dbo.sp_NhanVien_Delete TO r_hr;
 GRANT EXECUTE ON dbo.sp_NhanVien_UpdateTrangThai TO r_hr;
@@ -192,6 +157,7 @@ GRANT EXECUTE ON dbo.sp_TaoTaiKhoanDayDu TO r_quanly;
 GRANT EXECUTE ON dbo.sp_ThemMoiNhanVien TO r_quanly;
 GRANT EXECUTE ON dbo.sp_PhongBan_GetAll TO r_quanly;
 GRANT EXECUTE ON dbo.sp_ChucVu_GetAll TO r_quanly;
+-- sp_NhanVien_GetAll đã bị xóa vì không sử dụng trong C#
 GRANT EXECUTE ON dbo.sp_NhanVien_UpdateThongTinCaNhan TO r_quanly;
 GRANT EXECUTE ON dbo.sp_NhanVien_Delete TO r_quanly;
 GRANT EXECUTE ON dbo.sp_NhanVien_UpdateTrangThai TO r_quanly;
@@ -284,17 +250,6 @@ BEGIN
 END
 GO
 
--- 2) CALAM: Kiểm tra trùng lặp thời gian ca làm việc (hỗ trợ ca qua đêm)
--- LOGIC ĐÃ ĐƯỢC DI CHUYỂN VÀO STORED PROCEDURES sp_CaLam_Insert VÀ sp_CaLam_Update
--- XÓA TRIGGER ĐỂ GIẢM PHỨC TẠP HỆ THỐNG
---
--- LOGIC MỚI:
--- - Nhân viên được làm nhiều ca trong 1 ngày nhưng phải hợp lý
--- - Tổng thời gian làm việc không vượt quá 16 tiếng/ngày (960 phút)
--- - Không được làm 2 ca cùng loại trong cùng ngày (ví dụ: 2 ca sáng)
--- - Vẫn kiểm tra overlap thời gian giữa các ca
--- - Cho phép overlap hợp lý giữa ca chính và ca hành chính/part-time
--- - Hỗ trợ đầy đủ ca qua đêm với logic tính toán bằng phút từ midnight
 
 
 -- 3) CHAMCONG: Chặn UPDATE/DELETE khi đã khóa (Khoa = 1)

@@ -1134,4 +1134,13 @@ PRINT N'Đã thêm sp_DonTu_Insert';
 PRINT N'Đã thêm sp_NhanVien_Delete và sp_NhanVien_UpdateTrangThai';
 PRINT N'Đã thêm sp_NhanVien_GetThongTinCaNhan, sp_NhanVien_UpdateThongTinCaNhan, sp_NguoiDung_DoiMatKhau';
 PRINT N'✅ Đã bổ sung sp_PhongBan_GetAll và sp_ChucVu_GetAll cho form frmPhongBan_ChucVu';
+
+-- ============================================================================
+-- sp_NhanVien_GetAll - ĐÃ XÓA
+-- ============================================================================
+-- LÝ DO XÓA:
+-- 1. Code C# không sử dụng stored procedure này
+-- 2. Vừa tạo nhưng chưa implement trong C# code
+-- 3. Form frmNhanVien sử dụng sp_GetNhanVienFull thay thế
+-- ============================================================================
 PRINT N'Tiếp theo chạy file: 04_StoredProcedures_Advanced.sql';
