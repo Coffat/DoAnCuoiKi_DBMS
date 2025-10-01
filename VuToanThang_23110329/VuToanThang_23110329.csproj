@@ -60,6 +60,10 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Forms\frmLichTuan.Designer.cs" />
+    <Compile Include="Forms\frmQuanLyNguoiDung.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\frmQuanLyNguoiDung.Designer.cs" />
     <Compile Include="Forms\frmXemDonCuaToi.cs">
       <SubType>Form</SubType>
     </Compile>

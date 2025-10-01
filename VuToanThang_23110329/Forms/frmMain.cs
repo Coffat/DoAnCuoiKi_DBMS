@@ -67,11 +67,15 @@ namespace VuToanThang_23110329.Forms
             }
         }
 
-        // ✅ Đã XOÁ: Tab Danh mục (trùng lặp với tab Quản lý)
+        // ✅ Quản lý người dùng (chỉ dành cho HR)
         private void btnDanhMuc_Click(object sender, EventArgs e)
         {
-            // Chuyển hướng sang tab Quản lý
-            btnQuanLy_Click(sender, e);
+            SetActiveButton(btnDanhMuc);
+            lblWelcome.Text = "👤 Quản lý người dùng";
+            
+            // Mở form quản lý người dùng
+            frmQuanLyNguoiDung frmQuanLyND = new frmQuanLyNguoiDung();
+            frmQuanLyND.ShowDialog();
         }
 
         private void btnCaLam_Click(object sender, EventArgs e)
@@ -158,7 +162,7 @@ namespace VuToanThang_23110329.Forms
         {
             // Mặc định ẩn tất cả buttons
             btnQuanLy.Visible = false;
-            btnDanhMuc.Visible = false;  // ✅ Ẩn luôn, không dùng nữa
+            btnDanhMuc.Visible = false;  // ✅ Sử dụng lại cho "Quản lý người dùng"
             btnCaLam.Visible = false;
             btnNghiepVu.Visible = false;
             btnTienLuong.Visible = false;
@@ -175,6 +179,7 @@ namespace VuToanThang_23110329.Forms
 
                 case "HR": // Nhân viên HR
                     btnQuanLy.Visible = true;      // Quản lý nhân sự
+                    btnDanhMuc.Visible = true;     // ✅ Quản lý người dùng (chỉ HR)
                     btnNghiepVu.Visible = true;    // Nghiệp vụ (Duyệt đơn từ)
                     btnCaLam.Visible = true;       // Ca làm việc
                     btnChamCong.Visible = true;    // Chấm công

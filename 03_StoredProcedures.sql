@@ -1084,6 +1084,47 @@ BEGIN
 END
 GO
 
+-- ✅ BỔ SUNG CÁC STORED PROCEDURES GETALL CÒN THIẾU
+-- Form frmPhongBan_ChucVu cần các procedure này
+
+-- sp_PhongBan_GetAll
+IF OBJECT_ID('dbo.sp_PhongBan_GetAll','P') IS NOT NULL DROP PROCEDURE dbo.sp_PhongBan_GetAll;
+GO
+CREATE PROCEDURE dbo.sp_PhongBan_GetAll
+AS
+BEGIN
+    SET NOCOUNT ON;
+    
+    SELECT 
+        MaPhongBan,
+        TenPhongBan,
+        MoTa,
+        KichHoat
+    FROM dbo.PhongBan
+    ORDER BY TenPhongBan;
+END
+GO
+
+-- sp_ChucVu_GetAll  
+IF OBJECT_ID('dbo.sp_ChucVu_GetAll','P') IS NOT NULL DROP PROCEDURE dbo.sp_ChucVu_GetAll;
+GO
+CREATE PROCEDURE dbo.sp_ChucVu_GetAll
+AS
+BEGIN
+    SET NOCOUNT ON;
+    
+    SELECT 
+        MaChucVu,
+        TenChucVu,
+        MoTa,
+        KichHoat
+    FROM dbo.ChucVu
+    ORDER BY TenChucVu;
+END
+GO
+
+PRINT N'✅ Đã bổ sung sp_PhongBan_GetAll và sp_ChucVu_GetAll';
+
 PRINT N'=== HOÀN TẤT TẠO STORED PROCEDURES CƠ BẢN ===';
 PRINT N'Đã thêm CRUD LichPhanCa (Insert/Update/Delete/GetByNhanVien)';
 PRINT N'Đã thêm CRUD PhongBan (Insert/Update/Delete/GetAll)';
@@ -1091,4 +1132,5 @@ PRINT N'Đã thêm CRUD ChucVu (Insert/Update/Delete/GetAll)';
 PRINT N'Đã thêm sp_DonTu_Insert';
 PRINT N'Đã thêm sp_NhanVien_Delete và sp_NhanVien_UpdateTrangThai';
 PRINT N'Đã thêm sp_NhanVien_GetThongTinCaNhan, sp_NhanVien_UpdateThongTinCaNhan, sp_NguoiDung_DoiMatKhau';
+PRINT N'✅ Đã bổ sung sp_PhongBan_GetAll và sp_ChucVu_GetAll cho form frmPhongBan_ChucVu';
 PRINT N'Tiếp theo chạy file: 04_StoredProcedures_Advanced.sql';

@@ -224,7 +224,7 @@ namespace VuToanThang_23110329.Forms
             this.btnDanhMuc.Name = "btnDanhMuc";
             this.btnDanhMuc.Size = new System.Drawing.Size(230, 45);
             this.btnDanhMuc.TabIndex = 3;
-            this.btnDanhMuc.Text = "📋 Danh mục";
+            this.btnDanhMuc.Text = "👤 Quản lý người dùng";
             this.btnDanhMuc.TextAlign = System.Windows.Forms.HorizontalAlignment.Left;
             // 
             // btnCaLam

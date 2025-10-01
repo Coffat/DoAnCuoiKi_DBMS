@@ -57,6 +57,45 @@ GO
 ------------------------------------------------------------
 
 -- 1) Xóa và tạo lại ROLE (để đảm bảo sạch)
+-- ✅ FIX: Xóa tất cả members khỏi role trước khi DROP
+
+-- Xóa members khỏi r_hr
+DECLARE @sql NVARCHAR(MAX) = '';
+SELECT @sql += 'ALTER ROLE r_hr DROP MEMBER [' + dp.name + ']; '
+FROM sys.database_role_members drm
+JOIN sys.database_principals dp ON drm.member_principal_id = dp.principal_id
+JOIN sys.database_principals r ON drm.role_principal_id = r.principal_id
+WHERE r.name = 'r_hr';
+IF LEN(@sql) > 0 EXEC(@sql);
+
+-- Xóa members khỏi r_quanly
+SET @sql = '';
+SELECT @sql += 'ALTER ROLE r_quanly DROP MEMBER [' + dp.name + ']; '
+FROM sys.database_role_members drm
+JOIN sys.database_principals dp ON drm.member_principal_id = dp.principal_id
+JOIN sys.database_principals r ON drm.role_principal_id = r.principal_id
+WHERE r.name = 'r_quanly';
+IF LEN(@sql) > 0 EXEC(@sql);
+
+-- Xóa members khỏi r_ketoan
+SET @sql = '';
+SELECT @sql += 'ALTER ROLE r_ketoan DROP MEMBER [' + dp.name + ']; '
+FROM sys.database_role_members drm
+JOIN sys.database_principals dp ON drm.member_principal_id = dp.principal_id
+JOIN sys.database_principals r ON drm.role_principal_id = r.principal_id
+WHERE r.name = 'r_ketoan';
+IF LEN(@sql) > 0 EXEC(@sql);
+
+-- Xóa members khỏi r_nhanvien
+SET @sql = '';
+SELECT @sql += 'ALTER ROLE r_nhanvien DROP MEMBER [' + dp.name + ']; '
+FROM sys.database_role_members drm
+JOIN sys.database_principals dp ON drm.member_principal_id = dp.principal_id
+JOIN sys.database_principals r ON drm.role_principal_id = r.principal_id
+WHERE r.name = 'r_nhanvien';
+IF LEN(@sql) > 0 EXEC(@sql);
+
+-- Bây giờ mới DROP các role
 IF EXISTS (SELECT 1 FROM sys.database_principals WHERE name=N'r_hr' AND type='R')       DROP ROLE r_hr;
 IF EXISTS (SELECT 1 FROM sys.database_principals WHERE name=N'r_quanly' AND type='R')   DROP ROLE r_quanly;
 IF EXISTS (SELECT 1 FROM sys.database_principals WHERE name=N'r_ketoan' AND type='R')   DROP ROLE r_ketoan;
@@ -67,6 +106,28 @@ CREATE ROLE r_quanly;
 CREATE ROLE r_ketoan;
 CREATE ROLE r_nhanvien;
 PRINT N'Đã tạo lại các database roles: r_hr, r_quanly, r_ketoan, r_nhanvien';
+
+-- ✅ Tự động gán lại các user vào role dựa trên VaiTro trong NguoiDung
+DECLARE @SqlReassign NVARCHAR(MAX) = '';
+
+SELECT @SqlReassign += 
+    CASE nd.VaiTro
+        WHEN N'HR' THEN N'ALTER ROLE r_hr ADD MEMBER [' + nd.TenDangNhap + N']; '
+        WHEN N'QuanLy' THEN N'ALTER ROLE r_quanly ADD MEMBER [' + nd.TenDangNhap + N']; '
+        WHEN N'KeToan' THEN N'ALTER ROLE r_ketoan ADD MEMBER [' + nd.TenDangNhap + N']; '
+        WHEN N'NhanVien' THEN N'ALTER ROLE r_nhanvien ADD MEMBER [' + nd.TenDangNhap + N']; '
+        ELSE ''
+    END
+FROM dbo.NguoiDung nd
+WHERE nd.TenDangNhap IS NOT NULL
+  AND nd.KichHoat = 1
+  AND EXISTS (SELECT 1 FROM sys.database_principals dp WHERE dp.name = nd.TenDangNhap AND dp.type = 'S');
+
+IF LEN(@SqlReassign) > 0 
+BEGIN
+    EXEC(@SqlReassign);
+    PRINT N'✅ Đã gán lại ' + CAST((LEN(@SqlReassign) - LEN(REPLACE(@SqlReassign, 'ALTER ROLE', '')))/10 AS NVARCHAR) + N' user(s) vào các role tương ứng';
+END
 GO
 
 /* 2) DAC: Cấp quyền theo yêu cầu - MÔ HÌNH BẢO MẬT NÂNG CAO
@@ -84,7 +145,11 @@ GO
 */
 
 -- HR: Quyền xem và thực thi procedures
+GRANT SELECT ON dbo.NguoiDung   TO r_hr;  -- ✅ CẦN THIẾT cho login và kiểm tra quyền
 GRANT SELECT ON dbo.NhanVien    TO r_hr;
+GRANT SELECT ON dbo.PhongBan    TO r_hr;  -- Quản lý phòng ban
+GRANT SELECT ON dbo.ChucVu      TO r_hr;  -- Quản lý chức vụ
+GRANT SELECT ON dbo.CaLam       TO r_hr;  -- Quản lý ca làm
 GRANT SELECT ON dbo.LichPhanCa  TO r_hr;
 GRANT SELECT ON dbo.vw_CongThang          TO r_hr;
 GRANT SELECT ON dbo.vw_Lich_ChamCong_Ngay TO r_hr;
@@ -106,13 +171,20 @@ GRANT EXECUTE ON dbo.sp_CaLam_Update TO r_hr;
 GRANT EXECUTE ON dbo.sp_CaLam_Delete TO r_hr;
 
 -- QuanLy: Quyền xem và thực thi procedures (KHÔNG cấp quyền UPDATE trực tiếp)
+GRANT SELECT ON dbo.NguoiDung  TO r_quanly;  -- ✅ CẦN THIẾT cho login và kiểm tra quyền
 GRANT SELECT ON dbo.NhanVien TO r_quanly;
+GRANT SELECT ON dbo.PhongBan TO r_quanly;  -- Xem danh sách phòng ban
+GRANT SELECT ON dbo.ChucVu   TO r_quanly;  -- Xem danh sách chức vụ
+GRANT SELECT ON dbo.CaLam    TO r_quanly;  -- Xem ca làm
 GRANT SELECT ON dbo.LichPhanCa TO r_quanly;
 GRANT SELECT ON dbo.ChamCong TO r_quanly;
+GRANT SELECT ON dbo.DonTu    TO r_quanly;  -- Xem đơn từ để duyệt
 GRANT SELECT ON dbo.vw_Lich_ChamCong_Ngay TO r_quanly;
 GRANT EXECUTE ON dbo.sp_DuyetDonTu TO r_quanly; -- duyệt qua proc để đảm bảo side-effects
 
 -- KeToan: Chỉ SELECT và EXECUTE procedures (KHÔNG cấp quyền INSERT/UPDATE trực tiếp)
+GRANT SELECT ON dbo.NguoiDung  TO r_ketoan;  -- ✅ CẦN THIẾT cho login và kiểm tra quyền
+GRANT SELECT ON dbo.NhanVien   TO r_ketoan;  -- Cần xem thông tin nhân viên để tính lương
 GRANT SELECT ON dbo.ChamCong TO r_ketoan;
 GRANT SELECT ON dbo.vw_CongThang TO r_ketoan;
 GRANT SELECT ON dbo.BangLuong TO r_ketoan;
@@ -120,6 +192,11 @@ GRANT EXECUTE ON dbo.sp_ChayBangLuong TO r_ketoan;
 GRANT EXECUTE ON dbo.sp_DongBangLuong TO r_ketoan;
 
 -- NhanVien: Chỉ SELECT và EXECUTE procedures (KHÔNG cấp quyền INSERT trực tiếp)
+GRANT SELECT ON dbo.NguoiDung  TO r_nhanvien;  -- ✅ CẦN THIẾT cho login và kiểm tra quyền
+GRANT SELECT ON dbo.NhanVien   TO r_nhanvien;  -- Xem thông tin cá nhân
+GRANT SELECT ON dbo.PhongBan   TO r_nhanvien;  -- Xem thông tin phòng ban
+GRANT SELECT ON dbo.ChucVu     TO r_nhanvien;  -- Xem thông tin chức vụ
+GRANT SELECT ON dbo.CaLam      TO r_nhanvien;  -- Xem ca làm
 GRANT SELECT ON dbo.LichPhanCa TO r_nhanvien;
 GRANT SELECT ON dbo.ChamCong   TO r_nhanvien;
 GRANT SELECT ON dbo.DonTu      TO r_nhanvien;
@@ -381,12 +458,13 @@ GRANT EXECUTE ON dbo.sp_LichPhanCa_MoKhoaTuan TO r_hr, r_quanly;
 GRANT SELECT ON dbo.tvf_LichTheoTuan TO r_hr, r_quanly, r_ketoan, r_nhanvien;
 
 -- Quyền cho CRUD PhongBan và ChucVu
-GRANT EXECUTE ON dbo.sp_PhongBan_GetAll TO r_hr, r_quanly;
+-- ✅ Đã bổ sung sp_PhongBan_GetAll và sp_ChucVu_GetAll
+GRANT EXECUTE ON dbo.sp_PhongBan_GetAll TO r_hr, r_quanly, r_ketoan, r_nhanvien;
 GRANT EXECUTE ON dbo.sp_PhongBan_Insert TO r_hr;
 GRANT EXECUTE ON dbo.sp_PhongBan_Update TO r_hr;
 GRANT EXECUTE ON dbo.sp_PhongBan_Delete TO r_hr;
 
-GRANT EXECUTE ON dbo.sp_ChucVu_GetAll TO r_hr, r_quanly;
+GRANT EXECUTE ON dbo.sp_ChucVu_GetAll TO r_hr, r_quanly, r_ketoan, r_nhanvien;
 GRANT EXECUTE ON dbo.sp_ChucVu_Insert TO r_hr;
 GRANT EXECUTE ON dbo.sp_ChucVu_Update TO r_hr;
 GRANT EXECUTE ON dbo.sp_ChucVu_Delete TO r_hr;

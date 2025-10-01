@@ -23,6 +23,7 @@ SET NOCOUNT ON;
 
 PRINT N'====================================================================';
 PRINT N'BẮT ĐẦU TẠO DỮ LIỆU MẪU - ' + CONVERT(NVARCHAR, GETDATE(), 120);
+PRINT N'User hiện tại: ' + USER_NAME();
 PRINT N'====================================================================';
 
 SET XACT_ABORT ON;
@@ -41,12 +42,18 @@ DELETE FROM dbo.DonTu; DELETE FROM dbo.BangLuong; DELETE FROM dbo.ChamCong;
 DELETE FROM dbo.LichPhanCa; DELETE FROM dbo.NhanVien; DELETE FROM dbo.NguoiDung;
 DELETE FROM dbo.PhongBan; DELETE FROM dbo.ChucVu; DELETE FROM dbo.CaLam;
 
--- RESET IDENTITY
-DBCC CHECKIDENT ('dbo.PhongBan', RESEED, 0); DBCC CHECKIDENT ('dbo.ChucVu', RESEED, 0);
-DBCC CHECKIDENT ('dbo.CaLam', RESEED, 0); DBCC CHECKIDENT ('dbo.NguoiDung', RESEED, 0);
-DBCC CHECKIDENT ('dbo.NhanVien', RESEED, 0); DBCC CHECKIDENT ('dbo.LichPhanCa', RESEED, 0);
-DBCC CHECKIDENT ('dbo.ChamCong', RESEED, 0); DBCC CHECKIDENT ('dbo.DonTu', RESEED, 0);
-DBCC CHECKIDENT ('dbo.BangLuong', RESEED, 0);
+-- RESET IDENTITY về 1 (insert đầu tiên sẽ có ID = 1)
+-- Với bảng rỗng: RESEED, 0 -> ID tiếp theo = 1
+DBCC CHECKIDENT ('dbo.PhongBan', RESEED, 0) WITH NO_INFOMSGS;
+DBCC CHECKIDENT ('dbo.ChucVu', RESEED, 0) WITH NO_INFOMSGS;
+DBCC CHECKIDENT ('dbo.CaLam', RESEED, 0) WITH NO_INFOMSGS;
+DBCC CHECKIDENT ('dbo.NguoiDung', RESEED, 0) WITH NO_INFOMSGS;
+DBCC CHECKIDENT ('dbo.NhanVien', RESEED, 0) WITH NO_INFOMSGS;
+DBCC CHECKIDENT ('dbo.LichPhanCa', RESEED, 0) WITH NO_INFOMSGS;
+DBCC CHECKIDENT ('dbo.ChamCong', RESEED, 0) WITH NO_INFOMSGS;
+DBCC CHECKIDENT ('dbo.DonTu', RESEED, 0) WITH NO_INFOMSGS;
+DBCC CHECKIDENT ('dbo.BangLuong', RESEED, 0) WITH NO_INFOMSGS;
+PRINT N'✓ Đã reset identity về 0 (ID đầu tiên sẽ là 1)';
 
 -- TẠO DANH MỤC
 PRINT N'[2/7] Tạo danh mục...';
@@ -54,14 +61,16 @@ INSERT INTO dbo.PhongBan (TenPhongBan, MoTa, KichHoat) VALUES
 (N'Ban Giám đốc', N'Điều hành chung', 1), (N'Phòng Nhân sự', N'Quản lý nhân sự', 1),
 (N'Phòng Kế toán', N'Kế toán tài chính', 1), (N'Bộ phận Bán hàng', N'Bán hàng', 1),
 (N'Bộ phận Kho', N'Quản lý kho', 1), (N'Bộ phận Thu ngân', N'Thu ngân', 1);
-PRINT N'✓ Phòng ban: ' + CAST(@@ROWCOUNT AS NVARCHAR);
+PRINT N'✓ Phòng ban: ' + CAST(@@ROWCOUNT AS NVARCHAR) + 
+      N' (MaPhongBan: ' + CAST(IDENT_CURRENT('dbo.PhongBan') AS NVARCHAR) + N')';
 
 INSERT INTO dbo.ChucVu (TenChucVu, MoTa, KichHoat) VALUES 
 (N'Giám đốc', N'Giám đốc điều hành', 1), (N'Trưởng phòng', N'Trưởng phòng', 1),
 (N'Nhân viên Nhân sự', N'NV nhân sự', 1), (N'Kế toán viên', N'NV kế toán', 1),
 (N'Nhân viên Bán hàng', N'NV bán hàng', 1), (N'Nhân viên Kho', N'NV kho', 1),
 (N'Nhân viên Thu ngân', N'NV thu ngân', 1);
-PRINT N'✓ Chức vụ: ' + CAST(@@ROWCOUNT AS NVARCHAR);
+PRINT N'✓ Chức vụ: ' + CAST(@@ROWCOUNT AS NVARCHAR) + 
+      N' (MaChucVu: ' + CAST(IDENT_CURRENT('dbo.ChucVu') AS NVARCHAR) + N')';
 
 INSERT INTO dbo.CaLam (TenCa, GioBatDau, GioKetThuc, HeSoCa, MoTa, KichHoat) VALUES 
 (N'Ca Sáng', '06:00', '14:00', 1.0, N'Ca sáng', 1),
@@ -70,24 +79,48 @@ INSERT INTO dbo.CaLam (TenCa, GioBatDau, GioKetThuc, HeSoCa, MoTa, KichHoat) VAL
 (N'Ca Hành chính', '08:00', '17:00', 1.0, N'Ca hành chính', 1);
 PRINT N'✓ Ca làm: ' + CAST(@@ROWCOUNT AS NVARCHAR);
 
--- NGƯỜI DÙNG VÀ NHÂN VIÊN
-PRINT N'[3/7] Tạo người dùng và nhân viên...';
-INSERT INTO dbo.NguoiDung (TenDangNhap, MatKhauHash, VaiTro, KichHoat) VALUES
-('giamdoc', '123', N'QuanLy', 1), ('hr_manager', '123', N'HR', 1), ('ketoan01', '123', N'KeToan', 1),
-('nv_hr_01', '123', N'NhanVien', 1), ('nv_banhang_01', '123', N'NhanVien', 1), ('nv_banhang_02', '123', N'NhanVien', 1),
-('nv_kho_01', '123', N'NhanVien', 1), ('nv_thungan_01', '123', N'NhanVien', 1), ('nv_nghiviec', '123', N'NhanVien', 0);
-PRINT N'✓ Người dùng: ' + CAST(@@ROWCOUNT AS NVARCHAR);
+-- NGƯỜI DÙNG VÀ NHÂN VIÊN (Tạo qua SP để tự động tạo SQL Login + Role)
+PRINT N'[3/7] Tạo người dùng và nhân viên (với SQL Login + Role)...';
 
-INSERT INTO dbo.NhanVien (MaNguoiDung, HoTen, NgaySinh, GioiTinh, DienThoai, Email, DiaChi, NgayVaoLam, TrangThai, MaPhongBan, MaChucVu, LuongCoBan) VALUES
-(1, N'Nguyễn Văn An', '1980-05-20', N'Nam', '0901112221', 'giamdoc@minimart.com', N'123 Lê Lợi, Q1', '2020-01-15', N'DangLam', 1, 1, 50000000),
-(2, N'Trần Thị Bích', '1988-10-02', N'Nu', '0901112222', 'hr.manager@minimart.com', N'456 Nguyễn Trãi, Q5', '2021-03-10', N'DangLam', 2, 2, 25000000),
-(3, N'Lê Văn Cường', '1992-07-11', N'Nam', '0901112223', 'ketoan01@minimart.com', N'789 CMT8, Q3', '2022-09-01', N'DangLam', 3, 4, 15000000),
-(4, N'Ngô Thị Lan', '1995-04-12', N'Nu', '0901112228', 'lannt@minimart.com', N'555 Phan Xích Long', '2023-06-15', N'DangLam', 2, 3, 12000000),
-(5, N'Phạm Thị Dung', '1998-11-30', N'Nu', '0901112224', 'dungpt@minimart.com', N'111 HBT, Q1', '2023-05-20', N'DangLam', 4, 5, 8500000),
-(6, N'Lý Thị Mai', '2001-08-08', N'Nu', '0901112229', 'mailt@minimart.com', N'666 Hoàng Diệu, Q4', '2024-01-15', N'DangLam', 4, 5, 8500000),
-(7, N'Hoàng Văn Em', '2000-02-15', N'Nam', '0901112225', 'emhv@minimart.com', N'222 Võ Văn Tần, Q3', '2024-02-01', N'DangLam', 5, 6, 8000000),
-(8, N'Vũ Thị Giang', '1999-06-25', N'Nu', '0901112226', 'giangvt@minimart.com', N'333 ĐBP, Bình Thạnh', '2024-03-01', N'DangLam', 6, 7, 8200000),
-(9, N'Đỗ Văn Hùng', '1995-01-01', N'Nam', '0901112227', 'hungdv@minimart.com', N'444 XVNT, Bình Thạnh', '2023-01-01', N'Nghi', 4, 5, 8000000);
+-- Tạo từng tài khoản qua sp_TaoTaiKhoanDayDu
+-- Thứ tự tham số: @HoTen, @NgaySinh, @GioiTinh, @DienThoai, @Email, @DiaChi, @NgayVaoLam, @MaPhongBan, @MaChucVu, @LuongCoBan, @TenDangNhap, @MatKhau, @VaiTro
+
+DECLARE @MaNV_Out INT;
+EXEC dbo.sp_TaoTaiKhoanDayDu N'Nguyễn Văn An', '1980-05-20', N'Nam', '0901112221', 'giamdoc@minimart.com', N'123 Lê Lợi, Q1', '2020-01-15', 1, 1, 50000000, 'giamdoc', '123', N'QuanLy', @MaNV_Out OUTPUT;
+PRINT N'✓ 1. giamdoc (QuanLy) - MaNV: ' + CAST(@MaNV_Out AS NVARCHAR);
+
+EXEC dbo.sp_TaoTaiKhoanDayDu N'Trần Thị Bích', '1988-10-02', N'Nu', '0901112222', 'hr.manager@minimart.com', N'456 Nguyễn Trãi, Q5', '2021-03-10', 2, 2, 25000000, 'hr_manager', '123', N'HR', @MaNV_Out OUTPUT;
+PRINT N'✓ 2. hr_manager (HR) - MaNV: ' + CAST(@MaNV_Out AS NVARCHAR);
+
+EXEC dbo.sp_TaoTaiKhoanDayDu N'Lê Văn Cường', '1992-07-11', N'Nam', '0901112223', 'ketoan01@minimart.com', N'789 CMT8, Q3', '2022-09-01', 3, 4, 15000000, 'ketoan01', '123', N'KeToan', @MaNV_Out OUTPUT;
+PRINT N'✓ 3. ketoan01 (KeToan) - MaNV: ' + CAST(@MaNV_Out AS NVARCHAR);
+
+EXEC dbo.sp_TaoTaiKhoanDayDu N'Ngô Thị Lan', '1995-04-12', N'Nu', '0901112228', 'lannt@minimart.com', N'555 Phan Xích Long', '2023-06-15', 2, 3, 12000000, 'nv_hr_01', '123', N'NhanVien', @MaNV_Out OUTPUT;
+PRINT N'✓ 4. nv_hr_01 (NhanVien) - MaNV: ' + CAST(@MaNV_Out AS NVARCHAR);
+
+EXEC dbo.sp_TaoTaiKhoanDayDu N'Phạm Thị Dung', '1998-11-30', N'Nu', '0901112224', 'dungpt@minimart.com', N'111 HBT, Q1', '2023-05-20', 4, 5, 8500000, 'nv_banhang_01', '123', N'NhanVien', @MaNV_Out OUTPUT;
+PRINT N'✓ 5. nv_banhang_01 (NhanVien) - MaNV: ' + CAST(@MaNV_Out AS NVARCHAR);
+
+EXEC dbo.sp_TaoTaiKhoanDayDu N'Lý Thị Mai', '2001-08-08', N'Nu', '0901112229', 'mailt@minimart.com', N'666 Hoàng Diệu, Q4', '2024-01-15', 4, 5, 8500000, 'nv_banhang_02', '123', N'NhanVien', @MaNV_Out OUTPUT;
+PRINT N'✓ 6. nv_banhang_02 (NhanVien) - MaNV: ' + CAST(@MaNV_Out AS NVARCHAR);
+
+EXEC dbo.sp_TaoTaiKhoanDayDu N'Hoàng Văn Em', '2000-02-15', N'Nam', '0901112225', 'emhv@minimart.com', N'222 Võ Văn Tần, Q3', '2024-02-01', 5, 6, 8000000, 'nv_kho_01', '123', N'NhanVien', @MaNV_Out OUTPUT;
+PRINT N'✓ 7. nv_kho_01 (NhanVien) - MaNV: ' + CAST(@MaNV_Out AS NVARCHAR);
+
+EXEC dbo.sp_TaoTaiKhoanDayDu N'Vũ Thị Giang', '1999-06-25', N'Nu', '0901112226', 'giangvt@minimart.com', N'333 ĐBP, Bình Thạnh', '2024-03-01', 6, 7, 8200000, 'nv_thungan_01', '123', N'NhanVien', @MaNV_Out OUTPUT;
+PRINT N'✓ 8. nv_thungan_01 (NhanVien) - MaNV: ' + CAST(@MaNV_Out AS NVARCHAR);
+
+-- Nhân viên đã nghỉ việc - cần xử lý riêng vì SP tự động tạo tài khoản active
+EXEC dbo.sp_TaoTaiKhoanDayDu N'Đỗ Văn Hùng', '1995-01-01', N'Nam', '0901112227', 'hungdv@minimart.com', N'444 XVNT, Bình Thạnh', '2023-01-01', 4, 5, 8000000, 'nv_nghiviec', '123', N'NhanVien', @MaNV_Out OUTPUT;
+-- Cập nhật trạng thái nghỉ việc
+UPDATE dbo.NhanVien SET TrangThai = N'Nghi' WHERE MaNV = @MaNV_Out;
+UPDATE dbo.NguoiDung SET KichHoat = 0 WHERE MaNguoiDung = (SELECT MaNguoiDung FROM dbo.NhanVien WHERE MaNV = @MaNV_Out);
+-- Disable SQL Login
+DECLARE @SqlDisable NVARCHAR(500) = N'ALTER LOGIN [nv_nghiviec] DISABLE';
+EXEC sp_executesql @SqlDisable;
+PRINT N'✓ 9. nv_nghiviec (Đã nghỉ việc - tài khoản bị khóa) - MaNV: ' + CAST(@MaNV_Out AS NVARCHAR);
+
+PRINT N'✓ Đã tạo 9 tài khoản với SQL Login + Role đầy đủ';
 
 -- LỊCH PHÂN CA VÀ CHẤM CÔNG
 PRINT N'[4/7] Tạo lịch và chấm công tự động...';
