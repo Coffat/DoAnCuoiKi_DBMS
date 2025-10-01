@@ -169,12 +169,11 @@ namespace VuToanThang_23110329.Forms
                             ISNULL(cv.TenChucVu, N'Chưa phân công') as TenChucVu,
                             ISNULL(bl.LuongCoBan, 0) as LuongCoBan,
                             ISNULL(bl.TongGioCong, 0) as TongGioCong,
-                            ISNULL(bl.LuongThucTe, 0) as LuongThucTe,
-                            ISNULL(bl.BHXH, 0) as BHXH,
-                            ISNULL(bl.BHYT, 0) as BHYT,
-                            ISNULL(bl.BHTN, 0) as BHTN,
-                            ISNULL(bl.ThueTNCN, 0) as ThueTNCN,
-                            ISNULL(bl.LuongNhan, 0) as LuongNhan
+                            ISNULL(bl.GioOT, 0) as GioOT,
+                            ISNULL(bl.PhuCap, 0) as PhuCap,
+                            ISNULL(bl.KhauTru, 0) as KhauTru,
+                            ISNULL(bl.ThueBH, 0) as ThueBH,
+                            ISNULL(bl.ThucLanh, 0) as ThucLanh
                         FROM dbo.BangLuong bl
                         INNER JOIN dbo.NhanVien nv ON nv.MaNV = bl.MaNV
                         LEFT JOIN dbo.PhongBan pb ON pb.MaPhongBan = nv.MaPhongBan
@@ -202,12 +201,11 @@ namespace VuToanThang_23110329.Forms
                             dgvBangLuong.Columns["TenChucVu"].HeaderText = "Chức vụ";
                             dgvBangLuong.Columns["LuongCoBan"].HeaderText = "Lương cơ bản";
                             dgvBangLuong.Columns["TongGioCong"].HeaderText = "Tổng giờ công";
-                            dgvBangLuong.Columns["LuongThucTe"].HeaderText = "Lương thực tế";
-                            dgvBangLuong.Columns["BHXH"].HeaderText = "BHXH";
-                            dgvBangLuong.Columns["BHYT"].HeaderText = "BHYT";
-                            dgvBangLuong.Columns["BHTN"].HeaderText = "BHTN";
-                            dgvBangLuong.Columns["ThueTNCN"].HeaderText = "Thuế TNCN";
-                            dgvBangLuong.Columns["LuongNhan"].HeaderText = "Lương nhận";
+                            dgvBangLuong.Columns["GioOT"].HeaderText = "Giờ OT";
+                            dgvBangLuong.Columns["PhuCap"].HeaderText = "Phụ cấp";
+                            dgvBangLuong.Columns["KhauTru"].HeaderText = "Khấu trừ";
+                            dgvBangLuong.Columns["ThueBH"].HeaderText = "Thuế BH";
+                            dgvBangLuong.Columns["ThucLanh"].HeaderText = "Thực lãnh";
                         }
                         
                         UpdateSummaryLabels(dt);
@@ -229,9 +227,9 @@ namespace VuToanThang_23110329.Forms
             
             foreach (DataRow row in dt.Rows)
             {
-                totalSalary += Convert.ToDecimal(row["LuongThucTe"]);
-                totalDeduction += Convert.ToDecimal(row["BHXH"]) + Convert.ToDecimal(row["BHYT"]) + 
-                                 Convert.ToDecimal(row["BHTN"]) + Convert.ToDecimal(row["ThueTNCN"]);
+                totalSalary += Convert.ToDecimal(row["ThucLanh"]);
+                totalAllowance += Convert.ToDecimal(row["PhuCap"]);
+                totalDeduction += Convert.ToDecimal(row["KhauTru"]) + Convert.ToDecimal(row["ThueBH"]);
             }
             
             lblTongNhanVien.Text = $"Tổng nhân viên: {totalEmployees}";

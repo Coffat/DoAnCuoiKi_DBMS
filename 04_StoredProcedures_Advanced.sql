@@ -696,6 +696,7 @@ CREATE PROCEDURE dbo.sp_TaoTaiKhoanDayDu
     @MatKhau NVARCHAR(200),  -- Nhận mật khẩu gốc, chưa mã hóa
     @VaiTro NVARCHAR(20),
     @MaNV_OUT INT OUTPUT
+WITH EXECUTE AS OWNER  -- ✅ CHẠY VỚI QUYỀN DBO
 AS
 BEGIN
     SET NOCOUNT ON;
@@ -797,6 +798,7 @@ CREATE PROCEDURE dbo.sp_CapNhatTaiKhoanDayDu
     @LuongCoBan DECIMAL(12,2),
     @VaiTro NVARCHAR(20),
     @MatKhauMoi NVARCHAR(200) = NULL  -- Để NULL nếu không muốn đổi mật khẩu
+WITH EXECUTE AS OWNER  -- ✅ CHẠY VỚI QUYỀN DBO
 AS
 BEGIN
     SET NOCOUNT ON;
@@ -907,6 +909,7 @@ GO
 CREATE PROCEDURE dbo.sp_XoaTaiKhoanDayDu
     @MaNV INT,
     @XoaHoanToan BIT = 0  -- 1 = Xóa hoàn toàn (chỉ dùng cho test), 0 = Vô hiệu hóa (mặc định)
+WITH EXECUTE AS OWNER  -- ✅ CHẠY VỚI QUYỀN DBO
 AS
 BEGIN
     SET NOCOUNT ON;
@@ -999,6 +1002,7 @@ GO
 CREATE PROCEDURE dbo.sp_VoHieuHoaTaiKhoan
     @MaNV INT,
     @KichHoat BIT  -- 1 = Enable, 0 = Disable
+WITH EXECUTE AS OWNER  -- ✅ CHẠY VỚI QUYỀN DBO
 AS
 BEGIN
     SET NOCOUNT ON;

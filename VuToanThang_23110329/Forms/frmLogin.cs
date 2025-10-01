@@ -100,6 +100,8 @@ namespace VuToanThang_23110329.Forms
                         // ============================================
                         // Từ giờ tất cả các form khác sẽ dùng chuỗi này
                         GlobalState.ConnectionString = dynamicConnectionString;
+                        GlobalState.UserRole = vaiTro;
+                        GlobalState.Username = username;
                         
                         // Lưu thông tin người dùng vào session
                         UserSession.SetUser(maNguoiDung, maNV, username, hoTen, vaiTro);

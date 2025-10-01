@@ -56,79 +56,39 @@ GO
 -- IV) SECURITY: RBAC + DAC
 ------------------------------------------------------------
 
--- 1) Xóa và tạo lại ROLE (để đảm bảo sạch)
--- ✅ FIX: Xóa tất cả members khỏi role trước khi DROP
 
--- Xóa members khỏi r_hr
-DECLARE @sql NVARCHAR(MAX) = '';
-SELECT @sql += 'ALTER ROLE r_hr DROP MEMBER [' + dp.name + ']; '
-FROM sys.database_role_members drm
-JOIN sys.database_principals dp ON drm.member_principal_id = dp.principal_id
-JOIN sys.database_principals r ON drm.role_principal_id = r.principal_id
-WHERE r.name = 'r_hr';
-IF LEN(@sql) > 0 EXEC(@sql);
-
--- Xóa members khỏi r_quanly
-SET @sql = '';
-SELECT @sql += 'ALTER ROLE r_quanly DROP MEMBER [' + dp.name + ']; '
-FROM sys.database_role_members drm
-JOIN sys.database_principals dp ON drm.member_principal_id = dp.principal_id
-JOIN sys.database_principals r ON drm.role_principal_id = r.principal_id
-WHERE r.name = 'r_quanly';
-IF LEN(@sql) > 0 EXEC(@sql);
-
--- Xóa members khỏi r_ketoan
-SET @sql = '';
-SELECT @sql += 'ALTER ROLE r_ketoan DROP MEMBER [' + dp.name + ']; '
-FROM sys.database_role_members drm
-JOIN sys.database_principals dp ON drm.member_principal_id = dp.principal_id
-JOIN sys.database_principals r ON drm.role_principal_id = r.principal_id
-WHERE r.name = 'r_ketoan';
-IF LEN(@sql) > 0 EXEC(@sql);
-
--- Xóa members khỏi r_nhanvien
-SET @sql = '';
-SELECT @sql += 'ALTER ROLE r_nhanvien DROP MEMBER [' + dp.name + ']; '
-FROM sys.database_role_members drm
-JOIN sys.database_principals dp ON drm.member_principal_id = dp.principal_id
-JOIN sys.database_principals r ON drm.role_principal_id = r.principal_id
-WHERE r.name = 'r_nhanvien';
-IF LEN(@sql) > 0 EXEC(@sql);
-
--- Bây giờ mới DROP các role
-IF EXISTS (SELECT 1 FROM sys.database_principals WHERE name=N'r_hr' AND type='R')       DROP ROLE r_hr;
-IF EXISTS (SELECT 1 FROM sys.database_principals WHERE name=N'r_quanly' AND type='R')   DROP ROLE r_quanly;
-IF EXISTS (SELECT 1 FROM sys.database_principals WHERE name=N'r_ketoan' AND type='R')   DROP ROLE r_ketoan;
-IF EXISTS (SELECT 1 FROM sys.database_principals WHERE name=N'r_nhanvien' AND type='R') DROP ROLE r_nhanvien;
-
-CREATE ROLE r_hr;
-CREATE ROLE r_quanly;
-CREATE ROLE r_ketoan;
-CREATE ROLE r_nhanvien;
-PRINT N'Đã tạo lại các database roles: r_hr, r_quanly, r_ketoan, r_nhanvien';
-
--- ✅ Tự động gán lại các user vào role dựa trên VaiTro trong NguoiDung
-DECLARE @SqlReassign NVARCHAR(MAX) = '';
-
-SELECT @SqlReassign += 
-    CASE nd.VaiTro
-        WHEN N'HR' THEN N'ALTER ROLE r_hr ADD MEMBER [' + nd.TenDangNhap + N']; '
-        WHEN N'QuanLy' THEN N'ALTER ROLE r_quanly ADD MEMBER [' + nd.TenDangNhap + N']; '
-        WHEN N'KeToan' THEN N'ALTER ROLE r_ketoan ADD MEMBER [' + nd.TenDangNhap + N']; '
-        WHEN N'NhanVien' THEN N'ALTER ROLE r_nhanvien ADD MEMBER [' + nd.TenDangNhap + N']; '
-        ELSE ''
-    END
-FROM dbo.NguoiDung nd
-WHERE nd.TenDangNhap IS NOT NULL
-  AND nd.KichHoat = 1
-  AND EXISTS (SELECT 1 FROM sys.database_principals dp WHERE dp.name = nd.TenDangNhap AND dp.type = 'S');
-
-IF LEN(@SqlReassign) > 0 
+-- Tạo roles nếu chưa tồn tại
+IF NOT EXISTS (SELECT 1 FROM sys.database_principals WHERE name = 'r_hr' AND type = 'R')
 BEGIN
-    EXEC(@SqlReassign);
-    PRINT N'✅ Đã gán lại ' + CAST((LEN(@SqlReassign) - LEN(REPLACE(@SqlReassign, 'ALTER ROLE', '')))/10 AS NVARCHAR) + N' user(s) vào các role tương ứng';
+    CREATE ROLE r_hr;
+    PRINT N'✓ Đã tạo role r_hr';
 END
-GO
+ELSE
+    PRINT N'→ Role r_hr đã tồn tại';
+
+IF NOT EXISTS (SELECT 1 FROM sys.database_principals WHERE name = 'r_quanly' AND type = 'R')
+BEGIN
+    CREATE ROLE r_quanly;
+    PRINT N'✓ Đã tạo role r_quanly';
+END
+ELSE
+    PRINT N'→ Role r_quanly đã tồn tại';
+
+IF NOT EXISTS (SELECT 1 FROM sys.database_principals WHERE name = 'r_ketoan' AND type = 'R')
+BEGIN
+    CREATE ROLE r_ketoan;
+    PRINT N'✓ Đã tạo role r_ketoan';
+END
+ELSE
+    PRINT N'→ Role r_ketoan đã tồn tại';
+
+IF NOT EXISTS (SELECT 1 FROM sys.database_principals WHERE name = 'r_nhanvien' AND type = 'R')
+BEGIN
+    CREATE ROLE r_nhanvien;
+    PRINT N'✓ Đã tạo role r_nhanvien';
+END
+ELSE
+    PRINT N'→ Role r_nhanvien đã tồn tại';
 
 /* 2) DAC: Cấp quyền theo yêu cầu - MÔ HÌNH BẢO MẬT NÂNG CAO
    
@@ -160,6 +120,11 @@ GRANT EXECUTE ON dbo.sp_TaoTaiKhoanDayDu TO r_hr;  -- Thêm quyền cho bảo m�
 GRANT EXECUTE ON dbo.sp_CapNhatTaiKhoanDayDu TO r_hr;
 GRANT EXECUTE ON dbo.sp_XoaTaiKhoanDayDu TO r_hr;
 GRANT EXECUTE ON dbo.sp_VoHieuHoaTaiKhoan TO r_hr;
+GRANT EXECUTE ON dbo.sp_NguoiDung_DoiMatKhau TO r_hr;  -- Thêm quyền đổi mật khẩu
+
+-- Thêm quyền INSERT/UPDATE cho các bảng cần thiết
+GRANT INSERT, UPDATE ON dbo.NguoiDung TO r_hr;
+GRANT INSERT, UPDATE ON dbo.NhanVien TO r_hr;
 GRANT EXECUTE ON dbo.sp_DuyetDonTu       TO r_hr;
 GRANT EXECUTE ON dbo.sp_KhoaCongThang    TO r_hr;
 GRANT EXECUTE ON dbo.sp_MoKhoaCongThang  TO r_hr;

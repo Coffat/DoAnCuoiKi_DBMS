@@ -1032,6 +1032,7 @@ CREATE PROCEDURE dbo.sp_NguoiDung_DoiMatKhau
     @MaNguoiDung INT,
     @MatKhauCu NVARCHAR(128),
     @MatKhauMoi NVARCHAR(128)
+WITH EXECUTE AS OWNER
 AS
 BEGIN
     SET NOCOUNT ON;
@@ -1052,33 +1053,33 @@ BEGIN
     
     BEGIN TRAN;
     
-    -- Kiểm tra mật khẩu cũ
-    DECLARE @CurrentPassword NVARCHAR(128);
-    SELECT @CurrentPassword = MatKhauHash 
-    FROM dbo.NguoiDung 
-    WHERE MaNguoiDung = @MaNguoiDung;
-    
-    IF @CurrentPassword IS NULL
+    -- Kiểm tra mật khẩu cũ (nếu không trống)
+    IF @MatKhauCu != ''
     BEGIN
-        ROLLBACK;
-        RAISERROR(N'Không tìm thấy người dùng.', 16, 1);
-        RETURN;
+        DECLARE @CurrentPassword NVARCHAR(128);
+        SELECT @CurrentPassword = MatKhauHash 
+        FROM dbo.NguoiDung 
+        WHERE MaNguoiDung = @MaNguoiDung;
+        
+        IF @CurrentPassword IS NULL
+        BEGIN
+            ROLLBACK;
+            RAISERROR(N'Không tìm thấy người dùng.', 16, 1);
+            RETURN;
+        END
+        
+        IF @CurrentPassword != @MatKhauCu
+        BEGIN
+            ROLLBACK;
+            RAISERROR(N'Mật khẩu cũ không đúng.', 16, 1);
+            RETURN;
+        END
     END
     
-    IF @CurrentPassword != @MatKhauCu
-    BEGIN
-        ROLLBACK;
-        RAISERROR(N'Mật khẩu cũ không đúng.', 16, 1);
-        RETURN;
-    END
-    
-    -- ⚠️ CẢNH BÁO: Chỉ cập nhật mật khẩu trong bảng NguoiDung
-    -- KHÔNG cập nhật SQL Server Login password
+    -- Cập nhật mật khẩu mới
     UPDATE dbo.NguoiDung 
     SET MatKhauHash = @MatKhauMoi
     WHERE MaNguoiDung = @MaNguoiDung;
-    
-    PRINT N'⚠️ LƯU Ý: Chỉ cập nhật mật khẩu trong bảng NguoiDung. SQL Login không thay đổi!';
     
     COMMIT;
 END

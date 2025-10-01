@@ -72,10 +72,10 @@ namespace VuToanThang_23110329.Forms
         {
             SetActiveButton(btnDanhMuc);
             lblWelcome.Text = "👤 Quản lý người dùng";
+            lblStatus.Text = "Đang quản lý người dùng";
             
-            // Mở form quản lý người dùng
-            frmQuanLyNguoiDung frmQuanLyND = new frmQuanLyNguoiDung();
-            frmQuanLyND.ShowDialog();
+            // Mở form trong panel giống các form khác
+            OpenFormInPanel(new frmQuanLyNguoiDung());
         }
 
         private void btnCaLam_Click(object sender, EventArgs e)

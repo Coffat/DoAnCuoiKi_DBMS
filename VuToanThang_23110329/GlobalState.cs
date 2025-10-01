@@ -16,6 +16,16 @@ namespace VuToanThang_23110329
         public static string ConnectionString { get; set; }
 
         /// <summary>
+        /// Vai trò của người dùng hiện tại (HR, QuanLy, KeToan, NhanVien)
+        /// </summary>
+        public static string UserRole { get; set; }
+
+        /// <summary>
+        /// Tên đăng nhập của người dùng hiện tại
+        /// </summary>
+        public static string Username { get; set; }
+
+        /// <summary>
         /// Tên server SQL (Data Source)
         /// </summary>
         public static string ServerName { get; set; } = "localhost";
@@ -31,6 +41,8 @@ namespace VuToanThang_23110329
         public static void Clear()
         {
             ConnectionString = string.Empty;
+            UserRole = string.Empty;
+            Username = string.Empty;
         }
 
         /// <summary>
