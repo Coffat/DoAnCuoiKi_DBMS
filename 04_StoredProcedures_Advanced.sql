@@ -298,12 +298,12 @@ BEGIN
     -- Tính toán giờ bắt đầu ca hôm nay và giờ sớm nhất được check in (15 phút trước)
     SET @GioBatDauToday = DATETIMEFROMPARTS(YEAR(@NgayLam), MONTH(@NgayLam), DAY(@NgayLam), 
                                            DATEPART(HOUR, @GioBatDau), DATEPART(MINUTE, @GioBatDau), 0, 0);
-    SET @GioSomNhat = DATEADD(MINUTE, -15, @GioBatDauToday);
+    SET @GioSomNhat = DATEADD(MINUTE, -60, @GioBatDauToday); -- Cho phép check in sớm 60 phút để test
 
-    -- Kiểm tra check in không được sớm quá 15 phút
+    -- Kiểm tra check in không được sớm quá 60 phút (để test)
     IF @GioVao < @GioSomNhat
     BEGIN
-        DECLARE @ThongBaoSom NVARCHAR(200) = N'Chỉ được check in sớm tối đa 15 phút trước giờ bắt đầu ca. ' +
+        DECLARE @ThongBaoSom NVARCHAR(200) = N'Chỉ được check in sớm tối đa 60 phút trước giờ bắt đầu ca. ' +
                                            N'Ca ' + @TenCa + N' bắt đầu lúc ' + FORMAT(@GioBatDau, 'HH:mm') + 
                                            N'. Có thể check in từ ' + FORMAT(@GioSomNhat, 'HH:mm') + N'.';
         RAISERROR(@ThongBaoSom, 16, 1);
