@@ -287,7 +287,7 @@ BEGIN
     SELECT @GioBatDau = cl.GioBatDau, @GioKetThuc = cl.GioKetThuc, @TenCa = cl.TenCa
     FROM dbo.LichPhanCa lpc
     INNER JOIN dbo.CaLam cl ON lpc.MaCa = cl.MaCa
-    WHERE lpc.MaNV = @MaNV AND lpc.NgayLam = @NgayLam AND lpc.TrangThai IN (N'DuKien', N'Mo');
+    WHERE lpc.MaNV = @MaNV AND lpc.NgayLam = @NgayLam AND lpc.TrangThai = N'DuKien';
 
     IF @GioBatDau IS NULL
     BEGIN
@@ -896,11 +896,17 @@ BEGIN
 END
 GO
 
--- 12.3) XÓA TÀI KHOẢN ĐẦY ĐỦ
+-- 12.3) VÔ HIỆU HÓA TÀI KHOẢN NHÂN VIÊN NGHỈ VIỆC (Không xóa dữ liệu lịch sử)
+-- ⚠️ LƯU Ý: Stored Procedure này ĐÃ ĐƯỢC ĐIỀU CHỈNH để GIỮ LẠI dữ liệu lịch sử
+-- Thay vì xóa hoàn toàn, sẽ:
+--   1. Đặt trạng thái nhân viên thành 'Nghi'
+--   2. Vô hiệu hóa tài khoản (KichHoat = 0, DISABLE Login)
+--   3. GIỮ LẠI tất cả dữ liệu lịch sử (ChamCong, DonTu, BangLuong, LichPhanCa)
 IF OBJECT_ID('dbo.sp_XoaTaiKhoanDayDu','P') IS NOT NULL DROP PROCEDURE dbo.sp_XoaTaiKhoanDayDu;
 GO
 CREATE PROCEDURE dbo.sp_XoaTaiKhoanDayDu
-    @MaNV INT
+    @MaNV INT,
+    @XoaHoanToan BIT = 0  -- 1 = Xóa hoàn toàn (chỉ dùng cho test), 0 = Vô hiệu hóa (mặc định)
 AS
 BEGIN
     SET NOCOUNT ON;
@@ -916,7 +922,7 @@ BEGIN
 
         IF @TenDangNhap IS NULL
         BEGIN
-            RAISERROR(N'Không tìm thấy tài khoản để xóa.', 16, 1);
+            RAISERROR(N'Không tìm thấy tài khoản để xử lý.', 16, 1);
             RETURN;
         END
 
@@ -924,25 +930,56 @@ BEGIN
 
         DECLARE @SqlCmd NVARCHAR(MAX);
 
-        -- BƯỚC 1: Xóa Database User (phải xóa trước Login)
-        SET @SqlCmd = N'IF EXISTS (SELECT 1 FROM sys.database_principals WHERE name = ''' + 
-                      @TenDangNhap + ''' AND type = ''S'') ' +
-                      N'DROP USER ' + QUOTENAME(@TenDangNhap);
-        EXEC sp_executesql @SqlCmd;
+        IF @XoaHoanToan = 1
+        BEGIN
+            -- CHẾ ĐỘ XÓA HOÀN TOÀN (Chỉ dùng cho test/cleanup)
+            PRINT N'⚠️ CẢNH BÁO: Đang xóa hoàn toàn tài khoản và DỮ LIỆU LỊCH SỬ!';
+            
+            -- Xóa Database User
+            SET @SqlCmd = N'IF EXISTS (SELECT 1 FROM sys.database_principals WHERE name = ''' + 
+                          @TenDangNhap + ''' AND type = ''S'') ' +
+                          N'DROP USER ' + QUOTENAME(@TenDangNhap);
+            EXEC sp_executesql @SqlCmd;
 
-        -- BƯỚC 2: Xóa SQL Login
-        SET @SqlCmd = N'IF EXISTS (SELECT 1 FROM sys.server_principals WHERE name = ''' + 
-                      @TenDangNhap + ''' AND type = ''S'') ' +
-                      N'DROP LOGIN ' + QUOTENAME(@TenDangNhap);
-        EXEC sp_executesql @SqlCmd;
-        
-        -- BƯỚC 3: Xóa dữ liệu trong các bảng (CASCADE sẽ tự động xử lý)
-        DELETE FROM dbo.NhanVien WHERE MaNV = @MaNV;
-        DELETE FROM dbo.NguoiDung WHERE MaNguoiDung = @MaNguoiDung;
+            -- Xóa SQL Login
+            SET @SqlCmd = N'IF EXISTS (SELECT 1 FROM sys.server_principals WHERE name = ''' + 
+                          @TenDangNhap + ''' AND type = ''S'') ' +
+                          N'DROP LOGIN ' + QUOTENAME(@TenDangNhap);
+            EXEC sp_executesql @SqlCmd;
+            
+            -- Xóa dữ liệu (CASCADE sẽ xóa LichPhanCa, ChamCong, DonTu, BangLuong)
+            DELETE FROM dbo.NhanVien WHERE MaNV = @MaNV;
+            DELETE FROM dbo.NguoiDung WHERE MaNguoiDung = @MaNguoiDung;
+            
+            PRINT N'Đã xóa hoàn toàn tài khoản và dữ liệu: ' + @TenDangNhap;
+        END
+        ELSE
+        BEGIN
+            -- CHẾ ĐỘ VÔ HIỆU HÓA (Khuyến nghị - Giữ lại dữ liệu lịch sử)
+            
+            -- Bước 1: Vô hiệu hóa SQL Login
+            SET @SqlCmd = N'IF EXISTS (SELECT 1 FROM sys.server_principals WHERE name = ''' + 
+                          @TenDangNhap + ''' AND type = ''S'') ' +
+                          N'ALTER LOGIN ' + QUOTENAME(@TenDangNhap) + N' DISABLE';
+            EXEC sp_executesql @SqlCmd;
+            
+            -- Bước 2: Cập nhật trạng thái nhân viên thành 'Nghi'
+            UPDATE dbo.NhanVien
+            SET TrangThai = N'Nghi'
+            WHERE MaNV = @MaNV;
+            
+            -- Bước 3: Vô hiệu hóa tài khoản trong bảng NguoiDung
+            UPDATE dbo.NguoiDung
+            SET KichHoat = 0
+            WHERE MaNguoiDung = @MaNguoiDung;
+            
+            PRINT N'Đã vô hiệu hóa tài khoản (giữ lại dữ liệu lịch sử): ' + @TenDangNhap;
+            PRINT N'  - Trạng thái nhân viên: Nghi';
+            PRINT N'  - SQL Login: DISABLED';
+            PRINT N'  - Dữ liệu lịch sử (ChamCong, BangLuong, DonTu, LichPhanCa): Được giữ lại';
+        END
 
         COMMIT;
-        
-        PRINT N'Đã xóa hoàn toàn tài khoản: ' + @TenDangNhap;
     END TRY
     BEGIN CATCH
         IF @@TRANCOUNT > 0 ROLLBACK;

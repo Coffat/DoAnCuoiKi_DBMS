@@ -182,40 +182,6 @@ BEGIN
         RETURN;
     END
 
-    -- Kiểm tra tổng thời gian làm việc không vượt quá 16 tiếng/ngày
-    DECLARE @TongThoiGianPhut INT = 0;
-    DECLARE @CaMoiThoiGianPhut INT = DATEDIFF(MINUTE, @GioBatDau, @GioKetThuc);
-    IF @CaMoiThoiGianPhut < 0 SET @CaMoiThoiGianPhut = @CaMoiThoiGianPhut + 1440; -- Ca qua đêm
-
-    -- Tính tổng thời gian hiện tại của nhân viên trong ngày (không bao gồm ca đang cập nhật)
-    SELECT @TongThoiGianPhut = ISNULL(SUM(
-        CASE
-            WHEN DATEDIFF(MINUTE, cl.GioBatDau, cl.GioKetThuc) < 0
-            THEN DATEDIFF(MINUTE, cl.GioBatDau, cl.GioKetThuc) + 1440
-            ELSE DATEDIFF(MINUTE, cl.GioBatDau, cl.GioKetThuc)
-        END
-    ), 0)
-    FROM dbo.LichPhanCa lpc
-    INNER JOIN dbo.CaLam cl ON lpc.MaCa = cl.MaCa
-    WHERE lpc.NgayLam = CAST(GETDATE() AS DATE)
-      AND lpc.MaNV IN (SELECT DISTINCT MaNV FROM dbo.LichPhanCa WHERE MaCa = @MaCa)
-      AND lpc.TrangThai IN (N'DuKien', N'Mo')
-      AND cl.KichHoat = 1
-      AND lpc.MaCa <> @MaCa; -- Không tính ca đang được cập nhật
-
-    -- Cộng thêm thời gian ca mới
-    SET @TongThoiGianPhut = @TongThoiGianPhut + @CaMoiThoiGianPhut;
-
-    -- Kiểm tra tổng thời gian không vượt quá 16 tiếng (960 phút)
-    IF @TongThoiGianPhut > 960
-    BEGIN
-        DECLARE @TongGio INT = @TongThoiGianPhut / 60;
-        DECLARE @TongPhut INT = @TongThoiGianPhut % 60;
-        RAISERROR(N'Tổng thời gian làm việc trong ngày (%d giờ %d phút) vượt quá 16 tiếng cho phép.',
-                 16, 1, @TongGio, @TongPhut);
-        RETURN;
-    END
-
     BEGIN TRAN;
 
     UPDATE dbo.CaLam
@@ -713,6 +679,39 @@ BEGIN
     )
     BEGIN
         RAISERROR(N'Lịch bị trùng lặp thời gian với ca khác.', 16, 1);
+        RETURN;
+    END
+
+    -- Kiểm tra tổng thời gian làm việc không vượt quá 16 tiếng/ngày
+    DECLARE @TongThoiGianPhut INT;
+    DECLARE @CaMoiThoiGianPhut INT = DATEDIFF(MINUTE, @GioBatDau, @GioKetThuc);
+    IF @CaMoiThoiGianPhut < 0 SET @CaMoiThoiGianPhut = @CaMoiThoiGianPhut + 1440; -- Ca qua đêm
+
+    -- Tính tổng thời gian hiện tại của nhân viên trong ngày này
+    SELECT @TongThoiGianPhut = ISNULL(SUM(
+        CASE
+            WHEN DATEDIFF(MINUTE, cl.GioBatDau, cl.GioKetThuc) < 0
+            THEN DATEDIFF(MINUTE, cl.GioBatDau, cl.GioKetThuc) + 1440
+            ELSE DATEDIFF(MINUTE, cl.GioBatDau, cl.GioKetThuc)
+        END
+    ), 0)
+    FROM dbo.LichPhanCa lpc
+    INNER JOIN dbo.CaLam cl ON lpc.MaCa = cl.MaCa
+    WHERE lpc.NgayLam = @Ngay
+      AND lpc.MaNV = @MaNV
+      AND lpc.TrangThai IN (N'DuKien', N'Khoa')
+      AND cl.KichHoat = 1;
+
+    -- Cộng thêm thời gian ca mới
+    SET @TongThoiGianPhut = @TongThoiGianPhut + @CaMoiThoiGianPhut;
+
+    -- Kiểm tra tổng thời gian không vượt quá 16 tiếng (960 phút)
+    IF @TongThoiGianPhut > 960
+    BEGIN
+        DECLARE @TongGio INT = @TongThoiGianPhut / 60;
+        DECLARE @TongPhut INT = @TongThoiGianPhut % 60;
+        RAISERROR(N'Tổng thời gian làm việc trong ngày (%d giờ %d phút) vượt quá 16 tiếng cho phép.',
+                 16, 1, @TongGio, @TongPhut);
         RETURN;
     END
 

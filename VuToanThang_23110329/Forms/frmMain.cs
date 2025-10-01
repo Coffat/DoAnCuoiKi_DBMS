@@ -315,7 +315,11 @@ namespace VuToanThang_23110329.Forms
                        break;
                    case "Đăng xuất":
                        btnDangXuat_Click(sender, e);
-{{ ... }}
+                       break;
+                   case "Quản lý Bảng lương":
+                       OpenFormInPanel(new frmBangLuong());
+                       lblStatus.Text = "Đang quản lý bảng lương";
+                       break;
                    case "Thoát":
                        this.Close();
                        break;

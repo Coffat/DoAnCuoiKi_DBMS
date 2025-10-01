@@ -29,7 +29,7 @@ SET XACT_ABORT ON;
 BEGIN TRAN;
 
 -- TẮT TRIGGER (chỉ tắt trigger chặn khóa, giữ trigger tính công để tự động tính GioCong/DiTre/VeSom)
-ALTER TABLE dbo.LichPhanCa DISABLE TRIGGER tr_LichPhanCa_NoEditWhenKhoa;
+-- ✅ Đã xóa: tr_LichPhanCa_NoEditWhenKhoa (trùng lặp)
 ALTER TABLE dbo.LichPhanCa DISABLE TRIGGER tr_LichPhanCa_BlockChangeWhenLocked;
 ALTER TABLE dbo.ChamCong DISABLE TRIGGER tr_ChamCong_BlockWhenLocked_U;
 ALTER TABLE dbo.ChamCong DISABLE TRIGGER tr_ChamCong_BlockWhenLocked_D;
@@ -184,7 +184,7 @@ PRINT N'Đơn từ: ' + CAST(@CDonTu AS NVARCHAR);
 PRINT N'Bảng lương: ' + CAST(@CBangLuong AS NVARCHAR) + N' tháng';
 
 -- BẬT LẠI TRIGGER
-ALTER TABLE dbo.LichPhanCa ENABLE TRIGGER tr_LichPhanCa_NoEditWhenKhoa;
+-- ✅ Đã xóa: tr_LichPhanCa_NoEditWhenKhoa (trùng lặp)
 ALTER TABLE dbo.LichPhanCa ENABLE TRIGGER tr_LichPhanCa_BlockChangeWhenLocked;
 ALTER TABLE dbo.ChamCong ENABLE TRIGGER tr_ChamCong_BlockWhenLocked_U;
 ALTER TABLE dbo.ChamCong ENABLE TRIGGER tr_ChamCong_BlockWhenLocked_D;

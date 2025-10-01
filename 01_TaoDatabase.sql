@@ -106,8 +106,8 @@ ON dbo.NhanVien(Email)
 WHERE Email IS NOT NULL;
 -- Email không được trùng nếu có cung cấp.
 
-ALTER TABLE dbo.NhanVien ADD CONSTRAINT CK_NhanVien_TrangThai CHECK(TrangThai IN (N'DangLam',N'Nghi'));
--- Chỉ chấp nhận 2 trạng thái nhân viên.
+ALTER TABLE dbo.NhanVien ADD CONSTRAINT CK_NhanVien_TrangThai CHECK(TrangThai IN (N'DangLam',N'Nghi',N'TamNghi'));
+-- Chấp nhận 3 trạng thái: Đang làm, Nghỉ, Tạm nghỉ
 
 ALTER TABLE dbo.NhanVien WITH NOCHECK 
   ADD CONSTRAINT CK_NhanVien_GioiTinh CHECK(GioiTinh IS NULL OR GioiTinh IN (N'Nam',N'Nu',N'Khac'));

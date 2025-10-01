@@ -256,33 +256,8 @@ BEGIN
 END
 GO
 
--- 4) LICHPHANCA: Chặn đổi MaNV/NgayLam/MaCa khi lịch đã Khoa
-IF OBJECT_ID('dbo.tr_LichPhanCa_NoEditWhenKhoa','TR') IS NOT NULL DROP TRIGGER dbo.tr_LichPhanCa_NoEditWhenKhoa;
-GO
-CREATE TRIGGER dbo.tr_LichPhanCa_NoEditWhenKhoa
-ON dbo.LichPhanCa
-AFTER UPDATE
-AS
-BEGIN
-    SET NOCOUNT ON;
-    IF TRY_CONVERT(INT, SESSION_CONTEXT(N'SkipTrigger')) = 1 RETURN;
-
-    IF EXISTS (
-        SELECT 1
-        FROM inserted i
-        JOIN deleted d ON d.MaLich = i.MaLich
-        WHERE d.TrangThai = N'Khoa'
-          AND ( ISNULL(i.MaNV,0)   <> ISNULL(d.MaNV,0)
-             OR ISNULL(i.MaCa,0)   <> ISNULL(d.MaCa,0)
-             OR ISNULL(i.NgayLam,'1900-01-01') <> ISNULL(d.NgayLam,'1900-01-01') )
-    )
-    BEGIN
-        RAISERROR(N'Lịch đã khóa, không được thay đổi nhân sự/ca/ngày.', 16, 1);
-        ROLLBACK TRANSACTION;
-        RETURN;
-    END
-END
-GO
+-- 4) LICHPHANCA: Trigger đã được gộp vào tr_LichPhanCa_BlockChangeWhenLocked (xem phía dưới)
+-- Đã xóa trigger tr_LichPhanCa_NoEditWhenKhoa vì trùng lặp chức năng
 
 -- 5) BANGLUONG: Chặn UPDATE/DELETE khi TrangThai = 'Dong'
 IF OBJECT_ID('dbo.tr_BangLuong_NoEditWhenDong_U','TR') IS NOT NULL DROP TRIGGER dbo.tr_BangLuong_NoEditWhenDong_U;
