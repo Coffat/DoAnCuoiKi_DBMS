@@ -575,6 +575,15 @@ namespace VuToanThang_23110329.Forms
                         cmd.Parameters.AddWithValue("@LuongCoBan", numLuongCoBan.Value);
                         cmd.Parameters.AddWithValue("@MaPhongBan", cmbPhongBanForm.SelectedValue == DBNull.Value ? (object)DBNull.Value : cmbPhongBanForm.SelectedValue);
                         cmd.Parameters.AddWithValue("@MaChucVu", cmbChucVu.SelectedValue == DBNull.Value ? (object)DBNull.Value : cmbChucVu.SelectedValue);
+                        cmd.Parameters.AddWithValue("@TaoTaiKhoan", 0); // Không tạo tài khoản đăng nhập
+                        cmd.Parameters.AddWithValue("@TenDangNhap", DBNull.Value);
+                        cmd.Parameters.AddWithValue("@MatKhauHash", DBNull.Value);
+                        cmd.Parameters.AddWithValue("@VaiTro", "NhanVien");
+                        
+                        // Output parameter
+                        SqlParameter outputParam = new SqlParameter("@MaNV_OUT", SqlDbType.Int);
+                        outputParam.Direction = ParameterDirection.Output;
+                        cmd.Parameters.Add(outputParam);
 
                         cmd.ExecuteNonQuery();
                     }
@@ -597,25 +606,18 @@ namespace VuToanThang_23110329.Forms
                 using (SqlConnection conn = new SqlConnection(connectionString))
                 {
                     conn.Open();
-                    using (SqlCommand cmd = new SqlCommand("sp_UpdateNhanVienWithPhongBanChucVu", conn))
+                    using (SqlCommand cmd = new SqlCommand("sp_NhanVien_UpdateThongTinCaNhan", conn))
                     {
                         cmd.CommandType = CommandType.StoredProcedure;
                         cmd.Parameters.AddWithValue("@MaNV", currentMaNV);
                         cmd.Parameters.AddWithValue("@HoTen", txtHoTen.Text.Trim());
-                        cmd.Parameters.AddWithValue("@NgaySinh", dtpNgaySinh.Value);
-                        cmd.Parameters.AddWithValue("@GioiTinh", cmbGioiTinh.SelectedItem?.ToString() ?? "");
                         cmd.Parameters.AddWithValue("@DienThoai", txtDienThoai.Text.Trim());
                         cmd.Parameters.AddWithValue("@Email", txtEmail.Text.Trim());
                         cmd.Parameters.AddWithValue("@DiaChi", txtDiaChi.Text.Trim());
-                        cmd.Parameters.AddWithValue("@NgayVaoLam", dtpNgayVaoLam.Value);
-                        cmd.Parameters.AddWithValue("@LuongCoBan", numLuongCoBan.Value);
-                        cmd.Parameters.AddWithValue("@MaPhongBan", cmbPhongBanForm.SelectedValue == DBNull.Value ? (object)DBNull.Value : cmbPhongBanForm.SelectedValue);
-                        cmd.Parameters.AddWithValue("@MaChucVu", cmbChucVu.SelectedValue == DBNull.Value ? (object)DBNull.Value : cmbChucVu.SelectedValue);
 
                         cmd.ExecuteNonQuery();
                     }
                 }
-                LoadData();
                 pnlRight.Visible = false;
                 ClearForm();
                 MessageBox.Show("Cập nhật thông tin nhân viên thành công.", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -678,13 +680,29 @@ namespace VuToanThang_23110329.Forms
                             if (reader.Read())
                             {
                                 txtHoTen.Text = reader["HoTen"].ToString();
-                                dtpNgaySinh.Value = Convert.ToDateTime(reader["NgaySinh"]);
-                                cmbGioiTinh.Text = reader["GioiTinh"].ToString();
-                                txtDienThoai.Text = reader["DienThoai"].ToString();
-                                txtEmail.Text = reader["Email"].ToString();
-                                txtDiaChi.Text = reader["DiaChi"].ToString();
-                                dtpNgayVaoLam.Value = Convert.ToDateTime(reader["NgayVaoLam"]);
-                                numLuongCoBan.Value = Convert.ToDecimal(reader["LuongCoBan"]);
+                                
+                                // Xử lý NgaySinh có thể NULL
+                                if (reader["NgaySinh"] != DBNull.Value)
+                                    dtpNgaySinh.Value = Convert.ToDateTime(reader["NgaySinh"]);
+                                else
+                                    dtpNgaySinh.Value = DateTime.Now.AddYears(-25);
+                                
+                                cmbGioiTinh.Text = reader["GioiTinh"]?.ToString() ?? "";
+                                txtDienThoai.Text = reader["DienThoai"]?.ToString() ?? "";
+                                txtEmail.Text = reader["Email"]?.ToString() ?? "";
+                                txtDiaChi.Text = reader["DiaChi"]?.ToString() ?? "";
+                                
+                                // Xử lý NgayVaoLam có thể NULL
+                                if (reader["NgayVaoLam"] != DBNull.Value)
+                                    dtpNgayVaoLam.Value = Convert.ToDateTime(reader["NgayVaoLam"]);
+                                else
+                                    dtpNgayVaoLam.Value = DateTime.Now;
+                                
+                                // Xử lý LuongCoBan có thể NULL
+                                if (reader["LuongCoBan"] != DBNull.Value)
+                                    numLuongCoBan.Value = Convert.ToDecimal(reader["LuongCoBan"]);
+                                else
+                                    numLuongCoBan.Value = 5000000;
                                 
                                 if (reader["MaPhongBan"] != DBNull.Value && cmbPhongBanForm.Items.Count > 0)
                                     cmbPhongBanForm.SelectedValue = reader["MaPhongBan"];

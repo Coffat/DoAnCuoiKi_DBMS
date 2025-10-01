@@ -230,19 +230,41 @@ namespace VuToanThang_23110329.Forms
                     using (SqlConnection conn = new SqlConnection(connectionString))
                     {
                         conn.Open();
-                        using (SqlCommand cmd = new SqlCommand("dbo.sp_VoHieuHoaTaiKhoan", conn))
+                        
+                        // Lấy MaNV từ MaNguoiDung
+                        string getMaNV = "SELECT MaNV FROM dbo.NhanVien WHERE MaNguoiDung = @MaNguoiDung";
+                        int maNV = 0;
+                        
+                        using (SqlCommand cmd = new SqlCommand(getMaNV, conn))
                         {
-                            cmd.CommandType = CommandType.StoredProcedure;
                             cmd.Parameters.AddWithValue("@MaNguoiDung", currentMaNguoiDung);
-                            cmd.Parameters.AddWithValue("@KichHoat", !currentStatus);
-                            
-                            cmd.ExecuteNonQuery();
-                            
-                            MessageBox.Show($"Đã {action} tài khoản thành công!", "Thành công", 
-                                MessageBoxButtons.OK, MessageBoxIcon.Information);
-                            
-                            LoadData();
+                            object result_obj = cmd.ExecuteScalar();
+                            if (result_obj != null)
+                                maNV = Convert.ToInt32(result_obj);
                         }
+                        
+                        if (maNV > 0)
+                        {
+                            using (SqlCommand cmd = new SqlCommand("dbo.sp_VoHieuHoaTaiKhoan", conn))
+                            {
+                                cmd.CommandType = CommandType.StoredProcedure;
+                                cmd.Parameters.AddWithValue("@MaNV", maNV);
+                                cmd.Parameters.AddWithValue("@KichHoat", !currentStatus);
+                                
+                                cmd.ExecuteNonQuery();
+                            }
+                        }
+                        else
+                        {
+                            MessageBox.Show("Không tìm thấy nhân viên tương ứng.", "Lỗi", 
+                                MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            return;
+                        }
+                        
+                        MessageBox.Show($"Đã {action} tài khoản thành công!", "Thành công", 
+                            MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        
+                        LoadData();
                     }
                 }
                 catch (Exception ex)

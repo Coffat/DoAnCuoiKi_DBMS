@@ -716,10 +716,10 @@ BEGIN
             RETURN;
         END
 
-        -- Kiểm tra SQL Login đã tồn tại chưa
-        IF EXISTS (SELECT 1 FROM sys.server_principals WHERE name = @TenDangNhap AND type = 'S')
+        -- Kiểm tra Database User đã tồn tại chưa
+        IF EXISTS (SELECT 1 FROM sys.database_principals WHERE name = @TenDangNhap AND type = 'S')
         BEGIN
-            RAISERROR(N'Tên đăng nhập đã tồn tại trong SQL Server.', 16, 1);
+            RAISERROR(N'Tên đăng nhập đã tồn tại trong Database Users.', 16, 1);
             RETURN;
         END
 
@@ -743,15 +743,8 @@ BEGIN
 
         SET @MaNV_OUT = @MaNV_Temp;
 
-        -- BƯỚC 3: Tạo SQL Login cho người dùng mới
-        SET @SqlCmd = N'CREATE LOGIN ' + QUOTENAME(@TenDangNhap) + 
-                      N' WITH PASSWORD = ' + QUOTENAME(@MatKhau, '''') + 
-                      N', DEFAULT_DATABASE = QLNhanSuSieuThiMini, CHECK_POLICY = OFF';
-        EXEC sp_executesql @SqlCmd;
-
-        -- BƯỚC 4: Tạo Database User và ánh xạ với Login vừa tạo
-        SET @SqlCmd = N'USE QLNhanSuSieuThiMini; CREATE USER ' + QUOTENAME(@TenDangNhap) + 
-                      N' FOR LOGIN ' + QUOTENAME(@TenDangNhap);
+        -- BƯỚC 3: Tạo Database User WITHOUT LOGIN (chỉ trong database)
+        SET @SqlCmd = N'CREATE USER ' + QUOTENAME(@TenDangNhap) + N' WITHOUT LOGIN';
         EXEC sp_executesql @SqlCmd;
 
         -- BƯỚC 5: Thêm User vào Role tương ứng
@@ -908,7 +901,7 @@ IF OBJECT_ID('dbo.sp_XoaTaiKhoanDayDu','P') IS NOT NULL DROP PROCEDURE dbo.sp_Xo
 GO
 CREATE PROCEDURE dbo.sp_XoaTaiKhoanDayDu
     @MaNV INT,
-    @XoaHoanToan BIT = 0  -- 1 = Xóa hoàn toàn (chỉ dùng cho test), 0 = Vô hiệu hóa (mặc định)
+    @XoaHoanToan BIT = 1  -- 1 = Xóa hoàn toàn (mặc định), 0 = Vô hiệu hóa
 WITH EXECUTE AS OWNER  -- ✅ CHẠY VỚI QUYỀN DBO
 AS
 BEGIN
@@ -938,16 +931,10 @@ BEGIN
             -- CHẾ ĐỘ XÓA HOÀN TOÀN (Chỉ dùng cho test/cleanup)
             PRINT N'⚠️ CẢNH BÁO: Đang xóa hoàn toàn tài khoản và DỮ LIỆU LỊCH SỬ!';
             
-            -- Xóa Database User
+            -- Xóa Database User (không có SQL Login để xóa)
             SET @SqlCmd = N'IF EXISTS (SELECT 1 FROM sys.database_principals WHERE name = ''' + 
                           @TenDangNhap + ''' AND type = ''S'') ' +
                           N'DROP USER ' + QUOTENAME(@TenDangNhap);
-            EXEC sp_executesql @SqlCmd;
-
-            -- Xóa SQL Login
-            SET @SqlCmd = N'IF EXISTS (SELECT 1 FROM sys.server_principals WHERE name = ''' + 
-                          @TenDangNhap + ''' AND type = ''S'') ' +
-                          N'DROP LOGIN ' + QUOTENAME(@TenDangNhap);
             EXEC sp_executesql @SqlCmd;
             
             -- Xóa dữ liệu (CASCADE sẽ xóa LichPhanCa, ChamCong, DonTu, BangLuong)
@@ -960,11 +947,7 @@ BEGIN
         BEGIN
             -- CHẾ ĐỘ VÔ HIỆU HÓA (Khuyến nghị - Giữ lại dữ liệu lịch sử)
             
-            -- Bước 1: Vô hiệu hóa SQL Login
-            SET @SqlCmd = N'IF EXISTS (SELECT 1 FROM sys.server_principals WHERE name = ''' + 
-                          @TenDangNhap + ''' AND type = ''S'') ' +
-                          N'ALTER LOGIN ' + QUOTENAME(@TenDangNhap) + N' DISABLE';
-            EXEC sp_executesql @SqlCmd;
+            -- Bước 1: Không cần vô hiệu hóa SQL Login (vì không có)
             
             -- Bước 2: Cập nhật trạng thái nhân viên thành 'Nghi'
             UPDATE dbo.NhanVien
