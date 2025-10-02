@@ -164,31 +164,57 @@ SELECT 'ChucVu' as TableName, MaChucVu, TenChucVu FROM dbo.ChucVu;
 -- Tạo từng tài khoản qua sp_TaoTaiKhoanDayDu
 -- Thứ tự tham số: @HoTen, @NgaySinh, @GioiTinh, @DienThoai, @Email, @DiaChi, @NgayVaoLam, @MaPhongBan, @MaChucVu, @LuongCoBan, @TenDangNhap, @MatKhau, @VaiTro
 
--- Lấy ID thực tế từ các bảng vừa tạo (dùng thứ tự insert)
+-- ✅ SỬA: Lấy ID thực tế từ database thay vì hardcode
 DECLARE @MaNV_Out INT;
-DECLARE @PhongBan_GiamDoc INT = 1;    -- Ban Giám đốc
-DECLARE @PhongBan_NhanSu INT = 2;     -- Phòng Nhân sự  
-DECLARE @PhongBan_KeToan INT = 3;     -- Phòng Kế toán
-DECLARE @PhongBan_BanHang INT = 4;    -- Bộ phận Bán hàng
-DECLARE @PhongBan_Kho INT = 5;        -- Bộ phận Kho
-DECLARE @PhongBan_ThuNgan INT = 6;    -- Bộ phận Thu ngân
+DECLARE @PhongBan_GiamDoc INT, @PhongBan_NhanSu INT, @PhongBan_KeToan INT;
+DECLARE @PhongBan_BanHang INT, @PhongBan_Kho INT, @PhongBan_ThuNgan INT;
+DECLARE @ChucVu_GiamDoc INT, @ChucVu_TruongPhong INT, @ChucVu_NhanSu INT;
+DECLARE @ChucVu_KeToan INT, @ChucVu_BanHang INT, @ChucVu_Kho INT, @ChucVu_ThuNgan INT;
 
-DECLARE @ChucVu_GiamDoc INT = 1;      -- Giám đốc
-DECLARE @ChucVu_TruongPhong INT = 2;  -- Trưởng phòng
-DECLARE @ChucVu_NhanSu INT = 3;       -- Nhân viên Nhân sự
-DECLARE @ChucVu_KeToan INT = 4;       -- Kế toán viên
-DECLARE @ChucVu_BanHang INT = 5;      -- Nhân viên Bán hàng
-DECLARE @ChucVu_Kho INT = 6;          -- Nhân viên Kho
-DECLARE @ChucVu_ThuNgan INT = 7;      -- Nhân viên Thu ngân
+-- Lấy ID thực tế từ database
+SELECT @PhongBan_GiamDoc = MaPhongBan FROM dbo.PhongBan WHERE TenPhongBan = N'Ban Giám đốc';
+SELECT @PhongBan_NhanSu = MaPhongBan FROM dbo.PhongBan WHERE TenPhongBan = N'Phòng Nhân sự';
+SELECT @PhongBan_KeToan = MaPhongBan FROM dbo.PhongBan WHERE TenPhongBan = N'Phòng Kế toán';
+SELECT @PhongBan_BanHang = MaPhongBan FROM dbo.PhongBan WHERE TenPhongBan = N'Bộ phận Bán hàng';
+SELECT @PhongBan_Kho = MaPhongBan FROM dbo.PhongBan WHERE TenPhongBan = N'Bộ phận Kho';
+SELECT @PhongBan_ThuNgan = MaPhongBan FROM dbo.PhongBan WHERE TenPhongBan = N'Bộ phận Thu ngân';
+
+SELECT @ChucVu_GiamDoc = MaChucVu FROM dbo.ChucVu WHERE TenChucVu = N'Giám đốc';
+SELECT @ChucVu_TruongPhong = MaChucVu FROM dbo.ChucVu WHERE TenChucVu = N'Trưởng phòng';
+SELECT @ChucVu_NhanSu = MaChucVu FROM dbo.ChucVu WHERE TenChucVu = N'Nhân viên Nhân sự';
+SELECT @ChucVu_KeToan = MaChucVu FROM dbo.ChucVu WHERE TenChucVu = N'Kế toán viên';
+SELECT @ChucVu_BanHang = MaChucVu FROM dbo.ChucVu WHERE TenChucVu = N'Nhân viên Bán hàng';
+SELECT @ChucVu_Kho = MaChucVu FROM dbo.ChucVu WHERE TenChucVu = N'Nhân viên Kho';
+SELECT @ChucVu_ThuNgan = MaChucVu FROM dbo.ChucVu WHERE TenChucVu = N'Nhân viên Thu ngân';
 
 -- Debug: Hiển thị các ID được lấy
 PRINT N'=== DEBUG: ID được lấy ===';
 PRINT N'@PhongBan_GiamDoc: ' + CAST(ISNULL(@PhongBan_GiamDoc, -1) AS NVARCHAR);
 PRINT N'@PhongBan_NhanSu: ' + CAST(ISNULL(@PhongBan_NhanSu, -1) AS NVARCHAR);
 PRINT N'@PhongBan_KeToan: ' + CAST(ISNULL(@PhongBan_KeToan, -1) AS NVARCHAR);
+PRINT N'@PhongBan_BanHang: ' + CAST(ISNULL(@PhongBan_BanHang, -1) AS NVARCHAR);
+PRINT N'@PhongBan_Kho: ' + CAST(ISNULL(@PhongBan_Kho, -1) AS NVARCHAR);
+PRINT N'@PhongBan_ThuNgan: ' + CAST(ISNULL(@PhongBan_ThuNgan, -1) AS NVARCHAR);
 PRINT N'@ChucVu_GiamDoc: ' + CAST(ISNULL(@ChucVu_GiamDoc, -1) AS NVARCHAR);
 PRINT N'@ChucVu_TruongPhong: ' + CAST(ISNULL(@ChucVu_TruongPhong, -1) AS NVARCHAR);
+PRINT N'@ChucVu_NhanSu: ' + CAST(ISNULL(@ChucVu_NhanSu, -1) AS NVARCHAR);
 PRINT N'@ChucVu_KeToan: ' + CAST(ISNULL(@ChucVu_KeToan, -1) AS NVARCHAR);
+PRINT N'@ChucVu_BanHang: ' + CAST(ISNULL(@ChucVu_BanHang, -1) AS NVARCHAR);
+PRINT N'@ChucVu_Kho: ' + CAST(ISNULL(@ChucVu_Kho, -1) AS NVARCHAR);
+PRINT N'@ChucVu_ThuNgan: ' + CAST(ISNULL(@ChucVu_ThuNgan, -1) AS NVARCHAR);
+
+-- ✅ VALIDATION: Kiểm tra tất cả ID đều được tìm thấy
+IF @PhongBan_ThuNgan IS NULL
+BEGIN
+    RAISERROR(N'❌ Không tìm thấy phòng ban "Bộ phận Thu ngân"', 16, 1);
+    RETURN;
+END
+
+IF @ChucVu_ThuNgan IS NULL  
+BEGIN
+    RAISERROR(N'❌ Không tìm thấy chức vụ "Nhân viên Thu ngân"', 16, 1);
+    RETURN;
+END
 
 EXEC dbo.sp_TaoTaiKhoanDayDu N'Nguyễn Văn An', '1980-05-20', N'Nam', '0901112221', 'giamdoc@minimart.com', N'123 Lê Lợi, Q1', '2020-01-15', @PhongBan_GiamDoc, @ChucVu_GiamDoc, 50000000, 'giamdoc', '123', N'QuanLy', @MaNV_Out OUTPUT;
 PRINT N'✓ 1. giamdoc (QuanLy) - MaNV: ' + CAST(@MaNV_Out AS NVARCHAR);
@@ -219,9 +245,7 @@ EXEC dbo.sp_TaoTaiKhoanDayDu N'Đỗ Văn Hùng', '1995-01-01', N'Nam', '0901112
 -- Cập nhật trạng thái nghỉ việc
 UPDATE dbo.NhanVien SET TrangThai = N'Nghi' WHERE MaNV = @MaNV_Out;
 UPDATE dbo.NguoiDung SET KichHoat = 0 WHERE MaNguoiDung = (SELECT MaNguoiDung FROM dbo.NhanVien WHERE MaNV = @MaNV_Out);
--- Disable SQL Login
-DECLARE @SqlDisable NVARCHAR(500) = N'ALTER LOGIN [nv_nghiviec] DISABLE';
-EXEC sp_executesql @SqlDisable;
+-- ✅ SỬA: Không disable SQL Login vì sp_TaoTaiKhoanDayDu tạo Database User WITHOUT LOGIN
 PRINT N'✓ 9. nv_nghiviec (Đã nghỉ việc - tài khoản bị khóa) - MaNV: ' + CAST(@MaNV_Out AS NVARCHAR);
 
 PRINT N'✓ Đã tạo 9 tài khoản với SQL Login + Role đầy đủ';
@@ -231,7 +255,20 @@ PRINT N'[4/7] Tạo lịch và chấm công tự động...';
 DECLARE @Start DATE = '2025-07-01', @End DATE = GETDATE();
 DECLARE @Current DATE = @Start;
 DECLARE @CurMonth INT = MONTH(@End), @CurYear INT = YEAR(@End);
-DECLARE @CS INT = 1, @CC INT = 2, @CT INT = 3, @CH INT = 4;
+
+-- ✅ SỬA: Lấy MaCa thực tế từ database thay vì hardcode
+DECLARE @CS INT, @CC INT, @CT INT, @CH INT;
+SELECT @CS = MaCa FROM dbo.CaLam WHERE TenCa = N'Ca Sáng';
+SELECT @CC = MaCa FROM dbo.CaLam WHERE TenCa = N'Ca Chiều';  
+SELECT @CT = MaCa FROM dbo.CaLam WHERE TenCa = N'Ca Đêm (Qua ngày)';
+SELECT @CH = MaCa FROM dbo.CaLam WHERE TenCa = N'Ca Hành chính';
+
+PRINT N'=== DEBUG: MaCa được lấy ===';
+PRINT N'@CS (Ca Sáng): ' + CAST(ISNULL(@CS, -1) AS NVARCHAR);
+PRINT N'@CC (Ca Chiều): ' + CAST(ISNULL(@CC, -1) AS NVARCHAR);
+PRINT N'@CT (Ca Đêm): ' + CAST(ISNULL(@CT, -1) AS NVARCHAR);
+PRINT N'@CH (Ca Hành chính): ' + CAST(ISNULL(@CH, -1) AS NVARCHAR);
+
 DECLARE @LC INT = 0, @CgC INT = 0;
 
 WHILE @Current <= @End
@@ -243,7 +280,7 @@ BEGIN
     BEGIN
         INSERT INTO dbo.LichPhanCa (MaNV, NgayLam, MaCa, TrangThai)
         SELECT MaNV, @Current, @CH, @TS FROM dbo.NhanVien 
-        WHERE MaChucVu IN (1,2,3,4) AND NgayVaoLam <= @Current AND TrangThai = N'DangLam';
+        WHERE MaChucVu IN (@ChucVu_GiamDoc, @ChucVu_TruongPhong, @ChucVu_NhanSu, @ChucVu_KeToan) AND NgayVaoLam <= @Current AND TrangThai = N'DangLam';
         SET @LC = @LC + @@ROWCOUNT;
     END
     

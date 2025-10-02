@@ -81,7 +81,7 @@ GRANT SELECT ON dbo.vw_Lich_ChamCong_Ngay TO r_hr;
 GRANT EXECUTE ON dbo.sp_ThemMoiNhanVien  TO r_hr;
 GRANT EXECUTE ON dbo.sp_ThemMoiNhanVien  TO r_quanly;
 GRANT EXECUTE ON dbo.sp_TaoTaiKhoanDayDu TO r_hr;  -- Thêm quyền cho bảo mật 2 lớp
-GRANT EXECUTE ON dbo.sp_CapNhatTaiKhoanDayDu TO r_hr;
+-- GRANT EXECUTE ON dbo.sp_CapNhatTaiKhoanDayDu TO r_hr; -- ❌ XÓA: Procedure không tồn tại
 GRANT EXECUTE ON dbo.sp_XoaTaiKhoanDayDu TO r_hr;
 GRANT EXECUTE ON dbo.sp_VoHieuHoaTaiKhoan TO r_hr;
 GRANT EXECUTE ON dbo.sp_NguoiDung_DoiMatKhau TO r_hr;  -- Thêm quyền đổi mật khẩu

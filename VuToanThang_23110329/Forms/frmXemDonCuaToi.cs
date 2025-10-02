@@ -62,43 +62,44 @@ namespace VuToanThang_23110329.Forms
                 using (SqlConnection conn = new SqlConnection(connectionString))
                 {
                     conn.Open();
+                    
+                    // ✅ OPTIMIZED: Sử dụng vw_DonTu_ChiTiet thay vì raw SQL
                     string query = @"
                         SELECT 
-                            dt.MaDon,
-                            CASE dt.Loai 
+                            MaDon,
+                            CASE Loai 
                                 WHEN 'NGHI' THEN N'Nghỉ phép'
                                 WHEN 'OT' THEN N'Làm thêm giờ'
                             END as LoaiDon,
-                            dt.TuLuc,
-                            dt.DenLuc,
-                            dt.SoGio,
-                            dt.LyDo,
-                            CASE dt.TrangThai
+                            TuLuc,
+                            DenLuc,
+                            SoGio,
+                            LyDo,
+                            CASE TrangThai
                                 WHEN 'ChoDuyet' THEN N'Chờ duyệt'
                                 WHEN 'DaDuyet' THEN N'Đã duyệt'
                                 WHEN 'TuChoi' THEN N'Từ chối'
                             END as TrangThai,
-                            nd.TenDangNhap as NguoiDuyet
-                        FROM dbo.DonTu dt
-                        LEFT JOIN dbo.NguoiDung nd ON dt.DuyetBoi = nd.MaNguoiDung
-                        WHERE dt.MaNV = @MaNV";
+                            TenNguoiDuyet as NguoiDuyet
+                        FROM dbo.vw_DonTu_ChiTiet
+                        WHERE MaNV = @MaNV";
 
                     // Thêm filter theo trạng thái
                     if (cmbTrangThai.SelectedIndex > 0)
                     {
                         string trangThai = cmbTrangThai.SelectedIndex == 1 ? "ChoDuyet" :
                                           cmbTrangThai.SelectedIndex == 2 ? "DaDuyet" : "TuChoi";
-                        query += " AND dt.TrangThai = @TrangThai";
+                        query += " AND TrangThai = @TrangThai";
                     }
 
                     // Thêm filter theo loại đơn
                     if (cmbLoaiDon.SelectedIndex > 0)
                     {
                         string loai = cmbLoaiDon.SelectedIndex == 1 ? "NGHI" : "OT";
-                        query += " AND dt.Loai = @Loai";
+                        query += " AND Loai = @Loai";
                     }
 
-                    query += " ORDER BY dt.MaDon DESC";
+                    query += " ORDER BY MaDon DESC";
 
                     using (SqlCommand cmd = new SqlCommand(query, conn))
                     {
@@ -160,6 +161,70 @@ namespace VuToanThang_23110329.Forms
         private void cmbLoaiDon_SelectedIndexChanged(object sender, EventArgs e)
         {
             LoadData();
+        }
+
+        // ✅ NEW METHOD: Sử dụng tvf_LichSuDonTuNhanVien để lấy lịch sử đơn từ
+        public void LoadLichSuDonTuOptimized(int soThangGanNhat = 6)
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(connectionString))
+                {
+                    conn.Open();
+                    string query = @"
+                        SELECT 
+                            MaDon,
+                            CASE Loai 
+                                WHEN 'NGHI' THEN N'Nghỉ phép'
+                                WHEN 'OT' THEN N'Làm thêm giờ'
+                            END as LoaiDon,
+                            TuLuc,
+                            DenLuc,
+                            SoGio,
+                            LyDo,
+                            CASE TrangThai
+                                WHEN 'ChoDuyet' THEN N'Chờ duyệt'
+                                WHEN 'DaDuyet' THEN N'Đã duyệt'
+                                WHEN 'TuChoi' THEN N'Từ chối'
+                            END as TrangThai,
+                            NguoiDuyet,
+                            SoNgayTuTao
+                        FROM dbo.tvf_LichSuDonTuNhanVien(@MaNV, @SoThangGanNhat)
+                        ORDER BY NgayTao DESC";
+
+                    using (SqlCommand cmd = new SqlCommand(query, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@MaNV", currentMaNV);
+                        cmd.Parameters.AddWithValue("@SoThangGanNhat", soThangGanNhat);
+
+                        SqlDataAdapter adapter = new SqlDataAdapter(cmd);
+                        DataTable dt = new DataTable();
+                        adapter.Fill(dt);
+
+                        dgvDonTu.DataSource = dt;
+
+                        // Setup column headers với cột mới
+                        if (dgvDonTu.Columns.Count > 0)
+                        {
+                            dgvDonTu.Columns["MaDon"].HeaderText = "Mã đơn";
+                            dgvDonTu.Columns["LoaiDon"].HeaderText = "Loại đơn";
+                            dgvDonTu.Columns["TuLuc"].HeaderText = "Từ lúc";
+                            dgvDonTu.Columns["DenLuc"].HeaderText = "Đến lúc";
+                            dgvDonTu.Columns["SoGio"].HeaderText = "Số giờ";
+                            dgvDonTu.Columns["LyDo"].HeaderText = "Lý do";
+                            dgvDonTu.Columns["TrangThai"].HeaderText = "Trạng thái";
+                            dgvDonTu.Columns["NguoiDuyet"].HeaderText = "Người duyệt";
+                            dgvDonTu.Columns["SoNgayTuTao"].HeaderText = "Số ngày từ tạo";
+
+                            dgvDonTu.Columns["SoGio"].DefaultCellStyle.Format = "F2";
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Lỗi khi tải lịch sử đơn từ: {ex.Message}", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
     }
 }

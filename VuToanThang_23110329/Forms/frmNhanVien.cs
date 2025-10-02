@@ -315,6 +315,55 @@ namespace VuToanThang_23110329.Forms
                 using (SqlConnection conn = new SqlConnection(connectionString))
                 {
                     conn.Open();
+                    
+                    // ✅ OPTIMIZED: Sử dụng vw_NhanVien_Full và fn_TinhTuoi
+                    string query = @"
+                        SELECT 
+                            MaNV,
+                            HoTen,
+                            NgaySinh,
+                            dbo.fn_TinhTuoi(NgaySinh) AS Tuoi,
+                            GioiTinh,
+                            DienThoai,
+                            Email,
+                            DiaChi,
+                            NgayVaoLam,
+                            DATEDIFF(DAY, NgayVaoLam, GETDATE()) AS SoNgayLamViec,
+                            LuongCoBan,
+                            TrangThai,
+                            TenPhongBan,
+                            TenChucVu,
+                            MaPhongBan,
+                            MaChucVu
+                        FROM dbo.vw_NhanVien_Full
+                        ORDER BY HoTen";
+                    
+                    using (SqlCommand cmd = new SqlCommand(query, conn))
+                    {
+                        using (SqlDataAdapter adapter = new SqlDataAdapter(cmd))
+                        {
+                            dtNhanVien = new DataTable();
+                            adapter.Fill(dtNhanVien);
+                            dgvNhanVien.DataSource = dtNhanVien;
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Lỗi khi tải dữ liệu nhân viên: {ex.Message}", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                // Fallback to stored procedure
+                LoadDataFallback();
+            }
+        }
+
+        private void LoadDataFallback()
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(connectionString))
+                {
+                    conn.Open();
                     using (SqlCommand cmd = new SqlCommand("sp_GetNhanVienFull", conn))
                     {
                         cmd.CommandType = CommandType.StoredProcedure;
@@ -329,7 +378,7 @@ namespace VuToanThang_23110329.Forms
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Lỗi khi tải dữ liệu nhân viên: {ex.Message}", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($"Lỗi khi tải dữ liệu nhân viên (fallback): {ex.Message}", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -631,6 +680,41 @@ namespace VuToanThang_23110329.Forms
         private void dgvNhanVien_SelectionChanged(object sender, EventArgs e)
         {
             // Có thể thêm logic xử lý khi chọn row
+        }
+
+        // Method mới sử dụng table-valued function để lấy nhân viên theo phòng ban
+        public void LoadNhanVienTheoPhongBan(int maPhongBan)
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(connectionString))
+                {
+                    conn.Open();
+                    string query = "SELECT * FROM dbo.tvf_NhanVienTheoPhongBan(@MaPhongBan)";
+                    
+                    using (SqlCommand cmd = new SqlCommand(query, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@MaPhongBan", maPhongBan);
+                        
+                        using (SqlDataAdapter adapter = new SqlDataAdapter(cmd))
+                        {
+                            DataTable dt = new DataTable();
+                            adapter.Fill(dt);
+                            dgvNhanVien.DataSource = dt;
+                            
+                            // Cập nhật header cho các cột mới
+                            if (dgvNhanVien.Columns.Contains("Tuoi"))
+                                dgvNhanVien.Columns["Tuoi"].HeaderText = "Tuổi";
+                            if (dgvNhanVien.Columns.Contains("SoNgayLamViec"))
+                                dgvNhanVien.Columns["SoNgayLamViec"].HeaderText = "Số ngày làm việc";
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Lỗi khi tải nhân viên theo phòng ban: {ex.Message}", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void txtTimKiem_TextChanged(object sender, EventArgs e)

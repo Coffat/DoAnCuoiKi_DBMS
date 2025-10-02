@@ -111,11 +111,11 @@ namespace VuToanThang_23110329.Forms
                 using (SqlConnection conn = new SqlConnection(connectionString))
                 {
                     conn.Open();
+                    // ✅ OPTIMIZED: Sử dụng vw_DonTu_ChiTiet thay vì raw SQL join
                     string query = @"
-                        SELECT dt.MaDon, nv.HoTen as TenNhanVien, dt.Loai, dt.TuLuc, dt.DenLuc, 
-                               dt.SoGio, dt.LyDo, dt.TrangThai, dt.TuLuc as NgayTao
-                        FROM dbo.DonTu dt
-                        INNER JOIN dbo.NhanVien nv ON dt.MaNV = nv.MaNV
+                        SELECT MaDon, TenNhanVien, Loai, TuLuc, DenLuc, 
+                               SoGio, LyDo, TrangThai, TuLuc as NgayTao
+                        FROM dbo.vw_DonTu_ChiTiet
                         WHERE 1=1";
 
                     // Apply filters
@@ -125,13 +125,13 @@ namespace VuToanThang_23110329.Forms
                         switch (statusFilter)
                         {
                             case "Chờ duyệt":
-                                query += " AND dt.TrangThai = N'ChoDuyet'";
+                                query += " AND TrangThai = N'ChoDuyet'";
                                 break;
                             case "Đã duyệt":
-                                query += " AND dt.TrangThai = N'DaDuyet'";
+                                query += " AND TrangThai = N'DaDuyet'";
                                 break;
                             case "Từ chối":
-                                query += " AND dt.TrangThai = N'TuChoi'";
+                                query += " AND TrangThai = N'TuChoi'";
                                 break;
                         }
                     }
@@ -142,20 +142,20 @@ namespace VuToanThang_23110329.Forms
                         switch (typeFilter)
                         {
                             case "Nghỉ phép":
-                                query += " AND dt.Loai = N'NGHI'";
+                                query += " AND Loai = N'NGHI'";
                                 break;
                             case "Tăng ca":
-                                query += " AND dt.Loai = N'OT'";
+                                query += " AND Loai = N'OT'";
                                 break;
                         }
                     }
 
                     if (!string.IsNullOrEmpty(txtTimKiem.Text))
                     {
-                        query += " AND nv.HoTen LIKE N'%' + @TimKiem + '%'";
+                        query += " AND TenNhanVien LIKE N'%' + @TimKiem + '%'";
                     }
 
-                    query += " ORDER BY dt.TuLuc DESC";
+                    query += " ORDER BY TuLuc DESC";
 
                     using (SqlCommand cmd = new SqlCommand(query, conn))
                     {

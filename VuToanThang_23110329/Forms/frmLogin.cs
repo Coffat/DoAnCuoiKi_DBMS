@@ -4,6 +4,7 @@ using System.Windows.Forms;
 using Guna.UI2.WinForms;
 using System.Data.SqlClient;
 using System.Configuration;
+using System.Linq;
 
 namespace VuToanThang_23110329.Forms
 {
@@ -38,39 +39,29 @@ namespace VuToanThang_23110329.Forms
             }
 
             // ============================================
-            // BẢO MẬT 2 LỚP: TẠO CHUỖI KẾT NỐI ĐỘNG
+            // AUTHENTICATION Ở DATABASE LEVEL
             // ============================================
-            // Thay vì dùng tài khoản sa cố định, ta tạo chuỗi kết nối 
-            // sử dụng chính thông tin đăng nhập của người dùng
+            // Sử dụng connection cố định, kiểm tra user/pass với bảng NguoiDung
             
-            SqlConnectionStringBuilder connectionBuilder = new SqlConnectionStringBuilder();
-            connectionBuilder.DataSource = GlobalState.ServerName;  // Mặc định: localhost
-            connectionBuilder.InitialCatalog = GlobalState.DatabaseName;  // QLNhanSuSieuThiMini
-            connectionBuilder.UserID = username;  // Sử dụng tên đăng nhập người dùng nhập
-            connectionBuilder.Password = password;  // Sử dụng mật khẩu người dùng nhập
-            connectionBuilder.TrustServerCertificate = true;
-            connectionBuilder.ConnectTimeout = 10;
-
-            string dynamicConnectionString = connectionBuilder.ConnectionString;
+            string connectionString = ConfigurationManager.ConnectionStrings["HrDb"].ConnectionString;
 
             // ============================================
-            // THỬ KẾT NỐI VỚI THÔNG TIN ĐĂNG NHẬP
+            // KIỂM TRA THÔNG TIN ĐĂNG NHẬP VỚI BẢNG NGUOIDUNG
             // ============================================
-            // Nếu SQL Server Login tồn tại và mật khẩu đúng, kết nối sẽ thành công
-            // Đồng thời kiểm tra quyền trong bảng NguoiDung
+            // Kết nối với connection cố định, kiểm tra user/pass với database
             
-            using (SqlConnection conn = new SqlConnection(dynamicConnectionString))
+            using (SqlConnection conn = new SqlConnection(connectionString))
             {
                 try
                 {
                     conn.Open();
                     
-                    // Nếu kết nối thành công, nghĩa là SQL Login hợp lệ
-                    // Bây giờ lấy thông tin từ bảng NguoiDung
-                    string query = @"SELECT nd.MaNguoiDung, nd.VaiTro, nd.KichHoat, nv.MaNV, nv.HoTen 
+                    // Kiểm tra username và password với bảng NguoiDung
+                    // Giả sử password được hash bằng SHA256 hoặc plain text (tùy thiết kế)
+                    string query = @"SELECT nd.MaNguoiDung, nd.VaiTro, nd.KichHoat, nv.MaNV, nv.HoTen, nd.MatKhauHash
                                     FROM dbo.NguoiDung nd
                                     LEFT JOIN dbo.NhanVien nv ON nd.MaNguoiDung = nv.MaNguoiDung
-                                    WHERE nd.TenDangNhap = @username";
+                                    WHERE nd.TenDangNhap = @username AND nd.KichHoat = 1";
                     
                     SqlCommand cmd = new SqlCommand(query, conn);
                     cmd.Parameters.AddWithValue("@username", username);
@@ -79,6 +70,23 @@ namespace VuToanThang_23110329.Forms
 
                     if (reader.Read())
                     {
+                        string matKhauHash = reader.GetString(5);
+                        
+                        // ✅ KIỂM TRA PASSWORD
+                        // Nếu password trong DB là plain text, so sánh trực tiếp
+                        // Nếu là hash, cần hash password input rồi so sánh
+                        bool passwordValid = (matKhauHash == password) || 
+                                            (System.Security.Cryptography.SHA256.Create()
+                                             .ComputeHash(System.Text.Encoding.UTF8.GetBytes(password))
+                                             .Aggregate("", (s, b) => s + b.ToString("x2")) == matKhauHash);
+                        
+                        if (!passwordValid)
+                        {
+                            MessageBox.Show("Tên đăng nhập hoặc mật khẩu không đúng.", "Lỗi đăng nhập", 
+                                          MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            return;
+                        }
+                        
                         bool kichHoat = reader.GetBoolean(2);
                         
                         if (!kichHoat)
@@ -96,10 +104,10 @@ namespace VuToanThang_23110329.Forms
                         reader.Close();
                         
                         // ============================================
-                        // LƯU CHUỖI KẾT NỐI ĐỘNG VÀO GLOBALSTATE
+                        // LƯU CHUỖI KẾT NỐI VÀO GLOBALSTATE
                         // ============================================
                         // Từ giờ tất cả các form khác sẽ dùng chuỗi này
-                        GlobalState.ConnectionString = dynamicConnectionString;
+                        GlobalState.ConnectionString = connectionString;
                         GlobalState.UserRole = vaiTro;
                         GlobalState.Username = username;
                         
@@ -114,27 +122,16 @@ namespace VuToanThang_23110329.Forms
                     }
                     else
                     {
-                        // Trường hợp SQL Login hợp lệ nhưng không có trong bảng NguoiDung
-                        // (không nên xảy ra nếu dùng sp_TaoTaiKhoanDayDu)
-                        MessageBox.Show("Tài khoản không có quyền truy cập hệ thống.", 
-                                      "Lỗi xác thực", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        // Không tìm thấy user trong bảng NguoiDung hoặc tài khoản bị khóa
+                        MessageBox.Show("Tên đăng nhập hoặc mật khẩu không đúng.", 
+                                      "Lỗi đăng nhập", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
                 }
                 catch (SqlException ex)
                 {
-                    // Lỗi kết nối SQL = sai tên đăng nhập hoặc mật khẩu
-                    if (ex.Number == 18456)  // Login failed
-                    {
-                        MessageBox.Show("Tên đăng nhập hoặc mật khẩu không đúng.\n\n" +
-                                      "Lưu ý: Hệ thống sử dụng xác thực SQL Server Authentication.", 
-                                      "Đăng nhập thất bại", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    }
-                    else
-                    {
-                        MessageBox.Show($"Lỗi kết nối cơ sở dữ liệu:\n{ex.Message}\n\n" +
-                                      $"Error Code: {ex.Number}", 
-                                      "Lỗi kết nối", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    }
+                    MessageBox.Show($"Lỗi kết nối cơ sở dữ liệu:\n{ex.Message}\n\n" +
+                                  $"Error Code: {ex.Number}", 
+                                  "Lỗi kết nối", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
                 catch (Exception ex)
                 {

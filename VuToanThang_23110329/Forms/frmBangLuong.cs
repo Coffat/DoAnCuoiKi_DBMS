@@ -98,15 +98,11 @@ namespace VuToanThang_23110329.Forms
                             ISNULL(cv.TenChucVu, N'Chưa phân công') as TenChucVu,
                             ISNULL(nv.LuongCoBan, 0) as LuongCoBan,
                             ISNULL(ct.TongGioCong, 0) as TongGioCong,
-                            (
-                                SELECT COUNT(DISTINCT cc.NgayLam)
-                                FROM dbo.ChamCong cc
-                                WHERE cc.MaNV = nv.MaNV 
-                                  AND YEAR(cc.NgayLam) = @Nam 
-                                  AND MONTH(cc.NgayLam) = @Thang
-                            ) as SoNgayLam,
+                            dbo.fn_SoNgayLamViec(nv.MaNV, @Nam, @Thang) as SoNgayLam,
                             ISNULL(ct.TongPhutDiTre, 0) as TongDiTre,
-                            ISNULL(ct.TongPhutVeSom, 0) as TongVeSom
+                            ISNULL(ct.TongPhutVeSom, 0) as TongVeSom,
+                            dbo.fn_TyLeDiTre(nv.MaNV, @Nam, @Thang) as TyLeDiTre,
+                            dbo.fn_TongLuongThang(nv.MaNV, @Nam, @Thang) as TongLuongDaTra
                         FROM dbo.NhanVien nv
                         LEFT JOIN dbo.PhongBan pb ON pb.MaPhongBan = nv.MaPhongBan
                         LEFT JOIN dbo.ChucVu cv ON cv.MaChucVu = nv.MaChucVu
@@ -138,6 +134,13 @@ namespace VuToanThang_23110329.Forms
                             dgvCongThang.Columns["SoNgayLam"].HeaderText = "Số ngày làm";
                             dgvCongThang.Columns["TongDiTre"].HeaderText = "Tổng đi trễ (phút)";
                             dgvCongThang.Columns["TongVeSom"].HeaderText = "Tổng về sớm (phút)";
+                            dgvCongThang.Columns["TyLeDiTre"].HeaderText = "Tỷ lệ đi trễ (%)";
+                            dgvCongThang.Columns["TongLuongDaTra"].HeaderText = "Tổng lương đã trả";
+                            
+                            // Format currency columns
+                            dgvCongThang.Columns["LuongCoBan"].DefaultCellStyle.Format = "N0";
+                            dgvCongThang.Columns["TongLuongDaTra"].DefaultCellStyle.Format = "N0";
+                            dgvCongThang.Columns["TyLeDiTre"].DefaultCellStyle.Format = "N2";
                         }
                     }
                 }
@@ -161,25 +164,24 @@ namespace VuToanThang_23110329.Forms
                 using (SqlConnection conn = new SqlConnection(connectionString))
                 {
                     conn.Open();
+                    // ✅ OPTIMIZED: Sử dụng vw_BangLuong_ChiTiet thay vì raw SQL
                     string query = @"
                         SELECT 
-                            bl.MaNV,
-                            nv.HoTen,
-                            ISNULL(pb.TenPhongBan, N'Chưa phân công') as TenPhongBan,
-                            ISNULL(cv.TenChucVu, N'Chưa phân công') as TenChucVu,
-                            ISNULL(bl.LuongCoBan, 0) as LuongCoBan,
-                            ISNULL(bl.TongGioCong, 0) as TongGioCong,
-                            ISNULL(bl.GioOT, 0) as GioOT,
-                            ISNULL(bl.PhuCap, 0) as PhuCap,
-                            ISNULL(bl.KhauTru, 0) as KhauTru,
-                            ISNULL(bl.ThueBH, 0) as ThueBH,
-                            ISNULL(bl.ThucLanh, 0) as ThucLanh
-                        FROM dbo.BangLuong bl
-                        INNER JOIN dbo.NhanVien nv ON nv.MaNV = bl.MaNV
-                        LEFT JOIN dbo.PhongBan pb ON pb.MaPhongBan = nv.MaPhongBan
-                        LEFT JOIN dbo.ChucVu cv ON cv.MaChucVu = nv.MaChucVu
-                        WHERE bl.Nam = @Nam AND bl.Thang = @Thang
-                        ORDER BY nv.HoTen";
+                            MaNV,
+                            HoTen,
+                            PhongBan as TenPhongBan,
+                            ChucDanh as TenChucVu,
+                            LuongCoBan,
+                            TongGioCong,
+                            GioOT,
+                            PhuCap,
+                            KhauTru,
+                            ThueBH,
+                            ThucLanh,
+                            TrangThai
+                        FROM dbo.vw_BangLuong_ChiTiet
+                        WHERE Nam = @Nam AND Thang = @Thang
+                        ORDER BY HoTen";
                     
                     using (SqlCommand cmd = new SqlCommand(query, conn))
                     {

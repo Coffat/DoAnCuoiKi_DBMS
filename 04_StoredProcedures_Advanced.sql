@@ -696,7 +696,7 @@ CREATE PROCEDURE dbo.sp_TaoTaiKhoanDayDu
     @MatKhau NVARCHAR(200),  -- Nhận mật khẩu gốc, chưa mã hóa
     @VaiTro NVARCHAR(20),
     @MaNV_OUT INT OUTPUT
-WITH EXECUTE AS OWNER  -- ✅ CHẠY VỚI QUYỀN DBO
+WITH EXECUTE AS 'dbo'  -- ✅ CHẠY VỚI QUYỀN DBO EXPLICIT
 AS
 BEGIN
     SET NOCOUNT ON;
@@ -743,23 +743,31 @@ BEGIN
 
         SET @MaNV_OUT = @MaNV_Temp;
 
-        -- BƯỚC 3: Tạo Database User WITHOUT LOGIN (chỉ trong database)
-        SET @SqlCmd = N'CREATE USER ' + QUOTENAME(@TenDangNhap) + N' WITHOUT LOGIN';
-        EXEC sp_executesql @SqlCmd;
-
-        -- BƯỚC 5: Thêm User vào Role tương ứng
-        DECLARE @RoleName SYSNAME = 
-            CASE @VaiTro
-                WHEN N'HR' THEN N'r_hr'
-                WHEN N'QuanLy' THEN N'r_quanly'
-                WHEN N'KeToan' THEN N'r_ketoan'
-                ELSE N'r_nhanvien'
-            END;
+        COMMIT;  -- ✅ COMMIT trước khi tạo Database User
         
-        SET @SqlCmd = N'ALTER ROLE ' + QUOTENAME(@RoleName) + N' ADD MEMBER ' + QUOTENAME(@TenDangNhap);
-        EXEC sp_executesql @SqlCmd;
+        -- BƯỚC 3: Tạo Database User WITHOUT LOGIN (tách riêng khỏi transaction)
+        BEGIN TRY
+            SET @SqlCmd = N'CREATE USER ' + QUOTENAME(@TenDangNhap) + N' WITHOUT LOGIN';
+            EXEC sp_executesql @SqlCmd;
 
-        COMMIT;
+            -- BƯỚC 4: Thêm User vào Role tương ứng
+            DECLARE @RoleName SYSNAME = 
+                CASE @VaiTro
+                    WHEN N'HR' THEN N'r_hr'
+                    WHEN N'QuanLy' THEN N'r_quanly'
+                    WHEN N'KeToan' THEN N'r_ketoan'
+                    ELSE N'r_nhanvien'
+                END;
+            
+            SET @SqlCmd = N'ALTER ROLE ' + QUOTENAME(@RoleName) + N' ADD MEMBER ' + QUOTENAME(@TenDangNhap);
+            EXEC sp_executesql @SqlCmd;
+            
+            PRINT N'✅ Đã tạo Database User: ' + @TenDangNhap + N' (Role: ' + @RoleName + N')';
+        END TRY
+        BEGIN CATCH
+            PRINT N'⚠️ Lỗi tạo Database User cho: ' + @TenDangNhap + N' - ' + ERROR_MESSAGE();
+            -- Không rollback vì data đã được commit
+        END CATCH
         
         PRINT N'Đã tạo tài khoản đầy đủ cho: ' + @TenDangNhap + N' (Vai trò: ' + @VaiTro + N')';
     END TRY

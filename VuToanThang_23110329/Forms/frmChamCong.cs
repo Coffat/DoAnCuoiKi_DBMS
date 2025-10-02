@@ -91,11 +91,17 @@ namespace VuToanThang_23110329.Forms
                     conn.Open();
                     DateTime today = DateTime.Now.Date;
                     
-                    // Check if there's a schedule for today using view
+                    // ✅ OPTIMIZED: Sử dụng fn_KhungCa để lấy thông tin ca làm
                     string scheduleQuery = @"
-                        SELECT TenCa, GioBatDau, GioKetThuc, TrangThaiLich
-                        FROM dbo.vw_Lich_ChamCong_Ngay
-                        WHERE MaNV = @MaNV AND NgayLam = @NgayLam";
+                        SELECT 
+                            vc.TenCa, 
+                            kc.GioBatDau, 
+                            kc.GioKetThuc, 
+                            kc.HeSoCa,
+                            vc.TrangThaiLich
+                        FROM dbo.vw_Lich_ChamCong_Ngay vc
+                        CROSS APPLY dbo.fn_KhungCa(@MaNV, @NgayLam) kc
+                        WHERE vc.MaNV = @MaNV AND vc.NgayLam = @NgayLam";
                     
                     using (SqlCommand cmd = new SqlCommand(scheduleQuery, conn))
                     {
@@ -109,8 +115,9 @@ namespace VuToanThang_23110329.Forms
                                 string tenCa = reader["TenCa"].ToString();
                                 TimeSpan gioBatDau = (TimeSpan)reader["GioBatDau"];
                                 TimeSpan gioKetThuc = (TimeSpan)reader["GioKetThuc"];
+                                decimal heSoCa = Convert.ToDecimal(reader["HeSoCa"]);
                                 
-                                lblThongTinCa.Text = $"Ca: {tenCa} ({gioBatDau:hh\\:mm} - {gioKetThuc:hh\\:mm})";
+                                lblThongTinCa.Text = $"Ca: {tenCa} ({gioBatDau:hh\\:mm} - {gioKetThuc:hh\\:mm}) - Hệ số: {heSoCa:F2}";
                             }
                             else
                             {
@@ -285,7 +292,14 @@ namespace VuToanThang_23110329.Forms
                 {
                     conn.Open();
                     string query = @"
-                        SELECT NgayLam, GioVao, GioRa, GioCong, DiTrePhut, VeSomPhut
+                        SELECT 
+                            NgayLam, 
+                            GioVao, 
+                            GioRa, 
+                            GioCong, 
+                            DiTrePhut, 
+                            VeSomPhut,
+                            dbo.fn_SoPhutDuong(GioVao, GioRa) AS TongPhutLam
                         FROM dbo.ChamCong
                         WHERE MaNV = @MaNV 
                         AND YEAR(NgayLam) = @Nam 
@@ -304,15 +318,16 @@ namespace VuToanThang_23110329.Forms
                         
                         dgvLichSu.DataSource = dt;
                         
-                        // Setup columns
+                        // Setup column headers
                         if (dgvLichSu.Columns.Count > 0)
                         {
-                            dgvLichSu.Columns["NgayLam"].HeaderText = "Ngày";
+                            dgvLichSu.Columns["NgayLam"].HeaderText = "Ngày làm";
                             dgvLichSu.Columns["GioVao"].HeaderText = "Giờ vào";
                             dgvLichSu.Columns["GioRa"].HeaderText = "Giờ ra";
                             dgvLichSu.Columns["GioCong"].HeaderText = "Giờ công";
                             dgvLichSu.Columns["DiTrePhut"].HeaderText = "Đi trễ (phút)";
                             dgvLichSu.Columns["VeSomPhut"].HeaderText = "Về sớm (phút)";
+                            dgvLichSu.Columns["TongPhutLam"].HeaderText = "Tổng phút làm";
                         }
                     }
                 }
@@ -320,6 +335,54 @@ namespace VuToanThang_23110329.Forms
             catch (Exception ex)
             {
                 MessageBox.Show($"Lỗi khi tải lịch sử: {ex.Message}", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        // Method mới sử dụng table-valued function để tạo báo cáo chấm công tháng
+        public void LoadBaoCaoChamCongThang(int nam, int thang)
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(connectionString))
+                {
+                    conn.Open();
+                    string query = "SELECT * FROM dbo.tvf_BaoCaoChamCongThang(@Nam, @Thang)";
+                    
+                    using (SqlCommand cmd = new SqlCommand(query, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@Nam", nam);
+                        cmd.Parameters.AddWithValue("@Thang", thang);
+                        
+                        using (SqlDataAdapter adapter = new SqlDataAdapter(cmd))
+                        {
+                            DataTable dt = new DataTable();
+                            adapter.Fill(dt);
+                            dgvLichSu.DataSource = dt;
+                            
+                            // Cập nhật header
+                            if (dgvLichSu.Columns.Count > 0)
+                            {
+                                dgvLichSu.Columns["MaNV"].HeaderText = "Mã NV";
+                                dgvLichSu.Columns["HoTen"].HeaderText = "Họ tên";
+                                dgvLichSu.Columns["TenPhongBan"].HeaderText = "Phòng ban";
+                                dgvLichSu.Columns["TenChucVu"].HeaderText = "Chức vụ";
+                                dgvLichSu.Columns["SoNgayLam"].HeaderText = "Số ngày làm";
+                                dgvLichSu.Columns["TongGioCong"].HeaderText = "Tổng giờ công";
+                                dgvLichSu.Columns["TongPhutDiTre"].HeaderText = "Tổng phút đi trễ";
+                                dgvLichSu.Columns["TongPhutVeSom"].HeaderText = "Tổng phút về sớm";
+                                dgvLichSu.Columns["TyLeDiTre"].HeaderText = "Tỷ lệ đi trễ (%)";
+                                dgvLichSu.Columns["SoLanChamCong"].HeaderText = "Số lần chấm công";
+                                
+                                // Format columns
+                                dgvLichSu.Columns["TyLeDiTre"].DefaultCellStyle.Format = "N2";
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Lỗi khi tải báo cáo chấm công: {ex.Message}", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
