@@ -63,7 +63,7 @@ namespace VuToanThang_23110329.Forms
                 {
                     conn.Open();
                     
-                    // ✅ OPTIMIZED: Sử dụng vw_DonTu_ChiTiet thay vì raw SQL
+                    // ✅ IMPROVED: Sử dụng TVF thay vì View để có filter thời gian và SoNgayTuTao
                     string query = @"
                         SELECT 
                             MaDon,
@@ -80,43 +80,34 @@ namespace VuToanThang_23110329.Forms
                                 WHEN 'DaDuyet' THEN N'Đã duyệt'
                                 WHEN 'TuChoi' THEN N'Từ chối'
                             END as TrangThai,
-                            TenNguoiDuyet as NguoiDuyet
-                        FROM dbo.vw_DonTu_ChiTiet
-                        WHERE MaNV = @MaNV";
-
-                    // Thêm filter theo trạng thái
-                    if (cmbTrangThai.SelectedIndex > 0)
-                    {
-                        string trangThai = cmbTrangThai.SelectedIndex == 1 ? "ChoDuyet" :
-                                          cmbTrangThai.SelectedIndex == 2 ? "DaDuyet" : "TuChoi";
-                        query += " AND TrangThai = @TrangThai";
-                    }
-
-                    // Thêm filter theo loại đơn
-                    if (cmbLoaiDon.SelectedIndex > 0)
-                    {
-                        string loai = cmbLoaiDon.SelectedIndex == 1 ? "NGHI" : "OT";
-                        query += " AND Loai = @Loai";
-                    }
-
-                    query += " ORDER BY MaDon DESC";
+                            NguoiDuyet,
+                            SoNgayTuTao
+                        FROM dbo.tvf_LichSuDonTuNhanVien(@MaNV, @SoThangGanNhat)
+                        WHERE (@TrangThai = N'Tất cả' OR TrangThai = @TrangThaiParam)
+                        AND (@Loai = N'Tất cả' OR Loai = @LoaiParam)
+                        ORDER BY MaDon DESC";
 
                     using (SqlCommand cmd = new SqlCommand(query, conn))
                     {
                         cmd.Parameters.AddWithValue("@MaNV", currentMaNV);
+                        cmd.Parameters.AddWithValue("@SoThangGanNhat", 6); // Lấy 6 tháng gần nhất
 
-                        if (cmbTrangThai.SelectedIndex > 0)
-                        {
-                            string trangThai = cmbTrangThai.SelectedIndex == 1 ? "ChoDuyet" :
-                                              cmbTrangThai.SelectedIndex == 2 ? "DaDuyet" : "TuChoi";
-                            cmd.Parameters.AddWithValue("@TrangThai", trangThai);
-                        }
+                        // Xử lý filter trạng thái
+                        string selectedTrangThai = cmbTrangThai.SelectedItem?.ToString() ?? "Tất cả";
+                        cmd.Parameters.AddWithValue("@TrangThai", selectedTrangThai);
+                        
+                        string trangThaiParam = selectedTrangThai == "Chờ duyệt" ? "ChoDuyet" :
+                                               selectedTrangThai == "Đã duyệt" ? "DaDuyet" :
+                                               selectedTrangThai == "Từ chối" ? "TuChoi" : "";
+                        cmd.Parameters.AddWithValue("@TrangThaiParam", trangThaiParam);
 
-                        if (cmbLoaiDon.SelectedIndex > 0)
-                        {
-                            string loai = cmbLoaiDon.SelectedIndex == 1 ? "NGHI" : "OT";
-                            cmd.Parameters.AddWithValue("@Loai", loai);
-                        }
+                        // Xử lý filter loại đơn
+                        string selectedLoai = cmbLoaiDon.SelectedItem?.ToString() ?? "Tất cả";
+                        cmd.Parameters.AddWithValue("@Loai", selectedLoai);
+                        
+                        string loaiParam = selectedLoai == "Nghỉ phép" ? "NGHI" :
+                                          selectedLoai == "Làm thêm giờ" ? "OT" : "";
+                        cmd.Parameters.AddWithValue("@LoaiParam", loaiParam);
 
                         SqlDataAdapter adapter = new SqlDataAdapter(cmd);
                         DataTable dt = new DataTable();
@@ -134,10 +125,12 @@ namespace VuToanThang_23110329.Forms
                             dgvDonTu.Columns["LyDo"].HeaderText = "Lý do";
                             dgvDonTu.Columns["TrangThai"].HeaderText = "Trạng thái";
                             dgvDonTu.Columns["NguoiDuyet"].HeaderText = "Người duyệt";
+                            dgvDonTu.Columns["SoNgayTuTao"].HeaderText = "Số ngày từ tạo";
 
                             dgvDonTu.Columns["TuLuc"].DefaultCellStyle.Format = "dd/MM/yyyy HH:mm";
                             dgvDonTu.Columns["DenLuc"].DefaultCellStyle.Format = "dd/MM/yyyy HH:mm";
                             dgvDonTu.Columns["SoGio"].DefaultCellStyle.Format = "F2";
+                            dgvDonTu.Columns["SoNgayTuTao"].DefaultCellStyle.Format = "N0";
                         }
                     }
                 }
@@ -163,14 +156,15 @@ namespace VuToanThang_23110329.Forms
             LoadData();
         }
 
-        // ✅ NEW METHOD: Sử dụng tvf_LichSuDonTuNhanVien để lấy lịch sử đơn từ
-        public void LoadLichSuDonTuOptimized(int soThangGanNhat = 6)
+        // ✅ FLEXIBLE METHOD: Cho phép thay đổi số tháng lấy dữ liệu
+        public void LoadDataWithTimeRange(int soThangGanNhat)
         {
             try
             {
                 using (SqlConnection conn = new SqlConnection(connectionString))
                 {
                     conn.Open();
+                    
                     string query = @"
                         SELECT 
                             MaDon,
@@ -190,12 +184,31 @@ namespace VuToanThang_23110329.Forms
                             NguoiDuyet,
                             SoNgayTuTao
                         FROM dbo.tvf_LichSuDonTuNhanVien(@MaNV, @SoThangGanNhat)
-                        ORDER BY NgayTao DESC";
+                        WHERE (@TrangThai = N'Tất cả' OR TrangThai = @TrangThaiParam)
+                        AND (@Loai = N'Tất cả' OR Loai = @LoaiParam)
+                        ORDER BY MaDon DESC";
 
                     using (SqlCommand cmd = new SqlCommand(query, conn))
                     {
                         cmd.Parameters.AddWithValue("@MaNV", currentMaNV);
                         cmd.Parameters.AddWithValue("@SoThangGanNhat", soThangGanNhat);
+
+                        // Xử lý filter trạng thái
+                        string selectedTrangThai = cmbTrangThai.SelectedItem?.ToString() ?? "Tất cả";
+                        cmd.Parameters.AddWithValue("@TrangThai", selectedTrangThai);
+                        
+                        string trangThaiParam = selectedTrangThai == "Chờ duyệt" ? "ChoDuyet" :
+                                               selectedTrangThai == "Đã duyệt" ? "DaDuyet" :
+                                               selectedTrangThai == "Từ chối" ? "TuChoi" : "";
+                        cmd.Parameters.AddWithValue("@TrangThaiParam", trangThaiParam);
+
+                        // Xử lý filter loại đơn
+                        string selectedLoai = cmbLoaiDon.SelectedItem?.ToString() ?? "Tất cả";
+                        cmd.Parameters.AddWithValue("@Loai", selectedLoai);
+                        
+                        string loaiParam = selectedLoai == "Nghỉ phép" ? "NGHI" :
+                                          selectedLoai == "Làm thêm giờ" ? "OT" : "";
+                        cmd.Parameters.AddWithValue("@LoaiParam", loaiParam);
 
                         SqlDataAdapter adapter = new SqlDataAdapter(cmd);
                         DataTable dt = new DataTable();
@@ -203,7 +216,6 @@ namespace VuToanThang_23110329.Forms
 
                         dgvDonTu.DataSource = dt;
 
-                        // Setup column headers với cột mới
                         if (dgvDonTu.Columns.Count > 0)
                         {
                             dgvDonTu.Columns["MaDon"].HeaderText = "Mã đơn";
@@ -216,15 +228,19 @@ namespace VuToanThang_23110329.Forms
                             dgvDonTu.Columns["NguoiDuyet"].HeaderText = "Người duyệt";
                             dgvDonTu.Columns["SoNgayTuTao"].HeaderText = "Số ngày từ tạo";
 
+                            dgvDonTu.Columns["TuLuc"].DefaultCellStyle.Format = "dd/MM/yyyy HH:mm";
+                            dgvDonTu.Columns["DenLuc"].DefaultCellStyle.Format = "dd/MM/yyyy HH:mm";
                             dgvDonTu.Columns["SoGio"].DefaultCellStyle.Format = "F2";
+                            dgvDonTu.Columns["SoNgayTuTao"].DefaultCellStyle.Format = "N0";
                         }
                     }
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Lỗi khi tải lịch sử đơn từ: {ex.Message}", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($"Lỗi khi tải dữ liệu: {ex.Message}", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+
     }
 }

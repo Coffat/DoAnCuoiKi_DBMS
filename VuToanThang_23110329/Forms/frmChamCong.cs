@@ -214,11 +214,13 @@ namespace VuToanThang_23110329.Forms
                     conn.Open();
                     DateTime now = DateTime.Now;
                     
-                    // Sử dụng stored procedure sp_CheckIn
+                    // ✅ OPTIMIZED: Sử dụng stored procedure sp_CheckIn
                     using (SqlCommand cmd = new SqlCommand("dbo.sp_CheckIn", conn))
                     {
                         cmd.CommandType = CommandType.StoredProcedure;
                         cmd.Parameters.AddWithValue("@MaNV", currentUserId);
+                        cmd.Parameters.AddWithValue("@NgayLam", now.Date);
+                        cmd.Parameters.AddWithValue("@GioVao", now.TimeOfDay);
                         
                         cmd.ExecuteNonQuery();
                         
@@ -242,11 +244,13 @@ namespace VuToanThang_23110329.Forms
                     conn.Open();
                     DateTime now = DateTime.Now;
                     
-                    // Sử dụng stored procedure sp_CheckOut
+                    // ✅ OPTIMIZED: Sử dụng stored procedure sp_CheckOut
                     using (SqlCommand cmd = new SqlCommand("dbo.sp_CheckOut", conn))
                     {
                         cmd.CommandType = CommandType.StoredProcedure;
                         cmd.Parameters.AddWithValue("@MaNV", currentUserId);
+                        cmd.Parameters.AddWithValue("@NgayLam", now.Date);
+                        cmd.Parameters.AddWithValue("@GioRa", now.TimeOfDay);
                         
                         cmd.ExecuteNonQuery();
                         

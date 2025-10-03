@@ -90,26 +90,23 @@ namespace VuToanThang_23110329.Forms
                 using (SqlConnection conn = new SqlConnection(connectionString))
                 {
                     conn.Open();
+                    // ✅ IMPROVED: Sử dụng TVF thay vì raw query với nhiều JOIN và function calls
                     string query = @"
                         SELECT 
-                            nv.MaNV,
-                            nv.HoTen,
-                            ISNULL(pb.TenPhongBan, N'Chưa phân công') as TenPhongBan,
-                            ISNULL(cv.TenChucVu, N'Chưa phân công') as TenChucVu,
-                            ISNULL(nv.LuongCoBan, 0) as LuongCoBan,
-                            ISNULL(ct.TongGioCong, 0) as TongGioCong,
-                            dbo.fn_SoNgayLamViec(nv.MaNV, @Nam, @Thang) as SoNgayLam,
-                            ISNULL(ct.TongPhutDiTre, 0) as TongDiTre,
-                            ISNULL(ct.TongPhutVeSom, 0) as TongVeSom,
-                            dbo.fn_TyLeDiTre(nv.MaNV, @Nam, @Thang) as TyLeDiTre,
-                            dbo.fn_TongLuongThang(nv.MaNV, @Nam, @Thang) as TongLuongDaTra
-                        FROM dbo.NhanVien nv
-                        LEFT JOIN dbo.PhongBan pb ON pb.MaPhongBan = nv.MaPhongBan
-                        LEFT JOIN dbo.ChucVu cv ON cv.MaChucVu = nv.MaChucVu
-                        LEFT JOIN dbo.vw_CongThang ct ON ct.MaNV = nv.MaNV 
-                            AND ct.Nam = @Nam AND ct.Thang = @Thang
-                        WHERE nv.TrangThai = N'DangLam'
-                        ORDER BY nv.HoTen";
+                            MaNV,
+                            HoTen,
+                            TenPhongBan,
+                            TenChucVu,
+                            (SELECT LuongCoBan FROM dbo.NhanVien WHERE MaNV = bc.MaNV) as LuongCoBan,
+                            TongGioCong,
+                            SoNgayLam,
+                            TongPhutDiTre as TongDiTre,
+                            TongPhutVeSom as TongVeSom,
+                            TyLeDiTre,
+                            SoLanChamCong,
+                            dbo.fn_TongLuongThang(MaNV, @Nam, @Thang) as TongLuongDaTra
+                        FROM dbo.tvf_BaoCaoChamCongThang(@Nam, @Thang) bc
+                        ORDER BY HoTen";
                     
                     using (SqlCommand cmd = new SqlCommand(query, conn))
                     {
@@ -135,12 +132,14 @@ namespace VuToanThang_23110329.Forms
                             dgvCongThang.Columns["TongDiTre"].HeaderText = "Tổng đi trễ (phút)";
                             dgvCongThang.Columns["TongVeSom"].HeaderText = "Tổng về sớm (phút)";
                             dgvCongThang.Columns["TyLeDiTre"].HeaderText = "Tỷ lệ đi trễ (%)";
+                            dgvCongThang.Columns["SoLanChamCong"].HeaderText = "Số lần chấm công";
                             dgvCongThang.Columns["TongLuongDaTra"].HeaderText = "Tổng lương đã trả";
                             
                             // Format currency columns
                             dgvCongThang.Columns["LuongCoBan"].DefaultCellStyle.Format = "N0";
                             dgvCongThang.Columns["TongLuongDaTra"].DefaultCellStyle.Format = "N0";
                             dgvCongThang.Columns["TyLeDiTre"].DefaultCellStyle.Format = "N2";
+                            dgvCongThang.Columns["TongGioCong"].DefaultCellStyle.Format = "N1";
                         }
                     }
                 }
@@ -405,6 +404,148 @@ namespace VuToanThang_23110329.Forms
         private void tabControl_SelectedIndexChanged(object sender, EventArgs e)
         {
             LoadData();
+        }
+
+        // ✅ ALTERNATIVE METHOD: Sử dụng hoàn toàn TVF cho báo cáo chấm công (không cần fn_TongLuongThang)
+        private void LoadAttendanceSummaryPureTVF()
+        {
+            if (cmbThang.SelectedItem == null || cmbNam.SelectedItem == null)
+                return;
+                
+            try
+            {
+                int month = int.Parse(cmbThang.SelectedItem.ToString());
+                int year = int.Parse(cmbNam.SelectedItem.ToString());
+                
+                using (SqlConnection conn = new SqlConnection(connectionString))
+                {
+                    conn.Open();
+                    // ✅ PURE TVF: Sử dụng 100% TVF, không có thêm function calls
+                    string query = @"
+                        SELECT 
+                            MaNV,
+                            HoTen,
+                            TenPhongBan,
+                            TenChucVu,
+                            SoNgayLam,
+                            TongGioCong,
+                            TongPhutDiTre,
+                            TongPhutVeSom,
+                            TyLeDiTre,
+                            SoLanChamCong
+                        FROM dbo.tvf_BaoCaoChamCongThang(@Nam, @Thang)
+                        ORDER BY HoTen";
+                    
+                    using (SqlCommand cmd = new SqlCommand(query, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@Nam", year);
+                        cmd.Parameters.AddWithValue("@Thang", month);
+                        
+                        SqlDataAdapter adapter = new SqlDataAdapter(cmd);
+                        DataTable dt = new DataTable();
+                        adapter.Fill(dt);
+                        
+                        dgvCongThang.DataSource = dt;
+                        
+                        // Setup columns
+                        if (dgvCongThang.Columns.Count > 0)
+                        {
+                            dgvCongThang.Columns["MaNV"].HeaderText = "Mã NV";
+                            dgvCongThang.Columns["HoTen"].HeaderText = "Họ tên";
+                            dgvCongThang.Columns["TenPhongBan"].HeaderText = "Phòng ban";
+                            dgvCongThang.Columns["TenChucVu"].HeaderText = "Chức vụ";
+                            dgvCongThang.Columns["SoNgayLam"].HeaderText = "Số ngày làm";
+                            dgvCongThang.Columns["TongGioCong"].HeaderText = "Tổng giờ công";
+                            dgvCongThang.Columns["TongPhutDiTre"].HeaderText = "Tổng đi trễ (phút)";
+                            dgvCongThang.Columns["TongPhutVeSom"].HeaderText = "Tổng về sớm (phút)";
+                            dgvCongThang.Columns["TyLeDiTre"].HeaderText = "Tỷ lệ đi trễ (%)";
+                            dgvCongThang.Columns["SoLanChamCong"].HeaderText = "Số lần chấm công";
+                            
+                            // Format columns
+                            dgvCongThang.Columns["TyLeDiTre"].DefaultCellStyle.Format = "N2";
+                            dgvCongThang.Columns["TongGioCong"].DefaultCellStyle.Format = "N1";
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Lỗi khi tải dữ liệu công (Pure TVF): {ex.Message}", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        // ✅ EXPORT METHOD: Xuất báo cáo chấm công ra CSV
+        public void ExportAttendanceReport(string filePath)
+        {
+            if (cmbThang.SelectedItem == null || cmbNam.SelectedItem == null)
+            {
+                MessageBox.Show("Vui lòng chọn tháng và năm!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+                
+            try
+            {
+                int month = int.Parse(cmbThang.SelectedItem.ToString());
+                int year = int.Parse(cmbNam.SelectedItem.ToString());
+                
+                using (SqlConnection conn = new SqlConnection(connectionString))
+                {
+                    conn.Open();
+                    string query = @"
+                        SELECT 
+                            MaNV as 'Mã NV',
+                            HoTen as 'Họ tên',
+                            TenPhongBan as 'Phòng ban',
+                            TenChucVu as 'Chức vụ',
+                            SoNgayLam as 'Số ngày làm',
+                            TongGioCong as 'Tổng giờ công',
+                            TongPhutDiTre as 'Tổng đi trễ (phút)',
+                            TongPhutVeSom as 'Tổng về sớm (phút)',
+                            TyLeDiTre as 'Tỷ lệ đi trễ (%)',
+                            SoLanChamCong as 'Số lần chấm công'
+                        FROM dbo.tvf_BaoCaoChamCongThang(@Nam, @Thang)
+                        ORDER BY HoTen";
+                    
+                    using (SqlCommand cmd = new SqlCommand(query, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@Nam", year);
+                        cmd.Parameters.AddWithValue("@Thang", month);
+                        
+                        SqlDataAdapter adapter = new SqlDataAdapter(cmd);
+                        DataTable dt = new DataTable();
+                        adapter.Fill(dt);
+                        
+                        // Export to CSV
+                        System.Text.StringBuilder csv = new System.Text.StringBuilder();
+                        
+                        // Headers
+                        string[] headers = new string[dt.Columns.Count];
+                        for (int i = 0; i < dt.Columns.Count; i++)
+                        {
+                            headers[i] = dt.Columns[i].ColumnName;
+                        }
+                        csv.AppendLine(string.Join(",", headers));
+                        
+                        // Data rows
+                        foreach (DataRow row in dt.Rows)
+                        {
+                            string[] fields = new string[dt.Columns.Count];
+                            for (int i = 0; i < dt.Columns.Count; i++)
+                            {
+                                fields[i] = row[i].ToString().Replace(",", ";");
+                            }
+                            csv.AppendLine(string.Join(",", fields));
+                        }
+                        
+                        System.IO.File.WriteAllText(filePath, csv.ToString(), System.Text.Encoding.UTF8);
+                        MessageBox.Show($"Xuất báo cáo thành công: {filePath}", "Thành công", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Lỗi khi xuất báo cáo: {ex.Message}", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
     }
 

@@ -45,7 +45,7 @@ namespace VuToanThang_23110329.Forms
             try
             {
                 using (var conn = new SqlConnection(_connectionString))
-                using (var cmd = new SqlCommand("SELECT MaNV, HoTen FROM dbo.NhanVien WHERE TrangThai = N'DangLam' ORDER BY HoTen", conn))
+                using (var cmd = new SqlCommand("SELECT MaNV, HoTen FROM dbo.vw_NhanVien_Full WHERE TrangThai = N'DangLam' ORDER BY HoTen", conn))
                 {
                     conn.Open();
                     var dt = new DataTable();
@@ -56,8 +56,8 @@ namespace VuToanThang_23110329.Forms
                     {
                         while (reader.Read())
                         {
-                            int maNV = reader.GetInt32(0);
-                            string hoTen = reader.GetString(1);
+                            int maNV = reader.GetInt32("MaNV");
+                            string hoTen = reader.GetString("HoTen");
                             dt.Rows.Add(maNV, $"{maNV} - {hoTen}");
                         }
                     }
@@ -228,17 +228,18 @@ namespace VuToanThang_23110329.Forms
             try
             {
                 using (var conn = new SqlConnection(_connectionString))
-                using (var cmd = new SqlCommand("SELECT MaCa, TenCa, GioBatDau, GioKetThuc FROM dbo.CaLam WHERE KichHoat = 1 ORDER BY GioBatDau", conn))
+                using (var cmd = new SqlCommand("sp_CaLam_GetAll", conn))
                 {
+                    cmd.CommandType = CommandType.StoredProcedure;
                     conn.Open();
                     using (var reader = cmd.ExecuteReader())
                     {
                         while (reader.Read())
                         {
-                            int maCa = reader.GetInt32(0);
-                            string tenCa = reader.GetString(1);
-                            TimeSpan gioBatDau = (TimeSpan)reader[2];
-                            TimeSpan gioKetThuc = (TimeSpan)reader[3];
+                            int maCa = reader.GetInt32("MaCa");
+                            string tenCa = reader.GetString("TenCa");
+                            TimeSpan gioBatDau = (TimeSpan)reader["GioBatDau"];
+                            TimeSpan gioKetThuc = (TimeSpan)reader["GioKetThuc"];
                             dt.Rows.Add(maCa, $"{tenCa} ({gioBatDau:hh\\:mm}-{gioKetThuc:hh\\:mm})");
                         }
                     }

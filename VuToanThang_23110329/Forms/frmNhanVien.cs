@@ -56,6 +56,8 @@ namespace VuToanThang_23110329.Forms
             GetCurrentUserRole();
             SetupDataGridView();
             LoadPhongBanChucVu();
+            // ✅ OPTIMIZED: Gọi method mới sử dụng stored procedure
+            LoadPhongBanChucVuData();
             LoadData();
         }
 
@@ -680,6 +682,60 @@ namespace VuToanThang_23110329.Forms
         private void dgvNhanVien_SelectionChanged(object sender, EventArgs e)
         {
             // Có thể thêm logic xử lý khi chọn row
+        }
+
+        // ✅ OPTIMIZED: Sử dụng sp_GetPhongBanChucVu để load ComboBox data
+        private void LoadPhongBanChucVuData()
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(connectionString))
+                {
+                    conn.Open();
+                    using (SqlCommand cmd = new SqlCommand("dbo.sp_GetPhongBanChucVu", conn))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        
+                        using (SqlDataReader reader = cmd.ExecuteReader())
+                        {
+                            // Load PhongBan data
+                            DataTable dtPhongBan = new DataTable();
+                            dtPhongBan.Load(reader);
+                            
+                            // Add "Chọn phòng ban" option
+                            DataRow emptyRow = dtPhongBan.NewRow();
+                            emptyRow["MaPhongBan"] = DBNull.Value;
+                            emptyRow["TenPhongBan"] = "-- Chọn phòng ban --";
+                            dtPhongBan.Rows.InsertAt(emptyRow, 0);
+                            
+                            cmbPhongBanForm.DataSource = dtPhongBan;
+                            cmbPhongBanForm.DisplayMember = "TenPhongBan";
+                            cmbPhongBanForm.ValueMember = "MaPhongBan";
+                            
+                            // Load ChucVu data (next result set)
+                            if (reader.NextResult())
+                            {
+                                DataTable dtChucVu = new DataTable();
+                                dtChucVu.Load(reader);
+                                
+                                // Add "Chọn chức vụ" option
+                                DataRow emptyRowCV = dtChucVu.NewRow();
+                                emptyRowCV["MaChucVu"] = DBNull.Value;
+                                emptyRowCV["TenChucVu"] = "-- Chọn chức vụ --";
+                                dtChucVu.Rows.InsertAt(emptyRowCV, 0);
+                                
+                                cmbChucVu.DataSource = dtChucVu;
+                                cmbChucVu.DisplayMember = "TenChucVu";
+                                cmbChucVu.ValueMember = "MaChucVu";
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Lỗi khi tải dữ liệu phòng ban/chức vụ: {ex.Message}", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         // Method mới sử dụng table-valued function để lấy nhân viên theo phòng ban

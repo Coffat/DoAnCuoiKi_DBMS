@@ -247,15 +247,15 @@ namespace VuToanThang_23110329.Forms
             try
             {
                 using (var conn = new SqlConnection(_connectionString))
-                using (var cmd = new SqlCommand("SELECT MaNV, HoTen FROM dbo.NhanVien WHERE TrangThai = N'DangLam' ORDER BY HoTen", conn))
+                using (var cmd = new SqlCommand("SELECT MaNV, HoTen FROM dbo.vw_NhanVien_Full WHERE TrangThai = N'DangLam' ORDER BY HoTen", conn))
                 {
                     conn.Open();
                     using (var reader = cmd.ExecuteReader())
                     {
                         while (reader.Read())
                         {
-                            int maNV = reader.GetInt32(0);
-                            string hoTen = reader.GetString(1);
+                            int maNV = reader.GetInt32("MaNV");
+                            string hoTen = reader.GetString("HoTen");
                             cboNhanVien.Items.Add($"{maNV} - {hoTen}");
                         }
                     }
@@ -339,8 +339,9 @@ namespace VuToanThang_23110329.Forms
             _shifts.Clear();
             if (string.IsNullOrEmpty(_connectionString)) return;
             using (var conn = new SqlConnection(_connectionString))
-            using (var cmd = new SqlCommand("SELECT MaCa, TenCa, GioBatDau, GioKetThuc FROM dbo.CaLam ORDER BY MaCa", conn))
+            using (var cmd = new SqlCommand("sp_CaLam_GetAll", conn))
             {
+                cmd.CommandType = CommandType.StoredProcedure;
                 conn.Open();
                 using (var rd = cmd.ExecuteReader())
                 {
@@ -348,10 +349,10 @@ namespace VuToanThang_23110329.Forms
                     {
                         _shifts.Add(new Shift
                         {
-                            MaCa = rd.GetInt32(0),
-                            TenCa = rd.GetString(1),
-                            GioBatDau = (TimeSpan)rd[2],
-                            GioKetThuc = (TimeSpan)rd[3]
+                            MaCa = rd.GetInt32("MaCa"),
+                            TenCa = rd.GetString("TenCa"),
+                            GioBatDau = (TimeSpan)rd["GioBatDau"],
+                            GioKetThuc = (TimeSpan)rd["GioKetThuc"]
                         });
                     }
                 }
@@ -373,11 +374,10 @@ namespace VuToanThang_23110329.Forms
             {
                 using (var conn = new SqlConnection(_connectionString))
                 using (var cmd = new SqlCommand(@"
-                    SELECT lpc.MaCa, lpc.NgayLam, nv.HoTen, lpc.TrangThai
-                    FROM dbo.LichPhanCa lpc
-                    INNER JOIN dbo.NhanVien nv ON nv.MaNV = lpc.MaNV
-                    WHERE lpc.NgayLam BETWEEN @D0 AND @D1
-                    ORDER BY lpc.NgayLam, lpc.MaCa, nv.HoTen
+                    SELECT MaCa, NgayLam, HoTen, TrangThaiLich as TrangThai
+                    FROM dbo.vw_Lich_ChamCong_Ngay
+                    WHERE NgayLam BETWEEN @D0 AND @D1
+                    ORDER BY NgayLam, MaCa, HoTen
                 ", conn))
                 {
                     cmd.Parameters.AddWithValue("@D0", fromDate.Date);
@@ -387,10 +387,10 @@ namespace VuToanThang_23110329.Forms
                     {
                         while (rd.Read())
                         {
-                            int maCa = rd.GetInt32(0);
-                            DateTime ngay = rd.GetDateTime(1).Date;
-                            string hoTen = rd.GetString(2);
-                            string trangThai = rd.GetString(3);
+                            int maCa = rd.GetInt32("MaCa");
+                            DateTime ngay = rd.GetDateTime("NgayLam").Date;
+                            string hoTen = rd.GetString("HoTen");
+                            string trangThai = rd.GetString("TrangThai");
                             var key = (maCa, ngay);
                             if (!map.TryGetValue(key, out var list))
                             {

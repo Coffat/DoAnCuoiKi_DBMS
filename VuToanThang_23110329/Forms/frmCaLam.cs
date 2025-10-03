@@ -567,6 +567,44 @@ namespace VuToanThang_23110329.Forms
             }
         }
 
+        // ✅ OPTIMIZED: Sử dụng sp_CaLam_GetById để lấy chi tiết ca làm
+        private void LoadShiftDetails(int maCa)
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(connectionString))
+                {
+                    using (SqlCommand cmd = new SqlCommand("sp_CaLam_GetById", conn))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Parameters.AddWithValue("@MaCa", maCa);
+                        
+                        conn.Open();
+                        using (SqlDataReader reader = cmd.ExecuteReader())
+                        {
+                            if (reader.Read())
+                            {
+                                txtMaCa.Text = reader["MaCa"].ToString();
+                                txtTenCa.Text = reader["TenCa"].ToString();
+                                dtpGioBatDau.Value = DateTime.Today.Add((TimeSpan)reader["GioBatDau"]);
+                                dtpGioKetThuc.Value = DateTime.Today.Add((TimeSpan)reader["GioKetThuc"]);
+                                txtHeSoCa.Text = reader["HeSoCa"].ToString();
+                                txtMoTa.Text = reader["MoTa"]?.ToString() ?? "";
+                                chkKichHoat.Checked = Convert.ToBoolean(reader["KichHoat"]);
+                                
+                                currentMaCa = maCa;
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Lỗi khi tải chi tiết ca làm: {ex.Message}", "Lỗi", 
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
         private void SetupRolePermissions()
         {
             // Dựa vào phân quyền SQL:

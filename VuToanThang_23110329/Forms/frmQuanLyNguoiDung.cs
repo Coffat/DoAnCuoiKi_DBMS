@@ -67,19 +67,32 @@ namespace VuToanThang_23110329.Forms
                 using (SqlConnection conn = new SqlConnection(connectionString))
                 {
                     conn.Open();
+                    // ✅ OPTIMIZED: Sử dụng vw_NhanVien_Full thay vì raw JOIN
                     string sql = @"
+                        SELECT 
+                            MaNguoiDung,
+                            (SELECT TenDangNhap FROM dbo.NguoiDung WHERE MaNguoiDung = nv.MaNguoiDung) as TenDangNhap,
+                            ISNULL(HoTen, N'Chưa có thông tin') as HoTen,
+                            (SELECT VaiTro FROM dbo.NguoiDung WHERE MaNguoiDung = nv.MaNguoiDung) as VaiTro,
+                            (SELECT KichHoat FROM dbo.NguoiDung WHERE MaNguoiDung = nv.MaNguoiDung) as KichHoat,
+                            ISNULL(TenPhongBan, N'Chưa phân công') as TenPhongBan,
+                            ISNULL(NgayVaoLam, GETDATE()) as NgayVaoLam,
+                            dbo.fn_TinhTuoi(NgaySinh) as Tuoi
+                        FROM dbo.vw_NhanVien_Full nv
+                        WHERE MaNguoiDung IS NOT NULL
+                        UNION ALL
                         SELECT 
                             nd.MaNguoiDung,
                             nd.TenDangNhap,
-                            ISNULL(nv.HoTen, N'Chưa có thông tin') as HoTen,
+                            N'Chưa có thông tin' as HoTen,
                             nd.VaiTro,
                             nd.KichHoat,
-                            ISNULL(pb.TenPhongBan, N'Chưa phân công') as TenPhongBan,
-                            ISNULL(nv.NgayVaoLam, GETDATE()) as NgayVaoLam
+                            N'Chưa phân công' as TenPhongBan,
+                            GETDATE() as NgayVaoLam,
+                            NULL as Tuoi
                         FROM dbo.NguoiDung nd
-                        LEFT JOIN dbo.NhanVien nv ON nd.MaNguoiDung = nv.MaNguoiDung
-                        LEFT JOIN dbo.PhongBan pb ON nv.MaPhongBan = pb.MaPhongBan
-                        ORDER BY nd.MaNguoiDung DESC";
+                        WHERE nd.MaNguoiDung NOT IN (SELECT DISTINCT MaNguoiDung FROM dbo.vw_NhanVien_Full WHERE MaNguoiDung IS NOT NULL)
+                        ORDER BY MaNguoiDung DESC";
 
                     SqlDataAdapter adapter = new SqlDataAdapter(sql, conn);
                     dtNguoiDung = new DataTable();

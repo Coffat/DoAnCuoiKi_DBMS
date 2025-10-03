@@ -223,7 +223,7 @@ BEGIN
     
     SELECT @TongLuong = ISNULL(SUM(ThucLanh), 0)
     FROM dbo.BangLuong 
-    WHERE MaNV = @MaNV AND Nam = @Nam AND Thang = @Thang AND TrangThai = N'DaThanhToan';
+    WHERE MaNV = @MaNV AND Nam = @Nam AND Thang = @Thang AND TrangThai = N'Dong';
     
     RETURN @TongLuong;
 END

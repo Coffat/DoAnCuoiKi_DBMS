@@ -106,63 +106,63 @@ namespace VuToanThang_23110329.Forms
 
         private void LoadData()
         {
+            LoadDataWithTimeRange(6); // Mặc định 6 tháng gần nhất
+        }
+
+        // ✅ IMPROVED: Sử dụng TVF với filter thời gian thay vì view
+        private void LoadDataWithTimeRange(int soThangGanNhat)
+        {
             try
             {
                 using (SqlConnection conn = new SqlConnection(connectionString))
                 {
                     conn.Open();
-                    // ✅ OPTIMIZED: Sử dụng vw_DonTu_ChiTiet thay vì raw SQL join
                     string query = @"
-                        SELECT MaDon, TenNhanVien, Loai, TuLuc, DenLuc, 
-                               SoGio, LyDo, TrangThai, TuLuc as NgayTao
-                        FROM dbo.vw_DonTu_ChiTiet
-                        WHERE 1=1";
-
-                    // Apply filters
-                    if (cmbTrangThai.SelectedIndex > 0)
-                    {
-                        string statusFilter = cmbTrangThai.SelectedItem.ToString();
-                        switch (statusFilter)
-                        {
-                            case "Chờ duyệt":
-                                query += " AND TrangThai = N'ChoDuyet'";
-                                break;
-                            case "Đã duyệt":
-                                query += " AND TrangThai = N'DaDuyet'";
-                                break;
-                            case "Từ chối":
-                                query += " AND TrangThai = N'TuChoi'";
-                                break;
-                        }
-                    }
-
-                    if (cmbLoaiDon.SelectedIndex > 0)
-                    {
-                        string typeFilter = cmbLoaiDon.SelectedItem.ToString();
-                        switch (typeFilter)
-                        {
-                            case "Nghỉ phép":
-                                query += " AND Loai = N'NGHI'";
-                                break;
-                            case "Tăng ca":
-                                query += " AND Loai = N'OT'";
-                                break;
-                        }
-                    }
-
-                    if (!string.IsNullOrEmpty(txtTimKiem.Text))
-                    {
-                        query += " AND TenNhanVien LIKE N'%' + @TimKiem + '%'";
-                    }
-
-                    query += " ORDER BY TuLuc DESC";
+                        SELECT MaDon, dt.MaNV, TenNhanVien, 
+                               CASE Loai 
+                                   WHEN 'NGHI' THEN N'Nghỉ phép'
+                                   WHEN 'OT' THEN N'Làm thêm giờ'
+                               END as LoaiDon,
+                               TuLuc, DenLuc, SoGio, LyDo,
+                               CASE TrangThai
+                                   WHEN 'ChoDuyet' THEN N'Chờ duyệt'
+                                   WHEN 'DaDuyet' THEN N'Đã duyệt'
+                                   WHEN 'TuChoi' THEN N'Từ chối'
+                               END as TrangThai,
+                               NguoiDuyet, SoNgayTuTao, NgayTao
+                        FROM (
+                            SELECT DISTINCT MaNV FROM dbo.NhanVien WHERE TrangThai = N'DangLam'
+                        ) nv
+                        CROSS APPLY dbo.tvf_LichSuDonTuNhanVien(nv.MaNV, @SoThangGanNhat) dt
+                        INNER JOIN dbo.vw_DonTu_ChiTiet vdt ON vdt.MaDon = dt.MaDon
+                        WHERE (@TrangThai = N'Tất cả' OR dt.TrangThai = @TrangThaiParam)
+                        AND (@Loai = N'Tất cả' OR dt.Loai = @LoaiParam)
+                        AND (@TimKiem = N'' OR vdt.TenNhanVien LIKE N'%' + @TimKiem + '%')
+                        ORDER BY dt.MaDon DESC";
 
                     using (SqlCommand cmd = new SqlCommand(query, conn))
                     {
-                        if (!string.IsNullOrEmpty(txtTimKiem.Text))
-                        {
-                            cmd.Parameters.AddWithValue("@TimKiem", txtTimKiem.Text);
-                        }
+                        cmd.Parameters.AddWithValue("@SoThangGanNhat", soThangGanNhat);
+
+                        // Xử lý filter trạng thái
+                        string selectedTrangThai = cmbTrangThai.SelectedItem?.ToString() ?? "Tất cả";
+                        cmd.Parameters.AddWithValue("@TrangThai", selectedTrangThai);
+                        
+                        string trangThaiParam = selectedTrangThai == "Chờ duyệt" ? "ChoDuyet" :
+                                               selectedTrangThai == "Đã duyệt" ? "DaDuyet" :
+                                               selectedTrangThai == "Từ chối" ? "TuChoi" : "";
+                        cmd.Parameters.AddWithValue("@TrangThaiParam", trangThaiParam);
+
+                        // Xử lý filter loại đơn
+                        string selectedLoai = cmbLoaiDon.SelectedItem?.ToString() ?? "Tất cả";
+                        cmd.Parameters.AddWithValue("@Loai", selectedLoai);
+                        
+                        string loaiParam = selectedLoai == "Nghỉ phép" ? "NGHI" :
+                                          selectedLoai == "Tăng ca" ? "OT" : "";
+                        cmd.Parameters.AddWithValue("@LoaiParam", loaiParam);
+
+                        // Tìm kiếm
+                        cmd.Parameters.AddWithValue("@TimKiem", txtTimKiem.Text ?? "");
 
                         SqlDataAdapter adapter = new SqlDataAdapter(cmd);
                         DataTable dt = new DataTable();
@@ -174,12 +174,12 @@ namespace VuToanThang_23110329.Forms
                             dgvDonTu.Rows.Add(
                                 row["MaDon"],
                                 row["TenNhanVien"],
-                                row["Loai"].ToString() == "NGHI" ? "Nghỉ phép" : "Tăng ca",
+                                row["LoaiDon"],
                                 Convert.ToDateTime(row["TuLuc"]).ToString("dd/MM/yyyy HH:mm"),
                                 Convert.ToDateTime(row["DenLuc"]).ToString("dd/MM/yyyy HH:mm"),
                                 row["SoGio"],
                                 row["LyDo"],
-                                GetStatusText(row["TrangThai"].ToString()),
+                                row["TrangThai"],
                                 Convert.ToDateTime(row["NgayTao"]).ToString("dd/MM/yyyy")
                             );
                         }
