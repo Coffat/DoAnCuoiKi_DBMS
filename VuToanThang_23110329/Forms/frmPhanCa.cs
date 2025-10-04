@@ -254,7 +254,7 @@ namespace VuToanThang_23110329.Forms
                     {
                         while (reader.Read())
                         {
-                            int maNV = reader.GetInt32("MaNV");
+                            int maNV = Convert.ToInt32(reader["MaNV"]);
                             string hoTen = reader.GetString("HoTen");
                             cboNhanVien.Items.Add($"{maNV} - {hoTen}");
                         }
@@ -349,7 +349,7 @@ namespace VuToanThang_23110329.Forms
                     {
                         _shifts.Add(new Shift
                         {
-                            MaCa = rd.GetInt32("MaCa"),
+                            MaCa = Convert.ToInt32(rd["MaCa"]),
                             TenCa = rd.GetString("TenCa"),
                             GioBatDau = (TimeSpan)rd["GioBatDau"],
                             GioKetThuc = (TimeSpan)rd["GioKetThuc"]
@@ -387,7 +387,7 @@ namespace VuToanThang_23110329.Forms
                     {
                         while (rd.Read())
                         {
-                            int maCa = rd.GetInt32("MaCa");
+                            int maCa = Convert.ToInt32(rd["MaCa"]);
                             DateTime ngay = rd.GetDateTime("NgayLam").Date;
                             string hoTen = rd.GetString("HoTen");
                             string trangThai = rd.GetString("TrangThai");

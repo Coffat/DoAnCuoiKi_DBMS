@@ -56,7 +56,7 @@ namespace VuToanThang_23110329.Forms
                     {
                         while (reader.Read())
                         {
-                            int maNV = reader.GetInt32("MaNV");
+                            int maNV = Convert.ToInt32(reader["MaNV"]);
                             string hoTen = reader.GetString("HoTen");
                             dt.Rows.Add(maNV, $"{maNV} - {hoTen}");
                         }
@@ -223,7 +223,7 @@ namespace VuToanThang_23110329.Forms
             dt.Columns.Add("Display", typeof(string));
 
             // Thêm dòng trống
-            dt.Rows.Add(DBNull.Value, "-- Không có ca --");
+            dt.Rows.Add(0, "-- Không có ca --");
 
             try
             {
@@ -236,7 +236,7 @@ namespace VuToanThang_23110329.Forms
                     {
                         while (reader.Read())
                         {
-                            int maCa = reader.GetInt32("MaCa");
+                            int maCa = Convert.ToInt32(reader["MaCa"]);
                             string tenCa = reader.GetString("TenCa");
                             TimeSpan gioBatDau = (TimeSpan)reader["GioBatDau"];
                             TimeSpan gioKetThuc = (TimeSpan)reader["GioKetThuc"];
