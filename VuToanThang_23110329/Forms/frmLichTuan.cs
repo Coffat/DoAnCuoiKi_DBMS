@@ -57,7 +57,7 @@ namespace VuToanThang_23110329.Forms
                         while (reader.Read())
                         {
                             int maNV = Convert.ToInt32(reader["MaNV"]);
-                            string hoTen = reader.GetString("HoTen");
+                            string hoTen = reader["HoTen"].ToString();
                             dt.Rows.Add(maNV, $"{maNV} - {hoTen}");
                         }
                     }
@@ -171,8 +171,8 @@ namespace VuToanThang_23110329.Forms
                             DateTime ngay = reader.GetDateTime(0);
                             int? maLich = reader.IsDBNull(2) ? (int?)null : reader.GetInt32(2);
                             int? maCa = reader.IsDBNull(3) ? (int?)null : reader.GetInt32(3);
-                            string trangThai = reader.IsDBNull(4) ? "" : reader.GetString(4);
-                            string ghiChu = reader.IsDBNull(5) ? "" : reader.GetString(5);
+                            string trangThai = reader.IsDBNull(4) ? "" : reader[4].ToString();
+                            string ghiChu = reader.IsDBNull(5) ? "" : reader[5].ToString();
 
                             int rowIndex = dgvLichTuan.Rows.Add();
                             var row = dgvLichTuan.Rows[rowIndex];
@@ -237,7 +237,7 @@ namespace VuToanThang_23110329.Forms
                         while (reader.Read())
                         {
                             int maCa = Convert.ToInt32(reader["MaCa"]);
-                            string tenCa = reader.GetString("TenCa");
+                            string tenCa = reader["TenCa"].ToString();
                             TimeSpan gioBatDau = (TimeSpan)reader["GioBatDau"];
                             TimeSpan gioKetThuc = (TimeSpan)reader["GioKetThuc"];
                             dt.Rows.Add(maCa, $"{tenCa} ({gioBatDau:hh\\:mm}-{gioKetThuc:hh\\:mm})");
