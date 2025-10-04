@@ -388,7 +388,7 @@ namespace VuToanThang_23110329.Forms
                         while (rd.Read())
                         {
                             int maCa = Convert.ToInt32(rd["MaCa"]);
-                            DateTime ngay = rd.GetDateTime("NgayLam").Date;
+                            DateTime ngay = Convert.ToDateTime(rd["NgayLam"]).Date;
                             string hoTen = rd["HoTen"].ToString();
                             string trangThai = rd["TrangThai"].ToString();
                             var key = (maCa, ngay);
