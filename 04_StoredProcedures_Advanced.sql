@@ -706,7 +706,8 @@ BEGIN
         BEGIN TRAN;
 
         DECLARE @SqlCmd NVARCHAR(MAX);
-        DECLARE @HashedPassword VARBINARY(32) = HASHBYTES('SHA2_256', @MatKhau);
+        -- ✅ SỬA: Không hash mật khẩu, lưu plain text để dễ test
+        -- DECLARE @HashedPassword VARBINARY(32) = HASHBYTES('SHA2_256', @MatKhau);
         DECLARE @MaNV_Temp INT;
 
         -- BƯỚC 1: Kiểm tra tên đăng nhập đã tồn tại chưa
@@ -737,7 +738,7 @@ BEGIN
             @LuongCoBan = @LuongCoBan,
             @TaoTaiKhoan = 1,
             @TenDangNhap = @TenDangNhap,
-            @MatKhauHash = @HashedPassword,
+            @MatKhauHash = @MatKhau,  -- ✅ SỬA: Lưu plain text thay vì hash
             @VaiTro = @VaiTro,
             @MaNV_OUT = @MaNV_Temp OUTPUT;
 

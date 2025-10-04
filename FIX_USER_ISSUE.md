@@ -140,6 +140,20 @@ WHERE dp.type = 'S'
 ORDER BY dp.name;
 ```
 
+## THÔNG TIN TÀI KHOẢN
+
+### Mật khẩu
+**Tất cả tài khoản đều có mật khẩu: `1`** (không hash, đơn giản để test)
+
+### ID bắt đầu từ 1
+Tất cả bảng có IDENTITY đều bắt đầu từ 1:
+- `MaPhongBan` bắt đầu từ 1
+- `MaChucVu` bắt đầu từ 1
+- `MaCa` bắt đầu từ 1
+- `MaNguoiDung` bắt đầu từ 1
+- `MaNV` bắt đầu từ 1
+- Và tất cả các bảng khác...
+
 ## HỖ TRỢ
 
 Nếu vẫn gặp lỗi, kiểm tra:
