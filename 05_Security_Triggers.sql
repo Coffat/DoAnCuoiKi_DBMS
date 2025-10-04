@@ -176,12 +176,13 @@ GRANT EXECUTE ON dbo.sp_NguoiDung_DoiMatKhau TO r_nhanvien;
 PRINT N'✅ ĐÃ CẤP QUYỀN EXECUTE CHO CÁC STORED PROCEDURES';
 
 -- ============================================================================
--- LƯU Ý: STORED PROCEDURES ĐÃ ĐƯỢC SỬA ĐỂ CHỈ TẠO DATABASE USERS
+-- LƯU Ý: STORED PROCEDURES SỬ DỤNG DATABASE USERS WITHOUT LOGIN
 -- ============================================================================
--- Không cần cấp quyền server-level vì không tạo SQL Logins nữa
+-- Không cần quyền server-level vì không tạo SQL Logins
 -- Chỉ tạo Database Users với "WITHOUT LOGIN"
+-- Users sẽ xuất hiện trong Security > Users của database
 
-PRINT N'✅ SỬ DỤNG DATABASE USERS WITHOUT LOGIN - KHÔNG CẦN QUYỀN SERVER-LEVEL';
+PRINT N'✅ SỬ DỤNG DATABASE USERS WITHOUT LOGIN - KHÔNG CẦN QUYỀN ADMIN';
 
 PRINT N'✅ ĐÃ CẤP QUYỀN THEO MÔ HÌNH BẢO MẬT NÂNG CAO';
 PRINT N'   - Tất cả thao tác thay đổi dữ liệu phải qua Stored Procedures';

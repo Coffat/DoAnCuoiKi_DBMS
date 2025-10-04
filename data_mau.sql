@@ -79,80 +79,9 @@ INSERT INTO dbo.CaLam (TenCa, GioBatDau, GioKetThuc, HeSoCa, MoTa, KichHoat) VAL
 (N'Ca Hành chính', '08:00', '17:00', 1.0, N'Ca hành chính', 1);
 PRINT N'✓ Ca làm: ' + CAST(@@ROWCOUNT AS NVARCHAR);
 
--- FIX PERMISSION: Sửa stored procedure để có quyền tạo SQL Login
-IF OBJECT_ID('dbo.sp_ThemMoiNhanVien','P') IS NOT NULL DROP PROCEDURE dbo.sp_ThemMoiNhanVien;
-IF OBJECT_ID('dbo.sp_TaoTaiKhoanDayDu','P') IS NOT NULL DROP PROCEDURE dbo.sp_TaoTaiKhoanDayDu;
-GO
-CREATE PROCEDURE dbo.sp_ThemMoiNhanVien
-    @HoTen NVARCHAR(120), @NgaySinh DATE = NULL, @GioiTinh NVARCHAR(10) = NULL, 
-    @DienThoai NVARCHAR(20) = NULL, @Email NVARCHAR(120) = NULL, @DiaChi NVARCHAR(255) = NULL, 
-    @NgayVaoLam DATE = NULL, @MaPhongBan INT = NULL, @MaChucVu INT = NULL, @LuongCoBan DECIMAL(12,2), 
-    @TaoTaiKhoan BIT = 0, @TenDangNhap NVARCHAR(50) = NULL, @MatKhauHash NVARCHAR(200) = NULL, 
-    @VaiTro NVARCHAR(20) = N'NhanVien', @MaNV_OUT INT OUTPUT
-WITH EXECUTE AS OWNER
-AS 
-BEGIN 
-    SET NOCOUNT ON; 
-    SET XACT_ABORT ON;
-    
-    IF @NgayVaoLam IS NULL SET @NgayVaoLam = CONVERT(date, GETDATE());
-    
-    BEGIN TRAN;
-    
-    DECLARE @MaNguoiDung INT = NULL;
-    
-    -- Thêm vào bảng NhanVien
-    INSERT INTO dbo.NhanVien (HoTen, NgaySinh, GioiTinh, DienThoai, Email, DiaChi, NgayVaoLam, MaPhongBan, MaChucVu, LuongCoBan, TrangThai)
-    VALUES (@HoTen, @NgaySinh, @GioiTinh, @DienThoai, @Email, @DiaChi, @NgayVaoLam, @MaPhongBan, @MaChucVu, @LuongCoBan, N'DangLam');
-    
-    SET @MaNV_OUT = SCOPE_IDENTITY();
-    
-    -- Tạo tài khoản nếu cần
-    IF @TaoTaiKhoan = 1 AND @TenDangNhap IS NOT NULL
-    BEGIN
-        INSERT INTO dbo.NguoiDung (TenDangNhap, MatKhauHash, VaiTro, KichHoat)
-        VALUES (@TenDangNhap, @MatKhauHash, @VaiTro, 1);
-        
-        SET @MaNguoiDung = SCOPE_IDENTITY();
-        
-        UPDATE dbo.NhanVien SET MaNguoiDung = @MaNguoiDung WHERE MaNV = @MaNV_OUT;
-    END
-    
-    COMMIT;
-END
-GO
-
-CREATE PROCEDURE dbo.sp_TaoTaiKhoanDayDu
-    @HoTen NVARCHAR(120), @NgaySinh DATE = NULL, @GioiTinh NVARCHAR(10) = NULL, 
-    @DienThoai NVARCHAR(20) = NULL, @Email NVARCHAR(120) = NULL, @DiaChi NVARCHAR(255) = NULL, 
-    @NgayVaoLam DATE = NULL, @MaPhongBan INT = NULL, @MaChucVu INT = NULL, @LuongCoBan DECIMAL(12,2), 
-    @TenDangNhap NVARCHAR(50), @MatKhau NVARCHAR(200), @VaiTro NVARCHAR(20), @MaNV_OUT INT OUTPUT
-WITH EXECUTE AS OWNER
-AS 
-BEGIN 
-    SET NOCOUNT ON; 
-    SET XACT_ABORT ON;
-    
-    BEGIN TRY
-        BEGIN TRAN;
-        
-        -- Gọi sp_ThemMoiNhanVien để tạo nhân viên và tài khoản
-        EXEC dbo.sp_ThemMoiNhanVien
-            @HoTen = @HoTen, @NgaySinh = @NgaySinh, @GioiTinh = @GioiTinh,
-            @DienThoai = @DienThoai, @Email = @Email, @DiaChi = @DiaChi,
-            @NgayVaoLam = @NgayVaoLam, @MaPhongBan = @MaPhongBan, @MaChucVu = @MaChucVu,
-            @LuongCoBan = @LuongCoBan, @TaoTaiKhoan = 1, @TenDangNhap = @TenDangNhap,
-            @MatKhauHash = @MatKhau, @VaiTro = @VaiTro, @MaNV_OUT = @MaNV_OUT OUTPUT;
-        
-        COMMIT;
-    END TRY
-    BEGIN CATCH
-        IF @@TRANCOUNT > 0 ROLLBACK;
-        DECLARE @ErrorMessage NVARCHAR(4000) = ERROR_MESSAGE();
-        RAISERROR(@ErrorMessage, 16, 1);
-    END CATCH
-END
-GO
+-- ✅ SỬA: Không override sp_TaoTaiKhoanDayDu nữa
+-- Sử dụng stored procedure gốc từ file 04_StoredProcedures_Advanced.sql
+-- Procedure đó có đầy đủ logic tạo Database User WITHOUT LOGIN
 
 -- NGƯỜI DÙNG VÀ NHÂN VIÊN (Tạo qua SP để tự động tạo SQL Login + Role)
 PRINT N'[3/7] Tạo người dùng và nhân viên (với SQL Login + Role)...';

@@ -667,16 +667,16 @@ GO
 /*
    MÔ HÌNH BẢO MẬT 2 LỚP:
    - Lớp 1: Tài khoản trong bảng NguoiDung (application level)
-   - Lớp 2: SQL Server Login + Database User (database level)
+   - Lớp 2: Database User WITHOUT LOGIN (database level)
    
    Mỗi tài khoản sẽ có:
    1. Bản ghi trong bảng NguoiDung
-   2. SQL Server Login để xác thực
-   3. Database User ánh xạ với Login
-   4. Role membership tương ứng với vai trò
+   2. Database User WITHOUT LOGIN (xuất hiện trong Security > Users)
+   3. Role membership tương ứng với vai trò
+   4. KHÔNG cần quyền admin để tạo
 */
 
--- 12.1) TẠO TÀI KHOẢN ĐẦY ĐỦ (Application + SQL Server Level)
+-- 12.1) TẠO TÀI KHOẢN ĐẦY ĐỦ (Application + Database Level - Không cần quyền admin)
 IF OBJECT_ID('dbo.sp_TaoTaiKhoanDayDu','P') IS NOT NULL DROP PROCEDURE dbo.sp_TaoTaiKhoanDayDu;
 GO
 CREATE PROCEDURE dbo.sp_TaoTaiKhoanDayDu
@@ -743,31 +743,25 @@ BEGIN
 
         SET @MaNV_OUT = @MaNV_Temp;
 
-        COMMIT;  -- ✅ COMMIT trước khi tạo Database User
-        
-        -- BƯỚC 3: Tạo Database User WITHOUT LOGIN (tách riêng khỏi transaction)
-        BEGIN TRY
-            SET @SqlCmd = N'CREATE USER ' + QUOTENAME(@TenDangNhap) + N' WITHOUT LOGIN';
-            EXEC sp_executesql @SqlCmd;
+        -- BƯỚC 3: Tạo Database User WITHOUT LOGIN (trong transaction)
+        SET @SqlCmd = N'CREATE USER ' + QUOTENAME(@TenDangNhap) + N' WITHOUT LOGIN';
+        EXEC sp_executesql @SqlCmd;
 
-            -- BƯỚC 4: Thêm User vào Role tương ứng
-            DECLARE @RoleName SYSNAME = 
-                CASE @VaiTro
-                    WHEN N'HR' THEN N'r_hr'
-                    WHEN N'QuanLy' THEN N'r_quanly'
-                    WHEN N'KeToan' THEN N'r_ketoan'
-                    ELSE N'r_nhanvien'
-                END;
-            
-            SET @SqlCmd = N'ALTER ROLE ' + QUOTENAME(@RoleName) + N' ADD MEMBER ' + QUOTENAME(@TenDangNhap);
-            EXEC sp_executesql @SqlCmd;
-            
-            PRINT N'✅ Đã tạo Database User: ' + @TenDangNhap + N' (Role: ' + @RoleName + N')';
-        END TRY
-        BEGIN CATCH
-            PRINT N'⚠️ Lỗi tạo Database User cho: ' + @TenDangNhap + N' - ' + ERROR_MESSAGE();
-            -- Không rollback vì data đã được commit
-        END CATCH
+        -- BƯỚC 4: Thêm User vào Role tương ứng
+        DECLARE @RoleName SYSNAME = 
+            CASE @VaiTro
+                WHEN N'HR' THEN N'r_hr'
+                WHEN N'QuanLy' THEN N'r_quanly'
+                WHEN N'KeToan' THEN N'r_ketoan'
+                ELSE N'r_nhanvien'
+            END;
+        
+        SET @SqlCmd = N'ALTER ROLE ' + QUOTENAME(@RoleName) + N' ADD MEMBER ' + QUOTENAME(@TenDangNhap);
+        EXEC sp_executesql @SqlCmd;
+        
+        PRINT N'✅ Đã tạo Database User: ' + @TenDangNhap + N' (Role: ' + @RoleName + N')';
+
+        COMMIT;  -- ✅ COMMIT sau khi tạo Database User thành công
         
         PRINT N'Đã tạo tài khoản đầy đủ cho: ' + @TenDangNhap + N' (Vai trò: ' + @VaiTro + N')';
     END TRY
@@ -833,7 +827,7 @@ BEGIN
             -- CHẾ ĐỘ XÓA HOÀN TOÀN (Chỉ dùng cho test/cleanup)
             PRINT N'⚠️ CẢNH BÁO: Đang xóa hoàn toàn tài khoản và DỮ LIỆU LỊCH SỬ!';
             
-            -- Xóa Database User (không có SQL Login để xóa)
+            -- Xóa Database User WITHOUT LOGIN
             SET @SqlCmd = N'IF EXISTS (SELECT 1 FROM sys.database_principals WHERE name = ''' + 
                           @TenDangNhap + ''' AND type = ''S'') ' +
                           N'DROP USER ' + QUOTENAME(@TenDangNhap);
@@ -849,7 +843,7 @@ BEGIN
         BEGIN
             -- CHẾ ĐỘ VÔ HIỆU HÓA (Khuyến nghị - Giữ lại dữ liệu lịch sử)
             
-            -- Bước 1: Không cần vô hiệu hóa SQL Login (vì không có)
+            -- Bước 1: Không cần vô hiệu hóa SQL Login (vì sử dụng WITHOUT LOGIN)
             
             -- Bước 2: Cập nhật trạng thái nhân viên thành 'Nghi'
             UPDATE dbo.NhanVien
@@ -863,7 +857,7 @@ BEGIN
             
             PRINT N'Đã vô hiệu hóa tài khoản (giữ lại dữ liệu lịch sử): ' + @TenDangNhap;
             PRINT N'  - Trạng thái nhân viên: Nghi';
-            PRINT N'  - SQL Login: DISABLED';
+            PRINT N'  - SQL Login: Không có (sử dụng WITHOUT LOGIN)';
             PRINT N'  - Dữ liệu lịch sử (ChamCong, BangLuong, DonTu, LichPhanCa): Được giữ lại';
         END
 
@@ -914,20 +908,15 @@ BEGIN
         SET KichHoat = @KichHoat
         WHERE MaNguoiDung = @MaNguoiDung;
 
-        -- Enable/Disable SQL Login
-        DECLARE @SqlCmd NVARCHAR(MAX);
+        -- Enable/Disable chỉ cập nhật trong bảng NguoiDung (không có SQL Login để enable/disable)
         IF @KichHoat = 1
         BEGIN
-            SET @SqlCmd = N'ALTER LOGIN ' + QUOTENAME(@TenDangNhap) + N' ENABLE';
             PRINT N'Đã kích hoạt tài khoản: ' + @TenDangNhap;
         END
         ELSE
         BEGIN
-            SET @SqlCmd = N'ALTER LOGIN ' + QUOTENAME(@TenDangNhap) + N' DISABLE';
             PRINT N'Đã vô hiệu hóa tài khoản: ' + @TenDangNhap;
         END
-        
-        EXEC sp_executesql @SqlCmd;
 
         COMMIT;
     END TRY
@@ -950,7 +939,7 @@ PRINT N'=== ĐÃ THÊM STORED PROCEDURES QUẢN LÝ LỊCH TUẦN ===';
 PRINT N'=== ĐÃ THÊM STORED PROCEDURES QUẢN LÝ TÀI KHOẢN 2 LỚP ===';
 PRINT N'';
 PRINT N'Stored Procedures Quản Lý Tài Khoản 2 Lớp:';
-PRINT N'  - sp_TaoTaiKhoanDayDu: Tạo tài khoản (App + Database User + Role)';
+PRINT N'  - sp_TaoTaiKhoanDayDu: Tạo tài khoản (App + Database User WITHOUT LOGIN + Role)';
 PRINT N'  - sp_XoaTaiKhoanDayDu: Xóa hoàn toàn tài khoản';
 PRINT N'  - sp_VoHieuHoaTaiKhoan: Enable/Disable tài khoản';
 PRINT N'  - sp_CapNhatTaiKhoanDayDu: ĐÃ XÓA (không sử dụng trong C#)';
