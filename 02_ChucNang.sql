@@ -33,7 +33,7 @@ CREATE VIEW dbo.vw_Lich_ChamCong_Ngay
 AS
 SELECT 
     nv.MaNV, nv.HoTen, lpc.NgayLam,
-    cl.TenCa, cl.GioBatDau, cl.GioKetThuc, cl.HeSoCa,
+    lpc.MaCa, cl.TenCa, cl.GioBatDau, cl.GioKetThuc, cl.HeSoCa,
     lpc.TrangThai AS TrangThaiLich,
     cc.GioVao, cc.GioRa, cc.GioCong, cc.DiTrePhut, cc.VeSomPhut, cc.Khoa AS KhoaChamCong
 FROM dbo.LichPhanCa lpc

@@ -389,7 +389,7 @@ namespace VuToanThang_23110329.Forms
             this.pnlCalendar.Location = new System.Drawing.Point(0, 0);
             this.pnlCalendar.Name = "pnlCalendar";
             this.pnlCalendar.Padding = new System.Windows.Forms.Padding(10, 0, 10, 10);
-            this.pnlCalendar.Size = new System.Drawing.Size(800, 660);
+            this.pnlCalendar.Size = new System.Drawing.Size(880, 660);
             this.pnlCalendar.TabIndex = 2;
             // 
             // dgvTuan
@@ -424,7 +424,7 @@ namespace VuToanThang_23110329.Forms
             this.dgvTuan.RowHeadersVisible = false;
             this.dgvTuan.RowTemplate.Height = 40;
             this.dgvTuan.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.CellSelect;
-            this.dgvTuan.Size = new System.Drawing.Size(780, 600);
+            this.dgvTuan.Size = new System.Drawing.Size(860, 600);
             this.dgvTuan.TabIndex = 3;
             this.dgvTuan.ThemeStyle.AlternatingRowsStyle.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(248)))), ((int)(((byte)(249)))), ((int)(((byte)(250)))));
             this.dgvTuan.ThemeStyle.AlternatingRowsStyle.Font = null;
@@ -518,9 +518,9 @@ namespace VuToanThang_23110329.Forms
             this.pnlInfo.Controls.Add(this.lblThongTinCa);
             this.pnlInfo.Controls.Add(this.lblChiTietLich);
             this.pnlInfo.Dock = System.Windows.Forms.DockStyle.Right;
-            this.pnlInfo.Location = new System.Drawing.Point(800, 0);
+            this.pnlInfo.Location = new System.Drawing.Point(880, 0);
             this.pnlInfo.Name = "pnlInfo";
-            this.pnlInfo.Size = new System.Drawing.Size(360, 660);
+            this.pnlInfo.Size = new System.Drawing.Size(280, 660);
             this.pnlInfo.TabIndex = 1;
             // 
             // lblThongTinCa

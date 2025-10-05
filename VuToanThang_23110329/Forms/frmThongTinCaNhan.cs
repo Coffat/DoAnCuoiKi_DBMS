@@ -232,12 +232,20 @@ namespace VuToanThang_23110329.Forms
                 {
                     try
                     {
+                        // Kiểm tra thông tin user session
+                        if (!UserSession.IsLoggedIn || UserSession.MaNguoiDung <= 0)
+                        {
+                            MessageBox.Show("Phiên đăng nhập không hợp lệ. Vui lòng đăng nhập lại.", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            return;
+                        }
+
                         using (SqlConnection conn = new SqlConnection(connectionString))
                         {
                             conn.Open();
-                            using (SqlCommand cmd = new SqlCommand("dbo.sp_NguoiDung_DoiMatKhauCaNhan", conn))
+                            using (SqlCommand cmd = new SqlCommand("dbo.sp_NguoiDung_DoiMatKhau", conn))
                             {
                                 cmd.CommandType = CommandType.StoredProcedure;
+                                cmd.Parameters.AddWithValue("@MaNguoiDung", UserSession.MaNguoiDung);
                                 cmd.Parameters.AddWithValue("@MatKhauCu", dialog.OldPassword);
                                 cmd.Parameters.AddWithValue("@MatKhauMoi", dialog.NewPassword);
 

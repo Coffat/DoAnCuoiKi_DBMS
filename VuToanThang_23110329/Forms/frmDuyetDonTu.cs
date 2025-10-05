@@ -118,27 +118,25 @@ namespace VuToanThang_23110329.Forms
                 {
                     conn.Open();
                     string query = @"
-                        SELECT MaDon, dt.MaNV, TenNhanVien, 
-                               CASE Loai 
+                        SELECT vdt.MaDon, vdt.MaNV, vdt.TenNhanVien, 
+                               CASE vdt.Loai 
                                    WHEN 'NGHI' THEN N'Nghỉ phép'
                                    WHEN 'OT' THEN N'Làm thêm giờ'
                                END as LoaiDon,
-                               TuLuc, DenLuc, SoGio, LyDo,
-                               CASE TrangThai
+                               vdt.TuLuc, vdt.DenLuc, vdt.SoGio, vdt.LyDo,
+                               CASE vdt.TrangThai
                                    WHEN 'ChoDuyet' THEN N'Chờ duyệt'
                                    WHEN 'DaDuyet' THEN N'Đã duyệt'
                                    WHEN 'TuChoi' THEN N'Từ chối'
                                END as TrangThai,
-                               NguoiDuyet, SoNgayTuTao, NgayTao
-                        FROM (
-                            SELECT DISTINCT MaNV FROM dbo.NhanVien WHERE TrangThai = N'DangLam'
-                        ) nv
-                        CROSS APPLY dbo.tvf_LichSuDonTuNhanVien(nv.MaNV, @SoThangGanNhat) dt
-                        INNER JOIN dbo.vw_DonTu_ChiTiet vdt ON vdt.MaDon = dt.MaDon
-                        WHERE (@TrangThai = N'Tất cả' OR dt.TrangThai = @TrangThaiParam)
-                        AND (@Loai = N'Tất cả' OR dt.Loai = @LoaiParam)
+                               vdt.TenNguoiDuyet AS NguoiDuyet, 
+                               vdt.TuLuc AS NgayTao
+                        FROM dbo.vw_DonTu_ChiTiet vdt
+                        WHERE vdt.TuLuc >= DATEADD(MONTH, -@SoThangGanNhat, GETDATE())
+                        AND (@TrangThai = N'Tất cả' OR vdt.TrangThai = @TrangThaiParam)
+                        AND (@Loai = N'Tất cả' OR vdt.Loai = @LoaiParam)
                         AND (@TimKiem = N'' OR vdt.TenNhanVien LIKE N'%' + @TimKiem + '%')
-                        ORDER BY dt.MaDon DESC";
+                        ORDER BY vdt.MaDon DESC";
 
                     using (SqlCommand cmd = new SqlCommand(query, conn))
                     {

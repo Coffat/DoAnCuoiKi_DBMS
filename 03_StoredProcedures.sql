@@ -1112,7 +1112,7 @@ BEGIN
     -- Tìm MaNguoiDung từ username hiện tại
     SELECT @MaNguoiDung = MaNguoiDung 
     FROM dbo.NguoiDung 
-    WHERE Username = @CurrentUser;
+    WHERE TenDangNhap = @CurrentUser;
     
     IF @MaNguoiDung IS NULL
     BEGIN
@@ -1164,8 +1164,7 @@ BEGIN
     
     -- Cập nhật mật khẩu mới
     UPDATE dbo.NguoiDung 
-    SET MatKhauHash = @MatKhauMoi,
-        NgayCapNhatMatKhau = GETDATE()
+    SET MatKhauHash = @MatKhauMoi
     WHERE MaNguoiDung = @MaNguoiDung;
     
     -- Log audit trail (nếu có bảng audit)

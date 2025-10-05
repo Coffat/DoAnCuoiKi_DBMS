@@ -192,6 +192,8 @@ namespace VuToanThang_23110329.Forms
                             }
                             
                             var phongBanBinding = dtPhongBan.Copy();
+                            // Cho phép NULL trong cột MaPhongBan
+                            phongBanBinding.Columns["MaPhongBan"].AllowDBNull = true;
                             var newRowPB = phongBanBinding.NewRow();
                             newRowPB["MaPhongBan"] = DBNull.Value;
                             newRowPB["TenPhongBan"] = "-- Chọn phòng ban --";
@@ -218,6 +220,8 @@ namespace VuToanThang_23110329.Forms
                             }
                             
                             var chucVuBinding = dtChucVu.Copy();
+                            // Cho phép NULL trong cột MaChucVu
+                            chucVuBinding.Columns["MaChucVu"].AllowDBNull = true;
                             var newRowCV = chucVuBinding.NewRow();
                             newRowCV["MaChucVu"] = DBNull.Value;
                             newRowCV["TenChucVu"] = "-- Chọn chức vụ --";
@@ -256,6 +260,8 @@ namespace VuToanThang_23110329.Forms
                             adapter.Fill(dtPhongBan);
                             
                             var phongBanBinding = dtPhongBan.Copy();
+                            // Cho phép NULL trong cột MaPhongBan
+                            phongBanBinding.Columns["MaPhongBan"].AllowDBNull = true;
                             var newRowPB = phongBanBinding.NewRow();
                             newRowPB["MaPhongBan"] = DBNull.Value;
                             newRowPB["TenPhongBan"] = "-- Chọn phòng ban --";
@@ -284,6 +290,8 @@ namespace VuToanThang_23110329.Forms
                             adapter.Fill(dtChucVu);
                             
                             var chucVuBinding = dtChucVu.Copy();
+                            // Cho phép NULL trong cột MaChucVu
+                            chucVuBinding.Columns["MaChucVu"].AllowDBNull = true;
                             var newRowCV = chucVuBinding.NewRow();
                             newRowCV["MaChucVu"] = DBNull.Value;
                             newRowCV["TenChucVu"] = "-- Chọn chức vụ --";
@@ -318,23 +326,23 @@ namespace VuToanThang_23110329.Forms
                 {
                     conn.Open();
                     
-                    // ✅ OPTIMIZED: Sử dụng vw_NhanVien_Full và fn_TinhTuoi
+                    // ✅ OPTIMIZED: Sử dụng vw_NhanVien_Full và fn_TinhTuoi với xử lý NULL
                     string query = @"
                         SELECT 
                             MaNV,
                             HoTen,
                             NgaySinh,
                             dbo.fn_TinhTuoi(NgaySinh) AS Tuoi,
-                            GioiTinh,
-                            DienThoai,
-                            Email,
-                            DiaChi,
+                            ISNULL(GioiTinh, N'') AS GioiTinh,
+                            ISNULL(DienThoai, N'') AS DienThoai,
+                            ISNULL(Email, N'') AS Email,
+                            ISNULL(DiaChi, N'') AS DiaChi,
                             NgayVaoLam,
                             DATEDIFF(DAY, NgayVaoLam, GETDATE()) AS SoNgayLamViec,
                             LuongCoBan,
                             TrangThai,
-                            TenPhongBan,
-                            TenChucVu,
+                            ISNULL(TenPhongBan, N'Chưa phân công') AS TenPhongBan,
+                            ISNULL(TenChucVu, N'Chưa phân công') AS TenChucVu,
                             MaPhongBan,
                             MaChucVu
                         FROM dbo.vw_NhanVien_Full
@@ -346,6 +354,13 @@ namespace VuToanThang_23110329.Forms
                         {
                             dtNhanVien = new DataTable();
                             adapter.Fill(dtNhanVien);
+                            
+                            // Đảm bảo các cột có thể chứa NULL
+                            if (dtNhanVien.Columns.Contains("MaPhongBan"))
+                                dtNhanVien.Columns["MaPhongBan"].AllowDBNull = true;
+                            if (dtNhanVien.Columns.Contains("MaChucVu"))
+                                dtNhanVien.Columns["MaChucVu"].AllowDBNull = true;
+                            
                             dgvNhanVien.DataSource = dtNhanVien;
                         }
                     }
@@ -373,6 +388,13 @@ namespace VuToanThang_23110329.Forms
                         {
                             dtNhanVien = new DataTable();
                             adapter.Fill(dtNhanVien);
+                            
+                            // Đảm bảo các cột có thể chứa NULL
+                            if (dtNhanVien.Columns.Contains("MaPhongBan"))
+                                dtNhanVien.Columns["MaPhongBan"].AllowDBNull = true;
+                            if (dtNhanVien.Columns.Contains("MaChucVu"))
+                                dtNhanVien.Columns["MaChucVu"].AllowDBNull = true;
+                            
                             dgvNhanVien.DataSource = dtNhanVien;
                         }
                     }
@@ -406,7 +428,16 @@ namespace VuToanThang_23110329.Forms
             {
                 if (!string.IsNullOrEmpty(filterExpression))
                     filterExpression += " AND ";
-                filterExpression += $"MaPhongBan = {phongBanFilter}";
+                
+                // Xử lý trường hợp NULL an toàn
+                if (int.TryParse(phongBanFilter, out int maPhongBan))
+                {
+                    filterExpression += $"MaPhongBan = {maPhongBan}";
+                }
+                else
+                {
+                    filterExpression += "MaPhongBan IS NULL";
+                }
             }
 
             // Lọc theo trạng thái
@@ -624,8 +655,8 @@ namespace VuToanThang_23110329.Forms
                         cmd.Parameters.AddWithValue("@DiaChi", txtDiaChi.Text.Trim());
                         cmd.Parameters.AddWithValue("@NgayVaoLam", dtpNgayVaoLam.Value);
                         cmd.Parameters.AddWithValue("@LuongCoBan", numLuongCoBan.Value);
-                        cmd.Parameters.AddWithValue("@MaPhongBan", cmbPhongBanForm.SelectedValue == DBNull.Value ? (object)DBNull.Value : cmbPhongBanForm.SelectedValue);
-                        cmd.Parameters.AddWithValue("@MaChucVu", cmbChucVu.SelectedValue == DBNull.Value ? (object)DBNull.Value : cmbChucVu.SelectedValue);
+                        cmd.Parameters.AddWithValue("@MaPhongBan", (cmbPhongBanForm.SelectedValue == null || cmbPhongBanForm.SelectedValue == DBNull.Value) ? (object)DBNull.Value : cmbPhongBanForm.SelectedValue);
+                        cmd.Parameters.AddWithValue("@MaChucVu", (cmbChucVu.SelectedValue == null || cmbChucVu.SelectedValue == DBNull.Value) ? (object)DBNull.Value : cmbChucVu.SelectedValue);
                         cmd.Parameters.AddWithValue("@TaoTaiKhoan", 0); // Không tạo tài khoản đăng nhập
                         cmd.Parameters.AddWithValue("@TenDangNhap", DBNull.Value);
                         cmd.Parameters.AddWithValue("@MatKhauHash", DBNull.Value);
@@ -702,6 +733,8 @@ namespace VuToanThang_23110329.Forms
                             DataTable dtPhongBan = new DataTable();
                             dtPhongBan.Load(reader);
                             
+                            // Cho phép NULL trong cột MaPhongBan
+                            dtPhongBan.Columns["MaPhongBan"].AllowDBNull = true;
                             // Add "Chọn phòng ban" option
                             DataRow emptyRow = dtPhongBan.NewRow();
                             emptyRow["MaPhongBan"] = DBNull.Value;
@@ -718,6 +751,8 @@ namespace VuToanThang_23110329.Forms
                                 DataTable dtChucVu = new DataTable();
                                 dtChucVu.Load(reader);
                                 
+                                // Cho phép NULL trong cột MaChucVu
+                                dtChucVu.Columns["MaChucVu"].AllowDBNull = true;
                                 // Add "Chọn chức vụ" option
                                 DataRow emptyRowCV = dtChucVu.NewRow();
                                 emptyRowCV["MaChucVu"] = DBNull.Value;
@@ -800,9 +835,13 @@ namespace VuToanThang_23110329.Forms
             dtpNgayVaoLam.Value = DateTime.Now;
             numLuongCoBan.Value = 5000000;
             if (cmbPhongBanForm.Items.Count > 0)
-                cmbPhongBanForm.SelectedIndex = 0;
+            {
+                cmbPhongBanForm.SelectedIndex = 0; // Chọn item "-- Chọn phòng ban --" có giá trị DBNull
+            }
             if (cmbChucVu.Items.Count > 0)
-                cmbChucVu.SelectedIndex = 0;
+            {
+                cmbChucVu.SelectedIndex = 0; // Chọn item "-- Chọn chức vụ --" có giá trị DBNull
+            }
         }
 
         private void LoadEmployeeToForm(int maNV)

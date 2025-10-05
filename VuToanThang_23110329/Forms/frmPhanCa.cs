@@ -101,6 +101,35 @@ namespace VuToanThang_23110329.Forms
             // Build or refresh grid columns and data
             BuildWeekColumns();
             PopulateWeekData();
+            // Đảm bảo DataGridView hiển thị đúng
+            EnsureDataGridViewLayout();
+        }
+
+        private void EnsureDataGridViewLayout()
+        {
+            // Refresh layout để đảm bảo không bị che phủ
+            dgvTuan.Refresh();
+            dgvTuan.Invalidate();
+            this.Refresh();
+            
+            // Đảm bảo tất cả cell có style đồng nhất
+            EnsureUniformCellStyles();
+        }
+
+        private void EnsureUniformCellStyles()
+        {
+            // Reset tất cả cell styles để đảm bảo đồng nhất
+            foreach (DataGridViewRow row in dgvTuan.Rows)
+            {
+                foreach (DataGridViewCell cell in row.Cells)
+                {
+                    if (cell.ColumnIndex > 0) // Bỏ qua cột đầu tiên (Ca)
+                    {
+                        cell.Style.BackColor = Color.White;
+                        cell.Style.ForeColor = Color.Black;
+                    }
+                }
+            }
         }
 
         private void ClearForm()
@@ -118,22 +147,26 @@ namespace VuToanThang_23110329.Forms
             {
                 Name = "colShift",
                 HeaderText = "Ca",
-                Width = 120,
+                Width = 100,
                 ReadOnly = true
             };
             dgvTuan.Columns.Add(colShift);
             BuildWeekColumns();
-            // Light theme for readability
+            // Đảm bảo tất cả cell có style đồng nhất
             dgvTuan.DefaultCellStyle.ForeColor = Color.Black;
             dgvTuan.DefaultCellStyle.BackColor = Color.White;
             dgvTuan.DefaultCellStyle.SelectionBackColor = Color.FromArgb(210, 227, 252); // Light blue
             dgvTuan.DefaultCellStyle.SelectionForeColor = Color.Black;
-            dgvTuan.AllowUserToResizeColumns = false;
+            dgvTuan.AlternatingRowsDefaultCellStyle.BackColor = Color.White;
+            dgvTuan.AlternatingRowsDefaultCellStyle.ForeColor = Color.Black;
+            dgvTuan.AllowUserToResizeColumns = true;
             dgvTuan.AllowUserToResizeRows = false;
             dgvTuan.DefaultCellStyle.WrapMode = DataGridViewTriState.True;
             dgvTuan.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells;
             dgvTuan.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.None;
             dgvTuan.RowTemplate.Height = 48;
+            dgvTuan.ScrollBars = ScrollBars.Both;
+            // Dock được thiết lập trong Designer, không cần set lại
         }
 
         private void BuildWeekColumns()
@@ -150,7 +183,7 @@ namespace VuToanThang_23110329.Forms
                 {
                     Name = $"col_{day:yyyyMMdd}",
                     HeaderText = day.ToString("ddd\n dd/MM"),
-                    Width = 130,
+                    Width = 110,
                     ReadOnly = _isReadOnlyForRole
                 };
                 dgvTuan.Columns.Add(col);
@@ -193,15 +226,16 @@ namespace VuToanThang_23110329.Forms
                             }));
                             dgvTuan.Rows[rowIndex].Cells[colIndex].Value = cellText;
 
-                            // Màu sắc theo trạng thái
-                            if (info.Any(x => x.TrangThai == "Khoa"))
-                                dgvTuan.Rows[rowIndex].Cells[colIndex].Style.BackColor = Color.FromArgb(255, 230, 230);
-                            else if (info.Any(x => x.TrangThai == "Huy"))
-                                dgvTuan.Rows[rowIndex].Cells[colIndex].Style.BackColor = Color.FromArgb(220, 220, 220);
+                            // Đảm bảo tất cả cell có màu nền giống nhau
+                            dgvTuan.Rows[rowIndex].Cells[colIndex].Style.BackColor = Color.White;
+                            dgvTuan.Rows[rowIndex].Cells[colIndex].Style.ForeColor = Color.Black;
                         }
                         else
                         {
                             dgvTuan.Rows[rowIndex].Cells[colIndex].Value = "";
+                            // Đảm bảo cell trống cũng có màu nền giống nhau
+                            dgvTuan.Rows[rowIndex].Cells[colIndex].Style.BackColor = Color.White;
+                            dgvTuan.Rows[rowIndex].Cells[colIndex].Style.ForeColor = Color.Black;
                         }
                     }
                 }
@@ -313,12 +347,11 @@ namespace VuToanThang_23110329.Forms
         {
             if (e.RowIndex < 0 || e.ColumnIndex < 0) return;
             if (e.ColumnIndex == 0) return; // shift column
-            // Example: color weekends
-            DateTime day = _currentWeekStartDate.AddDays(e.ColumnIndex - 1);
-            if (day.DayOfWeek == DayOfWeek.Saturday || day.DayOfWeek == DayOfWeek.Sunday)
-            {
-                e.CellStyle.BackColor = Color.FromArgb(40, 40, 60);
-            }
+            
+            // Đảm bảo tất cả các cột có UI giống nhau - không phân biệt cuối tuần
+            // Sử dụng màu nền mặc định cho tất cả các ngày
+            e.CellStyle.BackColor = Color.White;
+            e.CellStyle.ForeColor = Color.Black;
         }
 
         private void InitializeConnection()
@@ -337,25 +370,38 @@ namespace VuToanThang_23110329.Forms
         private void LoadShifts()
         {
             _shifts.Clear();
-            if (string.IsNullOrEmpty(_connectionString)) return;
-            using (var conn = new SqlConnection(_connectionString))
-            using (var cmd = new SqlCommand("sp_CaLam_GetAll", conn))
+            if (string.IsNullOrEmpty(_connectionString)) 
             {
-                cmd.CommandType = CommandType.StoredProcedure;
-                conn.Open();
-                using (var rd = cmd.ExecuteReader())
+                return;
+            }
+            
+            try
+            {
+                using (var conn = new SqlConnection(_connectionString))
+                using (var cmd = new SqlCommand("sp_CaLam_GetAll", conn))
                 {
-                    while (rd.Read())
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    conn.Open();
+                    using (var rd = cmd.ExecuteReader())
                     {
-                        _shifts.Add(new Shift
+                        while (rd.Read())
                         {
-                            MaCa = Convert.ToInt32(rd["MaCa"]),
-                            TenCa = rd["TenCa"].ToString(),
-                            GioBatDau = (TimeSpan)rd["GioBatDau"],
-                            GioKetThuc = (TimeSpan)rd["GioKetThuc"]
-                        });
+                            _shifts.Add(new Shift
+                            {
+                                MaCa = Convert.ToInt32(rd["MaCa"]),
+                                TenCa = rd["TenCa"].ToString(),
+                                GioBatDau = (TimeSpan)rd["GioBatDau"],
+                                GioKetThuc = (TimeSpan)rd["GioKetThuc"]
+                            });
+                        }
                     }
                 }
+                
+                // Debug: Đã load ca làm việc thành công
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Lỗi LoadShifts: {ex.Message}", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -373,32 +419,44 @@ namespace VuToanThang_23110329.Forms
             try
             {
                 using (var conn = new SqlConnection(_connectionString))
-                using (var cmd = new SqlCommand(@"
-                    SELECT MaCa, NgayLam, HoTen, TrangThaiLich as TrangThai
-                    FROM dbo.vw_Lich_ChamCong_Ngay
-                    WHERE NgayLam BETWEEN @D0 AND @D1
-                    ORDER BY NgayLam, MaCa, HoTen
-                ", conn))
                 {
-                    cmd.Parameters.AddWithValue("@D0", fromDate.Date);
-                    cmd.Parameters.AddWithValue("@D1", toDate.Date);
                     conn.Open();
-                    using (var rd = cmd.ExecuteReader())
+
+                    // Kiểm tra dữ liệu có sẵn (chỉ khi cần debug)
+                    // Debug code đã được tắt để tăng hiệu suất
+
+                    using (var cmd = new SqlCommand(@"
+                        SELECT lpc.MaCa, lpc.NgayLam, nv.HoTen, lpc.TrangThai
+                        FROM dbo.LichPhanCa lpc
+                        JOIN dbo.NhanVien nv ON nv.MaNV = lpc.MaNV
+                        WHERE lpc.NgayLam BETWEEN @D0 AND @D1
+                        ORDER BY lpc.NgayLam, lpc.MaCa, nv.HoTen
+                    ", conn))
                     {
-                        while (rd.Read())
+                        cmd.Parameters.AddWithValue("@D0", fromDate.Date);
+                        cmd.Parameters.AddWithValue("@D1", toDate.Date);
+
+                        int recordCount = 0;
+                        using (var rd = cmd.ExecuteReader())
                         {
-                            int maCa = Convert.ToInt32(rd["MaCa"]);
-                            DateTime ngay = Convert.ToDateTime(rd["NgayLam"]).Date;
-                            string hoTen = rd["HoTen"].ToString();
-                            string trangThai = rd["TrangThai"].ToString();
-                            var key = (maCa, ngay);
-                            if (!map.TryGetValue(key, out var list))
+                            while (rd.Read())
                             {
-                                list = new List<AssignmentInfo>();
-                                map[key] = list;
+                                recordCount++;
+                                int maCa = Convert.ToInt32(rd["MaCa"]);
+                                DateTime ngay = Convert.ToDateTime(rd["NgayLam"]).Date;
+                                string hoTen = rd["HoTen"].ToString();
+                                string trangThai = rd["TrangThai"].ToString();
+                                var key = (maCa, ngay);
+                                if (!map.TryGetValue(key, out var list))
+                                {
+                                    list = new List<AssignmentInfo>();
+                                    map[key] = list;
+                                }
+                                list.Add(new AssignmentInfo { HoTen = hoTen, TrangThai = trangThai });
                             }
-                            list.Add(new AssignmentInfo { HoTen = hoTen, TrangThai = trangThai });
                         }
+
+                        // Debug: Đã load lịch phân ca thành công
                     }
                 }
             }
