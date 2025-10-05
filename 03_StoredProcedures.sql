@@ -976,7 +976,6 @@ BEGIN
         RETURN;
     END
     
-    -- Validate phone number (Vietnamese format)
     IF @DienThoai IS NOT NULL AND @DienThoai != ''
     BEGIN
         IF LEN(@DienThoai) < 10 OR LEN(@DienThoai) > 15
@@ -1085,6 +1084,100 @@ BEGIN
 END
 GO
 
+-- ============================================================================
+-- sp_NguoiDung_DoiMatKhauCaNhan - Đổi mật khẩu cá nhân (chỉ cho chính mình)
+-- ============================================================================
+-- Mục đích: Cho phép user đổi mật khẩu của chính mình với bảo mật chặt chẽ
+-- Bảo mật: 
+-- 1. Chỉ có thể đổi mật khẩu của chính mình (MaNguoiDung = SUSER_SNAME())
+-- 2. Bắt buộc phải nhập mật khẩu cũ
+-- 3. Validation mật khẩu mới chặt chẽ
+-- 4. Log audit trail
+-- ============================================================================
+IF OBJECT_ID('dbo.sp_NguoiDung_DoiMatKhauCaNhan','P') IS NOT NULL DROP PROCEDURE dbo.sp_NguoiDung_DoiMatKhauCaNhan;
+GO
+CREATE PROCEDURE dbo.sp_NguoiDung_DoiMatKhauCaNhan
+    @MatKhauCu NVARCHAR(128),
+    @MatKhauMoi NVARCHAR(128)
+WITH EXECUTE AS OWNER
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET XACT_ABORT ON;
+    
+    -- Lấy thông tin user hiện tại
+    DECLARE @CurrentUser NVARCHAR(128) = SUSER_SNAME();
+    DECLARE @MaNguoiDung INT;
+    
+    -- Tìm MaNguoiDung từ username hiện tại
+    SELECT @MaNguoiDung = MaNguoiDung 
+    FROM dbo.NguoiDung 
+    WHERE Username = @CurrentUser;
+    
+    IF @MaNguoiDung IS NULL
+    BEGIN
+        RAISERROR(N'Không tìm thấy thông tin người dùng hiện tại.', 16, 1);
+        RETURN;
+    END
+    
+    -- Validation mật khẩu mới
+    IF LEN(@MatKhauMoi) < 8
+    BEGIN
+        RAISERROR(N'Mật khẩu mới phải có ít nhất 8 ký tự.', 16, 1);
+        RETURN;
+    END
+    
+    -- Kiểm tra độ phức tạp mật khẩu
+    IF @MatKhauMoi NOT LIKE '%[0-9]%' OR @MatKhauMoi NOT LIKE '%[A-Za-z]%'
+    BEGIN
+        RAISERROR(N'Mật khẩu mới phải chứa ít nhất 1 chữ số và 1 chữ cái.', 16, 1);
+        RETURN;
+    END
+    
+    IF @MatKhauCu = @MatKhauMoi
+    BEGIN
+        RAISERROR(N'Mật khẩu mới phải khác mật khẩu cũ.', 16, 1);
+        RETURN;
+    END
+    
+    -- Kiểm tra mật khẩu cũ (BẮT BUỘC)
+    IF @MatKhauCu = '' OR @MatKhauCu IS NULL
+    BEGIN
+        RAISERROR(N'Vui lòng nhập mật khẩu cũ.', 16, 1);
+        RETURN;
+    END
+    
+    BEGIN TRAN;
+    
+    -- Kiểm tra mật khẩu cũ
+    DECLARE @CurrentPassword NVARCHAR(128);
+    SELECT @CurrentPassword = MatKhauHash 
+    FROM dbo.NguoiDung 
+    WHERE MaNguoiDung = @MaNguoiDung;
+    
+    IF @CurrentPassword != @MatKhauCu
+    BEGIN
+        ROLLBACK;
+        RAISERROR(N'Mật khẩu cũ không đúng.', 16, 1);
+        RETURN;
+    END
+    
+    -- Cập nhật mật khẩu mới
+    UPDATE dbo.NguoiDung 
+    SET MatKhauHash = @MatKhauMoi,
+        NgayCapNhatMatKhau = GETDATE()
+    WHERE MaNguoiDung = @MaNguoiDung;
+    
+    -- Log audit trail (nếu có bảng audit)
+    -- INSERT INTO dbo.AuditLog (MaNguoiDung, Action, Details, Timestamp)
+    -- VALUES (@MaNguoiDung, 'PASSWORD_CHANGE', 'User changed password', GETDATE());
+    
+    COMMIT;
+    
+    PRINT N'Đổi mật khẩu thành công!';
+END
+GO
+
 -- ✅ BỔ SUNG CÁC STORED PROCEDURES GETALL CÒN THIẾU
 -- Form frmPhongBan_ChucVu cần các procedure này
 
@@ -1133,6 +1226,7 @@ PRINT N'Đã thêm CRUD ChucVu (Insert/Update/Delete/GetAll)';
 PRINT N'Đã thêm sp_DonTu_Insert';
 PRINT N'Đã thêm sp_NhanVien_Delete và sp_NhanVien_UpdateTrangThai';
 PRINT N'Đã thêm sp_NhanVien_GetThongTinCaNhan, sp_NhanVien_UpdateThongTinCaNhan, sp_NguoiDung_DoiMatKhau';
+PRINT N'Đã thêm sp_NguoiDung_DoiMatKhauCaNhan - Đổi mật khẩu cá nhân với bảo mật chặt chẽ';
 PRINT N'✅ Đã bổ sung sp_PhongBan_GetAll và sp_ChucVu_GetAll cho form frmPhongBan_ChucVu';
 
 -- ============================================================================

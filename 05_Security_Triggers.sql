@@ -85,6 +85,7 @@ GRANT EXECUTE ON dbo.sp_TaoTaiKhoanDayDu TO r_hr;  -- Thêm quyền cho bảo m�
 GRANT EXECUTE ON dbo.sp_XoaTaiKhoanDayDu TO r_hr;
 GRANT EXECUTE ON dbo.sp_VoHieuHoaTaiKhoan TO r_hr;
 GRANT EXECUTE ON dbo.sp_NguoiDung_DoiMatKhau TO r_hr;  -- Thêm quyền đổi mật khẩu
+GRANT EXECUTE ON dbo.sp_NguoiDung_DoiMatKhauCaNhan TO r_hr; -- ✅ Đổi mật khẩu cá nhân
 
 -- Thêm quyền INSERT/UPDATE cho các bảng cần thiết
 GRANT INSERT, UPDATE ON dbo.NguoiDung TO r_hr;
@@ -163,15 +164,18 @@ GRANT EXECUTE ON dbo.sp_NhanVien_Delete TO r_quanly;
 GRANT EXECUTE ON dbo.sp_NhanVien_UpdateTrangThai TO r_quanly;
 GRANT EXECUTE ON dbo.sp_KhoaCongThang TO r_quanly;
 GRANT EXECUTE ON dbo.sp_ChayBangLuong TO r_quanly;
+GRANT EXECUTE ON dbo.sp_NguoiDung_DoiMatKhauCaNhan TO r_quanly; -- ✅ Đổi mật khẩu cá nhân
 
 -- Cấp quyền cho Kế toán
 GRANT EXECUTE ON dbo.sp_KhoaCongThang TO r_ketoan;
 GRANT EXECUTE ON dbo.sp_ChayBangLuong TO r_ketoan;
+GRANT EXECUTE ON dbo.sp_NguoiDung_DoiMatKhauCaNhan TO r_ketoan; -- ✅ Đổi mật khẩu cá nhân
 
 -- Cấp quyền cho Nhân viên (chỉ xem thông tin cá nhân)
 GRANT EXECUTE ON dbo.sp_NhanVien_GetThongTinCaNhan TO r_nhanvien;
 GRANT EXECUTE ON dbo.sp_NhanVien_UpdateThongTinCaNhan TO r_nhanvien;
-GRANT EXECUTE ON dbo.sp_NguoiDung_DoiMatKhau TO r_nhanvien;
+-- GRANT EXECUTE ON dbo.sp_NguoiDung_DoiMatKhau TO r_nhanvien; -- ❌ XÓA: Chỉ HR được dùng
+GRANT EXECUTE ON dbo.sp_NguoiDung_DoiMatKhauCaNhan TO r_nhanvien; -- ✅ MỚI: Đổi mật khẩu cá nhân
 
 PRINT N'✅ ĐÃ CẤP QUYỀN EXECUTE CHO CÁC STORED PROCEDURES';
 

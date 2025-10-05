@@ -2,6 +2,7 @@ using System;
 using System.Data;
 using System.Data.SqlClient;
 using System.Drawing;
+using System.Linq;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using Guna.UI2.WinForms;
@@ -234,10 +235,9 @@ namespace VuToanThang_23110329.Forms
                         using (SqlConnection conn = new SqlConnection(connectionString))
                         {
                             conn.Open();
-                            using (SqlCommand cmd = new SqlCommand("dbo.sp_NguoiDung_DoiMatKhau", conn))
+                            using (SqlCommand cmd = new SqlCommand("dbo.sp_NguoiDung_DoiMatKhauCaNhan", conn))
                             {
                                 cmd.CommandType = CommandType.StoredProcedure;
-                                cmd.Parameters.AddWithValue("@MaNguoiDung", currentUserId);
                                 cmd.Parameters.AddWithValue("@MatKhauCu", dialog.OldPassword);
                                 cmd.Parameters.AddWithValue("@MatKhauMoi", dialog.NewPassword);
 
@@ -253,9 +253,17 @@ namespace VuToanThang_23110329.Forms
                         {
                             MessageBox.Show("Mật khẩu cũ không đúng!", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         }
-                        else if (ex.Message.Contains("ít nhất 6 ký tự"))
+                        else if (ex.Message.Contains("ít nhất 8 ký tự"))
                         {
-                            MessageBox.Show("Mật khẩu mới phải có ít nhất 6 ký tự!", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            MessageBox.Show("Mật khẩu mới phải có ít nhất 8 ký tự!", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        }
+                        else if (ex.Message.Contains("chứa ít nhất 1 chữ số và 1 chữ cái"))
+                        {
+                            MessageBox.Show("Mật khẩu mới phải chứa ít nhất 1 chữ số và 1 chữ cái!", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        }
+                        else if (ex.Message.Contains("nhập mật khẩu cũ"))
+                        {
+                            MessageBox.Show("Vui lòng nhập mật khẩu cũ!", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                         }
                         else
                         {
@@ -387,9 +395,16 @@ namespace VuToanThang_23110329.Forms
                     MessageBox.Show("Mật khẩu xác nhận không khớp!", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
-                if (txtNewPassword.Text.Length < 6)
+                if (txtNewPassword.Text.Length < 8)
                 {
-                    MessageBox.Show("Mật khẩu phải có ít nhất 6 ký tự!", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    MessageBox.Show("Mật khẩu phải có ít nhất 8 ký tự!", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+                
+                // Kiểm tra độ phức tạp mật khẩu
+                if (!txtNewPassword.Text.Any(char.IsDigit) || !txtNewPassword.Text.Any(char.IsLetter))
+                {
+                    MessageBox.Show("Mật khẩu phải chứa ít nhất 1 chữ số và 1 chữ cái!", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
                 DialogResult = DialogResult.OK;
