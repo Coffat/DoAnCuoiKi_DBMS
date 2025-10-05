@@ -110,7 +110,7 @@ ALTER TABLE dbo.NhanVien ADD CONSTRAINT CK_NhanVien_TrangThai CHECK(TrangThai IN
 -- Chấp nhận 3 trạng thái: Đang làm, Nghỉ, Tạm nghỉ
 
 ALTER TABLE dbo.NhanVien WITH NOCHECK 
-  ADD CONSTRAINT CK_NhanVien_GioiTinh CHECK(GioiTinh IS NULL OR GioiTinh IN (N'Nam',N'Nu',N'Khac'));
+  ADD CONSTRAINT CK_NhanVien_GioiTinh CHECK(GioiTinh IS NULL OR GioiTinh IN (N'Nam',N'Nữ',N'Khác'));
 -- Kiểm soát giá trị giới tính nếu có.
 
 -- Cập nhật index để sử dụng các cột mới

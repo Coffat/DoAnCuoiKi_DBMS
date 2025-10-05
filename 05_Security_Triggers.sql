@@ -382,6 +382,85 @@ BEGIN
 END
 GO
 
+-- 7) PHONGBAN: Tự động xử lý nhân viên khi vô hiệu hóa phòng ban
+IF OBJECT_ID('dbo.tr_PhongBan_HandleEmployees','TR') IS NOT NULL DROP TRIGGER dbo.tr_PhongBan_HandleEmployees;
+GO
+CREATE TRIGGER dbo.tr_PhongBan_HandleEmployees
+ON dbo.PhongBan
+AFTER UPDATE
+AS
+BEGIN
+    SET NOCOUNT ON;
+    IF TRY_CONVERT(INT, SESSION_CONTEXT(N'SkipTrigger')) = 1 RETURN;
+
+    -- Khi phòng ban bị vô hiệu hóa, chuyển nhân viên sang "TamNghi" và xóa phòng ban
+    IF UPDATE(KichHoat)
+    BEGIN
+        UPDATE nv
+        SET 
+            TrangThai = N'TamNghi',
+            MaPhongBan = NULL, -- Xóa liên kết với phòng ban
+            GhiChu = ISNULL(nv.GhiChu, '') + N' [Phòng ban bị vô hiệu hóa ' + CONVERT(NVARCHAR(10), GETDATE(), 103) + ']'
+        FROM dbo.NhanVien nv
+        JOIN inserted i ON nv.MaPhongBan = i.MaPhongBan
+        JOIN deleted d ON i.MaPhongBan = d.MaPhongBan
+        WHERE i.KichHoat = 0 
+        AND d.KichHoat = 1 
+        AND nv.TrangThai = N'DangLam';
+
+        -- Log thông báo
+        DECLARE @PhongBanName NVARCHAR(80), @SoNhanVien INT;
+        SELECT 
+            @PhongBanName = i.TenPhongBan,
+            @SoNhanVien = COUNT(nv.MaNV)
+        FROM inserted i
+        JOIN deleted d ON i.MaPhongBan = d.MaPhongBan
+        LEFT JOIN dbo.NhanVien nv ON nv.MaNV IN (
+            SELECT nv2.MaNV FROM dbo.NhanVien nv2 WHERE nv2.GhiChu LIKE N'%Phòng ban bị vô hiệu hóa%'
+        )
+        WHERE i.KichHoat = 0 AND d.KichHoat = 1
+        GROUP BY i.TenPhongBan;
+
+        IF @SoNhanVien > 0
+            PRINT N'Phòng ban "' + @PhongBanName + N'" bị vô hiệu hóa. ' + CAST(@SoNhanVien AS NVARCHAR(10)) + N' nhân viên chuyển sang "Tạm nghỉ".';
+    END
+END
+GO
+
+-- 8) DONTU: Tự động từ chối đơn từ quá hạn
+IF OBJECT_ID('dbo.tr_DonTu_AutoReject','TR') IS NOT NULL DROP TRIGGER dbo.tr_DonTu_AutoReject;
+GO
+CREATE TRIGGER dbo.tr_DonTu_AutoReject
+ON dbo.DonTu
+AFTER INSERT, UPDATE
+AS
+BEGIN
+    SET NOCOUNT ON;
+    IF TRY_CONVERT(INT, SESSION_CONTEXT(N'SkipTrigger')) = 1 RETURN;
+
+    -- Tự động từ chối đơn từ nếu quá 3 ngày sau thời gian kết thúc và chưa duyệt
+    UPDATE dt
+    SET 
+        TrangThai = N'TuChoi',
+        LyDo = ISNULL(dt.LyDo, '') + N' [Tự động từ chối: Quá 3 ngày sau thời gian yêu cầu]'
+    FROM dbo.DonTu dt
+    JOIN inserted i ON dt.MaDon = i.MaDon
+    WHERE dt.TrangThai = N'ChoDuyet'
+    AND DATEDIFF(DAY, dt.DenLuc, GETDATE()) > 3; -- Quá 3 ngày sau thời gian kết thúc
+
+    -- Log số đơn từ bị từ chối
+    DECLARE @RejectedCount INT;
+    SELECT @RejectedCount = COUNT(*)
+    FROM dbo.DonTu dt
+    JOIN inserted i ON dt.MaDon = i.MaDon
+    WHERE dt.TrangThai = N'TuChoi'
+    AND dt.LyDo LIKE N'%Tự động từ chối%';
+
+    IF @RejectedCount > 0
+        PRINT N'Đã tự động từ chối ' + CAST(@RejectedCount AS NVARCHAR(10)) + N' đơn từ quá 3 ngày sau thời gian yêu cầu.';
+END
+GO
+
 ------------------------------------------------------------
 -- V) PHÂN QUYỀN CHO CÁC STORED PROCEDURES MỚI
 ------------------------------------------------------------

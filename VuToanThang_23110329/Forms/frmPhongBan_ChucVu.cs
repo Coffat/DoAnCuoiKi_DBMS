@@ -25,14 +25,50 @@ namespace VuToanThang_23110329.Forms
         {
             SetupDataGridViews();
             LoadData();
+            ClearForm(); // Initialize button states
+            
+            // Đảm bảo các nút hiển thị và ở vị trí đúng
+            btnLuu.BringToFront();
+            btnHuy.BringToFront();
+            btnLuu.Visible = true;
+            btnHuy.Visible = true;
         }
 
         private void btnThemPhongBan_Click(object sender, EventArgs e)
         {
+            // Disconnect từ DataGridView selection
+            dgvPhongBan.ClearSelection();
+            dgvPhongBan.CurrentCell = null;
+            
+            // Clear databinding
+            txtMaPhongBan.DataBindings.Clear();
+            txtTenPhongBan.DataBindings.Clear();
+            txtMoTaPhongBan.DataBindings.Clear();
+            
+            // Clear và disable txtMaPhongBan (vì là IDENTITY)
             txtMaPhongBan.Text = "";
+            txtMaPhongBan.Enabled = false; // Không cho nhập mã khi thêm mới
+            txtMaPhongBan.BackColor = System.Drawing.SystemColors.Control; // Màu xám
+            
+            // Clear các field khác
             txtTenPhongBan.Text = "";
             txtMoTaPhongBan.Text = "";
+            
             editingPhongBan = true;
+            
+            // Enable/disable buttons for editing mode
+            btnLuu.Enabled = true;
+            btnLuu.Visible = true;
+            btnHuy.Enabled = true;
+            btnHuy.Visible = true;
+            btnThemPhongBan.Enabled = false;
+            btnSuaPhongBan.Enabled = false;
+            btnXoaPhongBan.Enabled = false;
+            
+            // Debug message removed
+            
+            // Focus on first input
+            txtTenPhongBan.Focus();
         }
 
         private void btnSuaPhongBan_Click(object sender, EventArgs e)
@@ -43,6 +79,12 @@ namespace VuToanThang_23110329.Forms
                 return;
             }
             editingPhongBan = true;
+            
+            // Enable txtMaPhongBan khi sửa (chỉ để hiển thị, không cho edit)
+            txtMaPhongBan.Enabled = true;
+            txtMaPhongBan.ReadOnly = true; // Chỉ đọc, không cho sửa mã
+            txtMaPhongBan.BackColor = System.Drawing.SystemColors.Control; // Màu xám để báo hiệu không edit được
+            
             DataRowView row = dgvPhongBan.CurrentRow.DataBoundItem as DataRowView;
             if (row != null)
             {
@@ -50,6 +92,16 @@ namespace VuToanThang_23110329.Forms
                 txtTenPhongBan.Text = row["TenPhongBan"].ToString();
                 txtMoTaPhongBan.Text = row["MoTa"].ToString();
             }
+            
+            // Enable/disable buttons for editing mode
+            btnLuu.Enabled = true;
+            btnHuy.Enabled = true;
+            btnThemPhongBan.Enabled = false;
+            btnSuaPhongBan.Enabled = false;
+            btnXoaPhongBan.Enabled = false;
+            
+            // Focus on first input
+            txtTenPhongBan.Focus();
         }
 
         private void btnXoaPhongBan_Click(object sender, EventArgs e)
@@ -85,10 +137,35 @@ namespace VuToanThang_23110329.Forms
 
         private void btnThemChucVu_Click(object sender, EventArgs e)
         {
+            // Disconnect từ DataGridView selection
+            dgvChucVu.ClearSelection();
+            dgvChucVu.CurrentCell = null;
+            
+            // Clear databinding
+            txtMaChucVu.DataBindings.Clear();
+            txtTenChucVu.DataBindings.Clear();
+            txtMoTaChucVu.DataBindings.Clear();
+            
+            // Clear và disable txtMaChucVu (vì là IDENTITY)
             txtMaChucVu.Text = "";
+            txtMaChucVu.Enabled = false; // Không cho nhập mã khi thêm mới
+            txtMaChucVu.BackColor = System.Drawing.SystemColors.Control; // Màu xám
+            
+            // Clear các field khác
             txtTenChucVu.Text = "";
             txtMoTaChucVu.Text = "";
+            
             editingChucVu = true;
+            
+            // Enable/disable buttons for editing mode
+            btnLuu.Enabled = true;
+            btnHuy.Enabled = true;
+            btnThemChucVu.Enabled = false;
+            btnSuaChucVu.Enabled = false;
+            btnXoaChucVu.Enabled = false;
+            
+            // Focus on first input
+            txtTenChucVu.Focus();
         }
 
         private void btnSuaChucVu_Click(object sender, EventArgs e)
@@ -99,6 +176,12 @@ namespace VuToanThang_23110329.Forms
                 return;
             }
             editingChucVu = true;
+            
+            // Enable txtMaChucVu khi sửa (chỉ để hiển thị, không cho edit)
+            txtMaChucVu.Enabled = true;
+            txtMaChucVu.ReadOnly = true; // Chỉ đọc, không cho sửa mã
+            txtMaChucVu.BackColor = System.Drawing.SystemColors.Control; // Màu xám để báo hiệu không edit được
+            
             DataRowView row = dgvChucVu.CurrentRow.DataBoundItem as DataRowView;
             if (row != null)
             {
@@ -106,6 +189,16 @@ namespace VuToanThang_23110329.Forms
                 txtTenChucVu.Text = row["TenChucVu"].ToString();
                 txtMoTaChucVu.Text = row["MoTa"].ToString();
             }
+            
+            // Enable/disable buttons for editing mode
+            btnLuu.Enabled = true;
+            btnHuy.Enabled = true;
+            btnThemChucVu.Enabled = false;
+            btnSuaChucVu.Enabled = false;
+            btnXoaChucVu.Enabled = false;
+            
+            // Focus on first input
+            txtTenChucVu.Focus();
         }
 
         private void btnXoaChucVu_Click(object sender, EventArgs e)
@@ -150,16 +243,43 @@ namespace VuToanThang_23110329.Forms
                     using (SqlConnection conn = new SqlConnection(connectionString))
                     {
                         conn.Open();
-                        if (string.IsNullOrWhiteSpace(txtMaPhongBan.Text))
+                        // Kiểm tra Insert hay Update
+                        bool isInsert = string.IsNullOrWhiteSpace(txtMaPhongBan.Text);
+                        
+                        if (isInsert)
                         {
-                            // Insert
-                            using (SqlCommand cmd = new SqlCommand("dbo.sp_PhongBan_Insert", conn))
+                            // Insert - Dùng stored procedure với debug chi tiết
+                            try
                             {
-                                cmd.CommandType = CommandType.StoredProcedure;
-                                cmd.Parameters.AddWithValue("@TenPhongBan", txtTenPhongBan.Text.Trim());
-                                cmd.Parameters.AddWithValue("@MoTa", string.IsNullOrWhiteSpace(txtMoTaPhongBan.Text) ? (object)DBNull.Value : txtMoTaPhongBan.Text.Trim());
-                                cmd.ExecuteNonQuery();
-                                MessageBox.Show("Thêm phòng ban thành công!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                using (SqlCommand cmd = new SqlCommand("dbo.sp_PhongBan_Insert", conn))
+                                {
+                                    cmd.CommandType = CommandType.StoredProcedure;
+                                    cmd.Parameters.AddWithValue("@TenPhongBan", txtTenPhongBan.Text.Trim());
+                                    cmd.Parameters.AddWithValue("@MoTa", string.IsNullOrWhiteSpace(txtMoTaPhongBan.Text) ? (object)DBNull.Value : txtMoTaPhongBan.Text.Trim());
+                                    cmd.Parameters.AddWithValue("@KichHoat", true);
+                                    
+                                    // Thêm tham số OUTPUT
+                                    var outputParam = new SqlParameter("@MaPhongBan_OUT", SqlDbType.Int)
+                                    {
+                                        Direction = ParameterDirection.Output
+                                    };
+                                    cmd.Parameters.Add(outputParam);
+                                    
+                                    cmd.ExecuteNonQuery();
+                                    
+                                    int newId = (int)outputParam.Value;
+                                    MessageBox.Show($"Thêm phòng ban thành công! Mã: {newId}", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                }
+                            }
+                            catch (SqlException sqlEx)
+                            {
+                                string detailError = $"SQL Error: {sqlEx.Message}\nError Number: {sqlEx.Number}\nSeverity: {sqlEx.Class}\nState: {sqlEx.State}";
+                                if (sqlEx.Number == 2)
+                                {
+                                    detailError += "\n\nStored procedure 'sp_PhongBan_Insert' không tồn tại. Hãy chạy file '03_StoredProcedures.sql'";
+                                }
+                                MessageBox.Show(detailError, "Lỗi SQL Chi Tiết", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                throw; // Re-throw để outer catch xử lý
                             }
                         }
                         else
@@ -189,16 +309,27 @@ namespace VuToanThang_23110329.Forms
                     using (SqlConnection conn = new SqlConnection(connectionString))
                     {
                         conn.Open();
-                        if (string.IsNullOrWhiteSpace(txtMaChucVu.Text))
+                        // Kiểm tra Insert hay Update
+                        bool isInsert = string.IsNullOrWhiteSpace(txtMaChucVu.Text);
+                        
+                        if (isInsert)
                         {
-                            // Insert
+                            // Insert - Dùng stored procedure
                             using (SqlCommand cmd = new SqlCommand("dbo.sp_ChucVu_Insert", conn))
                             {
                                 cmd.CommandType = CommandType.StoredProcedure;
                                 cmd.Parameters.AddWithValue("@TenChucVu", txtTenChucVu.Text.Trim());
                                 cmd.Parameters.AddWithValue("@MoTa", string.IsNullOrWhiteSpace(txtMoTaChucVu.Text) ? (object)DBNull.Value : txtMoTaChucVu.Text.Trim());
+                                cmd.Parameters.AddWithValue("@KichHoat", true);
+                                
+                                // Output parameter để nhận MaChucVu mới
+                                SqlParameter outputParam = new SqlParameter("@MaChucVu_OUT", SqlDbType.Int);
+                                outputParam.Direction = ParameterDirection.Output;
+                                cmd.Parameters.Add(outputParam);
+                                
                                 cmd.ExecuteNonQuery();
-                                MessageBox.Show("Thêm chức vụ thành công!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                int newId = Convert.ToInt32(outputParam.Value);
+                                MessageBox.Show($"Thêm chức vụ thành công! Mã: {newId}", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
                             }
                         }
                         else
@@ -222,7 +353,12 @@ namespace VuToanThang_23110329.Forms
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Lỗi: {ex.Message}", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                string errorMsg = $"Lỗi khi lưu dữ liệu: {ex.Message}";
+                if (ex.Message.Contains("Could not find stored procedure"))
+                {
+                    errorMsg += "\n\nVui lòng chạy file '03_StoredProcedures.sql' để tạo các stored procedures cần thiết.";
+                }
+                MessageBox.Show(errorMsg, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -297,6 +433,28 @@ namespace VuToanThang_23110329.Forms
             txtMaChucVu.Text = "";
             txtTenChucVu.Text = "";
             txtMoTaChucVu.Text = "";
+            
+            // Reset txtMaPhongBan về trạng thái bình thường
+            txtMaPhongBan.Enabled = true;
+            txtMaPhongBan.ReadOnly = false;
+            txtMaPhongBan.BackColor = System.Drawing.SystemColors.Window;
+            
+            // Reset txtMaChucVu về trạng thái bình thường
+            txtMaChucVu.Enabled = true;
+            txtMaChucVu.ReadOnly = false;
+            txtMaChucVu.BackColor = System.Drawing.SystemColors.Window;
+            
+            // Reset button states and visibility
+            btnLuu.Enabled = false;
+            btnLuu.Visible = true;  // Đảm bảo nút hiển thị
+            btnHuy.Enabled = false;
+            btnHuy.Visible = true;  // Đảm bảo nút hiển thị
+            btnThemPhongBan.Enabled = true;
+            btnSuaPhongBan.Enabled = true;
+            btnXoaPhongBan.Enabled = true;
+            btnThemChucVu.Enabled = true;
+            btnSuaChucVu.Enabled = true;
+            btnXoaChucVu.Enabled = true;
         }
 
         private void SetupDataGridViews()

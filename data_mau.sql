@@ -139,25 +139,25 @@ END
 EXEC dbo.sp_TaoTaiKhoanDayDu N'Nguyễn Văn An', '1980-05-20', N'Nam', '0901112221', 'giamdoc@minimart.com', N'123 Lê Lợi, Q1', '2020-01-15', @PhongBan_GiamDoc, @ChucVu_GiamDoc, 50000000, 'giamdoc', '1', N'QuanLy', @MaNV_Out OUTPUT;
 PRINT N'✓ 1. giamdoc (QuanLy) - MaNV: ' + CAST(@MaNV_Out AS NVARCHAR);
 
-EXEC dbo.sp_TaoTaiKhoanDayDu N'Trần Thị Bích', '1988-10-02', N'Nu', '0901112222', 'hr.manager@minimart.com', N'456 Nguyễn Trãi, Q5', '2021-03-10', @PhongBan_NhanSu, @ChucVu_TruongPhong, 25000000, 'hr_manager', '1', N'HR', @MaNV_Out OUTPUT;
+EXEC dbo.sp_TaoTaiKhoanDayDu N'Trần Thị Bích', '1988-10-02', N'Nữ', '0901112222', 'hr.manager@minimart.com', N'456 Nguyễn Trãi, Q5', '2021-03-10', @PhongBan_NhanSu, @ChucVu_TruongPhong, 25000000, 'hr_manager', '1', N'HR', @MaNV_Out OUTPUT;
 PRINT N'✓ 2. hr_manager (HR) - MaNV: ' + CAST(@MaNV_Out AS NVARCHAR);
 
 EXEC dbo.sp_TaoTaiKhoanDayDu N'Lê Văn Cường', '1992-07-11', N'Nam', '0901112223', 'ketoan01@minimart.com', N'789 CMT8, Q3', '2022-09-01', @PhongBan_KeToan, @ChucVu_KeToan, 15000000, 'ketoan01', '1', N'KeToan', @MaNV_Out OUTPUT;
 PRINT N'✓ 3. ketoan01 (KeToan) - MaNV: ' + CAST(@MaNV_Out AS NVARCHAR);
 
-EXEC dbo.sp_TaoTaiKhoanDayDu N'Ngô Thị Lan', '1995-04-12', N'Nu', '0901112228', 'lannt@minimart.com', N'555 Phan Xích Long', '2023-06-15', @PhongBan_NhanSu, @ChucVu_NhanSu, 12000000, 'nv_hr_01', '1', N'NhanVien', @MaNV_Out OUTPUT;
+EXEC dbo.sp_TaoTaiKhoanDayDu N'Ngô Thị Lan', '1995-04-12', N'Nữ', '0901112228', 'lannt@minimart.com', N'555 Phan Xích Long', '2023-06-15', @PhongBan_NhanSu, @ChucVu_NhanSu, 12000000, 'nv_hr_01', '1', N'NhanVien', @MaNV_Out OUTPUT;
 PRINT N'✓ 4. nv_hr_01 (NhanVien) - MaNV: ' + CAST(@MaNV_Out AS NVARCHAR);
 
-EXEC dbo.sp_TaoTaiKhoanDayDu N'Phạm Thị Dung', '1998-11-30', N'Nu', '0901112224', 'dungpt@minimart.com', N'111 HBT, Q1', '2023-05-20', @PhongBan_BanHang, @ChucVu_BanHang, 8500000, 'nv_banhang_01', '1', N'NhanVien', @MaNV_Out OUTPUT;
+EXEC dbo.sp_TaoTaiKhoanDayDu N'Phạm Thị Dung', '1998-11-30', N'Nữ', '0901112224', 'dungpt@minimart.com', N'111 HBT, Q1', '2023-05-20', @PhongBan_BanHang, @ChucVu_BanHang, 8500000, 'nv_banhang_01', '1', N'NhanVien', @MaNV_Out OUTPUT;
 PRINT N'✓ 5. nv_banhang_01 (NhanVien) - MaNV: ' + CAST(@MaNV_Out AS NVARCHAR);
 
-EXEC dbo.sp_TaoTaiKhoanDayDu N'Lý Thị Mai', '2001-08-08', N'Nu', '0901112229', 'mailt@minimart.com', N'666 Hoàng Diệu, Q4', '2024-01-15', @PhongBan_BanHang, @ChucVu_BanHang, 8500000, 'nv_banhang_02', '1', N'NhanVien', @MaNV_Out OUTPUT;
+EXEC dbo.sp_TaoTaiKhoanDayDu N'Lý Thị Mai', '2001-08-08', N'Nữ', '0901112229', 'mailt@minimart.com', N'666 Hoàng Diệu, Q4', '2024-01-15', @PhongBan_BanHang, @ChucVu_BanHang, 8500000, 'nv_banhang_02', '1', N'NhanVien', @MaNV_Out OUTPUT;
 PRINT N'✓ 6. nv_banhang_02 (NhanVien) - MaNV: ' + CAST(@MaNV_Out AS NVARCHAR);
 
 EXEC dbo.sp_TaoTaiKhoanDayDu N'Hoàng Văn Em', '2000-02-15', N'Nam', '0901112225', 'emhv@minimart.com', N'222 Võ Văn Tần, Q3', '2024-02-01', @PhongBan_Kho, @ChucVu_Kho, 8000000, 'nv_kho_01', '1', N'NhanVien', @MaNV_Out OUTPUT;
 PRINT N'✓ 7. nv_kho_01 (NhanVien) - MaNV: ' + CAST(@MaNV_Out AS NVARCHAR);
 
-EXEC dbo.sp_TaoTaiKhoanDayDu N'Vũ Thị Giang', '1999-06-25', N'Nu', '0901112226', 'giangvt@minimart.com', N'333 ĐBP, Bình Thạnh', '2024-03-01', @PhongBan_ThuNgan, @ChucVu_ThuNgan, 8200000, 'nv_thungan_01', '1', N'NhanVien', @MaNV_Out OUTPUT;
+EXEC dbo.sp_TaoTaiKhoanDayDu N'Vũ Thị Giang', '1999-06-25', N'Nữ', '0901112226', 'giangvt@minimart.com', N'333 ĐBP, Bình Thạnh', '2024-03-01', @PhongBan_ThuNgan, @ChucVu_ThuNgan, 8200000, 'nv_thungan_01', '1', N'NhanVien', @MaNV_Out OUTPUT;
 PRINT N'✓ 8. nv_thungan_01 (NhanVien) - MaNV: ' + CAST(@MaNV_Out AS NVARCHAR);
 
 -- Nhân viên đã nghỉ việc - cần xử lý riêng vì SP tự động tạo tài khoản active

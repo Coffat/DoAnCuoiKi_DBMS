@@ -39,8 +39,12 @@ namespace VuToanThang_23110329.Forms
         private void frmChamCong_Load(object sender, EventArgs e)
         {
             SetupComboBoxes();
-            LoadCurrentStatus();
             ConfigureRoleCapabilities();
+            LoadCurrentStatus();
+            
+            // Wire up event handlers for lock tab comboboxes
+            cmbThangKhoa.SelectedIndexChanged += cmbThangKhoa_SelectedIndexChanged;
+            cmbNamKhoa.SelectedIndexChanged += cmbNamKhoa_SelectedIndexChanged;
         }
 
         private void SetupComboBoxes()
@@ -278,6 +282,7 @@ namespace VuToanThang_23110329.Forms
             }
             else if (tabControl.SelectedTab == tabKhoaCong)
             {
+                // Luôn refresh trạng thái khóa khi chuyển tab
                 LoadLockStatus();
             }
         }
@@ -401,30 +406,37 @@ namespace VuToanThang_23110329.Forms
                 {
                     conn.Open();
                     string query = @"
-                        SELECT COUNT(*) as SoLuong
-                        FROM dbo.ChamCong
-                        WHERE YEAR(NgayLam) = @Nam 
-                        AND MONTH(NgayLam) = @Thang
-                        AND Khoa = 1";
+                        SELECT 
+                            (SELECT COUNT(*) FROM dbo.ChamCong 
+                             WHERE YEAR(NgayLam) = @Nam AND MONTH(NgayLam) = @Thang AND Khoa = 1) as ChamCongKhoa,
+                            (SELECT COUNT(*) FROM dbo.LichPhanCa 
+                             WHERE YEAR(NgayLam) = @Nam AND MONTH(NgayLam) = @Thang AND TrangThai = N'Khoa') as LichKhoa";
                     
                     using (SqlCommand cmd = new SqlCommand(query, conn))
                     {
                         cmd.Parameters.AddWithValue("@Nam", year);
                         cmd.Parameters.AddWithValue("@Thang", month);
                         
-                        int lockedCount = Convert.ToInt32(cmd.ExecuteScalar());
-                        
-                        if (lockedCount > 0)
+                        using (var reader = cmd.ExecuteReader())
                         {
-                            lblTrangThaiKhoa.Text = $"Công tháng {month}/{year} đã được khóa ({lockedCount} bản ghi)";
-                            lblTrangThaiKhoa.ForeColor = Color.Red;
-                            btnKhoaCong.Enabled = false;
-                        }
-                        else
-                        {
-                            lblTrangThaiKhoa.Text = $"Công tháng {month}/{year} chưa được khóa";
-                            lblTrangThaiKhoa.ForeColor = Color.Blue;
-                            btnKhoaCong.Enabled = true;
+                            if (reader.Read())
+                            {
+                                int chamCongKhoa = Convert.ToInt32(reader["ChamCongKhoa"]);
+                                int lichKhoa = Convert.ToInt32(reader["LichKhoa"]);
+                                
+                                if (chamCongKhoa > 0 || lichKhoa > 0)
+                                {
+                                    lblTrangThaiKhoa.Text = $"Công tháng {month}/{year} đã được khóa (Lịch: {lichKhoa}, Chấm công: {chamCongKhoa})";
+                                    lblTrangThaiKhoa.ForeColor = Color.Red;
+                                    btnKhoaCong.Enabled = false;
+                                }
+                                else
+                                {
+                                    lblTrangThaiKhoa.Text = $"Công tháng {month}/{year} chưa được khóa";
+                                    lblTrangThaiKhoa.ForeColor = Color.Blue;
+                                    btnKhoaCong.Enabled = true;
+                                }
+                            }
                         }
                     }
                 }
@@ -492,6 +504,22 @@ namespace VuToanThang_23110329.Forms
             if (tabControl.SelectedTab == tabLichSu)
             {
                 LoadAttendanceHistory();
+            }
+        }
+
+        private void cmbThangKhoa_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (tabControl.SelectedTab == tabKhoaCong)
+            {
+                LoadLockStatus();
+            }
+        }
+
+        private void cmbNamKhoa_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (tabControl.SelectedTab == tabKhoaCong)
+            {
+                LoadLockStatus();
             }
         }
     }
